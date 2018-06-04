@@ -13,7 +13,7 @@ namespace Skrypt {
 
             T.TokenRules.Add(new TokenRule {
                 Pattern = new Regex(@"\d+(\.\d+)?", RegexOptions.IgnoreCase),
-                Type = "Numeric"
+                Type = "NumericLiteral"
             });
 
             T.TokenRules.Add(new TokenRule {

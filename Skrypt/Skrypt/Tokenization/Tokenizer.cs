@@ -34,7 +34,12 @@ namespace Skrypt.Tokenization {
                     }
                 }
 
-                FoundMatch = FirstMatch.Success;          
+                FoundMatch = FirstMatch.Success;
+
+                if (FirstMatch.Index != 0) {
+                    Console.WriteLine("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
+                    return null;
+                }
 
                 if (FoundMatch) {
                     Token token = new Token {
@@ -46,12 +51,6 @@ namespace Skrypt.Tokenization {
 
                     Tokens.Add(token);
                 }
-
-                if (FirstMatch.Index != 0) {
-                    Console.WriteLine("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
-                    return null;
-                }
-
 
                 Index += FirstMatch.Value.Length;
                 Index += OriginalInput.Substring(Index).TakeWhile(c => c == ' ').Count();           
