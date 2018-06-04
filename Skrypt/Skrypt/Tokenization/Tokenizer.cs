@@ -27,21 +27,14 @@ namespace Skrypt.Tokenization {
                         FirstMatch = match;
                         FoundRule = Rule;
                     } else {
-                        if (match.Index < FirstMatch.Index) {
+                        if (match.Index < FirstMatch.Index && match.Success) {
                             FirstMatch = match;
                             FoundRule = Rule;
                         }
                     }
                 }
 
-                FoundMatch = FirstMatch.Success;
-
-                if (FirstMatch.Index != 0) {
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
-                    Console.ResetColor();
-                    return null;
-                }
+                FoundMatch = FirstMatch.Success;          
 
                 if (FoundMatch) {
                     Token token = new Token {
@@ -51,14 +44,18 @@ namespace Skrypt.Tokenization {
                         End = Index + FirstMatch.Index + FirstMatch.Value.Length - 1,
                     };
 
-                    Index = FirstMatch.Index + FirstMatch.Value.Length;
-                    Input = Input.Substring(Index);
-                    int whiteSpace = Input.TakeWhile(Char.IsWhiteSpace).Count();
-                    Index += whiteSpace;
-                    Input = Input.Substring(whiteSpace);
-
                     Tokens.Add(token);
                 }
+
+                if (FirstMatch.Index != 0) {
+                    Console.WriteLine("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
+                    return null;
+                }
+
+
+                Index += FirstMatch.Value.Length;
+                Index += OriginalInput.Substring(Index).TakeWhile(c => c == ' ').Count();           
+                Input = OriginalInput.Substring(Index);
             }
 
             return Tokens;

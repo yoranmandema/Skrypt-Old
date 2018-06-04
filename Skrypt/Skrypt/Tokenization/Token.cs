@@ -12,7 +12,7 @@ namespace Skrypt.Tokenization {
         public int End { get; set; }
 
         public override string ToString() {
-            return "Type: " + Type + ", Value: " + Value + " (" + Start + "," + End + ")";
+            return "(" + Start + "," + End + ") Type: " + Type + ", Value: " + Value;
         }
     }
 }

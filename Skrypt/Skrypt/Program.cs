@@ -12,13 +12,26 @@ namespace Skrypt {
             Tokenizer T = new Tokenizer();
 
             T.TokenRules.Add(new TokenRule {
-                Pattern = new Regex(@"-?\d+(\.\d*)?([eE][-+]?\d+)?", RegexOptions.IgnoreCase),
+                Pattern = new Regex(@"\d+(\.\d+)?", RegexOptions.IgnoreCase),
                 Type = "Numeric"
             });
 
-            var Tokens = T.Tokenize("1. s 2.00 3");
+            T.TokenRules.Add(new TokenRule {
+                Pattern = new Regex(@"(?:[_a-zA-Z]+[_a-zA-Z0-9]*)"),
+                Type = "Identifier"
+            });
 
-            Console.WriteLine(Tokens);
+            T.TokenRules.Add(new TokenRule {
+                Pattern = new Regex(@"(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=;<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
+                Type = "Punctuator"
+            });
+
+            var Tokens = T.Tokenize(@"doStuff ( 1");
+
+            if (Tokens != null) 
+            foreach (Token token in Tokens) {
+                Console.WriteLine(token);
+            }
 
             Console.ReadKey();
         }
