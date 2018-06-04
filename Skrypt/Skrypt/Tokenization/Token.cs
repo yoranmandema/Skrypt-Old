@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Skrypt.Interpreter {
+namespace Skrypt.Tokenization {
     class Token {
-        public string Value { get; set; } = null;
-        public string Type { get; set; } = null;
-
+        public string Value { get; set; }
+        public string Type { get; set; }
         public int Start { get; set; }
         public int End { get; set; }
     }
