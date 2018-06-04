@@ -53,7 +53,7 @@ namespace Skrypt.Tokenization {
                 }
 
                 Index += FirstMatch.Value.Length;
-                Index += OriginalInput.Substring(Index).TakeWhile(c => c == ' ').Count();           
+                Index += OriginalInput.Substring(Index).TakeWhile(Char.IsWhiteSpace).Count();           
                 Input = OriginalInput.Substring(Index);
             }
 
