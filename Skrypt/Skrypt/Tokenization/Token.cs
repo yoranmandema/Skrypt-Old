@@ -10,5 +10,9 @@ namespace Skrypt.Tokenization {
         public string Type { get; set; }
         public int Start { get; set; }
         public int End { get; set; }
+
+        public override string ToString() {
+            return "Type: " + Type + ", Value: " + Value + " (" + Start + "," + End + ")";
+        }
     }
 }
