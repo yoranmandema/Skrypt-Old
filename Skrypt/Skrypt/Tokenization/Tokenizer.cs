@@ -12,47 +12,38 @@ namespace Skrypt.Tokenization {
         public List<Token> Tokenize (string Input) {
             List<Token> Tokens = new List<Token>();
 
-            bool FoundMatch = true;
             int Index = 0;
             string OriginalInput = Input;
 
-            while (FoundMatch) {
-                Match FirstMatch = null;
+            while (Index < OriginalInput.Length) {
+                Match FoundMatch = null;
                 TokenRule FoundRule = null;
 
                 foreach (TokenRule Rule in TokenRules) {
                     Match match = Rule.Pattern.Match(Input);
 
-                    if (FirstMatch == null) {
-                        FirstMatch = match;
+                    if (match.Index == 0 && match.Success) {
+                        FoundMatch = match;
                         FoundRule = Rule;
-                    } else {
-                        if (match.Index < FirstMatch.Index && match.Success) {
-                            FirstMatch = match;
-                            FoundRule = Rule;
-                        }
                     }
                 }
 
-                FoundMatch = FirstMatch.Success;
-
-                if (FirstMatch.Index != 0) {
+                if (FoundMatch == null) {
+                    Console.WriteLine(Index);
                     Console.WriteLine("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
                     return null;
                 }
 
-                if (FoundMatch) {
-                    Token token = new Token {
-                        Value = FirstMatch.Value,
-                        Type = FoundRule.Type,
-                        Start = Index + FirstMatch.Index,
-                        End = Index + FirstMatch.Index + FirstMatch.Value.Length - 1,
-                    };
+                Token token = new Token {
+                    Value = FoundMatch.Value,
+                    Type = FoundRule.Type,
+                    Start = Index + FoundMatch.Index,
+                    End = Index + FoundMatch.Index + FoundMatch.Value.Length - 1,
+                };
 
-                    Tokens.Add(token);
-                }
+                Tokens.Add(token);
 
-                Index += FirstMatch.Value.Length;
+                Index += FoundMatch.Value.Length;
                 Index += OriginalInput.Substring(Index).TakeWhile(Char.IsWhiteSpace).Count();           
                 Input = OriginalInput.Substring(Index);
             }

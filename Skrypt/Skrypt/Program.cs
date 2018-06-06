@@ -17,7 +17,7 @@ namespace Skrypt {
             });
 
             T.TokenRules.Add(new TokenRule {
-                Pattern = new Regex(@"(?:[_a-zA-Z]+[_a-zA-Z0-9]*)"),
+                Pattern = new Regex(@"[_a-zA-Z]+[_a-zA-Z0-9]*"),
                 Type = "Identifier"
             });
 
@@ -26,7 +26,12 @@ namespace Skrypt {
                 Type = "Punctuator"
             });
 
-            var Tokens = T.Tokenize(@"doStuff ( 1");
+            T.TokenRules.Add(new TokenRule {
+                Pattern = new Regex(@"[""\'][^""\\]*(?:\\.[^""\\]*)*[""\']"),
+                Type = "StringLiteral"
+            });
+
+            var Tokens = T.Tokenize("doStuff (\"wdwd\")");
 
             if (Tokens != null) 
             foreach (Token token in Tokens) {
