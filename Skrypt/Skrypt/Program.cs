@@ -11,8 +11,15 @@ namespace Skrypt {
         static void Main(string[] args) {
             Tokenizer T = new Tokenizer();
 
+            // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
+            // This means you can ignore certain characters, like whitespace in this case, that way.
             T.TokenRules.Add(new TokenRule {
-                Pattern = new Regex(@"\d+(\.\d+)?", RegexOptions.IgnoreCase),
+                Pattern = new Regex(@"\s"),
+                Type = null
+            });
+
+            T.TokenRules.Add(new TokenRule {
+                Pattern = new Regex(@"\d+(\.\d+)?"),
                 Type = "NumericLiteral"
             });
 
@@ -31,11 +38,14 @@ namespace Skrypt {
                 Type = "StringLiteral"
             });
 
+            // Tokenizing a test string.
             var Tokens = T.Tokenize("doStuff (\"wdwd\")");
 
-            if (Tokens != null) 
-            foreach (Token token in Tokens) {
-                Console.WriteLine(token);
+            // Debug token list print.
+            if (Tokens != null) {
+                foreach (Token token in Tokens) {
+                    Console.WriteLine(token);
+                }
             }
 
             Console.ReadKey();

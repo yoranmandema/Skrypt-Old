@@ -6,9 +6,20 @@ using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace Skrypt.Tokenization {
+
+    /// <summary>
+    /// The main Tokenization class.
+    /// Contains all methods for tokenization.
+    /// </summary>
     class Tokenizer {
         public List<TokenRule> TokenRules = new List<TokenRule>();
 
+        /// <summary>
+        /// Tokenizes the given input string according to the token rules given to this object.
+        /// </summary>
+        /// <returns>
+        /// A list of tokens.
+        /// </returns>
         public List<Token> Tokenize (string Input) {
             List<Token> Tokens = new List<Token>();
 
@@ -19,6 +30,7 @@ namespace Skrypt.Tokenization {
                 Match FoundMatch = null;
                 TokenRule FoundRule = null;
 
+                // Check input string for all token rules
                 foreach (TokenRule Rule in TokenRules) {
                     Match match = Rule.Pattern.Match(Input);
 
@@ -28,6 +40,7 @@ namespace Skrypt.Tokenization {
                     }
                 }
 
+                // No match was found; this means we encountered an unexpected token.
                 if (FoundMatch == null) {
                     Console.WriteLine(Index);
                     Console.WriteLine("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
@@ -41,10 +54,13 @@ namespace Skrypt.Tokenization {
                     End = Index + FoundMatch.Index + FoundMatch.Value.Length - 1,
                 };
 
-                Tokens.Add(token);
+                // Ignore token if it's type equals null
+                if (FoundRule.Type != null) {
+                    Tokens.Add(token);
+                }
 
-                Index += FoundMatch.Value.Length;
-                Index += OriginalInput.Substring(Index).TakeWhile(Char.IsWhiteSpace).Count();           
+                // Increase current index and cut away part of the string that got matched so we don't repeat it again.
+                Index += FoundMatch.Value.Length;       
                 Input = OriginalInput.Substring(Index);
             }
 
