@@ -34,6 +34,7 @@ namespace Skrypt.Tokenization {
                 foreach (TokenRule Rule in TokenRules) {
                     Match match = Rule.Pattern.Match(Input);
 
+                    // Only permit match it's found at the start of the string
                     if (match.Index == 0 && match.Success) {
                         FoundMatch = match;
                         FoundRule = Rule;
@@ -42,7 +43,6 @@ namespace Skrypt.Tokenization {
 
                 // No match was found; this means we encountered an unexpected token.
                 if (FoundMatch == null) {
-                    Console.WriteLine(Index);
                     Console.WriteLine("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
                     return null;
                 }

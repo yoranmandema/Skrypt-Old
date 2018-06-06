@@ -39,7 +39,7 @@ namespace Skrypt {
             });
 
             // Tokenizing a test string.
-            var Tokens = T.Tokenize("doStuff (\"wdwd\")");
+            var Tokens = T.Tokenize("");
 
             // Debug token list print.
             if (Tokens != null) {
