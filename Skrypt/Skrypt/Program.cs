@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Tokenization;
 using System.Text.RegularExpressions;
+using System.IO;
 
 namespace Skrypt {
     class Program {
@@ -34,12 +35,25 @@ namespace Skrypt {
             });
 
             T.TokenRules.Add(new TokenRule {
-                Pattern = new Regex(@"[""\'][^""\\]*(?:\\.[^""\\]*)*[""\']"),
+                Pattern = new Regex(@""".*?(?<!\\)"""),
                 Type = "StringLiteral"
             });
 
-            // Tokenizing a test string.
-            var Tokens = T.Tokenize("");
+            T.TokenRules.Add(new TokenRule {
+                Pattern = new Regex(@"\/\*(.|\n)*\*\/"),
+                Type = null
+            });
+
+            T.TokenRules.Add(new TokenRule {
+                Pattern = new Regex(@"\/\/.*\n"),
+                Type = null
+            });
+
+            var path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"..\..\SkryptFiles\testcode.txt");
+            var code = File.ReadAllText(path);
+
+            // Tokenizing the file.
+            var Tokens = T.Tokenize(code);
 
             // Debug token list print.
             if (Tokens != null) {
