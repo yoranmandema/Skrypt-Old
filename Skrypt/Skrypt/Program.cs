@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 using Skrypt.Tokenization;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Diagnostics; // Using this so we can check how fast everything is happening
 
 namespace Skrypt {
     class Program {
         static void Main(string[] args) {
+            Stopwatch sw = new Stopwatch();
             Tokenizer T = new Tokenizer();
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
@@ -35,7 +37,7 @@ namespace Skrypt {
             });
 
             T.TokenRules.Add(new TokenRule {
-                Pattern = new Regex(@"(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=;<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
+                Pattern = new Regex(@"(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=;:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
                 Type = "Punctuator"
             });
 
@@ -54,13 +56,17 @@ namespace Skrypt {
             T.TokenRules.Add(new TokenRule {
                 Pattern = new Regex(@"\/\/.*\n"),
                 Type = null
-            });
+            });;
 
             var path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"..\..\SkryptFiles\testcode.txt");
             var code = File.ReadAllText(path);
 
+            sw.Start();
             // Tokenizing the file.
             var Tokens = T.Tokenize(code);
+            if (Tokens != null) 
+                TokenProcessor.ProcessTokens(Tokens);
+            sw.Stop();
 
             // Debug token list print.
             if (Tokens != null) {
@@ -69,16 +75,8 @@ namespace Skrypt {
                 }
             }
 
-            // Process the created tokens
-            TokenProcessor.ProcessTokens(Tokens);
-            Console.WriteLine("Processing tokens...");
+            Console.WriteLine("Tokenization time: {0} ms", sw.Elapsed.Milliseconds);
 
-            // Debug token list print.
-            if (Tokens != null) {
-                foreach (Token token in Tokens) {
-                    Console.WriteLine(token);
-                }
-            }
             Console.ReadKey();
         }
     }
