@@ -34,7 +34,7 @@ namespace Skrypt.Tokenization {
                 foreach (TokenRule Rule in TokenRules) {
                     Match match = Rule.Pattern.Match(Input);
 
-                    // Only permit match it's found at the start of the string
+                    // Only permit match if it's found at the start of the string
                     if (match.Index == 0 && match.Success) {
                         FoundMatch = match;
                         FoundRule = Rule;
