@@ -30,6 +30,11 @@ namespace Skrypt {
             });
 
             T.TokenRules.Add(new TokenRule {
+                Pattern = new Regex("true|false"),
+                Type = "BooleanLiteral"
+            });
+
+            T.TokenRules.Add(new TokenRule {
                 Pattern = new Regex(@"(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=;<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
                 Type = "Punctuator"
             });
@@ -64,6 +69,16 @@ namespace Skrypt {
                 }
             }
 
+            // Process the created tokens
+            TokenProcessor.ProcessTokens(Tokens);
+            Console.WriteLine("Processing tokens...");
+
+            // Debug token list print.
+            if (Tokens != null) {
+                foreach (Token token in Tokens) {
+                    Console.WriteLine(token);
+                }
+            }
             Console.ReadKey();
         }
     }

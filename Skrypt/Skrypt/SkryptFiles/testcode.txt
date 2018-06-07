@@ -2,4 +2,6 @@
 
 // this is also a comment
 
-"this is a string"
+"this is \% a string"
+
+true
