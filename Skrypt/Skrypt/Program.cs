@@ -39,11 +39,13 @@ namespace Skrypt {
                 Type = "StringLiteral"
             });
 
+            // Multi line comment
             T.TokenRules.Add(new TokenRule {
                 Pattern = new Regex(@"\/\*(.|\n)*\*\/"),
                 Type = null
             });
 
+            // Single line comment
             T.TokenRules.Add(new TokenRule {
                 Pattern = new Regex(@"\/\/.*\n"),
                 Type = null
