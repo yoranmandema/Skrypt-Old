@@ -136,5 +136,5 @@ function run(code, input) {
 
 var output = run("++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.");
 console.log(output);
-output = run(",[.-]", "Z");
+output = run(",[.-]","Z");
 console.log(output);

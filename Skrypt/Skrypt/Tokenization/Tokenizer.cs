@@ -14,6 +14,13 @@ namespace Skrypt.Tokenization {
     class Tokenizer {
         public List<TokenRule> TokenRules = new List<TokenRule>();
 
+        public void AddRule (Regex Pattern, string Type) {
+            TokenRules.Add(new TokenRule {
+                Pattern = Pattern,
+                Type = Type
+            });
+        }
+
         /// <summary>
         /// Tokenizes the given input string according to the token rules given to this object.
         /// </summary>
