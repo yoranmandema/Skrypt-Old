@@ -12,7 +12,7 @@ namespace Skrypt.Tokenization {
     /// Contains all methods for tokenization.
     /// </summary>
     class Tokenizer {
-        public List<TokenRule> TokenRules = new List<TokenRule>();
+        List<TokenRule> TokenRules = new List<TokenRule>();
 
         public void AddRule (Regex Pattern, string Type) {
             TokenRules.Add(new TokenRule {
