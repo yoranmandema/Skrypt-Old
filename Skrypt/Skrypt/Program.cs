@@ -11,12 +11,12 @@ using System.IO;
 namespace Skrypt {
     class Program {
         static void Main(string[] args) {
-            var path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"..\..\SkryptFiles\testcode.txt");
+            var path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"..\..\SkryptFiles\testcode.sk");
             var code = File.ReadAllText(path);
 
             SkryptEngine engine = new SkryptEngine();
 
-            engine.Run(code);
+            engine.Parse(code);
 
             Console.ReadKey();
         }

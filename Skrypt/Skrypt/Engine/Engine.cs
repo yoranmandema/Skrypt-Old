@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Tokenization;
+using Skrypt.Parsing;
 using System.Text.RegularExpressions;
 using System.Diagnostics; // Using this so we can check how fast everything is happening
 
@@ -58,25 +59,19 @@ namespace Skrypt.Engine {
             );
         }
 
-        public void Run (string code) {
-            Stopwatch sw = new Stopwatch();
+        public Node Parse (string code) {
 
-            sw.Start();
-            Tokens = tokenizer.Tokenize(code);
-
-            if (Tokens == null) { return; }
+            Tokens = tokenizer.Tokenize(code);      
+            if (Tokens == null) { return null; }
 
             TokenProcessor.ProcessTokens(Tokens);
-            sw.Stop();
 
-            // Debug token list print.
-            if (Tokens != null) {
-                foreach (Token token in Tokens) {
-                    Console.WriteLine(token);
-                }
-            }
+            Parser parser = new Parser();
+            Node Program = parser.Parse(Tokens);
 
-            Console.WriteLine("Tokenization time: {0} ms", sw.Elapsed.Milliseconds);
+            Console.WriteLine(Program);
+
+            return Program;
         }
     }
 }

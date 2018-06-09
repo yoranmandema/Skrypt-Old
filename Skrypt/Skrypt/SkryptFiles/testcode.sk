@@ -1,0 +1,38 @@
+﻿
+// global variables
+a = 1;
+b = "string";
+
+// global function
+method void someFunction () {
+	
+}
+
+// class/object template
+object someClass {
+	
+	classProperty1;
+	local classProperty2;
+
+	// Constructor
+	someClass () {
+		classProperty1 = 1;
+		classProperty2 = "two";
+	} 
+
+	// Public method
+	method void classFunction () {
+
+	}
+
+	// Private method
+	local method void localClassFunction () {
+
+	}
+}
+
+newObject = new someClass ();
+
+c = newObject.classProperty1;
+
+newObject.classFunction();
