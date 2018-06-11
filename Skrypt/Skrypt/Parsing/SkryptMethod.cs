@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Skrypt.Parsing {
-    class MethodCallState {
+    class SkryptMethod {
+        public string Name;
+        public Node NodeTree;
     }
 }

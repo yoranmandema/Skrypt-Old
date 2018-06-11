@@ -17,6 +17,10 @@ namespace Skrypt.Parsing {
             SubNodes = new List<Node>();
         }
 
+        public void Add (Node node) {
+            SubNodes.Add(node);
+        }
+
         public override string ToString() {
             return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"","");
         }

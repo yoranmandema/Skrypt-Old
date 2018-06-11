@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Skrypt.Parsing {
-    class ExpressionState : ParserState {
+
+    class SkryptOperator {
+        public string Operator;
     }
 }

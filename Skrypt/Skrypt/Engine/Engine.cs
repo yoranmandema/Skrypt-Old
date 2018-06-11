@@ -4,14 +4,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Tokenization;
-using Skrypt.Parsing;
 using System.Text.RegularExpressions;
+using Skrypt.Parsing;
 using System.Diagnostics; // Using this so we can check how fast everything is happening
 
 namespace Skrypt.Engine {
     class SkryptEngine {
         Tokenizer tokenizer = new Tokenizer();
         List<Token> Tokens;
+        List<SkryptClass> Classes = new List<SkryptClass>();
+        SkryptClass ProgramClass;
 
         public SkryptEngine() {
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
@@ -29,6 +31,11 @@ namespace Skrypt.Engine {
             tokenizer.AddRule(
                 new Regex(@"[_a-zA-Z]+[_a-zA-Z0-9]*"),
                 "Identifier"
+            );
+
+            tokenizer.AddRule(
+                new Regex("class"),
+                "Keyword"
             );
 
             tokenizer.AddRule(
@@ -59,19 +66,19 @@ namespace Skrypt.Engine {
             );
         }
 
-        public Node Parse (string code) {
+        public SkryptClass Parse (string code) {
 
             Tokens = tokenizer.Tokenize(code);      
             if (Tokens == null) { return null; }
 
             TokenProcessor.ProcessTokens(Tokens);
 
-            Parser parser = new Parser();
-            Node Program = parser.Parse(Tokens);
+            int index = 0;
+            ProgramClass = ClassParser.Parse(Tokens, ref index);
 
-            Console.WriteLine(Program);
+            Console.WriteLine(ProgramClass);
 
-            return Program;
+            return ProgramClass;
         }
     }
 }

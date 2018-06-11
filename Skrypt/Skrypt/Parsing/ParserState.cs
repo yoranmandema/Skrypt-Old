@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 using Skrypt.Tokenization;
 
 namespace Skrypt.Parsing {
-    class ParserState {
-        public Parser parser;
-        public List<Token> UnparsedTokens;
+    static class ParserState {
+        //public Parser parser;
 
-        public void SetState(ParserState State) {
-            parser.State = State;
-        }
+        //public ParserState(Parser p) {
+        //    parser = p;
+        //}
     }
 }

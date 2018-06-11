@@ -18,5 +18,21 @@ namespace Skrypt.Tokenization {
         public override string ToString() {
             return "(" + Start + "," + End + ") Type: " + Type + ", Value: " + Value;
         }
+
+        public bool Equals(Token other) {
+            if (this.Value == other.Value && this.Type == other.Type) {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool Has (string Type, string Value) {
+            if (this.Value == Value && this.Type == Type) {
+                return true;
+            }
+
+            return false;
+        }
     }
 }

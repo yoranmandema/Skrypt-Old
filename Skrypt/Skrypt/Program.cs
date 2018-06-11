@@ -21,4 +21,6 @@ namespace Skrypt {
             Console.ReadKey();
         }
     }
+
+
 }

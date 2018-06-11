@@ -46,11 +46,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Engine\Engine.cs" />
-    <Compile Include="Parsing\ExpressionState.cs" />
-    <Compile Include="Parsing\MethodCallState.cs" />
+    <Compile Include="Parsing\ClassParser.cs" />
+    <Compile Include="Parsing\ExpressionParser.cs" />
     <Compile Include="Parsing\Node.cs" />
-    <Compile Include="Parsing\Parser.cs" />
     <Compile Include="Parsing\ParserState.cs" />
+    <Compile Include="Parsing\SkryptClass.cs" />
+    <Compile Include="Parsing\SkryptClasses\Numeric.cs" />
+    <Compile Include="Parsing\SkryptMethod.cs" />
+    <Compile Include="Parsing\SkryptOperator.cs" />
+    <Compile Include="Parsing\SkryptProperty.cs" />
     <Compile Include="Tokenization\Tokenizer.cs" />
     <Compile Include="Tokenization\Token.cs" />
     <Compile Include="Program.cs" />
