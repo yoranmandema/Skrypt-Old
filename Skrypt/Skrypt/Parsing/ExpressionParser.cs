@@ -46,7 +46,7 @@ namespace Skrypt.Parsing {
             Action loop = () => {
                 foreach (OpereratorPrecedence OP in OperatorPrecedence) {
                     foreach (string Operator in OP.Operators) {
-                        int i = OP.LeftAssociate ? 0 : Math.Max(Tokens.Count - 1,0);
+                        int i = 0;
                         bool CanLoop = Tokens.Count > 0;
                         int parDepth = 0;
                         int firstPar = -1;
@@ -64,6 +64,7 @@ namespace Skrypt.Parsing {
 
                                 if (i == Tokens.Count - 1 && firstPar == 0) {
                                     isInPars = true;
+                                    return;
                                 }
                             } if (token.Value == Operator && parDepth == 0) {
                                 leftBuffer = Tokens.GetRange(0, i);
@@ -87,8 +88,8 @@ namespace Skrypt.Parsing {
                                 return;
                             }
 
-                            CanLoop = OP.LeftAssociate ? i < Tokens.Count - 1 : i > 0;
-                            i += OP.LeftAssociate ? 1 : -1;
+                            CanLoop = OP.LeftAssociate ? i < Tokens.Count - 1 : ((Tokens.Count - 1) - i) > 0 ;
+                            i++;
                         }
                     }
                 }
