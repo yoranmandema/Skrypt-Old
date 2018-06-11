@@ -1,5 +1,5 @@
 ﻿
 class Program {
-	A = 1 + 2 + 3;
+	print(1,poop(2),2);
 }
 	

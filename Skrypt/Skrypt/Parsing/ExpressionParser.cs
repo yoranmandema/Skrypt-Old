@@ -38,6 +38,14 @@ namespace Skrypt.Parsing {
         }
 
         static Node parse (Node branch, List<Token> Tokens) {
+
+            // Temporary function call finder
+            if (Tokens.Count > 2) {
+                if (Tokens[0].Type == "Identifier" && Tokens[1].Value == "(" && Tokens[Tokens.Count - 1].Value == ")") {
+                    return parseMethodCall(Tokens);
+                }
+            }
+
             List<Token> leftBuffer = new List<Token>();
             List<Token> rightBuffer = new List<Token>();
 
@@ -111,6 +119,37 @@ namespace Skrypt.Parsing {
             };
         }
 
+        static Node parseMethodCall (List<Token> Tokens) {
+            Node node = new Node { Body = Tokens[0].Value, TokenType = "Call" };
+            int i = 2;
+            int tokenStart = 2;
+            int depth = 0;
+            List<Token> Buffer = new List<Token>();
+
+            while (i < Tokens.Count) {
+                if (Tokens[i].Value == "(")
+                    depth++;
+
+                if (Tokens[i].Value == ")")
+                    depth--;
+
+                if ((Tokens[i].Value == "," || i == Tokens.Count - 1) && depth <= 0) {
+                    Node argNode = parse(node, Buffer);
+
+                    node.Add(argNode);
+
+                    tokenStart = i + 1;
+                    Buffer.Clear();
+                } else {
+                    Buffer.Add(Tokens[i]);
+                }
+
+                i++;
+            }
+
+            return node;
+        }
+
         static public Node Parse(List<Token> Tokens, ref int Index) {
             Node node = new Node { Body = "Expression" };
             int i = Index;
@@ -119,7 +158,7 @@ namespace Skrypt.Parsing {
                 Index++;
             }
 
-            parse(node, Tokens.GetRange(i, Index - i));
+            node.Add(parse(node, Tokens.GetRange(i, Index - i)));
 
             return node;
         }
