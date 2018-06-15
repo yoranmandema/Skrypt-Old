@@ -92,12 +92,14 @@ namespace Skrypt.Parsing {
                                             return;
                                         }
                                     }
+                                } else {
+                                    Node node = ParseArrayLiteral(Tokens, ref i);
+
+                                    if (i == Tokens.Count) {
+                                        branch.Add(node);
+                                        return;
+                                    }
                                 }
-
-                                if (firstPar == -1)
-                                    firstPar = i;
-
-                                parDepth++;
                             } else if (token.Value == Operator && parDepth == 0) {
                                 leftBuffer = Tokens.GetRange(0, i);
                                 rightBuffer = Tokens.GetRange(i + 1, Tokens.Count - i - 1);
@@ -242,6 +244,40 @@ namespace Skrypt.Parsing {
 
             Node argNode = parse(node, Tokens.GetRange(beginArguments, endArguments - beginArguments));
             node.Add(argNode);
+
+            return node;
+        }
+
+        static public Node ParseArrayLiteral (List<Token> Tokens, ref int Index) {
+            Node node = new Node { Body = "Array", TokenType = "ArrayLiteral" };
+
+            Index++;
+            int i = Index;
+            int depth = 1;
+            int endArguments = i;
+
+            while (depth > 0) {
+                if (Tokens[Index].Value == "[") {
+                    depth++;
+                }
+                else if (Tokens[Index].Value == "]") {
+                    depth--;
+
+                    if (depth == 0) {
+                        endArguments = Index;
+                    }
+                }
+
+                Index++;
+            }
+
+            List<List<Token>> Arguments = new List<List<Token>>();
+            SetArguments(Arguments, Tokens.GetRange(i, endArguments - i));
+
+            foreach (List<Token> Argument in Arguments) {
+                Node argNode = parse(node, Argument);
+                node.Add(argNode);
+            }
 
             return node;
         }
