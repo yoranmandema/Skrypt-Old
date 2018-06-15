@@ -173,25 +173,14 @@ namespace Skrypt.Parsing {
             }
         }
 
-        static public Node ParseCall(List<Token> Tokens, ref int Index) {
-            Node node = new Node { Body = Tokens[Index-1].Value, TokenType = "Call" };
-
-            int i = Index;
-            int depth = -1;
-            int beginArguments = 0;
-            int endArguments = 0;
+        static void SkipArguments(ref int Index, ref int endArguments, string upScope, string downScope, List<Token> Tokens) {
+            int depth = 1;
 
             while (depth != 0) {
-                if (Tokens[Index].Value == "(") {
-                    if (depth == -1) {
-                        depth = 1;
-                        beginArguments = Index + 1;
-                    }
-                    else {
-                        depth++;
-                    }
+                if (Tokens[Index].Value == upScope) {
+                    depth++;
                 }
-                else if (Tokens[Index].Value == ")") {
+                else if (Tokens[Index].Value == downScope) {
                     depth--;
 
                     if (depth == 0) {
@@ -201,9 +190,20 @@ namespace Skrypt.Parsing {
 
                 Index++;
             }
+        }
+
+        static public Node ParseCall(List<Token> Tokens, ref int Index) {
+            Node node = new Node { Body = Tokens[Index-1].Value, TokenType = "Call" };
+
+            Index += 1;
+
+            int i = Index;
+            int endArguments = i;
+
+            SkipArguments(ref Index, ref endArguments, "(", ")", Tokens);
 
             List<List<Token>> Arguments = new List<List<Token>>();
-            SetArguments(Arguments, Tokens.GetRange(beginArguments, endArguments - beginArguments));
+            SetArguments(Arguments, Tokens.GetRange(i, endArguments - i));
 
             foreach (List<Token> Argument in Arguments) {
                 Node argNode = parse(node, Argument);
@@ -216,33 +216,14 @@ namespace Skrypt.Parsing {
         static public Node ParseIndexing(List<Token> Tokens, ref int Index) {
             Node node = new Node { Body = Tokens[Index - 1].Value, TokenType = "Index" };
 
+            Index += 1;
+
             int i = Index;
-            int depth = -1;
-            int beginArguments = 0;
-            int endArguments = 0;
+            int endArguments = i;
 
-            while (depth != 0) {
-                if (Tokens[Index].Value == "[") {
-                    if (depth == -1) {
-                        depth = 1;
-                        beginArguments = Index + 1;
-                    }
-                    else {
-                        depth++;
-                    }
-                }
-                else if (Tokens[Index].Value == "]") {
-                    depth--;
+            SkipArguments(ref Index, ref endArguments, "[", "]", Tokens);
 
-                    if (depth == 0) {
-                        endArguments = Index;
-                    }
-                }
-
-                Index++;
-            }
-
-            Node argNode = parse(node, Tokens.GetRange(beginArguments, endArguments - beginArguments));
+            Node argNode = parse(node, Tokens.GetRange(i, endArguments - i));
             node.Add(argNode);
 
             return node;
@@ -253,23 +234,9 @@ namespace Skrypt.Parsing {
 
             Index++;
             int i = Index;
-            int depth = 1;
             int endArguments = i;
 
-            while (depth > 0) {
-                if (Tokens[Index].Value == "[") {
-                    depth++;
-                }
-                else if (Tokens[Index].Value == "]") {
-                    depth--;
-
-                    if (depth == 0) {
-                        endArguments = Index;
-                    }
-                }
-
-                Index++;
-            }
+            SkipArguments(ref Index, ref endArguments, "[", "]", Tokens);
 
             List<List<Token>> Arguments = new List<List<Token>>();
             SetArguments(Arguments, Tokens.GetRange(i, endArguments - i));
