@@ -1,5 +1,2 @@
 ﻿
-class Program {
-	print(1,poop(2),2);
-}
-	
+A = method(1,2,doStuff(2));

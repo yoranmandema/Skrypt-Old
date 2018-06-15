@@ -11,15 +11,18 @@ namespace Skrypt.Parsing {
             public List<string> Operators = new List<string>();
             public int Members;
             public bool LeftAssociate = true;
+            public bool IsPostfix = false;
 
-            public OpereratorPrecedence(string[] ops, bool LA = true, int mems = 2) {
+            public OpereratorPrecedence(string[] ops, bool LA = true, int mems = 2, bool PF = false) {
                 Operators = ops.ToList<string>();
                 Members = mems;
                 LeftAssociate = LA;
+                IsPostfix = PF;
             }
         }
 
         static List<OpereratorPrecedence> OperatorPrecedence = new List<OpereratorPrecedence> {
+            new OpereratorPrecedence(new[] {"."}, true, 2, true),
             new OpereratorPrecedence(new[] {"="}, false),
             new OpereratorPrecedence(new[] {"+","-"}),
             new OpereratorPrecedence(new[] {"*","/","%"}),
@@ -39,13 +42,6 @@ namespace Skrypt.Parsing {
 
         static Node parse (Node branch, List<Token> Tokens) {
 
-            // Temporary function call finder
-            if (Tokens.Count > 2) {
-                if (Tokens[0].Type == "Identifier" && Tokens[1].Value == "(" && Tokens[Tokens.Count - 1].Value == ")") {
-                    return parseMethodCall(Tokens);
-                }
-            }
-
             List<Token> leftBuffer = new List<Token>();
             List<Token> rightBuffer = new List<Token>();
 
@@ -61,11 +57,23 @@ namespace Skrypt.Parsing {
 
                         while (CanLoop) {                      
                             Token token = Tokens[i];
+                            Token previousToken = i >= 1 ? Tokens[i-1] : null;
 
                             if (token.Value == "(") {
+                                if (previousToken != null) {
+                                    if (previousToken.Type == "Identifier") {
+                                        Node node = ParseCall(Tokens, ref i);
+
+                                        if (i == Tokens.Count) {
+                                            branch.Add(node);
+                                            return;
+                                        }
+                                    }
+                                }
+
                                 if (firstPar == -1)
                                     firstPar = i;
-
+                            
                                 parDepth++;
                             } else if (token.Value == ")") {
                                 parDepth--;
@@ -74,7 +82,9 @@ namespace Skrypt.Parsing {
                                     isInPars = true;
                                     return;
                                 }
-                            } if (token.Value == Operator && parDepth == 0) {
+                            }
+
+                            if (token.Value == Operator && parDepth == 0) {
                                 leftBuffer = Tokens.GetRange(0, i);
                                 rightBuffer = Tokens.GetRange(i + 1, Tokens.Count - i - 1);
 
@@ -84,13 +94,11 @@ namespace Skrypt.Parsing {
 
                                 if (OP.Members > 1) {
                                     Node LeftNode = parse(NewNode, leftBuffer);
-                                    if (LeftNode != null)
-                                        NewNode.Add(LeftNode);
+                                    NewNode.Add(LeftNode);
                                 }
 
                                 Node RightNode = parse(NewNode, rightBuffer);
-                                if (RightNode != null) 
-                                    NewNode.Add(RightNode);
+                                NewNode.Add(RightNode);
 
                                 branch.Add(NewNode);
                                 return;
@@ -119,32 +127,71 @@ namespace Skrypt.Parsing {
             };
         }
 
-        static Node parseMethodCall (List<Token> Tokens) {
-            Node node = new Node { Body = Tokens[0].Value, TokenType = "Call" };
-            int i = 2;
-            int tokenStart = 2;
+        static public void SetArguments(List<List<Token>> Arguments, List<Token> Tokens) {
             int depth = 0;
+            int i = 0;
+            int startArg = 0;
             List<Token> Buffer = new List<Token>();
 
-            while (i < Tokens.Count) {
-                if (Tokens[i].Value == "(")
+            for (i = 0; i < Tokens.Count; i++) {
+                Token token = Tokens[i];
+
+                if (token.Value == "(") {
                     depth++;
-
-                if (Tokens[i].Value == ")")
+                }
+                else if (token.Value == ")") {
                     depth--;
-
-                if ((Tokens[i].Value == "," || i == Tokens.Count - 1) && depth <= 0) {
-                    Node argNode = parse(node, Buffer);
-
-                    node.Add(argNode);
-
-                    tokenStart = i + 1;
-                    Buffer.Clear();
-                } else {
-                    Buffer.Add(Tokens[i]);
                 }
 
-                i++;
+                if (token.Value == "," && depth == 0) {
+                    Buffer = Tokens.GetRange(startArg, i - startArg);
+                    startArg = i + 1;
+                    Arguments.Add(Buffer);
+                }
+
+                if (i == Tokens.Count - 1 && depth == 0) {                    
+                    Buffer = Tokens.GetRange(startArg, (i + 1) - startArg);
+                    startArg = i + 1;
+                    Arguments.Add(Buffer);
+                }
+            }
+        }
+
+        static public Node ParseCall(List<Token> Tokens, ref int Index) {
+            Node node = new Node { Body = Tokens[Index-1].Value, TokenType = "Call" };
+
+            int i = Index;
+            int depth = -1;
+            int beginArguments = 0;
+            int endArguments = 0;
+
+            while (depth != 0) {
+                if (Tokens[Index].Value == "(") {
+                    if (depth == -1) {
+                        depth = 1;
+                        beginArguments = Index + 1;
+                    }
+                    else {
+                        depth++;
+                    }
+                }
+                else if (Tokens[Index].Value == ")") {
+                    depth--;
+
+                    if (depth == 0) {
+                        endArguments = Index;
+                    }
+                }
+
+                Index++;
+            }
+
+            List<List<Token>> Arguments = new List<List<Token>>();
+            SetArguments(Arguments, Tokens.GetRange(beginArguments, endArguments - beginArguments));
+
+            foreach (List<Token> Argument in Arguments) {
+                Node argNode = parse(node, Argument);
+                node.Add(argNode);
             }
 
             return node;

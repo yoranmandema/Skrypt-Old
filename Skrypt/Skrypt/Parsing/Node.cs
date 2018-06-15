@@ -18,6 +18,11 @@ namespace Skrypt.Parsing {
         }
 
         public void Add (Node node) {
+
+            if (node == null) {
+                return;
+            }
+
             SubNodes.Add(node);
         }
 

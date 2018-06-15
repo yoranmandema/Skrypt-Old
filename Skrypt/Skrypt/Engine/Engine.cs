@@ -29,6 +29,11 @@ namespace Skrypt.Engine {
             );
 
             tokenizer.AddRule(
+                new Regex(@"class|method"),
+                "Keyword"
+            );
+
+            tokenizer.AddRule(
                 new Regex(@"[_a-zA-Z]+[_a-zA-Z0-9]*"),
                 "Identifier"
             );
@@ -66,19 +71,23 @@ namespace Skrypt.Engine {
             );
         }
 
-        public SkryptClass Parse (string code) {
+        public Node Parse (string code) {
 
             Tokens = tokenizer.Tokenize(code);      
             if (Tokens == null) { return null; }
 
             TokenProcessor.ProcessTokens(Tokens);
 
-            int index = 0;
-            ProgramClass = ClassParser.Parse(Tokens, ref index);
+            Node ProgramNode = new Node { Body = "Program" };
 
-            Console.WriteLine(ProgramClass);
+            for (int i = 0; i < Tokens.Count - 1; i++) {
+                var N = ExpressionParser.Parse(Tokens, ref i);
+                ProgramNode.Add(N);
+            }
 
-            return ProgramClass;
+            Console.WriteLine(ProgramNode);
+
+            return ProgramNode;
         }
     }
 }
