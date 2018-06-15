@@ -82,9 +82,23 @@ namespace Skrypt.Parsing {
                                     isInPars = true;
                                     return;
                                 }
-                            }
+                            } else if (token.Value == "[") {
+                                if (previousToken != null) {
+                                    if (previousToken.Type == "Identifier" || previousToken.Type == "StringLiteral") {
+                                        Node node = ParseIndexing(Tokens, ref i);
 
-                            if (token.Value == Operator && parDepth == 0) {
+                                        if (i == Tokens.Count) {
+                                            branch.Add(node);
+                                            return;
+                                        }
+                                    }
+                                }
+
+                                if (firstPar == -1)
+                                    firstPar = i;
+
+                                parDepth++;
+                            } else if (token.Value == Operator && parDepth == 0) {
                                 leftBuffer = Tokens.GetRange(0, i);
                                 rightBuffer = Tokens.GetRange(i + 1, Tokens.Count - i - 1);
 
@@ -193,6 +207,41 @@ namespace Skrypt.Parsing {
                 Node argNode = parse(node, Argument);
                 node.Add(argNode);
             }
+
+            return node;
+        }
+
+        static public Node ParseIndexing(List<Token> Tokens, ref int Index) {
+            Node node = new Node { Body = Tokens[Index - 1].Value, TokenType = "Index" };
+
+            int i = Index;
+            int depth = -1;
+            int beginArguments = 0;
+            int endArguments = 0;
+
+            while (depth != 0) {
+                if (Tokens[Index].Value == "[") {
+                    if (depth == -1) {
+                        depth = 1;
+                        beginArguments = Index + 1;
+                    }
+                    else {
+                        depth++;
+                    }
+                }
+                else if (Tokens[Index].Value == "]") {
+                    depth--;
+
+                    if (depth == 0) {
+                        endArguments = Index;
+                    }
+                }
+
+                Index++;
+            }
+
+            Node argNode = parse(node, Tokens.GetRange(beginArguments, endArguments - beginArguments));
+            node.Add(argNode);
 
             return node;
         }
