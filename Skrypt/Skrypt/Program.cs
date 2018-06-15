@@ -16,7 +16,11 @@ namespace Skrypt {
 
             SkryptEngine engine = new SkryptEngine();
 
-            engine.Parse(code);
+            //try {
+                engine.Parse(code);
+            //} catch (Exception e) {
+            //   Console.WriteLine(e.Message);
+            //}
 
             Console.ReadKey();
         }

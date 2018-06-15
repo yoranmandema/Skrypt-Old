@@ -145,6 +145,7 @@ namespace Skrypt.Parsing {
 
         static public void SetArguments(List<List<Token>> Arguments, List<Token> Tokens) {
             int depth = 0;
+            int indexDepth = 0;
             int i = 0;
             int startArg = 0;
             List<Token> Buffer = new List<Token>();
@@ -159,14 +160,15 @@ namespace Skrypt.Parsing {
                     depth--;
                 }
 
-                if (token.Value == "," && depth == 0) {
-                    Buffer = Tokens.GetRange(startArg, i - startArg);
-                    startArg = i + 1;
-                    Arguments.Add(Buffer);
+                if (token.Value == "[") {
+                    indexDepth++;
+                }
+                else if (token.Value == "]") {
+                    indexDepth--;
                 }
 
-                if (i == Tokens.Count - 1 && depth == 0) {                    
-                    Buffer = Tokens.GetRange(startArg, (i + 1) - startArg);
+                if ((token.Value == "," || i == Tokens.Count - 1) && depth == 0 && indexDepth == 0) {
+                    Buffer = Tokens.GetRange(startArg, (i == Tokens.Count - 1 ? i + 1 : i) - startArg);
                     startArg = i + 1;
                     Arguments.Add(Buffer);
                 }
@@ -176,7 +178,7 @@ namespace Skrypt.Parsing {
         static void SkipArguments(ref int Index, ref int endArguments, string upScope, string downScope, List<Token> Tokens) {
             int depth = 1;
 
-            while (depth != 0) {
+            while (depth != 0) {              
                 if (Tokens[Index].Value == upScope) {
                     depth++;
                 }
@@ -216,7 +218,7 @@ namespace Skrypt.Parsing {
         static public Node ParseIndexing(List<Token> Tokens, ref int Index) {
             Node node = new Node { Body = Tokens[Index - 1].Value, TokenType = "Index" };
 
-            Index += 1;
+            Index++;
 
             int i = Index;
             int endArguments = i;
@@ -250,7 +252,7 @@ namespace Skrypt.Parsing {
         }
 
         static public Node Parse(List<Token> Tokens, ref int Index) {
-            Node node = new Node { Body = "Expression" };
+            Node node = new Node();
             int i = Index;
 
             while (Tokens[Index].Value != ";") {
@@ -259,7 +261,7 @@ namespace Skrypt.Parsing {
 
             node.Add(parse(node, Tokens.GetRange(i, Index - i)));
 
-            return node;
+            return node.SubNodes[0];
         }
     }
 }

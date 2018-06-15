@@ -13,7 +13,6 @@ namespace Skrypt.Engine {
         Tokenizer tokenizer = new Tokenizer();
         List<Token> Tokens;
         List<SkryptClass> Classes = new List<SkryptClass>();
-        SkryptClass ProgramClass;
 
         public SkryptEngine() {
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.

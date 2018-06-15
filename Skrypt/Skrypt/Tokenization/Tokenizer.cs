@@ -50,8 +50,7 @@ namespace Skrypt.Tokenization {
 
                 // No match was found; this means we encountered an unexpected token.
                 if (FoundMatch == null) {
-                    Console.WriteLine("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
-                    return null;
+                    throw new Exception("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
                 }
 
                 Token token = new Token {
