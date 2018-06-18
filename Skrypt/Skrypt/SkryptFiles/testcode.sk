@@ -7,6 +7,10 @@ print(2 + 3);
 if (a == 4)
 {
 	b = 2;
+} elseif (a == 10) {
+
+} else {
+
 }
 
 C = 69;

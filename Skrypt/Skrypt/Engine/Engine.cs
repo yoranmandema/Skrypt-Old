@@ -28,17 +28,12 @@ namespace Skrypt.Engine {
             );
 
             tokenizer.AddRule(
-                new Regex(@"class|method"),
-                "Keyword"
-            );
-
-            tokenizer.AddRule(
                 new Regex(@"[_a-zA-Z]+[_a-zA-Z0-9]*"),
                 "Identifier"
             );
 
             tokenizer.AddRule(
-                new Regex("class|if"),
+                new Regex(@"class|method|if|elseif|else|while"),
                 "Keyword"
             );
 
