@@ -24,6 +24,10 @@ namespace Skrypt.Parsing {
         static List<OpereratorPrecedence> OperatorPrecedence = new List<OpereratorPrecedence> {
             new OpereratorPrecedence(new[] {"."}, true, 2, true),
             new OpereratorPrecedence(new[] {"="}, false),
+            new OpereratorPrecedence(new[] {"||"}),
+            new OpereratorPrecedence(new[] {"&&"}),
+            new OpereratorPrecedence(new[] {"!=","=="}),
+            new OpereratorPrecedence(new[] {"<",">","<=",">="}),
             new OpereratorPrecedence(new[] {"+","-"}),
             new OpereratorPrecedence(new[] {"*","/","%"}),
             new OpereratorPrecedence(new[] {"^"}),
@@ -40,7 +44,7 @@ namespace Skrypt.Parsing {
             return sb;
         }
 
-        static Node parse (Node branch, List<Token> Tokens) {
+        static public Node ParseExpression (Node branch, List<Token> Tokens) {
 
             List<Token> leftBuffer = new List<Token>();
             List<Token> rightBuffer = new List<Token>();
@@ -109,11 +113,11 @@ namespace Skrypt.Parsing {
                                 NewNode.TokenType = token.Type;
 
                                 if (OP.Members > 1) {
-                                    Node LeftNode = parse(NewNode, leftBuffer);
+                                    Node LeftNode = ParseExpression(NewNode, leftBuffer);
                                     NewNode.Add(LeftNode);
                                 }
 
-                                Node RightNode = parse(NewNode, rightBuffer);
+                                Node RightNode = ParseExpression(NewNode, rightBuffer);
                                 NewNode.Add(RightNode);
 
                                 branch.Add(NewNode);
@@ -129,7 +133,7 @@ namespace Skrypt.Parsing {
             loop();
 
             if (isInPars) {
-                return parse(branch, Tokens.GetRange(1, Tokens.Count - 2));
+                return ParseExpression(branch, Tokens.GetRange(1, Tokens.Count - 2));
             }
 
             if (Tokens.Count != 1) {
@@ -138,7 +142,7 @@ namespace Skrypt.Parsing {
 
             return new Node {
                 Body = Tokens[0].Value,
-                Value = null,
+                //Value = null,
                 TokenType = Tokens[0].Type
             };
         }
@@ -175,10 +179,10 @@ namespace Skrypt.Parsing {
             }
         }
 
-        static void SkipArguments(ref int Index, ref int endArguments, string upScope, string downScope, List<Token> Tokens) {
+        static public void SkipArguments(ref int Index, ref int endArguments, string upScope, string downScope, List<Token> Tokens) {
             int depth = 1;
 
-            while (depth != 0) {              
+            while (depth != 0) {
                 if (Tokens[Index].Value == upScope) {
                     depth++;
                 }
@@ -197,7 +201,7 @@ namespace Skrypt.Parsing {
         static public Node ParseCall(List<Token> Tokens, ref int Index) {
             Node node = new Node { Body = Tokens[Index-1].Value, TokenType = "Call" };
 
-            Index += 1;
+            Index++;
 
             int i = Index;
             int endArguments = i;
@@ -208,7 +212,7 @@ namespace Skrypt.Parsing {
             SetArguments(Arguments, Tokens.GetRange(i, endArguments - i));
 
             foreach (List<Token> Argument in Arguments) {
-                Node argNode = parse(node, Argument);
+                Node argNode = ParseExpression(node, Argument);
                 node.Add(argNode);
             }
 
@@ -225,7 +229,7 @@ namespace Skrypt.Parsing {
 
             SkipArguments(ref Index, ref endArguments, "[", "]", Tokens);
 
-            Node argNode = parse(node, Tokens.GetRange(i, endArguments - i));
+            Node argNode = ParseExpression(node, Tokens.GetRange(i, endArguments - i));
             node.Add(argNode);
 
             return node;
@@ -244,7 +248,7 @@ namespace Skrypt.Parsing {
             SetArguments(Arguments, Tokens.GetRange(i, endArguments - i));
 
             foreach (List<Token> Argument in Arguments) {
-                Node argNode = parse(node, Argument);
+                Node argNode = ParseExpression(node, Argument);
                 node.Add(argNode);
             }
 
@@ -255,13 +259,19 @@ namespace Skrypt.Parsing {
             Node node = new Node();
             int i = Index;
 
-            while (Tokens[Index].Value != ";") {
+            while (Tokens[Index].Value != ";" && Tokens[Index].Type != "Keyword" && Index < Tokens.Count - 1) {
                 Index++;
             }
 
-            node.Add(parse(node, Tokens.GetRange(i, Index - i)));
+            node.Add(ParseExpression(node, Tokens.GetRange(i, Index - i)));
 
-            return node.SubNodes[0];
+            Node returnNode = null;
+
+            if (node.SubNodes.Count > 0) {
+                returnNode = node.SubNodes[0];
+            }
+
+            return returnNode;
         }
     }
 }

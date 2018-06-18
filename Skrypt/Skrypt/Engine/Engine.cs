@@ -13,7 +13,7 @@ namespace Skrypt.Engine {
         Tokenizer tokenizer = new Tokenizer();
         List<Token> Tokens;
         List<SkryptClass> Classes = new List<SkryptClass>();
-
+  
         public SkryptEngine() {
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
@@ -38,7 +38,7 @@ namespace Skrypt.Engine {
             );
 
             tokenizer.AddRule(
-                new Regex("class"),
+                new Regex("class|if"),
                 "Keyword"
             );
 
@@ -77,12 +77,8 @@ namespace Skrypt.Engine {
 
             TokenProcessor.ProcessTokens(Tokens);
 
-            Node ProgramNode = new Node { Body = "Program" };
-
-            for (int i = 0; i < Tokens.Count - 1; i++) {
-                var N = ExpressionParser.Parse(Tokens, ref i);
-                ProgramNode.Add(N);
-            }
+            int Index = 0;
+            Node ProgramNode = GeneralParser.Parse(Tokens);
 
             Console.WriteLine(ProgramNode);
 

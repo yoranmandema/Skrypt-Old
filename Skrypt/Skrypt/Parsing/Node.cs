@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Skrypt.Parsing {
+
     class Node {
 
         public string Body { get; set; }
-        public object Value { get; set; }
+        //public object Value { get; set; }
         public string TokenType { get; set; }
         public List<Node> SubNodes { get; set; }
 
