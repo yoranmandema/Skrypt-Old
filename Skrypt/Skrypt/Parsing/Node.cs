@@ -18,6 +18,9 @@ namespace Skrypt.Parsing {
             SubNodes = new List<Node>();
         }
 
+        /// <summary>
+        /// Adds a subnode
+        /// </summary>
         public void Add (Node node) {
 
             if (node == null) {
