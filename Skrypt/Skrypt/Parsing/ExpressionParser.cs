@@ -179,7 +179,7 @@ namespace Skrypt.Parsing {
             }
         }
 
-        static public void SkipArguments(ref int Index, ref int endArguments, string upScope, string downScope, List<Token> Tokens) {
+        static public void SkipFromTo(ref int Index, ref int endArguments, string upScope, string downScope, List<Token> Tokens) {
             int depth = 1;
 
             while (depth != 0) {
@@ -206,7 +206,7 @@ namespace Skrypt.Parsing {
             int i = Index;
             int endArguments = i;
 
-            SkipArguments(ref Index, ref endArguments, "(", ")", Tokens);
+            SkipFromTo(ref Index, ref endArguments, "(", ")", Tokens);
 
             List<List<Token>> Arguments = new List<List<Token>>();
             SetArguments(Arguments, Tokens.GetRange(i, endArguments - i));
@@ -227,7 +227,7 @@ namespace Skrypt.Parsing {
             int i = Index;
             int endArguments = i;
 
-            SkipArguments(ref Index, ref endArguments, "[", "]", Tokens);
+            SkipFromTo(ref Index, ref endArguments, "[", "]", Tokens);
 
             Node argNode = ParseExpression(node, Tokens.GetRange(i, endArguments - i));
             node.Add(argNode);
@@ -242,7 +242,7 @@ namespace Skrypt.Parsing {
             int i = Index;
             int endArguments = i;
 
-            SkipArguments(ref Index, ref endArguments, "[", "]", Tokens);
+            SkipFromTo(ref Index, ref endArguments, "[", "]", Tokens);
 
             List<List<Token>> Arguments = new List<List<Token>>();
             SetArguments(Arguments, Tokens.GetRange(i, endArguments - i));
