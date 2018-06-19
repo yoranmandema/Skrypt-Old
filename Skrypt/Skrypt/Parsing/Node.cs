@@ -7,16 +7,14 @@ using Newtonsoft.Json;
 
 namespace Skrypt.Parsing {
 
+    /// <summary>
+    /// Class representing a node or AST
+    /// </summary>
     class Node {
-
         public string Body { get; set; }
         //public object Value { get; set; }
         public string TokenType { get; set; }
-        public List<Node> SubNodes { get; set; }
-
-        public Node () {
-            SubNodes = new List<Node>();
-        }
+        public List<Node> SubNodes { get; set; } = new List<Node>();
 
         /// <summary>
         /// Adds a subnode

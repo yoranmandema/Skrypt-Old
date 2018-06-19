@@ -323,7 +323,6 @@ namespace Skrypt.Parsing {
             // Parse tokens in expression
             node.Add(ParseExpression(node, Tokens.GetRange(i, Index - i)));
 
-
             // Only return the first subnode, so we don't create a messy AST
             Node returnNode = null;
             if (node.SubNodes.Count > 0) {
