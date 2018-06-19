@@ -67,14 +67,17 @@ namespace Skrypt.Engine {
 
         public Node Parse (string code) {
 
+            // Tokenize code
             Tokens = tokenizer.Tokenize(code);      
             if (Tokens == null) { return null; }
 
+            // Pre-process tokens so their values are correct
             TokenProcessor.ProcessTokens(Tokens);
 
-            int Index = 0;
+            // Generate the program node
             Node ProgramNode = GeneralParser.Parse(Tokens);
 
+            // Debug program node
             Console.WriteLine(ProgramNode);
 
             return ProgramNode;
