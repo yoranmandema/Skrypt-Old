@@ -50,7 +50,6 @@
     <Compile Include="Parsing\ExpressionParser.cs" />
     <Compile Include="Parsing\GeneralParser.cs" />
     <Compile Include="Parsing\Node.cs" />
-    <Compile Include="Parsing\ParserState.cs" />
     <Compile Include="Parsing\SkryptClass.cs" />
     <Compile Include="Parsing\SkryptClasses\Numeric.cs" />
     <Compile Include="Parsing\SkryptMethod.cs" />
