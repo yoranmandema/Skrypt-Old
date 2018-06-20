@@ -59,7 +59,6 @@ namespace Skrypt.Parsing {
         /// Parses a list of tokens into an expression recursively
         /// </summary>
         static public Node ParseExpression (Node branch, List<Token> Tokens) {
-
             // Create left and right token buffers
             List<Token> leftBuffer = new List<Token>();
             List<Token> rightBuffer = new List<Token>();
@@ -86,7 +85,7 @@ namespace Skrypt.Parsing {
                                         Node node = ParseCall(Tokens, ref i);
 
                                         // Only add method call node if all tokens were consumed in it
-                                        if (i == Tokens.Count) {
+                                        if (i == Tokens.Count - 1) {
                                             branch.Add(node);
                                             return;
                                         }
@@ -224,9 +223,9 @@ namespace Skrypt.Parsing {
         /// Skip tokens that are surrounded by 'upScope' and 'downScope'
         /// </summary>
         static public void SkipFromTo(ref int Index, ref int endSkip, string upScope, string downScope, List<Token> Tokens) {
-            int depth = 1;
+            int depth = 0;
 
-            while (depth != 0) {
+            while (true) {
                 if (Tokens[Index].Value == upScope) {
                     depth++;
                 }
@@ -235,10 +234,36 @@ namespace Skrypt.Parsing {
 
                     if (depth == 0) {
                         endSkip = Index;
+                        break;
                     }
                 }
 
                 Index++;
+
+                if (Index == Tokens.Count) {
+                    if (depth > 0) {
+                        throw new Exception("Closing token '" + downScope + "' not found after");
+                    } else if (depth < 0) {
+                        throw new Exception("Opening token '" + upScope + "' not found");
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Skip tokens until we hit a token with the given value
+        /// </summary>
+        static public void SkipUntil (ref int Index, Token Comparator, List<Token> Tokens) {
+            Token startToken = Tokens[Index];
+
+            while (!Tokens[Index].LazyEqual(Comparator)) {
+                Index++;
+
+                if (Index == Tokens.Count - 1) {
+                    string exceptionString = Comparator + " expected after " + startToken;
+
+                    throw new Exception(exceptionString);
+                }
             }
         }
 
@@ -250,7 +275,6 @@ namespace Skrypt.Parsing {
             Node node = new Node { Body = Tokens[Index-1].Value, TokenType = "Call" };
 
             // Skip to arguments, and parse arguments
-            Index++;
             int i = Index;
             int endArguments = i;
             SkipFromTo(ref Index, ref endArguments, "(", ")", Tokens);

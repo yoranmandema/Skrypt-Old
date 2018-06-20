@@ -15,7 +15,14 @@ namespace Skrypt.Tokenization {
         public int End { get; set; }
 
         public override string ToString() {
-            return "(" + Start + "," + End + ") Type: " + Type + ", Value: " + Value;
+            string str = "Token[";
+            str += (Start != End) && Start != 0 ? "(" + Start + "," + End + ")" : "";
+            str += Type != null ? "Type: " + Type : "";
+            str += Value != null ? (Type != null ? ", " : "") + "Value: " + Value : "";
+            str += "]";
+
+            //return "(" + Start + "," + End + ") Type: " + Type + ", Value: " + Value;
+            return str;
         }
 
         /// <summary>
@@ -38,6 +45,16 @@ namespace Skrypt.Tokenization {
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Returns true if token has the same type and value. Type and value can be left as null to ignore
+        /// </summary>
+        public bool LazyEqual (Token other) {
+            bool hasType = other.Type != null ? this.Type == other.Type : true;
+            bool hasValue = other.Value != null ? this.Value == other.Value : true;
+
+            return hasType && hasValue;
         }
     }
 }

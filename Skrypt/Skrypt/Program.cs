@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Tokenization;
+using Skrypt.Parsing;
 using Skrypt.Engine;
 using System.Text.RegularExpressions;
 using System.IO;
