@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Tokenization;
+using Skrypt.Engine;
 
 namespace Skrypt.Parsing {
 
@@ -11,7 +12,13 @@ namespace Skrypt.Parsing {
     /// The expression parser class.
     /// Contains all methods to parse expressions, and helper methods
     /// </summary>
-    static class ExpressionParser {
+    class ExpressionParser {
+        SkryptEngine engine;
+
+        public ExpressionParser(SkryptEngine e) {
+            engine = e;
+        }
+
         /// <summary>
         /// Class representing an operator group
         /// </summary>

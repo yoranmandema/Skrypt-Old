@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using Skrypt.Engine;
 
 namespace Skrypt.Tokenization {
 
@@ -13,6 +14,11 @@ namespace Skrypt.Tokenization {
     /// </summary>
     class Tokenizer {
         List<TokenRule> TokenRules = new List<TokenRule>();
+        SkryptEngine engine;
+
+        public Tokenizer(SkryptEngine e) {
+            engine = e;
+        }
 
         public void AddRule (Regex Pattern, string Type) {
             TokenRules.Add(new TokenRule {
@@ -50,7 +56,7 @@ namespace Skrypt.Tokenization {
 
                 // No match was found; this means we encountered an unexpected token.
                 if (FoundMatch == null) {
-                    throw new Exception("Unexpected token \"" + OriginalInput[Index] + "\" found at index " + Index);
+                    engine.throwError("Unexpected token '" + OriginalInput[Index] + "' found", new Token {Start = Index});
                 }
 
                 Token token = new Token {

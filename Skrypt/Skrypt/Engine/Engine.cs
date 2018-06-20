@@ -10,11 +10,21 @@ using System.Diagnostics; // Using this so we can check how fast everything is h
 
 namespace Skrypt.Engine {
     class SkryptEngine {
-        Tokenizer tokenizer = new Tokenizer();
+        Tokenizer tokenizer;
+        public StatementParser statementParser;
+        public ExpressionParser expressionParser;
+        public GeneralParser generalParser;
+
         List<Token> Tokens;
+        string Code = "";
         List<SkryptClass> Classes = new List<SkryptClass>();
   
         public SkryptEngine() {
+            tokenizer = new Tokenizer(this);
+            statementParser = new StatementParser(this);
+            generalParser = new GeneralParser(this);
+            expressionParser = new ExpressionParser(this);
+
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
             tokenizer.AddRule(
@@ -65,7 +75,33 @@ namespace Skrypt.Engine {
             );
         }
 
+        public string getLineAndRowStringFromIndex(int index) {
+            int lines = 0;
+            int row = 0;
+            int i = 0;
+
+            while (i < index) {
+                if (Code[i] == '\n') {
+                    lines++;
+                    row = 0;
+                } else {
+                    row++;
+                }
+
+                i++;
+            }
+
+            return "line: " + lines + ", col: " + row;
+        } 
+
+        public void throwError (string message, Token token = null) {
+            string lineRow = token != null ? getLineAndRowStringFromIndex(token.Start) : "";
+
+            throw new Exception(message + " (" + lineRow + ")");
+        }
+
         public Node Parse (string code) {
+            Code = code;
 
             // Tokenize code
             Tokens = tokenizer.Tokenize(code);      
@@ -75,7 +111,7 @@ namespace Skrypt.Engine {
             TokenProcessor.ProcessTokens(Tokens);
 
             // Generate the program node
-            Node ProgramNode = GeneralParser.Parse(Tokens);
+            Node ProgramNode = generalParser.Parse(Tokens);
 
             // Debug program node
             Console.WriteLine(ProgramNode);
