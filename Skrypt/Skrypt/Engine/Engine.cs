@@ -138,7 +138,7 @@ namespace Skrypt.Engine {
             Node ProgramNode = generalParser.Parse(Tokens);
 
             // Debug program node
-            Console.WriteLine(ProgramNode);
+            Console.WriteLine("Program:\n" + ProgramNode);
 
             return ProgramNode;
         }

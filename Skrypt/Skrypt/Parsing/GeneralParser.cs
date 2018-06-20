@@ -18,17 +18,74 @@ namespace Skrypt.Parsing {
             engine = e;
         }
 
+        class Result {
+            public Node node;
+            public Exception error;
+            public int index = -1;
+        }
+
+        Result TryParse (List<Token> Tokens, ref int index) {
+            Exception error = null;
+            Result ExpressionResult = new Result();
+            Result StatementResult = new Result();
+
+            try {
+                var i = 0;
+                Node node = engine.expressionParser.Parse(Tokens, ref i);
+
+                ExpressionResult.node = node;
+                ExpressionResult.index = i;
+            } catch (Exception e) {
+                error = e;
+                ExpressionResult.error = e;
+            }
+
+            try {
+                var i = 0;
+                Node node = engine.statementParser.Parse(Tokens, ref i);
+
+                StatementResult.node = node;
+                StatementResult.index = i;
+            }
+            catch (Exception e) {
+                error = e;
+                StatementResult.error = e;
+            }
+
+            if (ExpressionResult.node != null) {
+                index += ExpressionResult.index + 1;
+                return ExpressionResult;
+            } else if (StatementResult.node != null) {
+                index += StatementResult.index + 1;
+                return StatementResult;
+            } else {
+                engine.throwError(error.Message, Tokens[0]);
+                return null;
+            }
+        }
+
         public Node Parse(List<Token> Tokens) {
+            if (Tokens.Count == 0) {
+                return null;
+            }
+
             // Create main node
             Node Node = new Node { Body = "Block", TokenType = "Block" };
 
-            // Loop through all tokens
-            for (int i = 0; i < Tokens.Count; i++) {           
-                var ExpressionNode = engine.expressionParser.Parse(Tokens, ref i);
-                Node.Add(ExpressionNode);
+            //// Loop through all tokens
+            //for (int i = 0; i < Tokens.Count; i++) {           
+            //    var ExpressionNode = engine.expressionParser.Parse(Tokens, ref i);
+            //    Node.Add(ExpressionNode);
 
-                var StatementNode = engine.statementParser.Parse(Tokens, ref i);
-                Node.Add(StatementNode);
+            //    var StatementNode = engine.statementParser.Parse(Tokens, ref i);
+            //    Node.Add(StatementNode);
+            //}
+
+            int i = 0;
+
+            while (i < Tokens.Count - 1) {
+                var Test = TryParse(Tokens.GetRange(i,Tokens.Count - i), ref i);
+                Node.Add(Test.node);
             }
 
             return Node;

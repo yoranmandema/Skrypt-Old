@@ -52,7 +52,7 @@ namespace Skrypt.Parsing {
         };
 
         // (debug) Serializes a list of tokens into a string
-        static string TokenString (List<Token> Tokens) {
+        public static string TokenString (List<Token> Tokens) {
             string sb = "";
 
             foreach (Token token in Tokens) {
@@ -71,8 +71,6 @@ namespace Skrypt.Parsing {
             List<Token> rightBuffer = new List<Token>();
 
             bool isInPars = false;
-
-            Console.WriteLine(TokenString(Tokens));
 
             // Do logic in delegate so we can easily exit out of it when we need to
             Action loop = () => {

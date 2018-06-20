@@ -96,6 +96,7 @@ namespace Skrypt.Parsing {
                     Node elseNode = ParseElseStatement(Tokens, ref Index);
                     node.Add(elseNode);
                 }
+
             }
 
             return node;
