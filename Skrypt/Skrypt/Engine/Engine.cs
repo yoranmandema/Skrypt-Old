@@ -75,6 +75,9 @@ namespace Skrypt.Engine {
             );
         }
 
+        /// <summary>
+        /// Calculates the line and column of a given index
+        /// </summary>
         public string getLineAndRowStringFromIndex(int index) {
             int lines = 0;
             int row = 0;
@@ -92,8 +95,11 @@ namespace Skrypt.Engine {
             }
 
             return "line: " + lines + ", col: " + row;
-        } 
+        }
 
+        /// <summary>
+        /// Skips token if next token has the given value. Throws exception when not found.
+        /// </summary>
         public void expectValue(string Value, List<Token> Tokens, ref int Index) {
             string msg = "Token '" + Value + "' expected after " + Tokens[Index].Value + " keyword";
 
@@ -109,6 +115,9 @@ namespace Skrypt.Engine {
             }
         }
 
+        /// <summary>
+        /// Throws an error with line and colom indicator
+        /// </summary>
         public void throwError (string message, Token token = null) {
             string lineRow = token != null ? getLineAndRowStringFromIndex(token.Start) : "";
 

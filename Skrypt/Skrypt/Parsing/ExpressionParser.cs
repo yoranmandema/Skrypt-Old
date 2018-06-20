@@ -70,7 +70,9 @@ namespace Skrypt.Parsing {
             List<Token> leftBuffer = new List<Token>();
             List<Token> rightBuffer = new List<Token>();
 
-            bool isInPars = false; 
+            bool isInPars = false;
+
+            Console.WriteLine(TokenString(Tokens));
 
             // Do logic in delegate so we can easily exit out of it when we need to
             Action loop = () => {
@@ -84,6 +86,10 @@ namespace Skrypt.Parsing {
                         while (CanLoop) {                      
                             Token token = Tokens[i];
                             Token previousToken = i >= 1 ? Tokens[i-1] : null;
+
+                            if (Tokens[i].Type == "Keyword") {
+                                engine.throwError("Unexpected keyword '" + Tokens[i].Value + "' found", Tokens[i]);
+                            }
 
                             if (token.Value == "(") {
                                 if (previousToken != null) {
@@ -348,7 +354,7 @@ namespace Skrypt.Parsing {
             int i = Index;
 
             // Skip until we hit the end of an expression, or a keyword
-            while (Tokens[Index].Value != ";" && Tokens[Index].Type != "Keyword" && Index < Tokens.Count - 1) {
+            while (Tokens[Index].Value != ";"/* && Tokens[Index].Type != "Keyword"*/ && Index < Tokens.Count - 1) {
                 Index++;
             }
 
