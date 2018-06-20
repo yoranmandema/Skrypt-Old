@@ -94,6 +94,21 @@ namespace Skrypt.Engine {
             return "line: " + lines + ", col: " + row;
         } 
 
+        public void expectValue(string Value, List<Token> Tokens, ref int Index) {
+            string msg = "Token '" + Value + "' expected after " + Tokens[Index].Value + " keyword";
+
+            if (Index == Tokens.Count - 1) {
+                throwError(msg, Tokens[Index]);
+            }
+
+            if (Tokens[Index + 1].Value == Value) {
+                Index++;
+            }
+            else {
+                throwError(msg, Tokens[Index]);
+            }
+        }
+
         public void throwError (string message, Token token = null) {
             string lineRow = token != null ? getLineAndRowStringFromIndex(token.Start) : "";
 

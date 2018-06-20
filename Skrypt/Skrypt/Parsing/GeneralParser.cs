@@ -23,7 +23,7 @@ namespace Skrypt.Parsing {
             Node Node = new Node { Body = "Block", TokenType = "Block" };
 
             // Loop through all tokens
-            for (int i = 0; i < Tokens.Count - 1; i++) {
+            for (int i = 0; i < Tokens.Count; i++) {           
                 var ExpressionNode = engine.expressionParser.Parse(Tokens, ref i);
                 Node.Add(ExpressionNode);
 

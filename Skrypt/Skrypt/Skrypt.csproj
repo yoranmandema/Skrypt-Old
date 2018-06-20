@@ -60,6 +60,8 @@
     <Compile Include="Tokenization\Token.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tokenization\TokenPattern.cs" />
+    <Compile Include="Tokenization\TokenPatternChecker.cs" />
     <Compile Include="Tokenization\TokenProcessor.cs" />
     <Compile Include="Tokenization\TokenRule.cs" />
   </ItemGroup>

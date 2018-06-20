@@ -26,8 +26,8 @@ namespace Skrypt.Parsing {
             // Create main statement node
             Node node = new Node { Body = Tokens[Index].Value, TokenType = "Statement" };
 
-            // Skip to condition, and parse condition as expression
-            Index++;
+            engine.expectValue("(", Tokens, ref Index);
+
             int i = Index + 1;
             int endCondition = i;
             engine.expressionParser.SkipFromTo(ref Index, ref endCondition, "(", ")", Tokens);
@@ -35,8 +35,8 @@ namespace Skrypt.Parsing {
             Node conditionNode = new Node { Body = "Condition", TokenType = "Expression" };
             conditionNode.Add(engine.expressionParser.ParseExpression(conditionNode, Tokens.GetRange(i, endCondition - i)));
 
-            // Skip to content block, and parse as block
-            Index++;
+            engine.expectValue("{", Tokens, ref Index);
+
             i = Index + 1;
             int endBlock = i;
             engine.expressionParser.SkipFromTo(ref Index, ref endBlock, "{", "}", Tokens);
@@ -54,6 +54,9 @@ namespace Skrypt.Parsing {
         /// Parses an else statement (else {block})
         /// </summary>
         public Node ParseElseStatement(List<Token> Tokens, ref int Index) {
+            engine.expectValue("else", Tokens, ref Index);
+            engine.expectValue("{", Tokens, ref Index);
+
             // Skip to content block, and parse as block
             engine.expressionParser.SkipUntil(ref Index, new Token {Value="{"}, Tokens);
             int i = Index;
@@ -89,7 +92,7 @@ namespace Skrypt.Parsing {
                 }
 
                 // No more elseif statements left; check and parse else statement
-                if (Tokens[Index].Value == "else") {
+                if (Tokens[Index + 1].Value == "else") {
                     Node elseNode = ParseElseStatement(Tokens, ref Index);
                     node.Add(elseNode);
                 }

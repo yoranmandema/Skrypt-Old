@@ -16,7 +16,7 @@ namespace Skrypt.Tokenization {
 
         public override string ToString() {
             string str = "Token[";
-            str += (Start != End) && Start != 0 ? "(" + Start + "," + End + ")" : "";
+            str += (Start != End) && Start != 0 ? "(" + Start + "," + End + ") " : "";
             str += Type != null ? "Type: " + Type : "";
             str += Value != null ? (Type != null ? ", " : "") + "Value: " + Value : "";
             str += "]";
