@@ -86,7 +86,7 @@ namespace Skrypt.Parsing {
 
                                         // Only add method call node if all tokens were consumed in it
                                         if (i == Tokens.Count - 1) {
-                                            branch.Add(node);
+                                            branch.Add(node);                                      
                                             return;
                                         }
                                     }
@@ -111,7 +111,7 @@ namespace Skrypt.Parsing {
                                         Node node = ParseIndexing(Tokens, ref i);
 
                                         // Only add indexing node if all tokens were consumed in it
-                                        if (i == Tokens.Count) {
+                                        if (i == Tokens.Count - 1) {
                                             branch.Add(node);
                                             return;
                                         }
@@ -120,7 +120,7 @@ namespace Skrypt.Parsing {
                                     Node node = ParseArrayLiteral(Tokens, ref i);
 
                                     // Only add indexing node if all tokens were consumed in it
-                                    if (i == Tokens.Count) {
+                                    if (i == Tokens.Count - 1) {
                                         branch.Add(node);
                                         return;
                                     }
@@ -242,7 +242,7 @@ namespace Skrypt.Parsing {
 
                 if (Index == Tokens.Count) {
                     if (depth > 0) {
-                        throw new Exception("Closing token '" + downScope + "' not found after");
+                        throw new Exception("Closing token '" + downScope + "' not found");
                     } else if (depth < 0) {
                         throw new Exception("Opening token '" + upScope + "' not found");
                     }
@@ -275,7 +275,7 @@ namespace Skrypt.Parsing {
             Node node = new Node { Body = Tokens[Index-1].Value, TokenType = "Call" };
 
             // Skip to arguments, and parse arguments
-            int i = Index;
+            int i = Index + 1;
             int endArguments = i;
             SkipFromTo(ref Index, ref endArguments, "(", ")", Tokens);
 
@@ -297,8 +297,7 @@ namespace Skrypt.Parsing {
             Node node = new Node { Body = Tokens[Index - 1].Value, TokenType = "Index" };
 
             // Skip to index expression, and as expression
-            Index++;
-            int i = Index;
+            int i = Index + 1;
             int endArguments = i;
             SkipFromTo(ref Index, ref endArguments, "[", "]", Tokens);
 
@@ -316,8 +315,7 @@ namespace Skrypt.Parsing {
             Node node = new Node { Body = "Array", TokenType = "ArrayLiteral" };
 
             // Skip to arguments, and parse arguments
-            Index++;
-            int i = Index;
+            int i = Index + 1;
             int endArguments = i;
             SkipFromTo(ref Index, ref endArguments, "[", "]", Tokens);
 
