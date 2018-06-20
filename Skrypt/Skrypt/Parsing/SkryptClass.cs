@@ -18,10 +18,10 @@ namespace Skrypt.Parsing {
         }
 
         public void Generate (List<Token> Tokens) {
-            for (int i = 0; i < Tokens.Count-1; i++) {
-                var N = ExpressionParser.Parse(Tokens, ref i);
-                Console.WriteLine(N);
-            }
+            //for (int i = 0; i < Tokens.Count-1; i++) {
+            //    var N = ExpressionParser.Parse(Tokens, ref i);
+            //    Console.WriteLine(N);
+            //}
         }
     }
 }

@@ -30,16 +30,16 @@ namespace Skrypt.Parsing {
             Index++;
             int i = Index + 1;
             int endCondition = i;
-            ExpressionParser.SkipFromTo(ref Index, ref endCondition, "(", ")", Tokens);
+            engine.expressionParser.SkipFromTo(ref Index, ref endCondition, "(", ")", Tokens);
 
             Node conditionNode = new Node { Body = "Condition", TokenType = "Expression" };
-            conditionNode.Add(ExpressionParser.ParseExpression(conditionNode, Tokens.GetRange(i, endCondition - i)));
+            conditionNode.Add(engine.expressionParser.ParseExpression(conditionNode, Tokens.GetRange(i, endCondition - i)));
 
             // Skip to content block, and parse as block
             Index++;
             i = Index + 1;
             int endBlock = i;
-            ExpressionParser.SkipFromTo(ref Index, ref endBlock, "{", "}", Tokens);
+            engine.expressionParser.SkipFromTo(ref Index, ref endBlock, "{", "}", Tokens);
 
             Node blockNode = engine.generalParser.Parse(Tokens.GetRange(i, endBlock - i));
 
@@ -55,10 +55,10 @@ namespace Skrypt.Parsing {
         /// </summary>
         public Node ParseElseStatement(List<Token> Tokens, ref int Index) {
             // Skip to content block, and parse as block
-            ExpressionParser.SkipUntil(ref Index, new Token {Value="{"}, Tokens);
+            engine.expressionParser.SkipUntil(ref Index, new Token {Value="{"}, Tokens);
             int i = Index;
             int endBlock = i;
-            ExpressionParser.SkipFromTo(ref Index, ref endBlock, "{", "}", Tokens);
+            engine.expressionParser.SkipFromTo(ref Index, ref endBlock, "{", "}", Tokens);
 
             // Parse block and rename to 'else'
             Node node = engine.generalParser.Parse(Tokens.GetRange(i, endBlock - i));
@@ -74,9 +74,6 @@ namespace Skrypt.Parsing {
             // Create main statement node
             Node node = ParseStatement(Tokens, ref Index);
 
-            Console.WriteLine(Index);
-            Console.WriteLine(Tokens.Count);
-
             // Only parse statements elseif/else if there's any tokens after if statement
             if (Index < Tokens.Count - 1) {
                 // Look for, and parse elseif statements
@@ -85,8 +82,6 @@ namespace Skrypt.Parsing {
 
                     Node elseIfNode = ParseStatement(Tokens, ref Index);
                     node.Add(elseIfNode);
-
-                    Console.WriteLine(elseIfNode);
 
                     if (Index == Tokens.Count - 1) {
                         break;

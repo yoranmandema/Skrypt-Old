@@ -24,7 +24,7 @@ namespace Skrypt.Parsing {
 
             // Loop through all tokens
             for (int i = 0; i < Tokens.Count - 1; i++) {
-                var ExpressionNode = ExpressionParser.Parse(Tokens, ref i);
+                var ExpressionNode = engine.expressionParser.Parse(Tokens, ref i);
                 Node.Add(ExpressionNode);
 
                 var StatementNode = engine.statementParser.Parse(Tokens, ref i);

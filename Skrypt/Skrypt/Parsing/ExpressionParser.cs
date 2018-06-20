@@ -65,7 +65,7 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Parses a list of tokens into an expression recursively
         /// </summary>
-        static public Node ParseExpression (Node branch, List<Token> Tokens) {
+        public Node ParseExpression (Node branch, List<Token> Tokens) {
             // Create left and right token buffers
             List<Token> leftBuffer = new List<Token>();
             List<Token> rightBuffer = new List<Token>();
@@ -229,12 +229,17 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Skip tokens that are surrounded by 'upScope' and 'downScope'
         /// </summary>
-        static public void SkipFromTo(ref int Index, ref int endSkip, string upScope, string downScope, List<Token> Tokens) {
+        public void SkipFromTo(ref int Index, ref int endSkip, string upScope, string downScope, List<Token> Tokens) {
             int depth = 0;
+            Token firstToken = null;
 
             while (true) {
                 if (Tokens[Index].Value == upScope) {
                     depth++;
+
+                    if (firstToken == null) {
+                        firstToken = Tokens[Index];
+                    }
                 }
                 else if (Tokens[Index].Value == downScope) {
                     depth--;
@@ -249,9 +254,9 @@ namespace Skrypt.Parsing {
 
                 if (Index == Tokens.Count) {
                     if (depth > 0) {
-                        throw new Exception("Closing token '" + downScope + "' not found");
+                        engine.throwError("Closing token '" + downScope + "' not found", firstToken);
                     } else if (depth < 0) {
-                        throw new Exception("Opening token '" + upScope + "' not found");
+                        engine.throwError("Opening token '" + upScope + "' not found", Tokens[Index]);
                     }
                 }
             }
@@ -260,16 +265,14 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Skip tokens until we hit a token with the given value
         /// </summary>
-        static public void SkipUntil (ref int Index, Token Comparator, List<Token> Tokens) {
+        public void SkipUntil (ref int Index, Token Comparator, List<Token> Tokens) {
             Token startToken = Tokens[Index];
 
             while (!Tokens[Index].LazyEqual(Comparator)) {
                 Index++;
 
                 if (Index == Tokens.Count - 1) {
-                    string exceptionString = Comparator + " expected after " + startToken;
-
-                    throw new Exception(exceptionString);
+                    engine.throwError("Token '" + Comparator + "' expected", startToken);
                 }
             }
         }
@@ -277,7 +280,7 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Parses a method call with arguments
         /// </summary>
-        static public Node ParseCall(List<Token> Tokens, ref int Index) {
+        public Node ParseCall(List<Token> Tokens, ref int Index) {
             // Create method call node with identifier as body
             Node node = new Node { Body = Tokens[Index-1].Value, TokenType = "Call" };
 
@@ -300,7 +303,7 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Parses an index operation
         /// </summary>
-        static public Node ParseIndexing(List<Token> Tokens, ref int Index) {
+        public Node ParseIndexing(List<Token> Tokens, ref int Index) {
             Node node = new Node { Body = Tokens[Index - 1].Value, TokenType = "Index" };
 
             // Skip to index expression, and as expression
@@ -317,7 +320,7 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Parses an array literal
         /// </summary>
-        static public Node ParseArrayLiteral (List<Token> Tokens, ref int Index) {
+        public Node ParseArrayLiteral (List<Token> Tokens, ref int Index) {
             // Create array literal node
             Node node = new Node { Body = "Array", TokenType = "ArrayLiteral" };
 
@@ -340,7 +343,7 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Parses a list of tokens into an expression node
         /// </summary>
-        static public Node Parse(List<Token> Tokens, ref int Index) {
+        public Node Parse(List<Token> Tokens, ref int Index) {
             Node node = new Node();
             int i = Index;
 
