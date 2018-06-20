@@ -21,10 +21,10 @@ namespace Skrypt.Parsing {
         class Result {
             public Node node;
             public Exception error;
-            public int index = -1;
+            public int delta = -1;
         }
 
-        Result TryParse (List<Token> Tokens, ref int index) {
+        Result TryParse (List<Token> Tokens) {
             Exception error = null;
             Result ExpressionResult = new Result();
             Result StatementResult = new Result();
@@ -34,7 +34,7 @@ namespace Skrypt.Parsing {
                 Node node = engine.expressionParser.Parse(Tokens, ref i);
 
                 ExpressionResult.node = node;
-                ExpressionResult.index = i;
+                ExpressionResult.delta = i + 1;
             } catch (Exception e) {
                 error = e;
                 ExpressionResult.error = e;
@@ -45,7 +45,7 @@ namespace Skrypt.Parsing {
                 Node node = engine.statementParser.Parse(Tokens, ref i);
 
                 StatementResult.node = node;
-                StatementResult.index = i;
+                StatementResult.delta = i + 1;
             }
             catch (Exception e) {
                 error = e;
@@ -53,10 +53,8 @@ namespace Skrypt.Parsing {
             }
 
             if (ExpressionResult.node != null) {
-                index += ExpressionResult.index + 1;
                 return ExpressionResult;
             } else if (StatementResult.node != null) {
-                index += StatementResult.index + 1;
                 return StatementResult;
             } else {
                 engine.throwError(error.Message, Tokens[0]);
@@ -84,7 +82,8 @@ namespace Skrypt.Parsing {
             int i = 0;
 
             while (i < Tokens.Count - 1) {
-                var Test = TryParse(Tokens.GetRange(i,Tokens.Count - i), ref i);
+                var Test = TryParse(Tokens.GetRange(i,Tokens.Count - i));
+                i += Test.delta;
                 Node.Add(Test.node);
             }
 
