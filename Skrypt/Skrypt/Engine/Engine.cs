@@ -115,13 +115,9 @@ namespace Skrypt.Engine {
                 throwError(msg, Tokens[index]);
             }
 
-            Console.WriteLine(Tokens[index]);
-            Console.WriteLine(Tokens[index + 1]);
-
             if (Tokens[index + 1].Value == Value) {
                 index++;
-            }
-            else {
+            } else {
                 throwError(msg, Tokens[index]);
             }
 

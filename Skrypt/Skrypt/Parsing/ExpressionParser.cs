@@ -71,11 +71,24 @@ namespace Skrypt.Parsing {
         /// Parses a list of tokens into an expression recursively
         /// </summary>
         public Node ParseExpression (Node branch, List<Token> Tokens) {
+
+            if (Tokens.Count == 1) {         
+                // return resulting end node
+                return new Node {
+                    Body = Tokens[0].Value,
+                    //Value = null,
+                    TokenType = Tokens[0].Type
+                };
+            }
+
             // Create left and right token buffers
             List<Token> leftBuffer = new List<Token>();
             List<Token> rightBuffer = new List<Token>();
 
             bool isInPars = false;
+            bool isMethodCall = false;
+            bool isIndexing = false;
+            bool isArrayLiteral = false;
 
             // Do logic in delegate so we can easily exit out of it when we need to
             Action loop = () => {
@@ -83,8 +96,6 @@ namespace Skrypt.Parsing {
                     foreach (string Operator in OP.Operators) {
                         int i = 0;
                         bool CanLoop = Tokens.Count > 0;
-                        int parDepth = 0;
-                        int firstPar = -1;
 
                         while (CanLoop) {                      
                             Token token = Tokens[i];
@@ -98,55 +109,49 @@ namespace Skrypt.Parsing {
                                 if (previousToken != null) {
                                     // Previous token was identifier; possible method call
                                     if (previousToken.Type == "Identifier") {
-                                        int start = i;
-                                        ParseResult result = ParseCall(Tokens, i);
-                                        i += result.delta;
+                                        skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
+                                        i += skip.delta;
 
-                                        // Only add method call node if all tokens were consumed in it
-                                        if (i == Tokens.Count - 1 && start == 1) {
-                                            branch.Add(result.node);                                      
+                                        if (skip.start == 1 && skip.end == Tokens.Count - 1) {
+                                            isMethodCall = true;
                                             return;
                                         }
                                     }
                                 }
+                            }
+                            if (token.Value == "(") {
+                                skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
+                                i += skip.delta;
 
-                                if (firstPar == -1)
-                                    firstPar = i;
-                            
-                                parDepth++;
-                            } else if (token.Value == ")") {
-                                parDepth--;
-
-                                // Whole expression is surrouned in parenthesis 
-                                if (i == Tokens.Count - 1 && firstPar == 0) {
+                                if (skip.start == 1 && skip.end == Tokens.Count - 1) {
                                     isInPars = true;
                                     return;
                                 }
-                            } else if (token.Value == "[") {
+                            }
+                            if (token.Value == "[") {
                                 if (previousToken != null) {
                                     // Previous token was identifier or string; possible indexing
                                     if (previousToken.Type == "Identifier" || previousToken.Type == "StringLiteral") {
-                                        ParseResult result = ParseIndexing(Tokens, i);
-                                        i += result.delta;
+                                        skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, i);
+                                        i += skip.delta;
 
-                                        // Only add indexing node if all tokens were consumed in it
-                                        if (i == Tokens.Count - 1) {
-                                            branch.Add(result.node);
+                                        if (skip.start == 1 && skip.end == Tokens.Count - 1) {
+                                            isIndexing = true;
                                             return;
                                         }
                                     }
-                                } else {
-                                    ParseResult result = ParseArrayLiteral(Tokens, i);
-                                    i += result.delta;
-
-                                    // Only add indexing node if all tokens were consumed in it
-                                    if (i == Tokens.Count - 1) {
-                                        branch.Add(result.node);
-                                        return;
-                                    }
                                 }
-                            } else if (token.Value == Operator && parDepth == 0) {
+                            }
+                            if (token.Value == "[") {
+                                skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, i);
+                                i += skip.delta;
 
+                                if (skip.start == 1 && skip.end == Tokens.Count - 1) {
+                                    isArrayLiteral = true;
+                                    return;
+                                }
+                            }
+                            if (token.Value == Operator) {
                                 // Fill left and right buffers
                                 leftBuffer = Tokens.GetRange(0, i);
                                 rightBuffer = Tokens.GetRange(i + 1, Tokens.Count - i - 1);
@@ -192,16 +197,25 @@ namespace Skrypt.Parsing {
                 return ParseExpression(branch, Tokens.GetRange(1, Tokens.Count - 2));
             }
 
-            if (Tokens.Count != 1) {
-                return null;
+            // Parse method call
+            if (isMethodCall) {
+                ParseResult result = ParseCall(Tokens);
+                return result.node;
             }
 
-            // return resulting end node
-            return new Node {
-                Body = Tokens[0].Value,
-                //Value = null,
-                TokenType = Tokens[0].Type
-            };
+            // Parse indexing
+            if (isIndexing) {
+                ParseResult result = ParseIndexing(Tokens);
+                return result.node;
+            }
+
+            // Parse indexing
+            if (isArrayLiteral) {
+                ParseResult result = ParseArrayLiteral(Tokens);
+                return result.node;
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -298,15 +312,18 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Parses a method call with arguments
         /// </summary>
-        public ParseResult ParseCall(List<Token> Tokens, int startingPoint = 0) {
-            int index = startingPoint;
+        public ParseResult ParseCall(List<Token> Tokens) {
+            int index = 0;
             skipInfo skip;
 
             // Create method call node with identifier as body
-            Node node = new Node { Body = Tokens[index - 1].Value, TokenType = "Call" };
+            Node node = new Node { Body = Tokens[index].Value, TokenType = "Call" };
 
-            // Skip to arguments, and parse arguments
+            skip = engine.expectValue("(", Tokens);
+            index = skip.end;
+
             int i = index + 1;
+            // Skip to arguments, and parse arguments
             skip = SkipFromTo("(", ")", Tokens, index);
             int endArguments = skip.end;
             index = skip.end;
@@ -319,16 +336,14 @@ namespace Skrypt.Parsing {
                 node.Add(argNode);
             }
 
-            int delta = index - startingPoint;
-
-            return new ParseResult {node=node,delta=delta};
+            return new ParseResult {node=node,delta=index};
         }
 
         /// <summary>
         /// Parses an index operation
         /// </summary>
-        public ParseResult ParseIndexing(List<Token> Tokens, int startingPoint) {
-            int index = startingPoint;
+        public ParseResult ParseIndexing(List<Token> Tokens) {
+            int index = 0;
             skipInfo skip;
             Node node = new Node { Body = Tokens[index - 1].Value, TokenType = "Index" };
 
@@ -341,16 +356,14 @@ namespace Skrypt.Parsing {
             Node argNode = ParseExpression(node, Tokens.GetRange(i, endArguments - i));
             node.Add(argNode);
 
-            int delta = index - startingPoint;
-
-            return new ParseResult { node = node, delta = delta };
+            return new ParseResult { node = node, delta = index };
         }
 
         /// <summary>
         /// Parses an array literal
         /// </summary>
-        public ParseResult ParseArrayLiteral (List<Token> Tokens, int startingPoint) {
-            int index = startingPoint;
+        public ParseResult ParseArrayLiteral (List<Token> Tokens) {
+            int index = 0;
             skipInfo skip;
             Node node = new Node { Body = "Array", TokenType = "ArrayLiteral" };
 
@@ -368,9 +381,7 @@ namespace Skrypt.Parsing {
                 node.Add(argNode);
             }
 
-            int delta = index - startingPoint;
-
-            return new ParseResult { node = node, delta = delta };
+            return new ParseResult { node = node, delta = index };
         }
 
         /// <summary>
