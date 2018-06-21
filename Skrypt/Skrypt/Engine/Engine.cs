@@ -9,6 +9,12 @@ using Skrypt.Parsing;
 using System.Diagnostics; // Using this so we can check how fast everything is happening
 
 namespace Skrypt.Engine {
+    class ParseResult {
+        public Node node;
+        //public Exception error;
+        public int delta = -1;
+    }
+
     class SkryptEngine {
         Tokenizer tokenizer;
         public StatementParser statementParser;
@@ -100,19 +106,28 @@ namespace Skrypt.Engine {
         /// <summary>
         /// Skips token if next token has the given value. Throws exception when not found.
         /// </summary>
-        public void expectValue(string Value, List<Token> Tokens, ref int Index) {
-            string msg = "Token '" + Value + "' expected after " + Tokens[Index].Value + " keyword";
+        public skipInfo expectValue(string Value, List<Token> Tokens, int startingPoint = 0) {
+            int start = startingPoint;
+            int index = startingPoint;
+            string msg = "Token '" + Value + "' expected after " + Tokens[index].Value + " keyword";
 
-            if (Index == Tokens.Count - 1) {
-                throwError(msg, Tokens[Index]);
+            if (index == Tokens.Count - 1) {
+                throwError(msg, Tokens[index]);
             }
 
-            if (Tokens[Index + 1].Value == Value) {
-                Index++;
+            Console.WriteLine(Tokens[index]);
+            Console.WriteLine(Tokens[index + 1]);
+
+            if (Tokens[index + 1].Value == Value) {
+                index++;
             }
             else {
-                throwError(msg, Tokens[Index]);
+                throwError(msg, Tokens[index]);
             }
+
+            int delta = index - startingPoint;
+
+            return new skipInfo {start=start, end=index, delta=delta};
         }
 
         /// <summary>

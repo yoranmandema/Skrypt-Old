@@ -22,24 +22,31 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Parses a statement ([if,while] (expression) {block}) into a node
         /// </summary>
-        public Node ParseStatement (List<Token> Tokens, ref int Index) {
+        public ParseResult ParseStatement (List<Token> Tokens) {
+            int index = 0;
+            skipInfo skip;
+
             // Create main statement node
-            Node node = new Node { Body = Tokens[Index].Value, TokenType = "Statement" };
+            Node node = new Node { Body = Tokens[index].Value, TokenType = "Statement" };
 
-            engine.expectValue("(", Tokens, ref Index);
+            skip = engine.expectValue("(", Tokens);
+            index = skip.end;
 
-            int i = Index + 1;
-            int endCondition = i;
-            engine.expressionParser.SkipFromTo(ref Index, ref endCondition, "(", ")", Tokens);
+            int i = index + 1;
+            skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, index);
+            int endCondition = skip.end;
+            index = skip.end;
 
             Node conditionNode = new Node { Body = "Condition", TokenType = "Expression" };
             conditionNode.Add(engine.expressionParser.ParseExpression(conditionNode, Tokens.GetRange(i, endCondition - i)));
 
-            engine.expectValue("{", Tokens, ref Index);
+            skip = engine.expectValue("{", Tokens, index);
+            index = skip.end;
 
-            i = Index + 1;
-            int endBlock = i;
-            engine.expressionParser.SkipFromTo(ref Index, ref endBlock, "{", "}", Tokens);
+            i = index + 1;
+            skip = engine.expressionParser.SkipFromTo("{", "}", Tokens, index);
+            int endBlock = skip.end;
+            index = skip.end;
 
             Node blockNode = engine.generalParser.Parse(Tokens.GetRange(i, endBlock - i));
 
@@ -47,75 +54,89 @@ namespace Skrypt.Parsing {
             node.Add(conditionNode);
             node.Add(blockNode);
 
-            return node;
+            return new ParseResult { node=node, delta=index};
         }
 
         /// <summary>
         /// Parses an else statement (else {block})
         /// </summary>
-        public Node ParseElseStatement(List<Token> Tokens, ref int Index) {
-            engine.expectValue("else", Tokens, ref Index);
-            engine.expectValue("{", Tokens, ref Index);
+        public ParseResult ParseElseStatement(List<Token> Tokens) {
+            int index = 0;
+            skipInfo skip;
 
-            // Skip to content block, and parse as block
-            engine.expressionParser.SkipUntil(ref Index, new Token {Value="{"}, Tokens);
-            int i = Index;
-            int endBlock = i;
-            engine.expressionParser.SkipFromTo(ref Index, ref endBlock, "{", "}", Tokens);
+            skip = engine.expectValue("{", Tokens);
+            index = skip.end;
+
+            int i = 1;
+            skip = engine.expressionParser.SkipFromTo("{", "}", Tokens, index);
+            int endBlock = skip.end;
+            index = skip.end;
 
             // Parse block and rename to 'else'
             Node node = engine.generalParser.Parse(Tokens.GetRange(i, endBlock - i));
             node.Body = "else";
 
-            return node;
+            return new ParseResult { node = node, delta = index };
         }
 
         /// <summary>
         /// Parses an if statement, including elseif and else statements
         /// </summary>
-        public Node ParseIfStatement(List<Token> Tokens, ref int Index) {
+        public ParseResult ParseIfStatement(List<Token> Tokens) {
+            int index = 0;
+
             // Create main statement node
-            Node node = ParseStatement(Tokens, ref Index);
+            ParseResult result = ParseStatement(Tokens);
+            index += result.delta;
 
             // Only parse statements elseif/else if there's any tokens after if statement
-            if (Index < Tokens.Count - 1) {
+            if (index < Tokens.Count - 1) {
                 // Look for, and parse elseif statements
-                while (Tokens[Index + 1].Value == "elseif") {
-                    Index++;
+                while (Tokens[index + 1].Value == "elseif") {
+                    Console.WriteLine("found elseif");
+                    index++;
 
-                    Node elseIfNode = ParseStatement(Tokens, ref Index);
-                    node.Add(elseIfNode);
+                    ParseResult elseIfResult = ParseStatement(Tokens.GetRange(index,Tokens.Count - index));
+                    result.node.Add(elseIfResult.node);
+                    index += elseIfResult.delta;
 
-                    if (Index == Tokens.Count - 1) {
+                    if (index == Tokens.Count - 1) {
                         break;
                     }
                 }
-
-                // No more elseif statements left; check and parse else statement
-                if (Tokens[Index + 1].Value == "else") {
-                    Node elseNode = ParseElseStatement(Tokens, ref Index);
-                    node.Add(elseNode);
-                }
-
             }
 
-            return node;
+            if (index < Tokens.Count - 1) {
+                // No more elseif statements left; check and parse else statement
+                if (Tokens[index + 1].Value == "else") {
+                    index++;
+
+                    ParseResult elseResult = ParseElseStatement(Tokens.GetRange(index, Tokens.Count - index));
+                    Console.WriteLine(elseResult);
+                    result.node.Add(elseResult.node);
+                    index += elseResult.delta;
+                }
+            }
+
+            Console.WriteLine(index);
+
+            return new ParseResult { node=result.node, delta=index};
         }
 
         /// <summary>
         /// Parses any statement and returns node 
         /// </summary>
-        public Node Parse(List<Token> Tokens, ref int Index) {
-            switch (Tokens[Index].Value) {
+        public ParseResult Parse(List<Token> Tokens) {
+            switch (Tokens[0].Value) {
                 case "while":
-                    return ParseStatement(Tokens, ref Index);
+                    return ParseStatement(Tokens);
                 case "if":
-                    return ParseIfStatement(Tokens, ref Index);
+                    return ParseIfStatement(Tokens);
                 case "else":
-                    engine.throwError("else statement must come directly after if or elseif statement", Tokens[Index]);
+                    engine.throwError("else statement must come directly after if or elseif statement", Tokens[0]);
                     break;
                 case "elseif":
-                    engine.throwError("elseif statement must come directly after if or elseif statement", Tokens[Index]);
+                    engine.throwError("elseif statement must come directly after if or elseif statement", Tokens[0]);
                     break;
             }
 

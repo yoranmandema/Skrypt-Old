@@ -18,38 +18,28 @@ namespace Skrypt.Parsing {
             engine = e;
         }
 
-        class Result {
-            public Node node;
-            public Exception error;
-            public int delta = -1;
-        }
-
-        Result TryParse (List<Token> Tokens) {
+        ParseResult TryParse (List<Token> Tokens) {
             Exception error = null;
-            Result ExpressionResult = new Result();
-            Result StatementResult = new Result();
+            ParseResult ExpressionResult = new ParseResult();
+            ParseResult StatementResult = new ParseResult();
 
             try {
-                var i = 0;
-                Node node = engine.expressionParser.Parse(Tokens, ref i);
+                ParseResult result = engine.expressionParser.Parse(Tokens);
 
-                ExpressionResult.node = node;
-                ExpressionResult.delta = i + 1;
+                ExpressionResult.node = result.node;
+                ExpressionResult.delta = result.delta;
             } catch (Exception e) {
                 error = e;
-                ExpressionResult.error = e;
             }
 
             try {
-                var i = 0;
-                Node node = engine.statementParser.Parse(Tokens, ref i);
+                ParseResult result = engine.statementParser.Parse(Tokens);
 
-                StatementResult.node = node;
-                StatementResult.delta = i + 1;
+                StatementResult.node = result.node;
+                StatementResult.delta = result.delta;
             }
             catch (Exception e) {
                 error = e;
-                StatementResult.error = e;
             }
 
             if (ExpressionResult.node != null) {
@@ -57,33 +47,25 @@ namespace Skrypt.Parsing {
             } else if (StatementResult.node != null) {
                 return StatementResult;
             } else {
-                engine.throwError(error.Message, Tokens[0]);
+                engine.throwError(error.StackTrace, Tokens[0]);
                 return null;
             }
         }
 
         public Node Parse(List<Token> Tokens) {
-            if (Tokens.Count == 0) {
-                return null;
-            }
-
             // Create main node
             Node Node = new Node { Body = "Block", TokenType = "Block" };
 
-            //// Loop through all tokens
-            //for (int i = 0; i < Tokens.Count; i++) {           
-            //    var ExpressionNode = engine.expressionParser.Parse(Tokens, ref i);
-            //    Node.Add(ExpressionNode);
-
-            //    var StatementNode = engine.statementParser.Parse(Tokens, ref i);
-            //    Node.Add(StatementNode);
-            //}
+            if (Tokens.Count == 0) {
+                return Node;
+            }
 
             int i = 0;
 
             while (i < Tokens.Count - 1) {
                 var Test = TryParse(Tokens.GetRange(i,Tokens.Count - i));
                 i += Test.delta;
+
                 Node.Add(Test.node);
             }
 
