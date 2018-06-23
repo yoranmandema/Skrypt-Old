@@ -25,30 +25,26 @@ namespace Skrypt.Parsing {
         public ParseResult ParseStatement (List<Token> Tokens) {
             int index = 0;
             skipInfo skip;
+            ParseResult result;
 
             // Create main statement node
             Node node = new Node { Body = Tokens[index].Value, TokenType = "Statement" };
 
             skip = engine.expectValue("(", Tokens);
-            index = skip.end;
+            index += skip.delta;
 
-            int i = index + 1;
-            skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, index);
-            int endCondition = skip.end;
-            index = skip.end;
-
-            Node conditionNode = new Node { Body = "Condition", TokenType = "Expression" };
-            conditionNode.Add(engine.expressionParser.ParseExpression(conditionNode, Tokens.GetRange(i, endCondition - i)));
+            result = engine.generalParser.parseSurrounded("(",")",index,Tokens,engine.expressionParser.ParseClean);
+            Node conditionNode = result.node;
+            conditionNode.Body = "Condition";
+            conditionNode.TokenType = "Expression";
+            index += result.delta;
 
             skip = engine.expectValue("{", Tokens, index);
-            index = skip.end;
+            index += skip.delta;
 
-            i = index + 1;
-            skip = engine.expressionParser.SkipFromTo("{", "}", Tokens, index);
-            int endBlock = skip.end;
-            index = skip.end;
-
-            Node blockNode = engine.generalParser.Parse(Tokens.GetRange(i, endBlock - i));
+            result = engine.generalParser.parseSurrounded("{", "}", index, Tokens, engine.generalParser.Parse);
+            Node blockNode = result.node;
+            index += result.delta;
 
             // Add condition and block nodes to main node
             node.Add(conditionNode);
@@ -65,16 +61,12 @@ namespace Skrypt.Parsing {
             skipInfo skip;
 
             skip = engine.expectValue("{", Tokens);
-            index = skip.end;
+            index += skip.delta;
 
-            int i = 1;
-            skip = engine.expressionParser.SkipFromTo("{", "}", Tokens, index);
-            int endBlock = skip.end;
-            index = skip.end;
-
-            // Parse block and rename to 'else'
-            Node node = engine.generalParser.Parse(Tokens.GetRange(i, endBlock - i));
+            ParseResult result = engine.generalParser.parseSurrounded("{", "}", index, Tokens, engine.generalParser.Parse);
+            Node node = result.node;
             node.Body = "else";
+            index += result.delta;
 
             return new ParseResult { node = node, delta = index };
         }
@@ -93,7 +85,6 @@ namespace Skrypt.Parsing {
             if (index < Tokens.Count - 1) {
                 // Look for, and parse elseif statements
                 while (Tokens[index + 1].Value == "elseif") {
-                    Console.WriteLine("found elseif");
                     index++;
 
                     ParseResult elseIfResult = ParseStatement(Tokens.GetRange(index,Tokens.Count - index));
@@ -112,13 +103,10 @@ namespace Skrypt.Parsing {
                     index++;
 
                     ParseResult elseResult = ParseElseStatement(Tokens.GetRange(index, Tokens.Count - index));
-                    Console.WriteLine(elseResult);
                     result.node.Add(elseResult.node);
                     index += elseResult.delta;
                 }
             }
-
-            Console.WriteLine(index);
 
             return new ParseResult { node=result.node, delta=index};
         }
@@ -129,7 +117,6 @@ namespace Skrypt.Parsing {
         public ParseResult Parse(List<Token> Tokens) {
             switch (Tokens[0].Value) {
                 case "while":
-                    return ParseStatement(Tokens);
                 case "if":
                     return ParseIfStatement(Tokens);
                 case "else":

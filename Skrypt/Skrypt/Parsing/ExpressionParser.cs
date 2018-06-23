@@ -146,7 +146,7 @@ namespace Skrypt.Parsing {
                                 skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, i);
                                 i += skip.delta;
 
-                                if (skip.start == 1 && skip.end == Tokens.Count - 1) {
+                                if (skip.start == 0 && skip.end == Tokens.Count - 1) {
                                     isArrayLiteral = true;
                                     return;
                                 }
@@ -314,27 +314,15 @@ namespace Skrypt.Parsing {
         /// </summary>
         public ParseResult ParseCall(List<Token> Tokens) {
             int index = 0;
-            skipInfo skip;
+            string name = Tokens[index].Value;
+            skipInfo skip = engine.expectValue("(", Tokens);
+            index += skip.delta;
 
-            // Create method call node with identifier as body
-            Node node = new Node { Body = Tokens[index].Value, TokenType = "Call" };
-
-            skip = engine.expectValue("(", Tokens);
-            index = skip.end;
-
-            int i = index + 1;
-            // Skip to arguments, and parse arguments
-            skip = SkipFromTo("(", ")", Tokens, index);
-            int endArguments = skip.end;
-            index = skip.end;
-
-            List<List<Token>> Arguments = new List<List<Token>>();
-            SetArguments(Arguments, Tokens.GetRange(i, endArguments - i));
-
-            foreach (List<Token> Argument in Arguments) {
-                Node argNode = ParseExpression(node, Argument);
-                node.Add(argNode);
-            }
+            ParseResult result = engine.generalParser.parseSurroundedExpressions("(", ")", index, Tokens);
+            Node node = result.node;
+            node.TokenType = "Call";
+            node.Body = name;
+            index += result.delta;
 
             return new ParseResult {node=node,delta=index};
         }
@@ -343,17 +331,12 @@ namespace Skrypt.Parsing {
         /// Parses an index operation
         /// </summary>
         public ParseResult ParseIndexing(List<Token> Tokens) {
-            int index = 0;
-            skipInfo skip;
-            Node node = new Node { Body = Tokens[index - 1].Value, TokenType = "Index" };
+            Node node = new Node { Body = Tokens[0].Value, TokenType = "Index" };
+            int index = 1;
 
-            // Skip to index expression, and as expression
-            int i = index + 1;
-            skip = SkipFromTo("[", "]", Tokens, index);
-            int endArguments = skip.end;
-            index = skip.end;
-
-            Node argNode = ParseExpression(node, Tokens.GetRange(i, endArguments - i));
+            ParseResult result = engine.generalParser.parseSurrounded("[", "]", index, Tokens, engine.expressionParser.ParseClean);
+            Node argNode = result.node;
+            index += result.delta;
             node.Add(argNode);
 
             return new ParseResult { node = node, delta = index };
@@ -364,24 +347,30 @@ namespace Skrypt.Parsing {
         /// </summary>
         public ParseResult ParseArrayLiteral (List<Token> Tokens) {
             int index = 0;
-            skipInfo skip;
-            Node node = new Node { Body = "Array", TokenType = "ArrayLiteral" };
 
-            // Skip to arguments, and parse arguments
-            int i = index + 1;
-            skip = SkipFromTo("[", "]", Tokens, index);
-            int endArguments = skip.end;
-            index = skip.end;
-
-            List<List<Token>> Arguments = new List<List<Token>>();
-            SetArguments(Arguments, Tokens.GetRange(i, endArguments - i));
-
-            foreach (List<Token> Argument in Arguments) {
-                Node argNode = ParseExpression(node, Argument);
-                node.Add(argNode);
-            }
+            ParseResult result = engine.generalParser.parseSurroundedExpressions("[", "]", 0, Tokens);
+            Node node = result.node;
+            node.TokenType = "ArrayLiteral";
+            node.Body = "Array";
+            index += result.delta;
 
             return new ParseResult { node = node, delta = index };
+        }
+
+        /// <summary>
+        /// Parses an expression node without any parenting node
+        /// </summary>
+        public Node ParseClean (List<Token> Tokens) {
+            Node node = new Node();
+            node.Add(ParseExpression(node, Tokens));
+
+            // Only return the first subnode, so we don't create a messy AST
+            Node returnNode = null;
+            if (node.SubNodes.Count > 0) {
+                returnNode = node.SubNodes[0];
+            }
+
+            return returnNode;
         }
 
         /// <summary>
@@ -389,22 +378,18 @@ namespace Skrypt.Parsing {
         /// </summary>
         public ParseResult Parse(List<Token> Tokens) {
             Node node = new Node();
-            int i = 0;
             int delta = 0;
 
             // Skip until we hit the end of an expression, or a keyword
-            while (Tokens[delta].Value != ";"/* && Tokens[Index].Type != "Keyword"*/ && delta < Tokens.Count - 1) {
+            while (Tokens[delta].Value != ";") {
                 delta++;
+
+                if (delta == Tokens.Count) {
+                    break;
+                }
             }
 
-            // Parse tokens in expression
-            node.Add(ParseExpression(node, Tokens.GetRange(i, delta - i)));
-
-            // Only return the first subnode, so we don't create a messy AST
-            Node returnNode = null;
-            if (node.SubNodes.Count > 0) {
-                returnNode = node.SubNodes[0];
-            }
+            Node returnNode = ParseClean(Tokens.GetRange(0, delta));
 
             return new ParseResult {node = returnNode, delta = delta};
         }
