@@ -229,24 +229,24 @@ namespace Skrypt.Parsing {
             ParseResult ExpressionResult = new ParseResult();
             ParseResult StatementResult = new ParseResult();
 
-            //try {
+            try {
                 ParseResult result = engine.expressionParser.Parse(Tokens);
-
+                
                 ExpressionResult.node = result.node;
                 ExpressionResult.delta = result.delta;
-            //} catch (Exception e) {
-            //    error = e;
-            //}
+            } catch (Exception e) {
+                error = e;
+            }
 
-            //try {
-            //    ParseResult result = engine.statementParser.Parse(Tokens);
+            try {
+                ParseResult result = engine.statementParser.Parse(Tokens);
 
-            //    StatementResult.node = result.node;
-            //    StatementResult.delta = result.delta;
-            //}
-            //catch (Exception e) {
-            //    error = e;
-            //}
+                StatementResult.node = result.node;
+                StatementResult.delta = result.delta;
+            }
+            catch (Exception e) {
+                error = e;
+            }
 
             if (ExpressionResult.node != null) {
                 return ExpressionResult;

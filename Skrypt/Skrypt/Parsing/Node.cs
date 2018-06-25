@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Skrypt.Tokenization;
 
 namespace Skrypt.Parsing {
 
@@ -14,6 +15,7 @@ namespace Skrypt.Parsing {
         public string Body { get; set; }
         //public object Value { get; set; }
         public string TokenType { get; set; }
+        public Token Token { get; set; }
         public List<Node> SubNodes { get; set; } = new List<Node>();
 
         /// <summary>

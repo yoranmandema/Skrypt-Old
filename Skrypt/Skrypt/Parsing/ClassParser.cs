@@ -5,12 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Tokenization;
 using Skrypt.Parsing;
+using Skrypt.Library;
 
 namespace Skrypt.Parsing {
     static class ClassParser {
-
-
-
         static public SkryptClass Parse (List<Token> Tokens, ref int Index) {
             bool HasClassKeyword = Tokens[0].Has("Keyword", "class");
             bool HasIdentifier = Tokens[1].Type == "Identifier";

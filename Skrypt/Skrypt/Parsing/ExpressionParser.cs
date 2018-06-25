@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Tokenization;
 using Skrypt.Engine;
+using Skrypt.Library;
 
 namespace Skrypt.Parsing {
     public class skipInfo {
@@ -28,13 +29,13 @@ namespace Skrypt.Parsing {
         /// Class representing an operator group
         /// </summary>
         class OperatorGroup {
-            public List<string> Operators = new List<string>();
+            public List<Operator> Operators = new List<Operator>();
             public int Members;
             public bool LeftAssociate = true;
             public bool IsPostfix = false;
 
-            public OperatorGroup(string[] ops, bool LA = true, int mems = 2, bool PF = false) {
-                Operators = ops.ToList<string>();
+            public OperatorGroup(Operator[] ops, bool LA = true, int mems = 2, bool PF = false) {
+                Operators = ops.ToList<Operator>();
                 Members = mems;
                 LeftAssociate = LA;
                 IsPostfix = PF;
@@ -43,17 +44,17 @@ namespace Skrypt.Parsing {
 
         // Create list of operator groups with the right precedence order
         static List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup> {
-            new OperatorGroup(new[] {"."}, true, 2, true),
-            new OperatorGroup(new[] {"="}, false),
-            new OperatorGroup(new[] {"||"}),
-            new OperatorGroup(new[] {"&&"}),
-            new OperatorGroup(new[] {"!=","=="}),
-            new OperatorGroup(new[] {"<",">","<=",">="}),
-            new OperatorGroup(new[] {"+","-"}),
-            new OperatorGroup(new[] {"*","/","%"}),
-            new OperatorGroup(new[] {"^"}),
-            new OperatorGroup(new[] { "-", "!" }, false, 1),
-            new OperatorGroup(new[] { "++", "--" }, false, 1, true),
+            new OperatorGroup(new[] {new Op_Access()}, true, 2, true),
+            new OperatorGroup(new[] {new Op_Assign()}, false),
+            new OperatorGroup(new[] {new Op_Or()}),
+            new OperatorGroup(new[] {new Op_And()}),
+            new OperatorGroup(new Operator[] {new Op_NotEqual(),new Op_Equal()}),
+            new OperatorGroup(new Operator[] {new Op_Lesser(),new Op_Greater(), new Op_LesserEqual(), new Op_GreaterEqual()}),
+            new OperatorGroup(new Operator[] {new Op_Add(), new Op_Subtract()}),
+            new OperatorGroup(new Operator[] {new Op_Multiply(), new Op_Divide(), new Op_Modulo()}),
+            new OperatorGroup(new[] {new Op_Power()}),
+            new OperatorGroup(new Operator[] { new Op_Negate(), new Op_Not() }, false, 1),
+            new OperatorGroup(new Operator[] { new Op_PostInc(), new Op_PostDec() }, false, 1, true),
         };
 
         // (debug) Serializes a list of tokens into a string
@@ -72,12 +73,13 @@ namespace Skrypt.Parsing {
         /// </summary>
         public Node ParseExpression (Node branch, List<Token> Tokens) {
 
-            if (Tokens.Count == 1) {         
+            if (Tokens.Count == 1) {
                 // return resulting end node
                 return new Node {
                     Body = Tokens[0].Value,
                     //Value = null,
-                    TokenType = Tokens[0].Type
+                    TokenType = Tokens[0].Type,
+                    Token = Tokens[0],
                 };
             }
 
@@ -93,7 +95,7 @@ namespace Skrypt.Parsing {
             // Do logic in delegate so we can easily exit out of it when we need to
             Action loop = () => {
                 foreach (OperatorGroup OP in OperatorPrecedence) {
-                    foreach (string Operator in OP.Operators) {
+                    foreach (Operator Operator in OP.Operators) {
                         int i = 0;
                         bool CanLoop = Tokens.Count > 0;
 
@@ -151,36 +153,51 @@ namespace Skrypt.Parsing {
                                     return;
                                 }
                             }
-                            if (token.Value == Operator) {
+                            if (token.Value == Operator.Operation) {
                                 // Fill left and right buffers
                                 leftBuffer = Tokens.GetRange(0, i);
                                 rightBuffer = Tokens.GetRange(i + 1, Tokens.Count - i - 1);
 
-                                // Create operation node with type and body
-                                Node NewNode = new Node();
-                                NewNode.Body = token.Value;
-                                NewNode.TokenType = token.Type;
+                                bool HasRequiredLeftTokens = leftBuffer.Count > 0;
+                                bool HasRequiredRightTokens = rightBuffer.Count > 0;
 
                                 if (OP.Members == 1) {
-                                    // Parse unary and do postfix logic
-
-                                    Node LeftNode = !OP.IsPostfix ? null : ParseExpression(NewNode, leftBuffer);
-                                    NewNode.Add(LeftNode);
-
-                                    Node RightNode = OP.IsPostfix ? null : ParseExpression(NewNode, rightBuffer);
-                                    NewNode.Add(RightNode);
-                                } else {
-                                    // Parse operators that need 2 sides
-
-                                    Node LeftNode = ParseExpression(NewNode, leftBuffer);
-                                    NewNode.Add(LeftNode);
-
-                                    Node RightNode = ParseExpression(NewNode, rightBuffer);
-                                    NewNode.Add(RightNode);
+                                    if (OP.IsPostfix) {
+                                        HasRequiredRightTokens = true;
+                                    }
+                                    else {
+                                        HasRequiredLeftTokens = true;
+                                    }
                                 }
 
-                                branch.Add(NewNode);
-                                return;
+                                if (HasRequiredLeftTokens && HasRequiredRightTokens) {
+                                    // Create operation node with type and body
+                                    Node NewNode = new Node();
+                                    NewNode.Body = Operator.OperationName;
+                                    NewNode.TokenType = token.Type;
+                                    NewNode.Token = token;
+
+                                    if (OP.Members == 1) {
+                                        // Parse unary and do postfix logic
+
+                                        Node LeftNode = !OP.IsPostfix ? null : ParseExpression(NewNode, leftBuffer);
+                                        NewNode.Add(LeftNode);
+
+                                        Node RightNode = OP.IsPostfix ? null : ParseExpression(NewNode, rightBuffer);
+                                        NewNode.Add(RightNode);
+                                    } else {
+                                        // Parse operators that need 2 sides
+
+                                        Node LeftNode = ParseExpression(NewNode, leftBuffer);
+                                        NewNode.Add(LeftNode);
+
+                                        Node RightNode = ParseExpression(NewNode, rightBuffer);
+                                        NewNode.Add(RightNode);
+                                    }
+
+                                    branch.Add(NewNode);
+                                    return;
+                                }
                             }
 
                             // Check if we're still in bounds

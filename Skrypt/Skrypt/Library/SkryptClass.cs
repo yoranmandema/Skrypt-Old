@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Skrypt.Tokenization;
 
-namespace Skrypt.Parsing {
+namespace Skrypt.Library {
     class SkryptClass {
         public string Name { get; set; }
         public List<SkryptProperty> Properties = new List<SkryptProperty>();

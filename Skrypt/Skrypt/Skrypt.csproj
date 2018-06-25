@@ -45,16 +45,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\Analizer.cs" />
     <Compile Include="Engine\Engine.cs" />
+    <Compile Include="Library\Operators.cs" />
     <Compile Include="Parsing\ClassParser.cs" />
     <Compile Include="Parsing\ExpressionParser.cs" />
     <Compile Include="Parsing\GeneralParser.cs" />
     <Compile Include="Parsing\Node.cs" />
-    <Compile Include="Parsing\SkryptClass.cs" />
-    <Compile Include="Parsing\SkryptClasses\Numeric.cs" />
-    <Compile Include="Parsing\SkryptMethod.cs" />
+    <Compile Include="Library\SkryptClass.cs" />
+    <Compile Include="Library\SkryptClasses\Numeric.cs" />
+    <Compile Include="Library\SkryptMethod.cs" />
     <Compile Include="Parsing\SkryptOperator.cs" />
-    <Compile Include="Parsing\SkryptProperty.cs" />
+    <Compile Include="Library\SkryptProperty.cs" />
     <Compile Include="Parsing\StatementParser.cs" />
     <Compile Include="Tokenization\Tokenizer.cs" />
     <Compile Include="Tokenization\Token.cs" />
