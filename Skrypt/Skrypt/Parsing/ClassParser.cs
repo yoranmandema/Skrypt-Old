@@ -9,7 +9,7 @@ using Skrypt.Library;
 
 namespace Skrypt.Parsing {
     static class ClassParser {
-        static public SkryptClass Parse (List<Token> Tokens, ref int Index) {
+        static public SkryptObject Parse (List<Token> Tokens, ref int Index) {
             bool HasClassKeyword = Tokens[0].Has("Keyword", "class");
             bool HasIdentifier = Tokens[1].Type == "Identifier";
             bool HasClosingBlock = false;
@@ -33,7 +33,7 @@ namespace Skrypt.Parsing {
 
             List <Token> BlockTokens = Tokens.GetRange(BlockStartIndex + 1, Tokens.Count - BlockStartIndex - 1);
 
-            SkryptClass Class = new SkryptClass();
+            SkryptObject Class = new SkryptObject();
             Class.Name = Tokens[1].Value;
             Class.Generate(BlockTokens);
 
