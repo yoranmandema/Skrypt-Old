@@ -12,6 +12,24 @@ namespace Skrypt.Library.SkryptClasses {
             Name = "array";
         }
 
+        static public SkryptArray _add(SkryptObject A, SkryptArray B) {
+            List<SkryptObject> newValue = new List<SkryptObject>() {
+                A
+            };
+
+            newValue.AddRange(B.value);
+
+            return new SkryptArray { value = newValue };
+        }
+
+        static public SkryptArray _add(SkryptArray A, SkryptObject B) {
+            List<SkryptObject> newValue = new List<SkryptObject>(A.value) {
+                B
+            };
+
+            return new SkryptArray { value = newValue };
+        }
+
         public override string ToString() {
             return "[" + string.Join(",", value) + "]";
         }

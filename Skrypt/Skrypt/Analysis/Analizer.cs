@@ -36,6 +36,18 @@ namespace Skrypt.Analysis {
         }
     }
 
+    class ScopeContext {
+        public Dictionary<string, SkryptObject> variables { get; set; }
+
+        public ScopeContext (Dictionary<string, SkryptObject> vars = null) {
+            if (vars == null) {
+                variables = new Dictionary<string, SkryptObject>();
+            } else {
+                variables = vars;
+            }
+        }
+    }
+
     /// <summary>
     /// The node analizer class.
     /// Analizes nodes to check for errors.
@@ -46,8 +58,8 @@ namespace Skrypt.Analysis {
         public Analizer(SkryptEngine e) {
             engine = e;
         }
-
-        public SkryptObject AnalizeExpression (Node node) {
+        
+        public SkryptObject AnalizeExpression (Node node, ScopeContext scope) {
             Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
 
             if (op != null) {
@@ -59,17 +71,17 @@ namespace Skrypt.Analysis {
 
                 switch (op.OperationName) {
                     case "assign":
-                        Console.WriteLine(node.Body);
-
                         if (node.SubNodes[0].TokenType != "Identifier") {
                             engine.throwError("Can't assign non-variable", node.SubNodes[0].Token);
                         }
-                    break;
+
+                        SkryptObject r = scope.variables[node.SubNodes[0].Body] = AnalizeExpression(node.SubNodes[1], scope);
+                        return r;
                 }
 
                 if (op.Members == 2) {
-                    SkryptObject Left = AnalizeExpression(node.SubNodes[0]);
-                    SkryptObject Right = AnalizeExpression(node.SubNodes[1]);
+                    SkryptObject Left = AnalizeExpression(node.SubNodes[0], scope);
+                    SkryptObject Right = AnalizeExpression(node.SubNodes[1], scope);
 
                     if (Left != null && Right != null) {
                         Type t1 = Left.GetType();
@@ -101,7 +113,7 @@ namespace Skrypt.Analysis {
                         engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
                     }
                 } else if (op.Members == 1) {
-                    SkryptObject Left = AnalizeExpression(node.SubNodes[0]);
+                    SkryptObject Left = AnalizeExpression(node.SubNodes[0], scope);
 
                     if (Left != null) {
                         Type t1 = Left.GetType();
@@ -133,18 +145,28 @@ namespace Skrypt.Analysis {
                 SkryptArray array = new SkryptArray();
 
                 foreach (Node subNode in node.SubNodes) {
-                    array.value.Add(AnalizeExpression(subNode));
+                    array.value.Add(AnalizeExpression(subNode, scope));
                 }
 
                 return array;
+            }
+
+            if (node.TokenType == "Identifier") {
+                if (scope.variables.ContainsKey(node.Body)) {
+                    return scope.variables[node.Body];
+                } else {
+                    engine.throwError("Variable '" + node.Body + "' does not exist in the current context!",node.Token);
+                }
             }
 
             return null;
         }
 
         public void Analize (Node node) {
+            ScopeContext context = new ScopeContext();
+
             foreach (Node subNode in node.SubNodes) {
-                SkryptObject result = AnalizeExpression(subNode);
+                SkryptObject result = AnalizeExpression(subNode, context);
                 Console.WriteLine("Result: " + result);
             }
         }

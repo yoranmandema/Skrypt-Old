@@ -171,11 +171,7 @@ namespace Skrypt.Parsing {
 
                     index += result.delta;
                 }
-
-                Console.WriteLine("Success");
             }
-
-            Console.WriteLine("Generated node:\n" + node + "\n");
 
             return new ParseResult { node = node, delta = index };
         }

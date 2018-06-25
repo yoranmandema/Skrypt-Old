@@ -408,6 +408,8 @@ namespace Skrypt.Parsing {
 
             Node returnNode = ParseClean(Tokens.GetRange(0, delta));
 
+            delta++;
+
             return new ParseResult {node = returnNode, delta = delta};
         }
     }
