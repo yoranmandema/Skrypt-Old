@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 using Skrypt.Tokenization;
 
 namespace Skrypt.Library {
-    class SkryptObject {
+    public class SkryptObject {
         public string Name { get; set; }
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
         public List<SkryptMethod> Methods = new List<SkryptMethod>();

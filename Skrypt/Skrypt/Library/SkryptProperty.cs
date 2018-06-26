@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Skrypt.Library {
-    class SkryptProperty {
+    public class SkryptProperty {
         public string Name;
         public object Value;
     }

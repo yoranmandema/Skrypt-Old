@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Skrypt.Parsing;
 
 namespace Skrypt.Library {
-    class SkryptMethod {
+    public class SkryptMethod {
         public string Name;
         public Node NodeTree;
     }

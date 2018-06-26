@@ -47,8 +47,12 @@
   <ItemGroup>
     <Compile Include="Analysis\Analizer.cs" />
     <Compile Include="Engine\Engine.cs" />
+    <Compile Include="Execution\Executor.cs" />
+    <Compile Include="Execution\MethodExtensions.cs" />
+    <Compile Include="Execution\ScopeContext.cs" />
     <Compile Include="Library\Operators.cs" />
     <Compile Include="Library\SkryptClasses\Array.cs" />
+    <Compile Include="Library\SkryptClasses\Boolean.cs" />
     <Compile Include="Library\SkryptClasses\String.cs" />
     <Compile Include="Parsing\ClassParser.cs" />
     <Compile Include="Parsing\ExpressionParser.cs" />

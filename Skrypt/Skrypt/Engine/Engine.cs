@@ -7,6 +7,7 @@ using Skrypt.Tokenization;
 using System.Text.RegularExpressions;
 using Skrypt.Parsing;
 using Skrypt.Analysis;
+using Skrypt.Execution;
 using System.Diagnostics; // Using this so we can check how fast everything is happening
 
 
@@ -23,6 +24,7 @@ namespace Skrypt.Engine {
         public ExpressionParser expressionParser;
         public GeneralParser generalParser;
         public Analizer analizer;
+        public Executor executor;
 
         List<Token> Tokens;
         string Code = "";
@@ -34,6 +36,7 @@ namespace Skrypt.Engine {
             generalParser = new GeneralParser(this);
             expressionParser = new ExpressionParser(this);
             analizer = new Analizer(this);
+            executor = new Executor(this);
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
@@ -152,10 +155,10 @@ namespace Skrypt.Engine {
             // Generate the program node
             Node ProgramNode = generalParser.Parse(Tokens);
 
-            analizer.Analize(ProgramNode);
-
             // Debug program node
             Console.WriteLine("Program:\n" + ProgramNode);
+
+            analizer.Analize(ProgramNode);
 
             return ProgramNode;
         }

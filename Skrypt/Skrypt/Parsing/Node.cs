@@ -11,7 +11,7 @@ namespace Skrypt.Parsing {
     /// <summary>
     /// Class representing a node or AST
     /// </summary>
-    class Node {
+    public class Node {
         public string Body { get; set; }
         //public object Value { get; set; }
         public string TokenType { get; set; }

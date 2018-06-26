@@ -8,7 +8,7 @@ namespace Skrypt.Tokenization {
     /// <summary>
     /// Represents part of a string with a type.
     /// </summary>
-    class Token {
+    public class Token {
         public string Value { get; set; }
         public string Type { get; set; }
         public int Start { get; set; }
