@@ -18,6 +18,8 @@ namespace Skrypt.Execution {
         }
 
         public SkryptObject ExecuteExpression (Node node, ScopeContext scope) {
+            ScopeContext scopeContext = new ScopeContext(scope);
+
             Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
 
             if (op != null) {
@@ -32,13 +34,13 @@ namespace Skrypt.Execution {
                         engine.throwError("Can't assign non-variable", node.SubNodes[0].Token);
                     }
 
-                    SkryptObject r = scope.Variables[node.SubNodes[0].Body] = ExecuteExpression(node.SubNodes[1], scope);
+                    SkryptObject r = scopeContext.Variables[node.SubNodes[0].Body] = ExecuteExpression(node.SubNodes[1], scopeContext);
                     return r;
                 }
 
                 if (op.Members == 2) {
-                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scope);
-                    SkryptObject Right = ExecuteExpression(node.SubNodes[1], scope);
+                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
+                    SkryptObject Right = ExecuteExpression(node.SubNodes[1], scopeContext);
 
                     if (Left != null && Right != null) {
                         Type t1 = Left.GetType();
@@ -58,7 +60,7 @@ namespace Skrypt.Execution {
 
                                 return (SkryptObject)result;
                             }
-                            catch (Exception e) { throw e;  }
+                            catch (Exception e) { }
                         }
                         else if (methodInfo2 != null) {
                             try {
@@ -72,7 +74,7 @@ namespace Skrypt.Execution {
                     }
                 }
                 else if (op.Members == 1) {
-                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scope);
+                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
 
                     if (Left != null) {
                         Type t1 = Left.GetType();
@@ -108,15 +110,15 @@ namespace Skrypt.Execution {
                 SkryptArray array = new SkryptArray();
 
                 foreach (Node subNode in node.SubNodes) {
-                    array.value.Add(ExecuteExpression(subNode, scope));
+                    array.value.Add(ExecuteExpression(subNode, scopeContext));
                 }
 
                 return array;
             }
 
             if (node.TokenType == "Identifier") {
-                if (scope.Variables.ContainsKey(node.Body)) {
-                    return scope.Variables[node.Body];
+                if (scopeContext.Variables.ContainsKey(node.Body)) {
+                    return scopeContext.Variables[node.Body];
                 }
                 else {
                     engine.throwError("Variable '" + node.Body + "' does not exist in the current context!", node.Token);

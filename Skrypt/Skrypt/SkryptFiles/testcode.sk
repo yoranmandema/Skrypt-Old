@@ -1,1 +1,11 @@
-﻿A = !true;
+﻿A = true;
+
+if (A) {
+	A = false;
+} elseif (false) {
+	B = 1;
+} elseif (false) {
+	A = B;
+} else {
+
+}
