@@ -44,6 +44,7 @@ namespace Skrypt.Parsing {
 
         // Create list of operator groups with the right precedence order
         static List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup> {
+            new OperatorGroup(new Operator[] { new Operator { OperationName="return", Operation ="return", Members = 1} }, false, 1),
             new OperatorGroup(new[] {new Op_Access()}, true, 2, true),
             new OperatorGroup(new[] {new Op_Assign()}, false),
             new OperatorGroup(new[] {new Op_Or()}),
@@ -54,8 +55,7 @@ namespace Skrypt.Parsing {
             new OperatorGroup(new Operator[] {new Op_Multiply(), new Op_Divide(), new Op_Modulo()}),
             new OperatorGroup(new[] {new Op_Power()}),
             new OperatorGroup(new Operator[] { new Op_Negate(), new Op_Not() }, false, 1),
-            new OperatorGroup(new Operator[] { new Op_PostInc(), new Op_PostDec() }, false, 1, true),
-        };
+            new OperatorGroup(new Operator[] { new Op_PostInc(), new Op_PostDec() }, false, 1, true),        };
 
         // (debug) Serializes a list of tokens into a string
         public static string TokenString (List<Token> Tokens) {

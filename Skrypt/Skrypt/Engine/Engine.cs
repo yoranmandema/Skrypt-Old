@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Skrypt.Parsing;
 using Skrypt.Analysis;
 using Skrypt.Execution;
+using Skrypt.Library;
 using System.Diagnostics; // Using this so we can check how fast everything is happening
 
 
@@ -18,23 +19,27 @@ namespace Skrypt.Engine {
         public int delta = -1;
     }
 
-    class SkryptEngine {
-        Tokenizer tokenizer;
+    public class SkryptEngine {
+        public Tokenizer tokenizer;
         public StatementParser statementParser;
         public ExpressionParser expressionParser;
         public GeneralParser generalParser;
+        public MethodParser methodParser;
         public Analizer analizer;
         public Executor executor;
 
         List<Token> Tokens;
         string Code = "";
+        public List<Node> MethodNodes = new List<Node>();
+        public List<SkryptMethod> Methods = new List<SkryptMethod>();
         //List<SkryptClass> Classes = new List<SkryptClass>();
-  
+
         public SkryptEngine() {
             tokenizer = new Tokenizer(this);
             statementParser = new StatementParser(this);
-            generalParser = new GeneralParser(this);
             expressionParser = new ExpressionParser(this);
+            generalParser = new GeneralParser(this);
+            methodParser = new MethodParser(this);
             analizer = new Analizer(this);
             executor = new Executor(this);
 
@@ -66,7 +71,7 @@ namespace Skrypt.Engine {
             );
 
             tokenizer.AddRule(
-                new Regex(@"(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=;:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
+                new Regex(@"(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=;:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
                 "Punctuator"
             );
 
@@ -131,6 +136,30 @@ namespace Skrypt.Engine {
             int delta = index - startingPoint;
 
             return new skipInfo {start=start, end=index, delta=delta};
+        }
+
+        /// <summary>
+        /// Skips token if next token has the given value. Throws exception when not found.
+        /// </summary>
+        public skipInfo expectType(string Type, List<Token> Tokens, int startingPoint = 0) {
+            int start = startingPoint;
+            int index = startingPoint;
+            string msg = "Token with type '" + Type + "' expected after " + Tokens[index].Value + " keyword";
+
+            if (index == Tokens.Count - 1) {
+                throwError(msg, Tokens[index]);
+            }
+
+            if (Tokens[index + 1].Type == Type) {
+                index++;
+            }
+            else {
+                throwError(msg, Tokens[index]);
+            }
+
+            int delta = index - startingPoint;
+
+            return new skipInfo { start = start, end = index, delta = delta };
         }
 
         /// <summary>

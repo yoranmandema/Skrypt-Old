@@ -1,11 +1,5 @@
-﻿A = true;
-
-if (A) {
-	A = false;
-} elseif (false) {
-	B = 1;
-} elseif (false) {
-	A = B;
-} else {
-
+﻿method numeric addNumbers (numeric a, numeric b) {
+	return a + b;
 }
+
+A = 2;

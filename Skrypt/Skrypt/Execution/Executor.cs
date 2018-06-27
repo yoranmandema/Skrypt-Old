@@ -17,9 +17,28 @@ namespace Skrypt.Execution {
             engine = e;
         }
 
-        public SkryptObject ExecuteExpression (Node node, ScopeContext scope) {
-            ScopeContext scopeContext = new ScopeContext(scope);
+        public void ExecuteWhileStatement (Node node, ScopeContext scopeContext) {
+            while (engine.executor.ExecuteExpression(node.SubNodes[0], scopeContext.Copy()).ToBoolean()) {
+                ExecuteBlock(node.SubNodes[1], scopeContext.Copy());
+            }
+        }
 
+        public void ExecuteBlock (Node node, ScopeContext scopeContext) {
+            foreach (Node subNode in node.SubNodes) {
+                if (subNode.TokenType == "Statement") {
+                    switch (subNode.Body) {
+                        case "while":
+                            ExecuteWhileStatement(subNode, scopeContext.Copy());
+                        break;
+                    }
+                }
+                else {
+                    SkryptObject result = engine.executor.ExecuteExpression(subNode, scopeContext.Copy());
+                }
+            }
+        }
+
+        public SkryptObject ExecuteExpression (Node node, ScopeContext scopeContext) {
             Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
 
             if (op != null) {
@@ -29,18 +48,26 @@ namespace Skrypt.Execution {
                     engine.throwError("Missing member of operation!", node.Token);
                 }
 
+                if (op.OperationName == "return") {
+                    if (scopeContext.Type == "method") {
+
+                    } else {
+                        engine.throwError("Can't use return operator outside method!", node.SubNodes[0].Token);
+                    }
+                }
+
                 if (op.OperationName == "assign") {
                     if (node.SubNodes[0].TokenType != "Identifier") {
                         engine.throwError("Can't assign non-variable", node.SubNodes[0].Token);
                     }
 
-                    SkryptObject r = scopeContext.Variables[node.SubNodes[0].Body] = ExecuteExpression(node.SubNodes[1], scopeContext);
+                    SkryptObject r = scopeContext.Variables[node.SubNodes[0].Body] = ExecuteExpression(node.SubNodes[1], scopeContext.Copy());
                     return r;
                 }
 
                 if (op.Members == 2) {
-                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
-                    SkryptObject Right = ExecuteExpression(node.SubNodes[1], scopeContext);
+                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext.Copy());
+                    SkryptObject Right = ExecuteExpression(node.SubNodes[1], scopeContext.Copy());
 
                     if (Left != null && Right != null) {
                         Type t1 = Left.GetType();
@@ -74,7 +101,7 @@ namespace Skrypt.Execution {
                     }
                 }
                 else if (op.Members == 1) {
-                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
+                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext.Copy());
 
                     if (Left != null) {
                         Type t1 = Left.GetType();
@@ -110,7 +137,7 @@ namespace Skrypt.Execution {
                 SkryptArray array = new SkryptArray();
 
                 foreach (Node subNode in node.SubNodes) {
-                    array.value.Add(ExecuteExpression(subNode, scopeContext));
+                    array.value.Add(ExecuteExpression(subNode, scopeContext.Copy()));
                 }
 
                 return array;

@@ -117,6 +117,7 @@ namespace Skrypt.Parsing {
         public ParseResult Parse(List<Token> Tokens) {
             switch (Tokens[0].Value) {
                 case "while":
+                    return ParseStatement(Tokens);
                 case "if":
                     return ParseIfStatement(Tokens);
                 case "else":

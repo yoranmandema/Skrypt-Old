@@ -222,14 +222,14 @@ namespace Skrypt.Parsing {
         ParseResult TryParse (List<Token> Tokens) {
 
             Exception error = null;
-            ParseResult ExpressionResult = new ParseResult();
-            ParseResult StatementResult = new ParseResult();
+            ParseResult ExpressionResult = null;
+            ParseResult StatementResult = null;
+            ParseResult MethodResult = null;
 
             try {
                 ParseResult result = engine.expressionParser.Parse(Tokens);
-                
-                ExpressionResult.node = result.node;
-                ExpressionResult.delta = result.delta;
+
+                ExpressionResult = result;
             } catch (Exception e) {
                 error = e;
             }
@@ -237,17 +237,28 @@ namespace Skrypt.Parsing {
             try {
                 ParseResult result = engine.statementParser.Parse(Tokens);
 
-                StatementResult.node = result.node;
-                StatementResult.delta = result.delta;
+                StatementResult = result;
             }
             catch (Exception e) {
                 error = e;
             }
 
-            if (ExpressionResult.node != null) {
+            try {
+                ParseResult result = engine.methodParser.Parse(Tokens);
+
+                MethodResult = result;
+            }
+            catch (Exception e) {
+                error = e;
+            }
+
+
+            if (ExpressionResult != null) {
                 return ExpressionResult;
-            } else if (StatementResult.node != null) {
+            } else if (StatementResult != null) {
                 return StatementResult;
+            } else if (MethodResult != null) {
+                return MethodResult;
             } else {
                 //throw error;
                 //engine.throwError(error.Message, Tokens[0]);
