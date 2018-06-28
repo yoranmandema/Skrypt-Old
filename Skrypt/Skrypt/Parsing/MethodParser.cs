@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Engine;
 using Skrypt.Tokenization;
+using Skrypt.Library;
 
 namespace Skrypt.Parsing {
     /// <summary>
@@ -20,7 +21,7 @@ namespace Skrypt.Parsing {
 
 
 
-        public Node ParseSingleParamter (List<Token> Tokens) {
+        public Node ParseSingleParameter (List<Token> Tokens) {
             int index = 0;
             skipInfo skip;
 
@@ -47,7 +48,7 @@ namespace Skrypt.Parsing {
             ExpressionParser.SetArguments(ParameterLists, Tokens);
 
             foreach (List<Token> Parameter in ParameterLists) {
-                Node ParameterNode = ParseSingleParamter(Parameter);
+                Node ParameterNode = ParseSingleParameter(Parameter);
                 node.Add(ParameterNode);
             }
 
@@ -92,10 +93,29 @@ namespace Skrypt.Parsing {
             Node node = new Node();
             node.Add(ParameterNode);
             node.Add(BlockNode);
-            node.Body = Tokens[2].Value;
-            node.TokenType = "Method";
+            node.TokenType = Tokens[1].Value;
+
+            string currentSignature = Tokens[2].Value;
+
+            foreach (Node par in node.SubNodes[0].SubNodes) {
+                currentSignature += "_" + par.TokenType;
+            }
+
+            node.Body = currentSignature;
+
+            // Check if method with the same signature already exists        
+            foreach (Node method in engine.MethodNodes) {
+                if (method.Body == currentSignature) {
+                    engine.throwError("Method with this signature already exists!", Tokens[0]);
+                }
+            }
 
             engine.MethodNodes.Add(node);
+            engine.Methods.Add(new UserMethod {
+                Name = currentSignature,
+                ReturnType = Tokens[1].Value,
+                BlockNode = node,
+            });
 
             return new ParseResult { node = null, delta = index };
         }

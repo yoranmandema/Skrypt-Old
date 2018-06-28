@@ -1,8 +1,9 @@
-﻿a = 1;
-b = 2;
-
-if (true) {
-	a = b;
+﻿method numeric addNumbers (numeric A, numeric B) {
+	return A + B;
 }
 
-print(a);
+method numeric addNumbers (numeric A, string B) {
+	return A + B;
+}
+
+addNumbers(1,"");

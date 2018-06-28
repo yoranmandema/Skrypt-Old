@@ -127,6 +127,8 @@ namespace Skrypt.Execution {
                 }
 
                 if (op.OperationName == "return") {
+                    Console.WriteLine(op);
+
                     if (scopeContext.Type == "method") {
 
                     } else {
@@ -277,25 +279,35 @@ namespace Skrypt.Execution {
             }
 
             if (node.TokenType == "Call") {
-                if (engine.Methods.Exists((m) => m.Name == node.Body)) {
-                    List<SkryptObject> Arguments = new List<SkryptObject>();
+                List<SkryptObject> Arguments = new List<SkryptObject>();
+                string signature = node.Body;
+                string searchString = node.Body;
 
-                    foreach (Node subNode in node.SubNodes) {
-                        SkryptObject Result = ExecuteExpression(subNode, scopeContext);
+                foreach (Node subNode in node.SubNodes) {
+                    SkryptObject Result = ExecuteExpression(subNode, scopeContext);
 
-                        if (Result.Name == "void") {
-                            engine.throwError("Can't pass void into arguments!", node.SubNodes[0].Token);
-                        }
-
-                        Arguments.Add(Result);
+                    if (Result.Name == "void") {
+                        engine.throwError("Can't pass void into arguments!", node.SubNodes[0].Token);
                     }
 
-                    SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == node.Body).Execute(engine, Arguments.ToArray(), scopeContext);
+                    Arguments.Add(Result);
+
+                    signature += "_" + Result.Name;
+                }
+
+                foreach (Node method in engine.MethodNodes) {
+                    if (method.Body == signature) {
+                        searchString = signature;
+                    }
+                }
+
+                if (engine.Methods.Exists((m) => m.Name == searchString)) {
+                    SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, Arguments.ToArray(), scopeContext);
 
                     return MethodResult;
                 }
                 else {
-                    engine.throwError("Method '" + node.Body + "' does not exist in the current context!", node.Token);
+                    engine.throwError("Method '" + node.Body + "(" + String.Join(",",signature.Split('_')) + ")' does not exist in the current context!", node.Token);
                 }
             }
 

@@ -234,17 +234,17 @@ namespace Skrypt.Parsing {
                 error = e;
             }
 
-            //try {
+            try {
                 if (true) {
                     ParseResult result = engine.statementParser.Parse(Tokens);
 
                     StatementResult = result;
                 }
-            //}
-            //catch (Exception e) {
-            //    error = e;
-            //    throw e;
-            //}
+            }
+            catch (Exception e) {
+                error = e;
+                throw e;
+            }
 
             try {
                 ParseResult result = engine.methodParser.Parse(Tokens);
@@ -264,7 +264,7 @@ namespace Skrypt.Parsing {
                 return MethodResult;
             } else {
                 //throw error;
-                //engine.throwError(error.Message, Tokens[0]);
+                engine.throwError(error.Message, Tokens[0]);
                 return null;
             }
         }
