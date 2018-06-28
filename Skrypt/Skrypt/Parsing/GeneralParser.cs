@@ -234,14 +234,17 @@ namespace Skrypt.Parsing {
                 error = e;
             }
 
-            try {
-                ParseResult result = engine.statementParser.Parse(Tokens);
+            //try {
+                if (true) {
+                    ParseResult result = engine.statementParser.Parse(Tokens);
 
-                StatementResult = result;
-            }
-            catch (Exception e) {
-                error = e;
-            }
+                    StatementResult = result;
+                }
+            //}
+            //catch (Exception e) {
+            //    error = e;
+            //    throw e;
+            //}
 
             try {
                 ParseResult result = engine.methodParser.Parse(Tokens);

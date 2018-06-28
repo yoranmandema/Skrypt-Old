@@ -1,14 +1,8 @@
-﻿print(1) = 1;
+﻿a = 1;
+b = 2;
 
-if (print(a)) {
-	print("Yes!");
-} elseif (a == 1)  {
-	print("Maybe!");
-
-	b = 1;
-} else {
-	print("No!");
+if (true) {
+	a = b;
 }
 
-print(b);
-
+print(a);

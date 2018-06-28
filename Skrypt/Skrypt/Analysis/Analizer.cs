@@ -26,11 +26,11 @@ namespace Skrypt.Analysis {
             
             // Check statement
             Node conditionNode = node.SubNodes[0];
-            SkryptObject result = engine.executor.ExecuteExpression(conditionNode, scopeContext.Copy());
+            SkryptObject result = engine.executor.ExecuteExpression(conditionNode, scopeContext);
 
             // Check block
             Node blockNode = node.SubNodes[1];
-            Analize(blockNode, scopeContext.Copy());
+            Analize(blockNode, scopeContext);
 
             // Check else/elseif
             if (node.SubNodes.Count > 2) {
@@ -39,9 +39,9 @@ namespace Skrypt.Analysis {
                     Node elseNode = node.SubNodes[i];
 
                     if (elseNode.Body == "elseif") {
-                        AnalizeStatement(elseNode, scopeContext.Copy());
+                        AnalizeStatement(elseNode, scopeContext);
                     } else {
-                        Analize(elseNode, scopeContext.Copy());
+                        Analize(elseNode, scopeContext);
                     }
                 }
             }
@@ -50,10 +50,10 @@ namespace Skrypt.Analysis {
         public void Analize (Node node, ScopeContext scopeContext) {
             foreach (Node subNode in node.SubNodes) {
                 if (subNode.TokenType == "Statement") {
-                    AnalizeStatement(subNode, scopeContext.Copy());
+                    AnalizeStatement(subNode, scopeContext);
                 }
                 else {
-                    SkryptObject result = engine.executor.ExecuteExpression(subNode, scopeContext.Copy());
+                    SkryptObject result = engine.executor.ExecuteExpression(subNode, scopeContext);
                 }
             }
         }

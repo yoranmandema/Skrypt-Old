@@ -47,7 +47,7 @@ namespace Skrypt.Parsing {
 
             result = engine.generalParser.parseSurrounded("{", "}", index, Tokens, engine.generalParser.Parse);
             Node blockNode = result.node;
-            index += result.delta;
+            index += result.delta + 1;
 
             // Add condition and block nodes to main node
             node.Add(conditionParentNode);
@@ -87,9 +87,7 @@ namespace Skrypt.Parsing {
             // Only parse statements elseif/else if there's any tokens after if statement
             if (index < Tokens.Count - 1) {
                 // Look for, and parse elseif statements
-                while (Tokens[index + 1].Value == "elseif") {
-                    index++;
-
+                while (Tokens[index].Value == "elseif") {
                     ParseResult elseIfResult = ParseStatement(Tokens.GetRange(index,Tokens.Count - index));
                     result.node.Add(elseIfResult.node);
                     index += elseIfResult.delta;
@@ -102,9 +100,7 @@ namespace Skrypt.Parsing {
 
             if (index < Tokens.Count - 1) {
                 // No more elseif statements left; check and parse else statement
-                if (Tokens[index + 1].Value == "else") {
-                    index++;
-
+                if (Tokens[index].Value == "else") {
                     ParseResult elseResult = ParseElseStatement(Tokens.GetRange(index, Tokens.Count - index));
                     result.node.Add(elseResult.node);
                     index += elseResult.delta;

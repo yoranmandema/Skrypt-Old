@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Skrypt.Tokenization;
+using Skrypt.Execution;
 
 namespace Skrypt.Library {
     public class SkryptObject {
         public string Name { get; set; }
+        public ScopeContext Scope { get; set; }
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
         public List<SkryptMethod> Methods = new List<SkryptMethod>();
 

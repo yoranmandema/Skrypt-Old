@@ -11,6 +11,7 @@ using Skrypt.Execution;
 using Skrypt.Library;
 using System.Diagnostics; // Using this so we can check how fast everything is happening
 using Skrypt.Library.Methods;
+using Skrypt.Library.SkryptClasses;
 
 namespace Skrypt.Engine {
     public class ParseResult {
@@ -178,6 +179,8 @@ namespace Skrypt.Engine {
         public Node Parse (string code) {
             Code = code;
 
+            Stopwatch stopwatch = Stopwatch.StartNew();
+
             // Tokenize code
             Tokens = tokenizer.Tokenize(code);      
             if (Tokens == null) { return null; }
@@ -185,8 +188,16 @@ namespace Skrypt.Engine {
             // Pre-process tokens so their values are correct
             TokenProcessor.ProcessTokens(Tokens);
 
+            stopwatch.Stop();
+            double T_Token = stopwatch.ElapsedMilliseconds;
+            stopwatch = Stopwatch.StartNew();
+
             // Generate the program node
             Node ProgramNode = generalParser.Parse(Tokens);
+
+            stopwatch.Stop();
+            double T_Parse = stopwatch.ElapsedMilliseconds;
+            stopwatch = Stopwatch.StartNew();
 
             // Debug program node
             Console.WriteLine("Program:\n" + ProgramNode);
@@ -194,8 +205,12 @@ namespace Skrypt.Engine {
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
 
-            ScopeContext Scope = new ScopeContext();
-            executor.ExecuteBlock(ProgramNode, Scope);
+            executor.ExecuteBlock(ProgramNode, null);
+
+            stopwatch.Stop();
+            double T_Execute = stopwatch.ElapsedMilliseconds;
+
+            Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms",T_Execute, T_Parse, T_Token);
 
             return ProgramNode;
         }

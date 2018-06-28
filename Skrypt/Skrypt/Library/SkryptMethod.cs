@@ -25,7 +25,7 @@ namespace Skrypt.Library {
         public override SkryptObject Execute(SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
             SkryptObject ReturnVariable = null;
 
-            engine.executor.ExecuteBlock(BlockNode, scope.Copy(), ref ReturnVariable);
+            engine.executor.ExecuteBlock(BlockNode, scope, ref ReturnVariable);
 
             return ReturnVariable;
         }
