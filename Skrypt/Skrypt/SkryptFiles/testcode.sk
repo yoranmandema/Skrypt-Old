@@ -1,5 +1,14 @@
-﻿method numeric addNumbers (numeric a, numeric b) {
-	return a + b;
+﻿print(1) = 1;
+
+if (print(a)) {
+	print("Yes!");
+} elseif (a == 1)  {
+	print("Maybe!");
+
+	b = 1;
+} else {
+	print("No!");
 }
 
-A = 2;
+print(b);
+

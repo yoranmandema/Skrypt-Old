@@ -12,7 +12,7 @@ namespace Skrypt.Library {
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
         public List<SkryptMethod> Methods = new List<SkryptMethod>();
 
-        public bool ToBoolean () {
+        public virtual bool ToBoolean () {
             return true;
         }
 
@@ -28,7 +28,5 @@ namespace Skrypt.Library {
             //    Console.WriteLine(N);
             //}
         }
-
-
     }
 }

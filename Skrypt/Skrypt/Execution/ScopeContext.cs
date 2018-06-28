@@ -1,11 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using Skrypt.Library;
 
 namespace Skrypt.Execution {
     public class ScopeContext {
         public string Type = "";
         public Dictionary<string, SkryptObject> Variables { get; set; } = new Dictionary<string, SkryptObject>();
+
+        public string DictToString<T, V>(IEnumerable<KeyValuePair<T, V>> items, string format) {
+            format = String.IsNullOrEmpty(format) ? "{0}='{1}' " : format;
+
+            StringBuilder itemString = new StringBuilder();
+            foreach (var item in items)
+                itemString.AppendFormat(format, item.Key, item.Value);
+
+            return itemString.ToString();
+        }
+
+        public override string ToString() {
+
+            string output = "Type:\n" + Type;
+            output = "Variables:\n";
+
+            output += DictToString<string, SkryptObject>(Variables, null);
+
+            return output;
+        }
 
         public ScopeContext(ScopeContext Copy = null) {
             if (Copy != null) {

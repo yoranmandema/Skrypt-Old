@@ -5,11 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Skrypt.Library.SkryptClasses {
-    class SkryptBoolean : SkryptObject {
+    public class SkryptBoolean : SkryptObject {
         public bool value;
 
         public SkryptBoolean() {
             Name = "boolean";
+        }
+
+        public override bool ToBoolean() {
+            return value;
         }
 
         static public SkryptBoolean _and (SkryptBoolean A, SkryptBoolean B) {

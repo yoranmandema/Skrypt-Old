@@ -11,7 +11,7 @@ namespace Skrypt.Parsing {
     /// The general parser class.
     /// Contains all methods to parse higher-level code, e.g code that contains statements AND expressions
     /// </summary>
-    class GeneralParser {
+    public class GeneralParser {
         SkryptEngine engine;
 
         public GeneralParser(SkryptEngine e) {

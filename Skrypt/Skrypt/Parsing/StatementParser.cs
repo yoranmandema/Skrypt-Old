@@ -11,7 +11,7 @@ namespace Skrypt.Parsing {
     /// The statement parser class.
     /// Contains all methods to parse if, elseif, else and while statements
     /// </summary>
-    class StatementParser {
+    public class StatementParser {
 
         SkryptEngine engine;
 
@@ -35,9 +35,12 @@ namespace Skrypt.Parsing {
 
             result = engine.generalParser.parseSurrounded("(",")",index,Tokens,engine.expressionParser.ParseClean);
             Node conditionNode = result.node;
-            conditionNode.Body = "Condition";
-            conditionNode.TokenType = "Expression";
             index += result.delta;
+
+            Node conditionParentNode = new Node();
+            conditionParentNode.Body = "Condition";
+            conditionParentNode.TokenType = "Condition";
+            conditionParentNode.Add(conditionNode);
 
             skip = engine.expectValue("{", Tokens, index);
             index += skip.delta;
@@ -47,7 +50,7 @@ namespace Skrypt.Parsing {
             index += result.delta;
 
             // Add condition and block nodes to main node
-            node.Add(conditionNode);
+            node.Add(conditionParentNode);
             node.Add(blockNode);
 
             return new ParseResult { node=node, delta=index};
@@ -66,7 +69,7 @@ namespace Skrypt.Parsing {
             ParseResult result = engine.generalParser.parseSurrounded("{", "}", index, Tokens, engine.generalParser.Parse);
             Node node = result.node;
             node.Body = "else";
-            index += result.delta;
+            index += result.delta + 1;
 
             return new ParseResult { node = node, delta = index };
         }

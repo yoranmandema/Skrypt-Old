@@ -8,6 +8,8 @@ using Skrypt.Execution;
 using Skrypt.Engine;
 
 namespace Skrypt.Library {
+    public delegate SkryptObject SkryptDelegate(params SkryptObject[] input);
+
     public class SkryptMethod {
         public string Name;
         public string ReturnType;
@@ -21,17 +23,19 @@ namespace Skrypt.Library {
         public Node BlockNode;
 
         public override SkryptObject Execute(SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
-            //engine.executor.
-            return null;
+            SkryptObject ReturnVariable = null;
+
+            engine.executor.ExecuteBlock(BlockNode, scope.Copy(), ref ReturnVariable);
+
+            return ReturnVariable;
         }
     }
 
     public class SharpMethod : SkryptMethod {
-        public delegate method;
+        public SkryptDelegate method;
 
         public override SkryptObject Execute(SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
-            //engine.executor.
-            return null;
+            return method(parameters);
         }
     }
 }

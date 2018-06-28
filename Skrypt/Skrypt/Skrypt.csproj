@@ -50,10 +50,14 @@
     <Compile Include="Execution\Executor.cs" />
     <Compile Include="Execution\MethodExtensions.cs" />
     <Compile Include="Execution\ScopeContext.cs" />
+    <Compile Include="Library\Methods\Math.cs" />
+    <Compile Include="Library\Methods\Standard.cs" />
+    <Compile Include="Library\Methods\StandardMethods.cs" />
     <Compile Include="Library\Operators.cs" />
     <Compile Include="Library\SkryptClasses\Array.cs" />
     <Compile Include="Library\SkryptClasses\Boolean.cs" />
     <Compile Include="Library\SkryptClasses\String.cs" />
+    <Compile Include="Library\SkryptClasses\Void.cs" />
     <Compile Include="Parsing\ClassParser.cs" />
     <Compile Include="Parsing\ExpressionParser.cs" />
     <Compile Include="Parsing\GeneralParser.cs" />
@@ -81,5 +85,6 @@
   <ItemGroup>
     <None Include="SkryptFiles\testcode.sk" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

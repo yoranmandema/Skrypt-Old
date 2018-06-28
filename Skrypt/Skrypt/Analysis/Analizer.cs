@@ -15,23 +15,22 @@ namespace Skrypt.Analysis {
     /// The node analizer class.
     /// Analizes nodes to check for errors.
     /// </summary>
-    class Analizer {
+    public class Analizer {
         SkryptEngine engine;
 
         public Analizer(SkryptEngine e) {
             engine = e;
         }
         
-        public void AnalizeStatement (Node node, ScopeContext context) {
-            ScopeContext scopeContext = new ScopeContext(context);
+        public void AnalizeStatement (Node node, ScopeContext scopeContext) {
             
             // Check statement
             Node conditionNode = node.SubNodes[0];
-            SkryptObject result = engine.executor.ExecuteExpression(conditionNode, scopeContext);
+            SkryptObject result = engine.executor.ExecuteExpression(conditionNode, scopeContext.Copy());
 
             // Check block
             Node blockNode = node.SubNodes[1];
-            Analize(blockNode, scopeContext);
+            Analize(blockNode, scopeContext.Copy());
 
             // Check else/elseif
             if (node.SubNodes.Count > 2) {
@@ -40,24 +39,21 @@ namespace Skrypt.Analysis {
                     Node elseNode = node.SubNodes[i];
 
                     if (elseNode.Body == "elseif") {
-                        AnalizeStatement(elseNode, scopeContext);
+                        AnalizeStatement(elseNode, scopeContext.Copy());
                     } else {
-                        Analize(elseNode, scopeContext);
+                        Analize(elseNode, scopeContext.Copy());
                     }
                 }
             }
         }
 
-        public void Analize (Node node, ScopeContext context = null) {
-            ScopeContext scopeContext = new ScopeContext(context);
-
+        public void Analize (Node node, ScopeContext scopeContext) {
             foreach (Node subNode in node.SubNodes) {
                 if (subNode.TokenType == "Statement") {
-                    AnalizeStatement(subNode, scopeContext);
+                    AnalizeStatement(subNode, scopeContext.Copy());
                 }
                 else {
-                    SkryptObject result = engine.executor.ExecuteExpression(subNode, scopeContext);
-                    Console.WriteLine("Result: " + result);
+                    SkryptObject result = engine.executor.ExecuteExpression(subNode, scopeContext.Copy());
                 }
             }
         }

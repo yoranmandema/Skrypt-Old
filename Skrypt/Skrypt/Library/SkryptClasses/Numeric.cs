@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Skrypt.Library.SkryptClasses {
-    class Numeric : SkryptObject {
+    public class Numeric : SkryptObject {
         public double value;
 
         public Numeric () {
@@ -34,6 +34,24 @@ namespace Skrypt.Library.SkryptClasses {
 
         static public Numeric _modulo(Numeric A, Numeric B) {
             return new Numeric { value = A.value % B.value };
+        }
+
+        static public Numeric _postincrement(Numeric A) {
+            double value = A.value;
+            A.value++;
+            return new Numeric { value = value };
+        }
+
+        static public SkryptBoolean _lesser(Numeric A, Numeric B) {
+            return new SkryptBoolean { value = A.value < B.value };
+        }
+
+        static public SkryptBoolean _greater(Numeric A, Numeric B) {
+            return new SkryptBoolean { value = A.value > B.value };
+        }
+
+        static public SkryptBoolean _equal(Numeric A, Numeric B) {
+            return new SkryptBoolean { value = A.value == B.value };
         }
 
         public override string ToString() {

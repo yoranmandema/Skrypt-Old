@@ -18,7 +18,7 @@ namespace Skrypt.Parsing {
     /// The expression parser class.
     /// Contains all methods to parse expressions, and helper methods
     /// </summary>
-    class ExpressionParser {
+    public class ExpressionParser {
         SkryptEngine engine;
 
         public ExpressionParser(SkryptEngine e) {
@@ -339,6 +339,7 @@ namespace Skrypt.Parsing {
             Node node = result.node;
             node.TokenType = "Call";
             node.Body = name;
+            node.Token = Tokens[0];
             index += result.delta;
 
             return new ParseResult {node=node,delta=index};
@@ -355,6 +356,7 @@ namespace Skrypt.Parsing {
             Node argNode = result.node;
             index += result.delta;
             node.Add(argNode);
+            node.Token = Tokens[0];
 
             return new ParseResult { node = node, delta = index };
         }

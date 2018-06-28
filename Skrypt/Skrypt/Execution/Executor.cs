@@ -10,35 +10,97 @@ using Skrypt.Engine;
 using Skrypt.Parsing;
 
 namespace Skrypt.Execution {
-    class Executor {
+    public class Executor {
         SkryptEngine engine;
 
         public Executor(SkryptEngine e) {
             engine = e;
         }
 
+        bool CheckCondition (Node node, ScopeContext scopeContext) {
+            bool ConditionResult = false;
+
+            try {
+                ConditionResult = engine.executor.ExecuteExpression(node, scopeContext).ToBoolean();
+            } catch (Exception e) {
+                engine.throwError(e.Message, node.Token);
+            }
+
+            return ConditionResult;
+        }
+
         public void ExecuteWhileStatement (Node node, ScopeContext scopeContext) {
-            while (engine.executor.ExecuteExpression(node.SubNodes[0], scopeContext.Copy()).ToBoolean()) {
-                ExecuteBlock(node.SubNodes[1], scopeContext.Copy());
+            while (true) {
+                bool ConditionResult = CheckCondition(node.SubNodes[0].SubNodes[0], scopeContext);
+
+                if (ConditionResult) {
+                    break;
+                }
+
+                ExecuteBlock(node.SubNodes[1], scopeContext);
             }
         }
 
-        public void ExecuteBlock (Node node, ScopeContext scopeContext) {
+        public void ExecuteIfStatement(Node node, ScopeContext scopeContext) {
+            bool ConditionResult = CheckCondition(node.SubNodes[0].SubNodes[0], scopeContext);
+
+            if (ConditionResult) {
+                ExecuteBlock(node.SubNodes[1], scopeContext);
+                return;
+            }
+
+            if (node.SubNodes.Count > 2) {
+                for (int i = 2; i < node.SubNodes.Count; i++) {
+                    Node elseNode = node.SubNodes[i];
+
+                    if (elseNode.Body == "elseif") {
+                        ConditionResult = engine.executor.ExecuteExpression(elseNode.SubNodes[0].SubNodes[0], scopeContext).ToBoolean();
+
+                        if (ConditionResult) {
+                            ExecuteBlock(elseNode.SubNodes[1], scopeContext);
+                            return;
+                        }
+                    }
+                    else {
+                        ExecuteBlock(elseNode, scopeContext);
+                    }
+                }
+            }
+        }
+
+        public void ExecuteBlock (Node node, ScopeContext scopeContext, ref SkryptObject returnVariable) {
+            scopeContext = scopeContext.Copy();
+
             foreach (Node subNode in node.SubNodes) {
                 if (subNode.TokenType == "Statement") {
                     switch (subNode.Body) {
                         case "while":
-                            ExecuteWhileStatement(subNode, scopeContext.Copy());
+                            ExecuteWhileStatement(subNode, scopeContext);
+                        break;
+                        case "if":
+                            ExecuteIfStatement(subNode, scopeContext);
                         break;
                     }
                 }
                 else {
-                    SkryptObject result = engine.executor.ExecuteExpression(subNode, scopeContext.Copy());
+                    SkryptObject result = engine.executor.ExecuteExpression(subNode, scopeContext);
+
+                    if (result.Name == "return") {
+                        returnVariable = result;
+                        return;
+                    }
                 }
             }
         }
 
+        public void ExecuteBlock(Node node, ScopeContext scopeContext) {
+            SkryptObject FakeObject = null;
+            ExecuteBlock(node, scopeContext, ref FakeObject);
+        }
+
         public SkryptObject ExecuteExpression (Node node, ScopeContext scopeContext) {
+            Console.WriteLine(node);
+
             Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
 
             if (op != null) {
@@ -60,14 +122,23 @@ namespace Skrypt.Execution {
                     if (node.SubNodes[0].TokenType != "Identifier") {
                         engine.throwError("Can't assign non-variable", node.SubNodes[0].Token);
                     }
+                    SkryptObject result = ExecuteExpression(node.SubNodes[1], scopeContext);
 
-                    SkryptObject r = scopeContext.Variables[node.SubNodes[0].Body] = ExecuteExpression(node.SubNodes[1], scopeContext.Copy());
-                    return r;
+                    if (result.Name == "void") {
+                        engine.throwError("Can't assign to void", node.SubNodes[1].Token);
+                    }
+
+                    scopeContext.Variables[node.SubNodes[0].Body] = result;
+                    return result;
                 }
 
                 if (op.Members == 2) {
-                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext.Copy());
-                    SkryptObject Right = ExecuteExpression(node.SubNodes[1], scopeContext.Copy());
+                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
+                    SkryptObject Right = ExecuteExpression(node.SubNodes[1], scopeContext);
+
+                    if (Left.Name == "void" || Right.Name == "void") {
+                        engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
+                    }
 
                     if (Left != null && Right != null) {
                         Type t1 = Left.GetType();
@@ -101,7 +172,11 @@ namespace Skrypt.Execution {
                     }
                 }
                 else if (op.Members == 1) {
-                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext.Copy());
+                    SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
+
+                    if (Left.Name == "void") {
+                        engine.throwError("No such operation as " + op.Operation + " " + Left.Name, node.SubNodes[0].Token);
+                    }
 
                     if (Left != null) {
                         Type t1 = Left.GetType();
@@ -137,7 +212,13 @@ namespace Skrypt.Execution {
                 SkryptArray array = new SkryptArray();
 
                 foreach (Node subNode in node.SubNodes) {
-                    array.value.Add(ExecuteExpression(subNode, scopeContext.Copy()));
+                    SkryptObject Result = ExecuteExpression(subNode, scopeContext);
+
+                    if (Result.Name == "void") {
+                        engine.throwError("Can't add void to array!", node.SubNodes[0].Token);
+                    }
+
+                    array.value.Add(Result);
                 }
 
                 return array;
@@ -149,6 +230,34 @@ namespace Skrypt.Execution {
                 }
                 else {
                     engine.throwError("Variable '" + node.Body + "' does not exist in the current context!", node.Token);
+                }
+            }
+
+            if (node.TokenType == "Call") {
+                if (engine.Methods.Exists((m) => m.Name == node.Body)) {
+                    Console.WriteLine("Calling method");
+
+                    List<SkryptObject> Arguments = new List<SkryptObject>();
+
+                    foreach (Node subNode in node.SubNodes) {
+                        SkryptObject Result = ExecuteExpression(subNode, scopeContext);
+
+                        if (Result.Name == "void") {
+                            engine.throwError("Can't pass void into arguments!", node.SubNodes[0].Token);
+                        }
+
+
+                        Arguments.Add(Result);
+                    }
+
+                    SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == node.Body).Execute(engine, Arguments.ToArray(), scopeContext);
+
+                    Console.WriteLine(MethodResult == null);
+
+                    return MethodResult;
+                }
+                else {
+                    engine.throwError("Method '" + node.Body + "' does not exist in the current context!", node.Token);
                 }
             }
 

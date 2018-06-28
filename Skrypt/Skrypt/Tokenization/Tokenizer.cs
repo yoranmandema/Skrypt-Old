@@ -12,7 +12,7 @@ namespace Skrypt.Tokenization {
     /// The main Tokenization class.
     /// Contains all methods for tokenization.
     /// </summary>
-    class Tokenizer {
+    public class Tokenizer {
         List<TokenRule> TokenRules = new List<TokenRule>();
         SkryptEngine engine;
 

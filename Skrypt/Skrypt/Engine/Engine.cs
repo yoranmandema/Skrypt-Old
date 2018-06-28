@@ -10,10 +10,10 @@ using Skrypt.Analysis;
 using Skrypt.Execution;
 using Skrypt.Library;
 using System.Diagnostics; // Using this so we can check how fast everything is happening
-
+using Skrypt.Library.Methods;
 
 namespace Skrypt.Engine {
-    class ParseResult {
+    public class ParseResult {
         public Node node;
         //public Exception error;
         public int delta = -1;
@@ -27,6 +27,7 @@ namespace Skrypt.Engine {
         public MethodParser methodParser;
         public Analizer analizer;
         public Executor executor;
+        public StandardMethods standardMethods;
 
         List<Token> Tokens;
         string Code = "";
@@ -42,6 +43,9 @@ namespace Skrypt.Engine {
             methodParser = new MethodParser(this);
             analizer = new Analizer(this);
             executor = new Executor(this);
+            standardMethods = new StandardMethods(this);
+
+            standardMethods.AddMethodsToEngine();
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
@@ -187,7 +191,11 @@ namespace Skrypt.Engine {
             // Debug program node
             Console.WriteLine("Program:\n" + ProgramNode);
 
-            analizer.Analize(ProgramNode);
+            //ScopeContext AnalizeScope = new ScopeContext();
+            //analizer.Analize(ProgramNode, AnalizeScope);
+
+            ScopeContext Scope = new ScopeContext();
+            executor.ExecuteBlock(ProgramNode, Scope);
 
             return ProgramNode;
         }
