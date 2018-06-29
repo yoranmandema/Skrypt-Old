@@ -114,7 +114,7 @@ namespace Skrypt.Parsing {
             engine.Methods.Add(new UserMethod {
                 Name = currentSignature,
                 ReturnType = Tokens[1].Value,
-                BlockNode = node,
+                BlockNode = BlockNode,
             });
 
             return new ParseResult { node = null, delta = index };

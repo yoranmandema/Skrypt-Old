@@ -195,4 +195,14 @@ namespace Skrypt.Library {
             AllOperators.Add(this);
         }
     }
+
+    class Op_Return : Operator {
+        public Op_Return() {
+            OperationName = "return";
+            Members = 0;
+            Operation = "return";
+
+            AllOperators.Add(this);
+        }
+    }
 }

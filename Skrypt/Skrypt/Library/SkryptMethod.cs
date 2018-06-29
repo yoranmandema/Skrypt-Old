@@ -17,15 +17,21 @@ namespace Skrypt.Library {
         public virtual SkryptObject Execute (SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
             return null;
         }
+
+        public override string ToString() {
+            return base.ToString();
+        }
     }
 
     public class UserMethod : SkryptMethod {
         public Node BlockNode;
 
         public override SkryptObject Execute(SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
-            SkryptObject ReturnVariable = null;
-            
-            engine.executor.ExecuteBlock(BlockNode, scope, ref ReturnVariable);
+            engine.executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
+
+            SkryptObject ReturnVariable = scope.subContext.ReturnObject;
+
+            Console.WriteLine("Returning value: " + ReturnVariable);
 
             return ReturnVariable;
         }

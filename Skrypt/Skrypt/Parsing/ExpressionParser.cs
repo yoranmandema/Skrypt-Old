@@ -44,7 +44,7 @@ namespace Skrypt.Parsing {
 
         // Create list of operator groups with the right precedence order
         static List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup> {
-            new OperatorGroup(new Operator[] { new Operator { OperationName="return", Operation ="return", Members = 1} }, false, 1),
+            new OperatorGroup(new[] {new Op_Return()}, false, 1),
             new OperatorGroup(new[] {new Op_Access()}, true, 2, true),
             new OperatorGroup(new[] {new Op_Assign()}, false),
             new OperatorGroup(new[] {new Op_Or()}),

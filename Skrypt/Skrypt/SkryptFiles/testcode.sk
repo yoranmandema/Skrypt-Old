@@ -1,9 +1,10 @@
-﻿method numeric addNumbers (numeric A, numeric B) {
-	return A + B;
+﻿
+method numeric stuff (numeric n) {
+	return factorial (n - 1);	
 }
 
-method numeric addNumbers (numeric A, string B) {
-	return A + B;
+method numeric factorial (numeric n) {
+	return stuff(n);	
 }
 
-addNumbers(1,"");
+print(factorial (3));

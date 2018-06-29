@@ -80,13 +80,18 @@ namespace Skrypt.Execution {
             }
         }
 
-        public void ExecuteBlock (Node node, ScopeContext scopeContext, ref SkryptObject returnVariable) {
+        public void ExecuteBlock (Node node, ScopeContext scopeContext, SubContext subContext = null) {
             ScopeContext scope = new ScopeContext();
 
             if (scopeContext == null) {
                 scope = new ScopeContext();
             } else {
+                scope.subContext = scopeContext.subContext;
                 scope.ParentScope = scopeContext;
+            }
+
+            if (subContext != null) {
+                scope.subContext = subContext;
             }
 
             foreach (Node subNode in node.SubNodes) {
@@ -103,17 +108,15 @@ namespace Skrypt.Execution {
                 else {
                     SkryptObject result = engine.executor.ExecuteExpression(subNode, scope);
 
-                    if (result.Name == "return") {
-                        returnVariable = result;
+                    if (scope.subContext.ReturnObject != null) {
+                        Console.WriteLine(scope.subContext.ReturnObject);
+                        scopeContext.subContext.ReturnObject = scope.subContext.ReturnObject;
                         return;
                     }
                 }
             }
-        }
 
-        public void ExecuteBlock(Node node, ScopeContext scopeContext) {
-            SkryptObject FakeObject = null;
-            ExecuteBlock(node, scopeContext, ref FakeObject);
+            return;
         }
 
         public SkryptObject ExecuteExpression (Node node, ScopeContext scopeContext) {
@@ -122,18 +125,31 @@ namespace Skrypt.Execution {
             if (op != null) {
                 int Members = node.SubNodes.Count;
 
-                if (Members != op.Members) {
+                if (Members < op.Members) {
                     engine.throwError("Missing member of operation!", node.Token);
                 }
 
                 if (op.OperationName == "return") {
-                    Console.WriteLine(op);
-
-                    if (scopeContext.Type == "method") {
-
-                    } else {
+                    if (!scopeContext.subContext.InMethod) {
                         engine.throwError("Can't use return operator outside method!", node.SubNodes[0].Token);
                     }
+
+                    SkryptObject result = null;
+
+                    if (node.SubNodes.Count == 1) {
+                        result = ExecuteExpression(node.SubNodes[0], scopeContext);
+                    } else {
+                        result = new SkryptVoid();
+                    }
+
+                    Console.WriteLine("Return result: " + result);
+
+                    if (result.Name != scopeContext.subContext.Method.ReturnType) {
+                        engine.throwError("Can't return '" + result.Name + "' in a method that returns '" + scopeContext.subContext.Method.ReturnType + "'!", node.Token);
+                    }
+
+                    scopeContext.subContext.ReturnObject = result;
+                    return result;
                 }
 
                 if (op.OperationName == "assign") {
@@ -148,7 +164,6 @@ namespace Skrypt.Execution {
                     }
 
                     SkryptObject foundVariable = getVariable(node.SubNodes[0].Body, scopeContext);
-
   
                     if (foundVariable != null) {
                         if (foundVariable.Name != result.Name) {
@@ -282,6 +297,9 @@ namespace Skrypt.Execution {
                 List<SkryptObject> Arguments = new List<SkryptObject>();
                 string signature = node.Body;
                 string searchString = node.Body;
+                ScopeContext methodContext = new ScopeContext {
+                    ParentScope = scopeContext
+                };
 
                 foreach (Node subNode in node.SubNodes) {
                     SkryptObject Result = ExecuteExpression(subNode, scopeContext);
@@ -298,11 +316,16 @@ namespace Skrypt.Execution {
                 foreach (Node method in engine.MethodNodes) {
                     if (method.Body == signature) {
                         searchString = signature;
+
+                        for (int i = 0; i < method.SubNodes[0].SubNodes.Count; i++) {
+                            Node par = method.SubNodes[0].SubNodes[i];
+                            methodContext.Variables[par.Body] = Arguments[i];
+                        }
                     }
                 }
 
                 if (engine.Methods.Exists((m) => m.Name == searchString)) {
-                    SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, Arguments.ToArray(), scopeContext);
+                    SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, Arguments.ToArray(), methodContext);
 
                     return MethodResult;
                 }
