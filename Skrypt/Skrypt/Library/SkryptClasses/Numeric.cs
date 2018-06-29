@@ -8,8 +8,12 @@ namespace Skrypt.Library.SkryptClasses {
     public class Numeric : SkryptObject {
         public double value;
 
-        public Numeric () {
+        public Numeric() {
             Name = "numeric";
+        }
+
+        public static implicit operator Numeric(double d) {
+            return new Numeric { value=d };
         }
 
         static public Numeric _negate(Numeric A) {

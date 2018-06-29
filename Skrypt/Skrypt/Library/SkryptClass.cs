@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Tokenization;
 using Skrypt.Execution;
+using Newtonsoft.Json;
 
 namespace Skrypt.Library {
     public class SkryptObject {
         public string Name { get; set; }
+        [JsonIgnore]
         public ScopeContext Scope { get; set; }
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
         public List<SkryptMethod> Methods = new List<SkryptMethod>();

@@ -34,6 +34,7 @@ namespace Skrypt.Engine {
         string Code = "";
         public List<Node> MethodNodes = new List<Node>();
         public List<SkryptMethod> Methods = new List<SkryptMethod>();
+        public ScopeContext GlobalScope = new ScopeContext();
         //List<SkryptClass> Classes = new List<SkryptClass>();
 
         public SkryptEngine() {
@@ -170,7 +171,7 @@ namespace Skrypt.Engine {
         /// <summary>
         /// Throws an error with line and colom indicator
         /// </summary>
-        public void throwError (string message, Token token = null, int urgency = 0) {
+        public void throwError (string message, Token token = null, int urgency = -1) {
             string lineRow = token != null ? " (" + getLineAndRowStringFromIndex(token.Start) + ")" : "";
 
             throw new SkryptException(message + lineRow, urgency);
@@ -205,12 +206,16 @@ namespace Skrypt.Engine {
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
 
-            executor.ExecuteBlock(ProgramNode, null);
+            executor.ExecuteBlock(ProgramNode, GlobalScope);
 
             stopwatch.Stop();
             double T_Execute = stopwatch.ElapsedMilliseconds;
 
             Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms",T_Execute, T_Parse, T_Token);
+
+            SkryptObject InvokeResult = executor.Invoke("x", true);
+            Console.WriteLine(InvokeResult);
+
 
             return ProgramNode;
         }

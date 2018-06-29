@@ -408,8 +408,6 @@ namespace Skrypt.Parsing {
                 }
             }
 
-            Console.WriteLine(TokenString(Tokens.GetRange(0, delta)));
-
             Node returnNode = ParseClean(Tokens.GetRange(0, delta));
 
             delta++;

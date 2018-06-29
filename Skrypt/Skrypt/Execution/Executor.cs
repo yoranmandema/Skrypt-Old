@@ -83,11 +83,16 @@ namespace Skrypt.Execution {
         public ScopeContext ExecuteBlock (Node node, ScopeContext scopeContext, SubContext subContext = null) {
             ScopeContext scope = new ScopeContext();
 
-            if (scopeContext == null) {
-                scope = new ScopeContext();
+            if (scope.ParentScope == null) {
+                scope = scopeContext;
             } else {
-                scope.subContext = scopeContext.subContext;
-                scope.ParentScope = scopeContext;
+                if (scopeContext == null) {
+                    scope = new ScopeContext();
+                }
+                else {
+                    scope.subContext = scopeContext.subContext;
+                    scope.ParentScope = scopeContext;
+                }
             }
 
             if (subContext != null) {
@@ -326,11 +331,63 @@ namespace Skrypt.Execution {
                     return MethodResult;
                 }
                 else {
-                    engine.throwError("Method '" + node.Body + "(" + String.Join(",",signature.Split('_')) + ")' does not exist in the current context!", node.Token);
+                    engine.throwError("Method '" + node.Body + "(" + String.Join(",",signature.Split('_').Skip(1).ToArray()) + ")' does not exist!", node.Token);
                 }
             }
 
             return null;
+        }
+
+        public SkryptObject Invoke (string Name, params object[] arguments) {
+            string signature = Name;
+            string searchString = Name;
+            ScopeContext methodContext = new ScopeContext {
+                ParentScope = engine.GlobalScope
+            };
+
+            SkryptObject[] parameters = new SkryptObject[arguments.Length];
+
+            for (int i = 0; i < arguments.Length; i++) {
+                object arg = arguments[i];
+
+                if (arg.GetType() == typeof(int) || arg.GetType() == typeof(float) || arg.GetType() == typeof(double)) {
+                    parameters[i] = new Numeric { value = Convert.ToDouble(arg) };
+                } else if (arg.GetType() == typeof(string)) {
+                    parameters[i] = new SkryptString { value = (string)arg };
+                } else if (arg.GetType() == typeof(bool)) {
+                    parameters[i] = new SkryptBoolean { value = (bool)arg };
+                }
+
+                i++;
+            }
+
+            foreach (SkryptObject parameter in parameters) {
+                if (parameter.Name == "void") {
+                    throw new SkryptException("Can't pass void into arguments!");
+                }
+
+                signature += "_" + parameter.Name;
+            }
+
+            foreach (Node method in engine.MethodNodes) {
+                if (method.Body == signature) {
+                    searchString = signature;
+
+                    for (int i = 0; i < method.SubNodes[0].SubNodes.Count; i++) {
+                        Node par = method.SubNodes[0].SubNodes[i];
+                        methodContext.Variables[par.Body] = parameters[i];
+                    }
+                }
+            }
+
+            if (engine.Methods.Exists((m) => m.Name == searchString)) {
+                SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, parameters, methodContext);
+
+                return MethodResult;
+            }
+            else {
+                throw new SkryptException("Method '" + Name + "(" + String.Join(",", signature.Split('_').Skip(1).ToArray()) + ")' does not exist!");
+            }
         }
     }
 }
