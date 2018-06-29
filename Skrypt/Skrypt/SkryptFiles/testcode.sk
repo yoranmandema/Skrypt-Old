@@ -2,7 +2,7 @@
 	print("input: " + n);
 
 	if (n == 0) {
-		print("input was zero");
+		print("input was zero";
 		return 1;
 	} else {
 		print("input was not zero");

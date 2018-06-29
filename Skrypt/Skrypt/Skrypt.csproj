@@ -66,6 +66,7 @@
     <Compile Include="Library\SkryptClass.cs" />
     <Compile Include="Library\SkryptClasses\Numeric.cs" />
     <Compile Include="Library\SkryptMethod.cs" />
+    <Compile Include="Parsing\SkryptException.cs" />
     <Compile Include="Parsing\SkryptOperator.cs" />
     <Compile Include="Library\SkryptProperty.cs" />
     <Compile Include="Parsing\StatementParser.cs" />

@@ -201,6 +201,21 @@ namespace Skrypt.Parsing {
             return new ParseResult { node = node, delta = SurroundedTokens.Count + 1 };
         }
 
+        Exception GetExceptionBasedOnUrgency (Exception e, ref int highestErrorUrgency) {
+            Exception error = null;
+
+            if (e.GetType() == typeof(SkryptException)) {
+                SkryptException cast = (SkryptException)e;
+
+                if (cast.urgency >= highestErrorUrgency) {
+                    error = e;
+                    highestErrorUrgency = cast.urgency;
+                }
+            }
+
+            return error;
+        }
+
         /// <summary>
         /// Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
         /// </summary>
@@ -221,6 +236,7 @@ namespace Skrypt.Parsing {
 
         ParseResult TryParse (List<Token> Tokens) {
 
+            int highestErrorUrgency = -1;
             Exception error = null;
             ParseResult ExpressionResult = null;
             ParseResult StatementResult = null;
@@ -232,8 +248,10 @@ namespace Skrypt.Parsing {
                 ExpressionResult = result;
             }
             catch (Exception e) {
-                error = e;
-                Console.WriteLine(e);
+                Exception test = GetExceptionBasedOnUrgency(e, ref highestErrorUrgency);
+
+                if (test != null)
+                    error = test;
             }
 
             try {
@@ -242,7 +260,10 @@ namespace Skrypt.Parsing {
                 StatementResult = result;
             }
             catch (Exception e) {
-                error = e;
+                Exception test = GetExceptionBasedOnUrgency(e, ref highestErrorUrgency);
+
+                if (test != null)
+                    error = test;
             }
 
             try {
@@ -251,7 +272,15 @@ namespace Skrypt.Parsing {
                 MethodResult = result;
             }
             catch (Exception e) {
-                error = e;
+                Exception test = GetExceptionBasedOnUrgency(e, ref highestErrorUrgency);
+
+                if (test != null)
+                    error = test;
+            }
+
+            if (highestErrorUrgency > -1) {
+                engine.throwError(error.Message);
+                return null;
             }
 
             if (StatementResult != null) {

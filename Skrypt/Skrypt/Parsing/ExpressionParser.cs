@@ -303,10 +303,9 @@ namespace Skrypt.Parsing {
 
                 if (index == Tokens.Count) {
                     if (depth > 0) {
-                        Console.WriteLine("Closing token '" + downScope + "' not found");
-                        engine.throwError("Closing token '" + downScope + "' not found", firstToken);
+                        engine.throwError("Closing token '" + downScope + "' not found", firstToken,10);
                     } else if (depth < 0) {
-                        engine.throwError("Opening token '" + upScope + "' not found", Tokens[index]);
+                        engine.throwError("Opening token '" + upScope + "' not found", Tokens[index],10);
                     }
                 }
             }

@@ -67,7 +67,7 @@ namespace Skrypt.Parsing {
             ParseResult result;
 
             if (Tokens[0].Value != "method") {
-                throw new Exception();
+                throw new SkryptException();
             }
 
             skip = engine.expectType("Identifier", Tokens);

@@ -170,10 +170,10 @@ namespace Skrypt.Engine {
         /// <summary>
         /// Throws an error with line and colom indicator
         /// </summary>
-        public void throwError (string message, Token token = null) {
-            string lineRow = token != null ? getLineAndRowStringFromIndex(token.Start) : "";
+        public void throwError (string message, Token token = null, int urgency = 0) {
+            string lineRow = token != null ? " (" + getLineAndRowStringFromIndex(token.Start) + ")" : "";
 
-            throw new Exception(message + " (" + lineRow + ")");
+            throw new SkryptException(message + lineRow, urgency);
         }
 
         public Node Parse (string code) {
