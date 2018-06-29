@@ -103,14 +103,14 @@ namespace Skrypt.Engine {
         /// Calculates the line and column of a given index
         /// </summary>
         public string getLineAndRowStringFromIndex(int index) {
-            int lines = 0;
-            int row = 0;
+            int lines = 1;
+            int row = 1;
             int i = 0;
 
             while (i < index) {
                 if (Code[i] == '\n') {
                     lines++;
-                    row = 0;
+                    row = 1;
                 } else {
                     row++;
                 }
@@ -172,6 +172,8 @@ namespace Skrypt.Engine {
         /// Throws an error with line and colom indicator
         /// </summary>
         public void throwError (string message, Token token = null, int urgency = -1) {
+            Console.WriteLine(message);
+
             string lineRow = token != null ? " (" + getLineAndRowStringFromIndex(token.Start) + ")" : "";
 
             throw new SkryptException(message + lineRow, urgency);
@@ -212,10 +214,6 @@ namespace Skrypt.Engine {
             double T_Execute = stopwatch.ElapsedMilliseconds;
 
             Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms",T_Execute, T_Parse, T_Token);
-
-            SkryptObject InvokeResult = executor.Invoke("x", true);
-            Console.WriteLine(InvokeResult);
-
 
             return ProgramNode;
         }

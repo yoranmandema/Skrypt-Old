@@ -35,7 +35,7 @@ namespace Skrypt.Execution {
             try {
                 ConditionResult = engine.executor.ExecuteExpression(node, scopeContext).ToBoolean();
             } catch (Exception e) {
-                engine.throwError(e.Message, node.Token);
+                engine.throwError(e.Message);
             }
 
             return ConditionResult;
@@ -126,11 +126,11 @@ namespace Skrypt.Execution {
             Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
 
             if (op != null) {
-                int Members = node.SubNodes.Count;
+                //int Members = node.SubNodes.Count;
 
-                if (Members < op.Members) {
-                    engine.throwError("Missing member of operation!", node.Token);
-                }
+                //if (Members < op.Members) {
+                //    engine.throwError("Missing member of operation!", node.Token);
+                //}
 
                 if (op.OperationName == "return") {
                     if (!scopeContext.subContext.InMethod) {

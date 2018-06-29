@@ -196,6 +196,8 @@ namespace Skrypt.Parsing {
         public ParseResult parseSurrounded(string open, string close, int start, List<Token> Tokens, parseMethod parseMethod) {
             List<Token> SurroundedTokens = GetSurroundedTokens(open, close, start, Tokens);
 
+            Console.WriteLine("General: " + ExpressionParser.TokenString(Tokens));
+
             Node node = parseMethod(SurroundedTokens);
 
             return new ParseResult { node = node, delta = SurroundedTokens.Count + 1 };
@@ -208,6 +210,8 @@ namespace Skrypt.Parsing {
                 SkryptException cast = (SkryptException)e;
 
                 if (cast.urgency >= highestErrorUrgency) {
+                    Console.WriteLine(cast.urgency);
+
                     error = e;
                     highestErrorUrgency = cast.urgency;
                 }
@@ -277,6 +281,8 @@ namespace Skrypt.Parsing {
                 if (test != null)
                     error = test;
             }
+
+            Console.WriteLine(highestErrorUrgency + " , " + error.Message);
 
             if (highestErrorUrgency > -1) {
                 engine.throwError(error.Message);
