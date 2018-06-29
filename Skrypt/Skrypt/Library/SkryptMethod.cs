@@ -27,11 +27,9 @@ namespace Skrypt.Library {
         public Node BlockNode;
 
         public override SkryptObject Execute(SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
-            engine.executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
+            ScopeContext ResultingScope = engine.executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
 
-            SkryptObject ReturnVariable = scope.subContext.ReturnObject;
-
-            Console.WriteLine("Returning value: " + ReturnVariable);
+            SkryptObject ReturnVariable = ResultingScope.subContext.ReturnObject;
 
             return ReturnVariable;
         }

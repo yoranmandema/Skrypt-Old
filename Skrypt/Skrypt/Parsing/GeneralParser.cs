@@ -230,20 +230,19 @@ namespace Skrypt.Parsing {
                 ParseResult result = engine.expressionParser.Parse(Tokens);
 
                 ExpressionResult = result;
-            } catch (Exception e) {
-                error = e;
-            }
-
-            try {
-                if (true) {
-                    ParseResult result = engine.statementParser.Parse(Tokens);
-
-                    StatementResult = result;
-                }
             }
             catch (Exception e) {
                 error = e;
-                throw e;
+                Console.WriteLine(e);
+            }
+
+            try {
+                ParseResult result = engine.statementParser.Parse(Tokens);
+
+                StatementResult = result;
+            }
+            catch (Exception e) {
+                error = e;
             }
 
             try {
@@ -255,11 +254,10 @@ namespace Skrypt.Parsing {
                 error = e;
             }
 
-
-            if (ExpressionResult != null) {
-                return ExpressionResult;
-            } else if (StatementResult != null) {
+            if (StatementResult != null) {
                 return StatementResult;
+            } else if (ExpressionResult != null) {
+                return ExpressionResult;
             } else if (MethodResult != null) {
                 return MethodResult;
             } else {

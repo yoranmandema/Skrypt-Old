@@ -80,7 +80,7 @@ namespace Skrypt.Execution {
             }
         }
 
-        public void ExecuteBlock (Node node, ScopeContext scopeContext, SubContext subContext = null) {
+        public ScopeContext ExecuteBlock (Node node, ScopeContext scopeContext, SubContext subContext = null) {
             ScopeContext scope = new ScopeContext();
 
             if (scopeContext == null) {
@@ -109,14 +109,12 @@ namespace Skrypt.Execution {
                     SkryptObject result = engine.executor.ExecuteExpression(subNode, scope);
 
                     if (scope.subContext.ReturnObject != null) {
-                        Console.WriteLine(scope.subContext.ReturnObject);
-                        scopeContext.subContext.ReturnObject = scope.subContext.ReturnObject;
-                        return;
-                    }
+                        return scope;
+                     }
                 }
             }
 
-            return;
+            return scope; 
         }
 
         public SkryptObject ExecuteExpression (Node node, ScopeContext scopeContext) {
@@ -141,8 +139,6 @@ namespace Skrypt.Execution {
                     } else {
                         result = new SkryptVoid();
                     }
-
-                    Console.WriteLine("Return result: " + result);
 
                     if (result.Name != scopeContext.subContext.Method.ReturnType) {
                         engine.throwError("Can't return '" + result.Name + "' in a method that returns '" + scopeContext.subContext.Method.ReturnType + "'!", node.Token);

@@ -303,6 +303,7 @@ namespace Skrypt.Parsing {
 
                 if (index == Tokens.Count) {
                     if (depth > 0) {
+                        Console.WriteLine("Closing token '" + downScope + "' not found");
                         engine.throwError("Closing token '" + downScope + "' not found", firstToken);
                     } else if (depth < 0) {
                         engine.throwError("Opening token '" + upScope + "' not found", Tokens[index]);
@@ -407,6 +408,8 @@ namespace Skrypt.Parsing {
                     break;
                 }
             }
+
+            Console.WriteLine(TokenString(Tokens.GetRange(0, delta)));
 
             Node returnNode = ParseClean(Tokens.GetRange(0, delta));
 
