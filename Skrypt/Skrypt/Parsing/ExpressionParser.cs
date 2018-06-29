@@ -73,8 +73,6 @@ namespace Skrypt.Parsing {
         /// </summary>
         public Node ParseExpression (Node branch, List<Token> Tokens) {
 
-            Console.WriteLine("Expression: " + TokenString(Tokens));
-
             if (Tokens.Count == 1) {
                 // return resulting end node
                 return new Node {
@@ -106,7 +104,7 @@ namespace Skrypt.Parsing {
                             Token previousToken = i >= 1 ? Tokens[i-1] : null;
 
                             if (Tokens[i].Type == "Keyword") {
-                                engine.throwError("Unexpected keyword '" + Tokens[i].Value + "' found", Tokens[i]);
+                                engine.throwError("Unexpected keyword '" + Tokens[i].Value + "' found", Tokens[i],2);
                             }
 
                             if (token.Value == "(") {
@@ -171,10 +169,6 @@ namespace Skrypt.Parsing {
                                         HasRequiredLeftTokens = true;
                                     }
                                 }
-
-                                Console.WriteLine("Found operator: " + token.Value);
-                                Console.WriteLine("Left: " + HasRequiredLeftTokens);
-                                Console.WriteLine("Right: " + HasRequiredRightTokens);
 
                                 if (HasRequiredLeftTokens && HasRequiredRightTokens) {
                                     // Create operation node with type and body
@@ -415,8 +409,6 @@ namespace Skrypt.Parsing {
                     break;
                 }
             }
-
-            Console.WriteLine(TokenString(Tokens.GetRange(0, delta)));
 
             Node returnNode = ParseClean(Tokens.GetRange(0, delta));
 

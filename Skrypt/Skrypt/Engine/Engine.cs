@@ -172,8 +172,6 @@ namespace Skrypt.Engine {
         /// Throws an error with line and colom indicator
         /// </summary>
         public void throwError (string message, Token token = null, int urgency = -1) {
-            Console.WriteLine(message);
-
             string lineRow = token != null ? " (" + getLineAndRowStringFromIndex(token.Start) + ")" : "";
 
             throw new SkryptException(message + lineRow, urgency);
