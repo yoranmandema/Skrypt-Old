@@ -55,7 +55,8 @@ namespace Skrypt.Parsing {
             new OperatorGroup(new Operator[] {new Op_Multiply(), new Op_Divide(), new Op_Modulo()}),
             new OperatorGroup(new[] {new Op_Power()}),
             new OperatorGroup(new Operator[] { new Op_Negate(), new Op_Not() }, false, 1),
-            new OperatorGroup(new Operator[] { new Op_PostInc(), new Op_PostDec() }, false, 1, true),        };
+            new OperatorGroup(new Operator[] { new Op_PostInc(), new Op_PostDec() }, false, 1, true),
+        };
 
         // (debug) Serializes a list of tokens into a string
         public static string TokenString (List<Token> Tokens) {
@@ -103,7 +104,7 @@ namespace Skrypt.Parsing {
                             Token token = Tokens[i];
                             Token previousToken = i >= 1 ? Tokens[i-1] : null;
 
-                            if (Tokens[i].Type == "Keyword") {
+                            if (GeneralParser.Keywords.Contains(Tokens[i].Value)) {
                                 engine.throwError("Unexpected keyword '" + Tokens[i].Value + "' found", Tokens[i],2);
                             }
 

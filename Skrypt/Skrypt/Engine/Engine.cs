@@ -35,6 +35,8 @@ namespace Skrypt.Engine {
         public List<Node> MethodNodes = new List<Node>();
         public List<SkryptMethod> Methods = new List<SkryptMethod>();
         public ScopeContext GlobalScope = new ScopeContext();
+        public Dictionary<string, SkryptObject> Constants { get; set; } = new Dictionary<string, SkryptObject>();
+
         //List<SkryptClass> Classes = new List<SkryptClass>();
 
         public SkryptEngine() {
@@ -48,6 +50,9 @@ namespace Skrypt.Engine {
             standardMethods = new StandardMethods(this);
 
             standardMethods.AddMethodsToEngine();
+
+            Constants["_PI"] = new Numeric(Math.PI);
+            Constants["_E"] = new Numeric(Math.E);
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.

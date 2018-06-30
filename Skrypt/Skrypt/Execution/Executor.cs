@@ -164,6 +164,10 @@ namespace Skrypt.Execution {
                         engine.throwError("Can't assign to void", node.SubNodes[1].Token);
                     }
 
+                    if (engine.Constants.ContainsKey(node.SubNodes[0].Body)) {
+                        engine.throwError("Can't assign constant " + node.SubNodes[0].Body, node.SubNodes[0].Token);
+                    }
+
                     SkryptObject foundVariable = getVariable(node.SubNodes[0].Body, scopeContext);
   
                     if (foundVariable != null) {
@@ -284,6 +288,10 @@ namespace Skrypt.Execution {
             }
 
             if (node.TokenType == "Identifier") {
+                if (engine.Constants.ContainsKey(node.Body)) {
+                    return engine.Constants[node.Body];
+                }
+
                 SkryptObject foundVariable = getVariable(node.Body, scopeContext);
 
                 if (foundVariable != null) {
@@ -351,7 +359,7 @@ namespace Skrypt.Execution {
                 object arg = arguments[i];
 
                 if (arg.GetType() == typeof(int) || arg.GetType() == typeof(float) || arg.GetType() == typeof(double)) {
-                    parameters[i] = new Numeric { value = Convert.ToDouble(arg) };
+                    parameters[i] = new Numeric(Convert.ToDouble(arg));
                 } else if (arg.GetType() == typeof(string)) {
                     parameters[i] = new SkryptString { value = (string)arg };
                 } else if (arg.GetType() == typeof(bool)) {

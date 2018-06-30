@@ -21,6 +21,13 @@ namespace Skrypt.Parsing {
         public delegate Node parseMethod(List<Token> Tokens);
         public delegate Node parseArgumentsMethod(List<List<Token>> Args, List<Token> Tokens);
 
+        public static List<string> Keywords = new List<string> {
+            "if",
+            "while",
+            "for",
+            "method",
+        };
+
         List<Token> GetSurroundedTokens (string open, string close, int start, List<Token> Tokens) {
             int index = start;
 

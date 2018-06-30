@@ -8,7 +8,7 @@ using Skrypt.Library.SkryptClasses;
 namespace Skrypt.Library.Methods {
     public partial class StandardMethods {
         public static Numeric Round(params SkryptObject[] input) {
-            return new Numeric { value = Math.Round(((Numeric)input[0]).value) };
+            return new Numeric(Math.Round(((Numeric)input[0]).value));
         }
     }
 }
