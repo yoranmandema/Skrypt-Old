@@ -76,65 +76,14 @@ namespace Skrypt.Parsing {
             return new ParseResult { node = node, delta = SurroundedTokens.Count + 1 };
         }
 
-        ParseResult TryParse (List<Token> Tokens) {
+        ParseResult TryParse(List<Token> Tokens) {
 
-            int highestErrorUrgency = -1;
-            Exception error = null;
-            ParseResult ExpressionResult = null;
-            ParseResult StatementResult = null;
-            ParseResult MethodResult = null;
-
-            try {
-                ParseResult result = engine.expressionParser.Parse(Tokens);
-
-                ExpressionResult = result;
-            }
-            catch (Exception e) {
-                Exception test = GetExceptionBasedOnUrgency(e, ref highestErrorUrgency);
-
-                if (test != null)
-                    error = test;
-            }
-
-            try {
-                ParseResult result = engine.statementParser.Parse(Tokens);
-
-                StatementResult = result;
-            }
-            catch (Exception e) {
-                Exception test = GetExceptionBasedOnUrgency(e, ref highestErrorUrgency);
-
-                if (test != null)
-                    error = test;
-            }
-
-            try {
-                ParseResult result = engine.methodParser.Parse(Tokens);
-
-                MethodResult = result;
-            }
-            catch (Exception e) {
-                Exception test = GetExceptionBasedOnUrgency(e, ref highestErrorUrgency);
-
-                if (test != null)
-                    error = test;
-            }
-
-            if (highestErrorUrgency > -1) {
-                engine.throwError(error.Message);
-                return null;
-            }
-
-            if (StatementResult != null) {
-                return StatementResult;
-            } else if (ExpressionResult != null) {
-                return ExpressionResult;
-            } else if (MethodResult != null) {
-                return MethodResult;
+            if (Tokens[0].Value == "if") {
+                return engine.statementParser.Parse(Tokens);
+            } else if (Tokens[0].Value == "method") {
+                return engine.methodParser.Parse(Tokens);
             } else {
-                //throw error;
-                engine.throwError(error.Message, Tokens[0]);
-                return null;
+                return engine.expressionParser.Parse(Tokens);
             }
         }
 
