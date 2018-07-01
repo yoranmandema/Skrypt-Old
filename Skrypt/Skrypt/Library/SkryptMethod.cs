@@ -27,6 +27,7 @@ namespace Skrypt.Library {
         public Node BlockNode;
         public string Signature;
         public string CallName;
+        public List<string> Parameters = new List<string>();
 
         public override SkryptObject Execute(SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
             ScopeContext ResultingScope = engine.executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace Skrypt.Library {
     public class SkryptProperty {
         public string Name;
-        public object Value;
+        public SkryptObject Value;
+        public string Accessibility = "private";
     }
 }

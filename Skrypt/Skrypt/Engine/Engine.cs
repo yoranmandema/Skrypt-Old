@@ -72,13 +72,18 @@ namespace Skrypt.Engine {
             );
 
             tokenizer.AddRule(
-                new Regex(@"class|method|if|elseif|else|while"),
+                new Regex(@"class|func|if|elseif|else|while"),
                 "Keyword"
             );
 
             tokenizer.AddRule(
                 new Regex("true|false"),
                 "BooleanLiteral"
+            );
+
+            tokenizer.AddRule(
+                new Regex("null"),
+                "NullLiteral"
             );
 
             tokenizer.AddRule(
@@ -212,8 +217,6 @@ namespace Skrypt.Engine {
             //analizer.Analize(ProgramNode, AnalizeScope);
 
             GlobalScope = executor.ExecuteBlock(ProgramNode, null);
-
-            Console.WriteLine("Resulting scope: " + GlobalScope);
 
             stopwatch.Stop();
             double T_Execute = stopwatch.ElapsedMilliseconds;

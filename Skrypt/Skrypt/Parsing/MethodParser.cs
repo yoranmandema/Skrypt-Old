@@ -23,18 +23,11 @@ namespace Skrypt.Parsing {
             int index = 0;
             skipInfo skip;
 
-            string Type = "";
-            string Name = "";
-
-            skip = engine.expectType("Identifier", Tokens);
-            Type = Tokens[index].Value;
-            index += skip.delta;
-
-            Name = Tokens[index].Value;
+            string Name = Tokens[index].Value;
 
             Node node = new Node();
             node.Body = Name;
-            node.TokenType = Type;
+            node.TokenType = "Parameter";
 
             return node;
         }
@@ -64,15 +57,11 @@ namespace Skrypt.Parsing {
             skipInfo skip;
             ParseResult result;
 
-            if (Tokens[0].Value != "method") {
-                throw new SkryptException();
-            }
-
             skip = engine.expectType("Identifier", Tokens);
             index += skip.delta;
 
-            skip = engine.expectType("Identifier", Tokens,index);
-            index += skip.delta;
+            //skip = engine.expectType("Identifier", Tokens,index);
+            //index += skip.delta;
 
             skip = engine.expectValue("(", Tokens, index);
             index += skip.delta;
@@ -88,18 +77,20 @@ namespace Skrypt.Parsing {
             Node BlockNode = result.node;
             index += result.delta + 1;
 
-            Node node = new Node();
-            node.Add(ParameterNode);
-            node.Add(BlockNode);
-            node.TokenType = Tokens[1].Value;
 
-            string currentSignature = Tokens[2].Value;
 
-            foreach (Node par in node.SubNodes[0].SubNodes) {
-                currentSignature += "_" + par.TokenType;
-            }
+            //Node node = new Node();
+            //node.Add(ParameterNode);
+            //node.Add(BlockNode);
+            //node.TokenType = Tokens[1].Value;
 
-            node.Body = currentSignature;
+            //string currentSignature = Tokens[2].Value;
+
+            //foreach (Node par in node.SubNodes[0].SubNodes) {
+            //    currentSignature += "_" + par.TokenType;
+            //}
+
+            //node.Body = currentSignature;
 
             //// Check if method with the same signature already exists        
             //foreach (Node method in engine.MethodNodes) {
@@ -116,9 +107,10 @@ namespace Skrypt.Parsing {
             //});
 
             Node returnNode = new Node();
-            returnNode.Body = currentSignature;
+            returnNode.Body = Tokens[1].Value;
             returnNode.TokenType = "MethodDeclaration";
             returnNode.SubNodes.Add(BlockNode);
+            returnNode.SubNodes.Add(ParameterNode);
 
             return new ParseResult { node = returnNode, delta = index };
         }

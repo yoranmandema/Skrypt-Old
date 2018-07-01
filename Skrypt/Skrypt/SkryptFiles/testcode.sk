@@ -1,12 +1,6 @@
 ﻿
-if (true) {
-	method void function (numeric a) {
-	
-	}
+func foo (a, b) {
+	print(a + b);
 }
 
-method void function (boolean a) {
-	
-}
-
-function (1);
+foo (1,null);

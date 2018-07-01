@@ -116,6 +116,10 @@ namespace Skrypt.Execution {
                     result.BlockNode = subNode.SubNodes[0];
                     result.CallName = subNode.Body.Split('_')[0];
 
+                    foreach (Node snode in subNode.SubNodes[1].SubNodes) {
+                        result.Parameters.Add(snode.Body);
+                    }
+
                     scope.Variables[subNode.Body] = result;
                 }
                 else {
@@ -275,6 +279,10 @@ namespace Skrypt.Execution {
                             value = node.Body == "true" ? true : false,
                             Scope = scopeContext
                         };
+                    case "NullLiteral":
+                        return new SkryptNull {
+                            Scope = scopeContext
+                        };
                 }
             }
             else if (node.TokenType == "ArrayLiteral") {
@@ -329,16 +337,27 @@ namespace Skrypt.Execution {
 
                     signature += "_" + Result.Name;
                 }
-
-                Console.WriteLine("Desired signature: " + signature);
-                Console.WriteLine("Scope: " + scopeContext);
-                SkryptObject found = getVariable(signature, scopeContext);
-
-                Console.WriteLine("Found: " + found);
+                SkryptObject found = getVariable(node.Body, scopeContext);
 
                 if (found != null) {
                     if (found.GetType() == typeof(UserMethod)) {
                         UserMethod method = (UserMethod)found;
+
+                        for (int i = 0; i < method.Parameters.Count; i++) {
+                            string parName = method.Parameters[i];
+                            SkryptObject input;
+
+                            if (i < Arguments.Count) {
+                                input = Arguments[i];
+                            } else {
+                                input = new SkryptNull {
+                                    Scope = scopeContext
+                                };
+                            }
+
+                            methodContext.Variables[parName] = input;
+                        }
+
                         SkryptObject MethodResult = method.Execute(engine, Arguments.ToArray(), methodContext);
 
                         return MethodResult;
