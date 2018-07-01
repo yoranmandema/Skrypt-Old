@@ -211,7 +211,9 @@ namespace Skrypt.Engine {
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
 
-            executor.ExecuteBlock(ProgramNode, GlobalScope);
+            GlobalScope = executor.ExecuteBlock(ProgramNode, null);
+
+            Console.WriteLine("Resulting scope: " + GlobalScope);
 
             stopwatch.Stop();
             double T_Execute = stopwatch.ElapsedMilliseconds;

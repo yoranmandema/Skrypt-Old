@@ -108,6 +108,11 @@ namespace Skrypt.Parsing {
                 var Test = TryParse(Tokens.GetRange(i,Tokens.Count - i));
                 i += Test.delta;
 
+                if (Test.node.TokenType == "MethodDeclaration") {
+                    Node.AddAsFirst(Test.node);
+                    continue;
+                }
+
                 Node.Add(Test.node);
             }
 

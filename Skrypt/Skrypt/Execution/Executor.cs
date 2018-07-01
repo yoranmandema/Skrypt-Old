@@ -83,16 +83,9 @@ namespace Skrypt.Execution {
         public ScopeContext ExecuteBlock (Node node, ScopeContext scopeContext, SubContext subContext = null) {
             ScopeContext scope = new ScopeContext();
 
-            if (scope.ParentScope == null) {
-                scope = scopeContext;
-            } else {
-                if (scopeContext == null) {
-                    scope = new ScopeContext();
-                }
-                else {
-                    scope.subContext = scopeContext.subContext;
-                    scope.ParentScope = scopeContext;
-                }
+            if (scopeContext != null) {
+                scope.subContext = scopeContext.subContext;
+                scope.ParentScope = scopeContext;
             }
 
             if (subContext != null) {
@@ -110,12 +103,27 @@ namespace Skrypt.Execution {
                         break;
                     }
                 }
+                else if (subNode.TokenType == "MethodDeclaration") {
+                    foreach (KeyValuePair<string, SkryptObject> pair in scope.Variables.Where((p) => p.Value.Name == "method")) {
+                        if (pair.Value.Name == subNode.Body) {
+                            engine.throwError("A method with this signature already exists in this context!", node.Token);
+                        }
+                    }
+
+                    UserMethod result = new UserMethod();
+                    result.Name = "method";
+                    result.Signature = subNode.Body;
+                    result.BlockNode = subNode.SubNodes[0];
+                    result.CallName = subNode.Body.Split('_')[0];
+
+                    scope.Variables[subNode.Body] = result;
+                }
                 else {
                     SkryptObject result = engine.executor.ExecuteExpression(subNode, scope);
 
                     if (scope.subContext.ReturnObject != null) {
                         return scope;
-                     }
+                    }
                 }
             }
 
@@ -322,24 +330,27 @@ namespace Skrypt.Execution {
                     signature += "_" + Result.Name;
                 }
 
-                foreach (Node method in engine.MethodNodes) {
-                    if (method.Body == signature) {
-                        searchString = signature;
+                Console.WriteLine("Desired signature: " + signature);
+                Console.WriteLine("Scope: " + scopeContext);
+                SkryptObject found = getVariable(signature, scopeContext);
 
-                        for (int i = 0; i < method.SubNodes[0].SubNodes.Count; i++) {
-                            Node par = method.SubNodes[0].SubNodes[i];
-                            methodContext.Variables[par.Body] = Arguments[i];
-                        }
+                Console.WriteLine("Found: " + found);
+
+                if (found != null) {
+                    if (found.GetType() == typeof(UserMethod)) {
+                        UserMethod method = (UserMethod)found;
+                        SkryptObject MethodResult = method.Execute(engine, Arguments.ToArray(), methodContext);
+
+                        return MethodResult;
                     }
                 }
-
-                if (engine.Methods.Exists((m) => m.Name == searchString)) {
+                else if (engine.Methods.Exists((m) => m.Name == searchString)) {
                     SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, Arguments.ToArray(), methodContext);
 
                     return MethodResult;
                 }
                 else {
-                    engine.throwError("Method '" + node.Body + "(" + String.Join(",",signature.Split('_').Skip(1).ToArray()) + ")' does not exist!", node.Token);
+                    engine.throwError("Method '" + node.Body + "(" + String.Join(",", signature.Split('_').Skip(1).ToArray()) + ")' does not exist in the current context!", node.Token);
                 }
             }
 

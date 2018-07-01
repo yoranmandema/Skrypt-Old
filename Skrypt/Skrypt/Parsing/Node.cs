@@ -30,6 +30,19 @@ namespace Skrypt.Parsing {
             SubNodes.Add(node);
         }
 
+        /// <summary>
+        /// Adds a subnode to the beginning of all subnodes
+        /// </summary>
+        public void AddAsFirst(Node node) {
+
+            if (node == null) {
+                return;
+            }
+
+            SubNodes.Insert(0,node);
+        }
+
+
         public override string ToString() {
             return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"","");
         }

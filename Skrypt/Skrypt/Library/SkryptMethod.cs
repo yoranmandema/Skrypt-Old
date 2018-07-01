@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using Skrypt.Parsing;
 using Skrypt.Execution;
 using Skrypt.Engine;
+using Skrypt.Library.SkryptClasses;
 
 namespace Skrypt.Library {
     public delegate SkryptObject SkryptDelegate(params SkryptObject[] input);
 
-    public class SkryptMethod {
-        public string Name;
+    public class SkryptMethod : SkryptObject {
         public string ReturnType;
 
         public virtual SkryptObject Execute (SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
@@ -25,11 +25,17 @@ namespace Skrypt.Library {
 
     public class UserMethod : SkryptMethod {
         public Node BlockNode;
+        public string Signature;
+        public string CallName;
 
         public override SkryptObject Execute(SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
             ScopeContext ResultingScope = engine.executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
 
             SkryptObject ReturnVariable = ResultingScope.subContext.ReturnObject;
+
+            if (ReturnVariable == null) {
+                ReturnVariable = new SkryptVoid();
+            }
 
             return ReturnVariable;
         }

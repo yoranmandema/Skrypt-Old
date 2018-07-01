@@ -1,1 +1,12 @@
-﻿print(_PI);
+﻿
+if (true) {
+	method void function (numeric a) {
+	
+	}
+}
+
+method void function (boolean a) {
+	
+}
+
+function (1);

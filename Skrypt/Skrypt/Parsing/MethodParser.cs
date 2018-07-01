@@ -19,8 +19,6 @@ namespace Skrypt.Parsing {
             engine = e;
         }
 
-
-
         public Node ParseSingleParameter (List<Token> Tokens) {
             int index = 0;
             skipInfo skip;
@@ -103,21 +101,26 @@ namespace Skrypt.Parsing {
 
             node.Body = currentSignature;
 
-            // Check if method with the same signature already exists        
-            foreach (Node method in engine.MethodNodes) {
-                if (method.Body == currentSignature) {
-                    engine.throwError("Method with this signature already exists!", Tokens[0]);
-                }
-            }
+            //// Check if method with the same signature already exists        
+            //foreach (Node method in engine.MethodNodes) {
+            //    if (method.Body == currentSignature) {
+            //        engine.throwError("Method with this signature already exists!", Tokens[0]);
+            //    }
+            //}
 
-            engine.MethodNodes.Add(node);
-            engine.Methods.Add(new UserMethod {
-                Name = currentSignature,
-                ReturnType = Tokens[1].Value,
-                BlockNode = BlockNode,
-            });
+            //engine.MethodNodes.Add(node);
+            //engine.Methods.Add(new UserMethod {
+            //    Name = currentSignature,
+            //    ReturnType = Tokens[1].Value,
+            //    BlockNode = BlockNode,
+            //});
 
-            return new ParseResult { node = null, delta = index };
+            Node returnNode = new Node();
+            returnNode.Body = currentSignature;
+            returnNode.TokenType = "MethodDeclaration";
+            returnNode.SubNodes.Add(BlockNode);
+
+            return new ParseResult { node = returnNode, delta = index };
         }
     }
 }
