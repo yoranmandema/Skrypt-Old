@@ -1,6 +1,7 @@
 ﻿
-func foo (a, b) {
-	print(a + b);
-}
 
-foo (1,null);
+foo = func () {
+	print("Hello world!");
+};
+
+foo();

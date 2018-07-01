@@ -49,6 +49,34 @@ namespace Skrypt.Parsing {
             return node;
         }
 
+        public ParseResult ParseFunctionLiteral (List<Token> Tokens) {
+            Console.WriteLine(ExpressionParser.TokenString(Tokens));
+
+            int index = 0;
+            Node node = new Node();
+            skipInfo skip;
+            ParseResult result;
+
+            result = engine.generalParser.parseSurrounded("(", ")", index, Tokens, ParseParameters);
+            Node ParameterNode = result.node;
+            index += result.delta;
+
+            skip = engine.expectValue("{", Tokens, index);
+            index += skip.delta;
+
+            result = engine.generalParser.parseSurrounded("{", "}", index, Tokens, engine.generalParser.Parse);
+            Node BlockNode = result.node;
+            index += result.delta + 1;
+
+            Node returnNode = new Node();
+            returnNode.Body = "Function";
+            returnNode.TokenType = "FunctionLiteral";
+            returnNode.SubNodes.Add(BlockNode);
+            returnNode.SubNodes.Add(ParameterNode);
+
+            return new ParseResult { node = returnNode, delta = index };
+        }
+
         /// <summary>
         /// Parses a list of tokens into a method node
         /// </summary>
