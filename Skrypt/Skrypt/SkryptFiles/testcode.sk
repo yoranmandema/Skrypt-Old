@@ -1,7 +1,10 @@
-﻿
+﻿a = 0;
 
 foo = func () {
-	print("Hello world!");
+	print(a);
+	a++;
 };
 
-foo();
+while (a < 1000) {
+	foo();
+}

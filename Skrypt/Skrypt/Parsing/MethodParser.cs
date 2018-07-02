@@ -50,8 +50,6 @@ namespace Skrypt.Parsing {
         }
 
         public ParseResult ParseFunctionLiteral (List<Token> Tokens) {
-            Console.WriteLine(ExpressionParser.TokenString(Tokens));
-
             int index = 0;
             Node node = new Node();
             skipInfo skip;

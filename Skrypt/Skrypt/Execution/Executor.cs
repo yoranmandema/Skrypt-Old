@@ -8,6 +8,9 @@ using System.Reflection;
 using Skrypt.Library;
 using Skrypt.Engine;
 using Skrypt.Parsing;
+using Skrypt.Tokenization;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace Skrypt.Execution {
     public class Executor {
@@ -134,6 +137,35 @@ namespace Skrypt.Execution {
             return scope; 
         }
 
+        public SkryptObject SolveOperation (string Operation, SkryptObject Left, SkryptObject Right, Token token) {
+            Type TLeft = Left.GetType();
+            Type TRight = Right.GetType();
+
+            // Get "Calculate" method.
+            MethodInfo methodInfo = Left.GetType().GetMethod(Operation, new Type[] { typeof(SkryptObject), typeof(SkryptObject) });
+
+            // Create parameter "A" and "B" for Calculate method.
+            ParameterExpression paramA = Expression.Parameter(typeof(SkryptObject), "A");
+            ParameterExpression paramB = Expression.Parameter(typeof(SkryptObject), "B");
+
+            // Create an expression for the method call "Add" and specify its parameter(s).
+            MethodCallExpression methodCall = Expression.Call(methodInfo, paramA, paramB);
+
+            //Console.WriteLine(methodCall);
+
+            // Create lambda expression from MethodCallExpression.
+            var lambda = Expression.Lambda<Func<SkryptObject, SkryptObject, SkryptObject>>(
+            methodCall,
+            new ParameterExpression[] { paramA, paramB }
+            );
+            // Compile lambda expression to a Func<>.
+            var func = lambda.Compile();
+
+            Console.WriteLine(func(Left, Right));
+
+            return func(Left, Right);
+        }
+
         public SkryptObject ExecuteExpression(Node node, ScopeContext scopeContext) {
             Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
 
@@ -191,6 +223,7 @@ namespace Skrypt.Execution {
                     }
                     else {
                         scopeContext.Variables[node.SubNodes[0].Body] = result;
+                        result.Scope = scopeContext;
                     }
 
                     return result;
@@ -199,6 +232,8 @@ namespace Skrypt.Execution {
                 if (op.Members == 2) {
                     SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
                     SkryptObject Right = ExecuteExpression(node.SubNodes[1], scopeContext);
+
+                    //return SolveOperation(op.OperationName, Left, Right, node.Token);
 
                     if (Left.Name == "void" || Right.Name == "void") {
                         engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
@@ -210,8 +245,8 @@ namespace Skrypt.Execution {
 
                         MethodInfo methodInfo1 = null;
                         MethodInfo methodInfo2 = null;
-                        var Methods1 = t1.GetMethodsBySig("_" + op.OperationName, t1, t2);
-                        var Methods2 = t2.GetMethodsBySig("_" + op.OperationName, t1, t2);
+                        var Methods1 = t1.GetMethodsBySig(op.OperationName, t1, t2);
+                        var Methods2 = t2.GetMethodsBySig(op.OperationName, t1, t2);
 
                         if (Methods1.Count() > 0) methodInfo1 = Methods1.ElementAt(0);
                         if (Methods2.Count() > 0) methodInfo2 = Methods2.ElementAt(0);
@@ -246,7 +281,7 @@ namespace Skrypt.Execution {
                         Type t1 = Left.GetType();
 
                         MethodInfo methodInfo1 = null;
-                        var Methods1 = t1.GetMethodsBySig("_" + op.OperationName, t1);
+                        var Methods1 = t1.GetMethodsBySig(op.OperationName, t1);
 
                         if (Methods1.Count() > 0) methodInfo1 = Methods1.ElementAt(0);
 

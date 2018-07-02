@@ -32,7 +32,7 @@ namespace Skrypt.Library {
 
     class Op_Or : Operator {
         public Op_Or() {
-            OperationName = "or";
+            OperationName = "Or";
             Operation = "||";
 
             AllOperators.Add(this);
@@ -41,7 +41,7 @@ namespace Skrypt.Library {
 
     class Op_And : Operator {
         public Op_And() {
-            OperationName = "and";
+            OperationName = "And";
             Operation = "&&";
 
             AllOperators.Add(this);
@@ -50,7 +50,7 @@ namespace Skrypt.Library {
 
     class Op_NotEqual : Operator {
         public Op_NotEqual() {
-            OperationName = "notequal";
+            OperationName = "NotEqual";
             Operation = "!=";
 
             AllOperators.Add(this);
@@ -59,7 +59,7 @@ namespace Skrypt.Library {
 
     class Op_Equal : Operator {
         public Op_Equal() {
-            OperationName = "equal";
+            OperationName = "Equal";
             Operation = "==";
 
             AllOperators.Add(this);
@@ -68,7 +68,7 @@ namespace Skrypt.Library {
 
     class Op_Greater : Operator {
         public Op_Greater() {
-            OperationName = "greater";
+            OperationName = "Greater";
             Operation = ">";
 
             AllOperators.Add(this);
@@ -77,7 +77,7 @@ namespace Skrypt.Library {
 
     class Op_Lesser : Operator {
         public Op_Lesser() {
-            OperationName = "lesser";
+            OperationName = "Lesser";
             Operation = "<";
 
             AllOperators.Add(this);
@@ -86,7 +86,7 @@ namespace Skrypt.Library {
 
     class Op_GreaterEqual : Operator {
         public Op_GreaterEqual() {
-            OperationName = "equalgreater";
+            OperationName = "GreaterOrEqual";
             Operation = ">=";
 
             AllOperators.Add(this);
@@ -95,7 +95,7 @@ namespace Skrypt.Library {
 
     class Op_LesserEqual : Operator {
         public Op_LesserEqual() {
-            OperationName = "equallesser";
+            OperationName = "LesserOrEqual";
             Operation = "<=";
 
             AllOperators.Add(this);
@@ -104,7 +104,7 @@ namespace Skrypt.Library {
 
     class Op_Add : Operator {
         public Op_Add() {
-            OperationName = "add";
+            OperationName = "Add";
             Operation = "+";
 
             AllOperators.Add(this);
@@ -113,7 +113,7 @@ namespace Skrypt.Library {
 
     class Op_Subtract : Operator {
         public Op_Subtract() {
-            OperationName = "subtract";
+            OperationName = "Subtract";
             Operation = "-";
 
             AllOperators.Add(this);
@@ -122,7 +122,7 @@ namespace Skrypt.Library {
 
     class Op_Multiply : Operator {
         public Op_Multiply() {
-            OperationName = "multiply";
+            OperationName = "Multiply";
             Operation = "*";
 
             AllOperators.Add(this);
@@ -131,7 +131,7 @@ namespace Skrypt.Library {
 
     class Op_Divide : Operator {
         public Op_Divide() {
-            OperationName = "divide";
+            OperationName = "Divide";
             Operation = "/";
 
             AllOperators.Add(this);
@@ -140,7 +140,7 @@ namespace Skrypt.Library {
 
     class Op_Modulo : Operator {
         public Op_Modulo() {
-            OperationName = "modulo";
+            OperationName = "Modulo";
             Operation = "%";
 
             AllOperators.Add(this);
@@ -149,7 +149,7 @@ namespace Skrypt.Library {
 
     class Op_Power : Operator {
         public Op_Power() {
-            OperationName = "power";
+            OperationName = "Power";
             Operation = "^";
 
             AllOperators.Add(this);
@@ -158,7 +158,7 @@ namespace Skrypt.Library {
 
     class Op_Negate : Operator {
         public Op_Negate() {
-            OperationName = "negate";
+            OperationName = "Negate";
             Members = 1;
             Operation = "-";
 
@@ -168,7 +168,7 @@ namespace Skrypt.Library {
 
     class Op_Not : Operator {
         public Op_Not() {
-            OperationName = "not";
+            OperationName = "Not";
             Members = 1;
             Operation = "!";
 
@@ -178,7 +178,7 @@ namespace Skrypt.Library {
 
     class Op_PostInc : Operator {
         public Op_PostInc() {
-            OperationName = "postincrement";
+            OperationName = "PostIncremenet";
             Members = 1;
             Operation = "++";
 
@@ -188,7 +188,7 @@ namespace Skrypt.Library {
 
     class Op_PostDec : Operator {
         public Op_PostDec() {
-            OperationName = "postdecrement";
+            OperationName = "PostDecremenet";
             Members = 1;
             Operation = "--";
 
