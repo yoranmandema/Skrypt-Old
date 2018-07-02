@@ -87,7 +87,12 @@ namespace Skrypt.Engine {
             );
 
             tokenizer.AddRule(
-                new Regex(@"(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=;:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
+                new Regex(@"[;]"),
+                "EndOfExpression"
+            );
+
+            tokenizer.AddRule(
+                new Regex(@"(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
                 "Punctuator"
             );
 
@@ -198,6 +203,11 @@ namespace Skrypt.Engine {
 
             // Pre-process tokens so their values are correct
             TokenProcessor.ProcessTokens(Tokens);
+
+            foreach (Token t in Tokens) {
+                Console.WriteLine(t);
+            }
+
             stopwatch.Stop();
             double T_Token = stopwatch.ElapsedMilliseconds;
 
