@@ -12,12 +12,13 @@ namespace Skrypt.Library.SkryptClasses {
             Name = "string";
         }
 
-        static public SkryptString _add(SkryptString A, SkryptObject B) {
-            return new SkryptString { value = A.value + B.ToString() };
+        public SkryptString(string v) {
+            Name = "string";
+            value = v;
         }
 
-        static public SkryptString _add(SkryptObject A, SkryptString B) {
-            return new SkryptString { value = A.ToString() + B.value };
+        public override SkryptObject _Add(SkryptObject X) {
+            return new SkryptString(value + X.ToString());
         }
 
         public override string ToString() {

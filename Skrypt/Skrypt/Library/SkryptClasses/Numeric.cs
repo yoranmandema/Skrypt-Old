@@ -17,50 +17,63 @@ namespace Skrypt.Library.SkryptClasses {
             value = v;
         }
 
+        new public Dictionary<string, operation> Operations = new Dictionary<string, operation>
+        {
+            {"add", (a,b) => {
+                return new Numeric(((Numeric)a).value + ((Numeric)b).value);
+            } },
+            {"subtract", (a,b) => {
+                return new Numeric(((Numeric)a).value - ((Numeric)b).value);
+            } },
+            {"multiply", (a,b) => {
+                return new Numeric(((Numeric)a).value * ((Numeric)b).value);
+            } },
+            {"lesser", (a,b) => {
+                return new SkryptBoolean(((Numeric)a).value < ((Numeric)b).value);
+            } },
+        };
+
+
         public static implicit operator Numeric(double d) {
             return new Numeric(d);
         }
 
-        static public Numeric _negate(Numeric A) {
-            return new Numeric(-A.value);
+        public override SkryptObject _Add(SkryptObject X) {
+            return new Numeric(value + ((Numeric)X).value);
         }
 
-        static public Numeric _add(Numeric A, Numeric B) {
-            return new Numeric(A.value + B.value);
+        public override SkryptObject _Subtract(SkryptObject X) {
+            return new Numeric(value - ((Numeric)X).value);
         }
 
-        static public Numeric _subtract(Numeric A, Numeric B) {
-            return new Numeric(A.value - B.value);
+        public override SkryptObject _Multiply(SkryptObject X) {
+            return new Numeric(value * ((Numeric)X).value);
         }
 
-        static public Numeric _multiply(Numeric A, Numeric B) {
-            return new Numeric(A.value * B.value);
+        public override SkryptObject _Divide(SkryptObject X) {
+            return new Numeric(value / ((Numeric)X).value);
         }
 
-        static public Numeric _divide(Numeric A, Numeric B) {
-            return new Numeric(A.value / B.value);
+        public override SkryptObject _Modulo(SkryptObject X) {
+            return new Numeric(value % ((Numeric)X).value);
         }
 
-        static public Numeric _modulo(Numeric A, Numeric B) {
-            return new Numeric(A.value % B.value);
+        public override SkryptObject _Lesser(SkryptObject X) {
+            return new SkryptBoolean(value < ((Numeric)X).value);
         }
 
-        static public Numeric _postincrement(Numeric A) {
-            double value = A.value;
-            A.value++;
-            return new Numeric(value);
+        public override SkryptObject _Greater(SkryptObject X) {
+            return new SkryptBoolean(value > ((Numeric)X).value);
         }
 
-        static public SkryptBoolean _lesser(Numeric A, Numeric B) {
-            return new SkryptBoolean { value = A.value < B.value };
+        public override SkryptObject _Equal(SkryptObject X) {
+            return new SkryptBoolean(value == ((Numeric)X).value);
         }
 
-        static public SkryptBoolean _greater(Numeric A, Numeric B) {
-            return new SkryptBoolean { value = A.value > B.value };
-        }
-
-        static public SkryptBoolean _equal(Numeric A, Numeric B) {
-            return new SkryptBoolean { value = A.value == B.value };
+        public override SkryptObject _PostIncrement() {
+            double v = value;
+            value++;
+            return new Numeric(v);
         }
 
         public override string ToString() {

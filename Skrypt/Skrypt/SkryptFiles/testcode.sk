@@ -1,5 +1,5 @@
-foo = func (a,b) {
-	print(a + b);
-};
+a = 0;
 
-foo(1,2);
+a = ("" + 1) + " is a number";
+
+print (a);

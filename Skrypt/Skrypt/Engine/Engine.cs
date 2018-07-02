@@ -198,17 +198,14 @@ namespace Skrypt.Engine {
 
             // Pre-process tokens so their values are correct
             TokenProcessor.ProcessTokens(Tokens);
-
             stopwatch.Stop();
             double T_Token = stopwatch.ElapsedMilliseconds;
-            stopwatch = Stopwatch.StartNew();
 
             // Generate the program node
+            stopwatch = Stopwatch.StartNew();
             Node ProgramNode = generalParser.Parse(Tokens);
-
             stopwatch.Stop();
             double T_Parse = stopwatch.ElapsedMilliseconds;
-            stopwatch = Stopwatch.StartNew();
 
             // Debug program node
             Console.WriteLine("Program:\n" + ProgramNode);
@@ -216,8 +213,8 @@ namespace Skrypt.Engine {
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
 
+            stopwatch = Stopwatch.StartNew();
             GlobalScope = executor.ExecuteBlock(ProgramNode, null);
-
             stopwatch.Stop();
             double T_Execute = stopwatch.ElapsedMilliseconds;
 

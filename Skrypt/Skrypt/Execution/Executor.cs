@@ -187,9 +187,9 @@ namespace Skrypt.Execution {
                     Variable foundVariable = getVariable(node.SubNodes[0].Body, scopeContext);
 
                     if (foundVariable != null) {
-                        if (foundVariable.Value.Name != result.Name) {
-                            engine.throwError("Can't assign " + foundVariable.Name + " to " + result.Name, node.SubNodes[1].Token);
-                        }
+                        //if (foundVariable.Value.Name != result.Name) {
+                        //    engine.throwError("Can't assign " + foundVariable.Name + " to " + result.Name, node.SubNodes[1].Token);
+                        //}
 
                         foundVariable.Value = result;
                     }
@@ -208,62 +208,108 @@ namespace Skrypt.Execution {
                     SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
                     SkryptObject Right = ExecuteExpression(node.SubNodes[1], scopeContext);
 
-                    if (Left.Name == "void" || Right.Name == "void") {
+                    try {
+                        switch (op.OperationName) {
+                            case "add":
+                                return Left._Add(Right);
+                            case "subtract":
+                                return Left._Subtract(Right);
+                            case "multiply":
+                                return Left._Multiply(Right);
+                            case "divide":
+                                return Left._Divide(Right);
+                            case "modulo":
+                                return Left._Modulo(Right);
+                            case "lesser":
+                                return Left._Lesser(Right);
+                            case "greater":
+                                return Left._Greater(Right);
+                            case "equal":
+                                return Left._Equal(Right);
+                            default:
+                                throw new Exception();
+                        }
+                    } catch (Exception e) {
                         engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
                     }
 
-                    if (Left != null && Right != null) {
-                        Type t1 = Left.GetType();
-                        Type t2 = Right.GetType();
+                    //dynamic Casted = Activator.CreateInstance(Left.GetType());
 
-                        MethodInfo methodInfo1 = t1.GetMethod("_" + op.OperationName, new Type[] { t1, t2 });
-                        MethodInfo methodInfo2 = t2.GetMethod("_" + op.OperationName, new Type[] { t1, t2 });
+                    //if (Casted.Operations.ContainsKey(op.OperationName)) {
+                    //    var Operation = Casted.Operations[op.OperationName];
 
-                        if (methodInfo1 != null) {
-                            try {
-                                object result = methodInfo1.Invoke(null, new object[] { Left, Right });
+                    //    return Operation(Left, Right);
+                    //} else {
+                    //    engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
+                    //}
 
-                                return (SkryptObject)result;
-                            }
-                            catch (Exception e) { }
-                        }
-                        else if (methodInfo2 != null) {
-                            try {
-                                object result = methodInfo2.Invoke(null, new object[] { Left, Right });
-                                return (SkryptObject)result;
-                            }
-                            catch (Exception e) { }
-                        }
+                    //if (Left.Name == "void" || Right.Name == "void") {
+                    //    engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
+                    //}
 
-                        engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
-                    }
+                    //if (Left != null && Right != null) {
+                    //    Type t1 = Left.GetType();
+                    //    Type t2 = Right.GetType();
+
+                    //    MethodInfo methodInfo1 = t1.GetMethod("_" + op.OperationName, new Type[] { t1, t2 });
+                    //    MethodInfo methodInfo2 = t2.GetMethod("_" + op.OperationName, new Type[] { t1, t2 });
+
+                    //    if (methodInfo1 != null) {
+                    //        try {
+                    //            object result = methodInfo1.Invoke(null, new object[] { Left, Right });
+
+                    //            return (SkryptObject)result;
+                    //        }
+                    //        catch (Exception e) { }
+                    //    }
+                    //    else if (methodInfo2 != null) {
+                    //        try {
+                    //            object result = methodInfo2.Invoke(null, new object[] { Left, Right });
+                    //            return (SkryptObject)result;
+                    //        }
+                    //        catch (Exception e) { }
+                    //    }
+
+                    //    engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
+                    //}
                 }
                 else if (op.Members == 1) {
                     SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
 
-                    if (Left.Name == "void") {
-                        engine.throwError("No such operation as " + op.Operation + " " + Left.Name, node.SubNodes[0].Token);
-                    }
-
-                    if (Left != null) {
-                        Type t1 = Left.GetType();
-
-                        MethodInfo methodInfo1 = null;
-                        var Methods1 = t1.GetMethodsBySig("_" + op.OperationName, t1);
-
-                        if (Methods1.Count() > 0) methodInfo1 = Methods1.ElementAt(0);
-
-                        if (methodInfo1 != null) {
-                            try {
-                                object result = methodInfo1.Invoke(null, new object[] { Left });
-                                return (SkryptObject)result;
-                            }
-                            catch (Exception e) { }
+                    try {
+                        switch (op.OperationName) {
+                            case "postincrement":
+                                return Left._PostIncrement();
+                            default:
+                                throw new Exception();
                         }
-
+                    } catch (Exception e) {
                         engine.throwError("No such operation as " + op.Operation + " " + Left.Name, node.SubNodes[0].Token);
                     }
-                }
+
+                //if (Left.Name == "void") {
+                //    engine.throwError("No such operation as " + op.Operation + " " + Left.Name, node.SubNodes[0].Token);
+                //}
+
+                //if (Left != null) {
+                //    Type t1 = Left.GetType();
+
+                //    MethodInfo methodInfo1 = null;
+                //    var Methods1 = t1.GetMethodsBySig("_" + op.OperationName, t1);
+
+                //    if (Methods1.Count() > 0) methodInfo1 = Methods1.ElementAt(0);
+
+                //    if (methodInfo1 != null) {
+                //        try {
+                //            object result = methodInfo1.Invoke(null, new object[] { Left });
+                //            return (SkryptObject)result;
+                //        }
+                //        catch (Exception e) { }
+                //    }
+
+                //    engine.throwError("No such operation as " + op.Operation + " " + Left.Name, node.SubNodes[0].Token);
+                //}
+            }
             }
             else if (node.SubNodes.Count == 0) {
                 switch (node.TokenType) {
@@ -316,7 +362,6 @@ namespace Skrypt.Execution {
                 }
 
                 Variable foundVariable = getVariable(node.Body, scopeContext);
-                Console.WriteLine("Getting variable {0}: {1}", foundVariable.Name, foundVariable.Scope);
 
                 if (foundVariable != null) {
                     return foundVariable.Value;
@@ -353,7 +398,6 @@ namespace Skrypt.Execution {
 
                     if (functionValue.GetType() == typeof(UserMethod)) {
                         UserMethod method = (UserMethod)functionValue;
-                        Console.WriteLine("Getting variable {0}: {1}", found.Name, found.Scope);
 
                         for (int i = 0; i < method.Parameters.Count; i++) {
                             string parName = method.Parameters[i];

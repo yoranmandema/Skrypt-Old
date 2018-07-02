@@ -12,7 +12,5 @@ namespace Skrypt.Execution {
         [JsonIgnore]
         public ScopeContext Scope;
         public SkryptObject Value;
-
-
     }
 }
