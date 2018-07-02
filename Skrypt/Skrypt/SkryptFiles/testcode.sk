@@ -1,5 +1,10 @@
-a = 0;
 
-a = ("" + 1) + " is a number";
+factorial = func (a) {
+	if (a == 0) {
+		return 1;
+	} else {
+		return a * factorial(a - 1);
+	}
+};
 
-print (a);
+print(factorial(1000));

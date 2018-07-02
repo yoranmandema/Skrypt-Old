@@ -161,9 +161,9 @@ namespace Skrypt.Execution {
                         result = new SkryptVoid();
                     }
 
-                    if (result.Name != scopeContext.subContext.Method.ReturnType) {
-                        engine.throwError("Can't return '" + result.Name + "' in a method that returns '" + scopeContext.subContext.Method.ReturnType + "'!", node.Token);
-                    }
+                    //if (result.Name != scopeContext.subContext.Method.ReturnType) {
+                    //    engine.throwError("Can't return '" + result.Name + "' in a method that returns '" + scopeContext.subContext.Method.ReturnType + "'!", node.Token);
+                    //}
 
                     scopeContext.subContext.ReturnObject = result;
                     return result;

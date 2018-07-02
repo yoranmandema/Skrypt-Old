@@ -73,8 +73,6 @@ namespace Skrypt.Parsing {
         /// Parses a list of tokens into an expression recursively
         /// </summary>
         public Node ParseExpression (Node branch, List<Token> Tokens) {
-            Console.WriteLine("In: " + TokenString(Tokens));
-
             if (Tokens.Count == 1) {
                 // return resulting end node
                 return new Node {
@@ -144,9 +142,6 @@ namespace Skrypt.Parsing {
                             if (token.Value == "(") {
                                 skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
                                 i += skip.delta;
-
-
-                                //Console.WriteLine("Par: {0} {1} {2} {3}", skip.start, skip.end, Tokens.Count - 1);
 
                                 if (skip.start == 0 && skip.end == Tokens.Count - 1) {
                                     isInPars = true;
@@ -236,7 +231,6 @@ namespace Skrypt.Parsing {
 
             // Parse expression within parenthesis if it's completely surrounded
             if (isInPars) {
-                Console.WriteLine("Parred: " + TokenString(Tokens.GetRange(1, Tokens.Count - 2)));
                 return ParseExpression(branch, Tokens.GetRange(1, Tokens.Count - 2));
             }
 
@@ -330,8 +324,6 @@ namespace Skrypt.Parsing {
                         return new skipInfo {start=start, end=end, delta=delta};
                     }
                 }
-
-                //Console.WriteLine(index);
 
                 index++;
 

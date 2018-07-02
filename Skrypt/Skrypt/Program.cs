@@ -8,6 +8,7 @@ using Skrypt.Parsing;
 using Skrypt.Engine;
 using System.Text.RegularExpressions;
 using System.IO;
+using System.Diagnostics;
 
 namespace Skrypt {
     class Program {
@@ -26,6 +27,16 @@ namespace Skrypt {
             //} catch (Exception e) {
             //   Console.WriteLine(e.Message);
             //}
+
+            //Stopwatch stopwatch = Stopwatch.StartNew();
+
+            //int a = Factorial(100);
+            //Console.WriteLine("Factorial: " + a);
+
+            //stopwatch.Stop();
+            //double T_Execute = stopwatch.ElapsedMilliseconds;
+
+            //Console.WriteLine("Test: {0}ms", T_Execute);
 
             Console.ReadKey();
         }
