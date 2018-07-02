@@ -1,10 +1,5 @@
-a = 0;
-
-foo = func () {
-	print(a);
-	a++;
+foo = func (a,b) {
+	print(a + b);
 };
 
-while (a < 100000) {
-	foo();
-}
+foo(1,2);

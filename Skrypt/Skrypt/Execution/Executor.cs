@@ -17,8 +17,8 @@ namespace Skrypt.Execution {
             engine = e;
         }
 
-        SkryptObject getVariable (string name, ScopeContext scopeContext) {
-            SkryptObject FoundVar = null;
+        Variable getVariable (string name, ScopeContext scopeContext) {
+            Variable FoundVar = null;
 
             if (scopeContext.Variables.ContainsKey(name)) {
                 FoundVar = scopeContext.Variables[name];
@@ -104,7 +104,7 @@ namespace Skrypt.Execution {
                     }
                 }
                 else if (subNode.TokenType == "MethodDeclaration") {
-                    foreach (KeyValuePair<string, SkryptObject> pair in scope.Variables.Where((p) => p.Value.Name == "method")) {
+                    foreach (KeyValuePair<string, Variable> pair in scope.Variables.Where((p) => p.Value.Value.Name == "method")) {
                         if (pair.Value.Name == subNode.Body) {
                             engine.throwError("A method with this signature already exists in this context!", node.Token);
                         }
@@ -120,7 +120,11 @@ namespace Skrypt.Execution {
                         result.Parameters.Add(snode.Body);
                     }
 
-                    scope.Variables[subNode.Body] = result;
+                    scope.Variables[subNode.Body] = new Variable {
+                        Name = result.CallName,
+                        Value = result,
+                        Scope = scope
+                    };
                 }
                 else {
                     SkryptObject result = engine.executor.ExecuteExpression(subNode, scope);
@@ -180,17 +184,21 @@ namespace Skrypt.Execution {
                         engine.throwError("Can't assign constant " + node.SubNodes[0].Body, node.SubNodes[0].Token);
                     }
 
-                    SkryptObject foundVariable = getVariable(node.SubNodes[0].Body, scopeContext);
+                    Variable foundVariable = getVariable(node.SubNodes[0].Body, scopeContext);
 
                     if (foundVariable != null) {
-                        if (foundVariable.Name != result.Name) {
+                        if (foundVariable.Value.Name != result.Name) {
                             engine.throwError("Can't assign " + foundVariable.Name + " to " + result.Name, node.SubNodes[1].Token);
                         }
 
-                        foundVariable.Scope.Variables[node.SubNodes[0].Body] = result;
+                        foundVariable.Value = result;
                     }
                     else {
-                        scopeContext.Variables[node.SubNodes[0].Body] = result;
+                        scopeContext.Variables[node.SubNodes[0].Body] = new Variable {
+                            Name = node.SubNodes[0].Body,
+                            Value = result,
+                            Scope = scopeContext
+                        };
                     }
 
                     return result;
@@ -208,13 +216,8 @@ namespace Skrypt.Execution {
                         Type t1 = Left.GetType();
                         Type t2 = Right.GetType();
 
-                        MethodInfo methodInfo1 = null;
-                        MethodInfo methodInfo2 = null;
-                        var Methods1 = t1.GetMethodsBySig("_" + op.OperationName, t1, t2);
-                        var Methods2 = t2.GetMethodsBySig("_" + op.OperationName, t1, t2);
-
-                        if (Methods1.Count() > 0) methodInfo1 = Methods1.ElementAt(0);
-                        if (Methods2.Count() > 0) methodInfo2 = Methods2.ElementAt(0);
+                        MethodInfo methodInfo1 = t1.GetMethod("_" + op.OperationName, new Type[] { t1, t2 });
+                        MethodInfo methodInfo2 = t2.GetMethod("_" + op.OperationName, new Type[] { t1, t2 });
 
                         if (methodInfo1 != null) {
                             try {
@@ -265,30 +268,21 @@ namespace Skrypt.Execution {
             else if (node.SubNodes.Count == 0) {
                 switch (node.TokenType) {
                     case "NumericLiteral":
-                        return new Numeric {
-                            value = Double.Parse(node.Body),
-                            Scope = scopeContext
-                        };
+                        return new Numeric (Double.Parse(node.Body));
                     case "StringLiteral":
                         return new SkryptString {
                             value = node.Body,
-                            Scope = scopeContext
                         };
                     case "BooleanLiteral":
                         return new SkryptBoolean {
                             value = node.Body == "true" ? true : false,
-                            Scope = scopeContext
                         };
                     case "NullLiteral":
-                        return new SkryptNull {
-                            Scope = scopeContext
-                        };
+                        return new SkryptNull ();
                 }
             }
             else if (node.TokenType == "ArrayLiteral") {
-                SkryptArray array = new SkryptArray {
-                    Scope = scopeContext
-                };
+                SkryptArray array = new SkryptArray ();
 
                 foreach (Node subNode in node.SubNodes) {
                     SkryptObject Result = ExecuteExpression(subNode, scopeContext);
@@ -321,10 +315,11 @@ namespace Skrypt.Execution {
                     return engine.Constants[node.Body];
                 }
 
-                SkryptObject foundVariable = getVariable(node.Body, scopeContext);
+                Variable foundVariable = getVariable(node.Body, scopeContext);
+                Console.WriteLine("Getting variable {0}: {1}", foundVariable.Name, foundVariable.Scope);
 
                 if (foundVariable != null) {
-                    return foundVariable;
+                    return foundVariable.Value;
                 }
                 else {
                     engine.throwError("Variable '" + node.Body + "' does not exist in the current context!", node.Token);
@@ -350,11 +345,15 @@ namespace Skrypt.Execution {
 
                     signature += "_" + Result.Name;
                 }
-                SkryptObject found = getVariable(node.Body, scopeContext);
+
+                Variable found = getVariable(node.Body, scopeContext);
 
                 if (found != null) {
-                    if (found.GetType() == typeof(UserMethod)) {
-                        UserMethod method = (UserMethod)found;
+                    SkryptObject functionValue = found.Value;
+
+                    if (functionValue.GetType() == typeof(UserMethod)) {
+                        UserMethod method = (UserMethod)functionValue;
+                        Console.WriteLine("Getting variable {0}: {1}", found.Name, found.Scope);
 
                         for (int i = 0; i < method.Parameters.Count; i++) {
                             string parName = method.Parameters[i];
@@ -363,12 +362,14 @@ namespace Skrypt.Execution {
                             if (i < Arguments.Count) {
                                 input = Arguments[i];
                             } else {
-                                input = new SkryptNull {
-                                    Scope = scopeContext
-                                };
+                                input = new SkryptNull ();
                             }
 
-                            methodContext.Variables[parName] = input;
+                            methodContext.Variables[parName] = new Variable {
+                                Name = parName,
+                                Value = input,
+                                Scope = methodContext
+                            };
                         }
 
                         SkryptObject MethodResult = method.Execute(engine, Arguments.ToArray(), methodContext);
@@ -426,7 +427,7 @@ namespace Skrypt.Execution {
 
                     for (int i = 0; i < method.SubNodes[0].SubNodes.Count; i++) {
                         Node par = method.SubNodes[0].SubNodes[i];
-                        methodContext.Variables[par.Body] = parameters[i];
+                        methodContext.Variables[par.Body].Value = parameters[i];
                     }
                 }
             }

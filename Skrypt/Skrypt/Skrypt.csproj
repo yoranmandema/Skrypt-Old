@@ -50,6 +50,7 @@
     <Compile Include="Execution\Executor.cs" />
     <Compile Include="Execution\MethodExtensions.cs" />
     <Compile Include="Execution\ScopeContext.cs" />
+    <Compile Include="Execution\Variable.cs" />
     <Compile Include="Library\Methods\Math.cs" />
     <Compile Include="Library\Methods\Standard.cs" />
     <Compile Include="Library\Methods\StandardMethods.cs" />
