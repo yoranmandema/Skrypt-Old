@@ -16,7 +16,7 @@ namespace Skrypt.Parsing {
     public class ClassParser {
         public ParseResult Parse(List<Token> Tokens) {
             // Create main node
-            Node Node = new Node { Body = "Block", TokenType = "Block" };
+            Node Node = new Node ();
             int index = 0;
 
             return new ParseResult { node = Node, delta = index };

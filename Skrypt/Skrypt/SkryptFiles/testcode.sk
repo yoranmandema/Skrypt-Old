@@ -1,26 +1,10 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-﻿a = 0;
-=======
-﻿
->>>>>>> parent of 02fde3f... Failed performance fix stash
+a = 0;
 
 foo = func () {
-	print("Hello world!");
+	print(a);
+	a++;
 };
 
-<<<<<<< HEAD
-while (a < 1000) {
+while (a < 100000) {
 	foo();
 }
-=======
-﻿
-func foo (a, b) {
-	print(a + b);
-}
-
-foo (1,null);
->>>>>>> parent of 6926741... function literal
-=======
-foo();
->>>>>>> parent of 02fde3f... Failed performance fix stash
