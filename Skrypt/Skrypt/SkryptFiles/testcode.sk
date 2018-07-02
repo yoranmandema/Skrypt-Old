@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿a = 0;
 
 foo = func () {
@@ -8,3 +9,11 @@ foo = func () {
 while (a < 1000) {
 	foo();
 }
+=======
+﻿
+func foo (a, b) {
+	print(a + b);
+}
+
+foo (1,null);
+>>>>>>> parent of 6926741... function literal

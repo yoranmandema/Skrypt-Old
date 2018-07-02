@@ -49,6 +49,7 @@ namespace Skrypt.Parsing {
             return node;
         }
 
+<<<<<<< HEAD
         public ParseResult ParseFunctionLiteral (List<Token> Tokens) {
             int index = 0;
             Node node = new Node();
@@ -75,6 +76,8 @@ namespace Skrypt.Parsing {
             return new ParseResult { node = returnNode, delta = index };
         }
 
+=======
+>>>>>>> parent of 6926741... function literal
         /// <summary>
         /// Parses a list of tokens into a method node
         /// </summary>

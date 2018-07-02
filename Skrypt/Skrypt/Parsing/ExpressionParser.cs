@@ -92,7 +92,6 @@ namespace Skrypt.Parsing {
             bool isMethodCall = false;
             bool isIndexing = false;
             bool isArrayLiteral = false;
-            bool isFunctionLiteral = false;
 
             // Do logic in delegate so we can easily exit out of it when we need to
             Action loop = () => {
@@ -105,25 +104,8 @@ namespace Skrypt.Parsing {
                             Token token = Tokens[i];
                             Token previousToken = i >= 1 ? Tokens[i-1] : null;
 
-                            if (token.Value == "func") {
-                                skipInfo skip = engine.expectValue("(", Tokens, i);
-                                i += skip.delta;
-
-                                int start = i;
-                                skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
-                                i += skip.delta;
-
-                                skip = engine.expressionParser.SkipFromTo("{", "}", Tokens, i);
-                                i += skip.delta;
-
-                                if (start == 1 && skip.end == Tokens.Count - 1) {
-                                    isFunctionLiteral = true;
-                                    return;
-                                }
-                            }
-
                             if (GeneralParser.Keywords.Contains(Tokens[i].Value)) {
-                                engine.throwError("Unexpected keyword '" + Tokens[i].Value + "' found", Tokens[i], 2);
+                                engine.throwError("Unexpected keyword '" + Tokens[i].Value + "' found", Tokens[i],2);
                             }
 
                             if (token.Value == "(") {
@@ -253,12 +235,6 @@ namespace Skrypt.Parsing {
                 return result.node;
             }
 
-            // Parse function literal
-            if (isFunctionLiteral) {
-                ParseResult result = engine.methodParser.ParseFunctionLiteral(Tokens.GetRange(1, Tokens.Count - 1));
-                return result.node;
-            }
-
             return null;
         }
 
@@ -326,15 +302,13 @@ namespace Skrypt.Parsing {
                     }
                 }
 
-                //Console.WriteLine(index);
-
                 index++;
 
                 if (index == Tokens.Count) {
                     if (depth > 0) {
-                        engine.throwError("Closing token '" + downScope + "' not found", firstToken);
+                        engine.throwError("Closing token '" + downScope + "' not found", firstToken,10);
                     } else if (depth < 0) {
-                        engine.throwError("Opening token '" + upScope + "' not found", Tokens[index]);
+                        engine.throwError("Opening token '" + upScope + "' not found", Tokens[index],10);
                     }
                 }
             }
@@ -459,15 +433,7 @@ namespace Skrypt.Parsing {
                         break;
                     }
                 }
-
-                delta++;
-
-                if (delta == Tokens.Count) {
-                    break;
-                }
             }
-
-            Console.WriteLine(TokenString(Tokens.GetRange(0, delta)));
 
             Node returnNode = ParseClean(Tokens.GetRange(0, delta));
 

@@ -9,8 +9,7 @@ using Skrypt.Library;
 using Skrypt.Engine;
 using Skrypt.Parsing;
 using Skrypt.Tokenization;
-using System.Linq;
-using System.Linq.Expressions;
+
 
 namespace Skrypt.Execution {
     public class Executor {
@@ -137,36 +136,7 @@ namespace Skrypt.Execution {
             return scope; 
         }
 
-        public SkryptObject SolveOperation (string Operation, SkryptObject Left, SkryptObject Right, Token token) {
-            Type TLeft = Left.GetType();
-            Type TRight = Right.GetType();
-
-            // Get "Calculate" method.
-            MethodInfo methodInfo = Left.GetType().GetMethod(Operation, new Type[] { typeof(SkryptObject), typeof(SkryptObject) });
-
-            // Create parameter "A" and "B" for Calculate method.
-            ParameterExpression paramA = Expression.Parameter(typeof(SkryptObject), "A");
-            ParameterExpression paramB = Expression.Parameter(typeof(SkryptObject), "B");
-
-            // Create an expression for the method call "Add" and specify its parameter(s).
-            MethodCallExpression methodCall = Expression.Call(methodInfo, paramA, paramB);
-
-            //Console.WriteLine(methodCall);
-
-            // Create lambda expression from MethodCallExpression.
-            var lambda = Expression.Lambda<Func<SkryptObject, SkryptObject, SkryptObject>>(
-            methodCall,
-            new ParameterExpression[] { paramA, paramB }
-            );
-            // Compile lambda expression to a Func<>.
-            var func = lambda.Compile();
-
-            Console.WriteLine(func(Left, Right));
-
-            return func(Left, Right);
-        }
-
-        public SkryptObject ExecuteExpression(Node node, ScopeContext scopeContext) {
+        public SkryptObject ExecuteExpression (Node node, ScopeContext scopeContext) {
             Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
 
             if (op != null) {
@@ -213,7 +183,7 @@ namespace Skrypt.Execution {
                     }
 
                     SkryptObject foundVariable = getVariable(node.SubNodes[0].Body, scopeContext);
-
+  
                     if (foundVariable != null) {
                         if (foundVariable.Name != result.Name) {
                             engine.throwError("Can't assign " + foundVariable.Name + " to " + result.Name, node.SubNodes[1].Token);
@@ -336,19 +306,6 @@ namespace Skrypt.Execution {
                 }
 
                 return array;
-            }
-            else if (node.TokenType == "FunctionLiteral") { 
-                UserMethod result = new UserMethod();
-                result.Name = "method";
-                result.Signature = node.Body;
-                result.BlockNode = node.SubNodes[0];
-                result.CallName = node.Body.Split('_')[0];
-
-                foreach (Node snode in node.SubNodes[1].SubNodes) {
-                    result.Parameters.Add(snode.Body);
-                }
-
-                return result;
             }
 
             if (node.TokenType == "Identifier") {
