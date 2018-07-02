@@ -8,8 +8,6 @@ using System.Reflection;
 using Skrypt.Library;
 using Skrypt.Engine;
 using Skrypt.Parsing;
-using Skrypt.Tokenization;
-
 
 namespace Skrypt.Execution {
     public class Executor {
@@ -193,7 +191,6 @@ namespace Skrypt.Execution {
                     }
                     else {
                         scopeContext.Variables[node.SubNodes[0].Body] = result;
-                        result.Scope = scopeContext;
                     }
 
                     return result;
@@ -202,8 +199,6 @@ namespace Skrypt.Execution {
                 if (op.Members == 2) {
                     SkryptObject Left = ExecuteExpression(node.SubNodes[0], scopeContext);
                     SkryptObject Right = ExecuteExpression(node.SubNodes[1], scopeContext);
-
-                    //return SolveOperation(op.OperationName, Left, Right, node.Token);
 
                     if (Left.Name == "void" || Right.Name == "void") {
                         engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
@@ -215,8 +210,8 @@ namespace Skrypt.Execution {
 
                         MethodInfo methodInfo1 = null;
                         MethodInfo methodInfo2 = null;
-                        var Methods1 = t1.GetMethodsBySig(op.OperationName, t1, t2);
-                        var Methods2 = t2.GetMethodsBySig(op.OperationName, t1, t2);
+                        var Methods1 = t1.GetMethodsBySig("_" + op.OperationName, t1, t2);
+                        var Methods2 = t2.GetMethodsBySig("_" + op.OperationName, t1, t2);
 
                         if (Methods1.Count() > 0) methodInfo1 = Methods1.ElementAt(0);
                         if (Methods2.Count() > 0) methodInfo2 = Methods2.ElementAt(0);
@@ -251,7 +246,7 @@ namespace Skrypt.Execution {
                         Type t1 = Left.GetType();
 
                         MethodInfo methodInfo1 = null;
-                        var Methods1 = t1.GetMethodsBySig(op.OperationName, t1);
+                        var Methods1 = t1.GetMethodsBySig("_" + op.OperationName, t1);
 
                         if (Methods1.Count() > 0) methodInfo1 = Methods1.ElementAt(0);
 

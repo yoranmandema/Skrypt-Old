@@ -12,11 +12,6 @@ namespace Skrypt.Library.SkryptClasses {
             Name = "boolean";
         }
 
-        public SkryptBoolean(bool v) {
-            Name = "boolean";
-            value = v;
-        }
-
         public override bool ToBoolean() {
             return value;
         }

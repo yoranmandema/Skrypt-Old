@@ -428,10 +428,8 @@ namespace Skrypt.Parsing {
                         break;
                 }
 
-                if (pScope == 0 && bScope == 0 && cScope == 0) {
-                    if (Tokens[delta].Value == ";") {
-                        break;
-                    }
+                if (Tokens[delta].Value == ";" && pScope == 0 && bScope == 0 && cScope == 0) {
+                    break;
                 }
             }
 
