@@ -45,8 +45,8 @@ namespace Skrypt.Parsing {
         // Create list of operator groups with the right precedence order
         static List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup> {
             new OperatorGroup(new[] {new Op_Return()}, false, 1),
-            new OperatorGroup(new[] {new Op_Access()}, true, 2, true),
             new OperatorGroup(new[] {new Op_Assign()}, false),
+            new OperatorGroup(new[] {new Op_Access()}, true, 2, true),
             new OperatorGroup(new[] {new Op_Or()}),
             new OperatorGroup(new[] {new Op_And()}),
             new OperatorGroup(new Operator[] {new Op_NotEqual(),new Op_Equal()}),
@@ -93,6 +93,8 @@ namespace Skrypt.Parsing {
             bool isArrayLiteral = false;
             bool isFunctionLiteral = false;
 
+            int accessEnd = 0;
+
             // Do logic in delegate so we can easily exit out of it when we need to
             Action loop = () => {
                 foreach (OperatorGroup OP in OperatorPrecedence) {
@@ -129,11 +131,17 @@ namespace Skrypt.Parsing {
                                 if (previousToken != null) {
                                     // Previous token was identifier; possible method call
                                     if (previousToken.Type == TokenTypes.Identifier) {
-                                        skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
+                                        skipInfo skip = SkipAccessing(Tokens, 0);
+
+                                        accessEnd = skip.end;
+                                        int iAtEnd = i;
+
+                                        skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
                                         i += skip.delta;
 
-                                        if (skip.start == 1 && skip.end == Tokens.Count - 1) {
+                                        if (accessEnd == iAtEnd && skip.end == Tokens.Count - 1) {
                                             isMethodCall = true;
+                                            Console.WriteLine("Method call tokens: " + TokenString(Tokens));
                                             return;
                                         }
                                     }
@@ -236,7 +244,7 @@ namespace Skrypt.Parsing {
 
             // Parse method call
             if (isMethodCall) {
-                ParseResult result = ParseCall(Tokens);
+                ParseResult result = ParseCall(Tokens, accessEnd);
                 return result.node;
             }
 
@@ -352,21 +360,76 @@ namespace Skrypt.Parsing {
             }
         }
 
+        public skipInfo SkipAccessing (List<Token> Tokens, int startingPoint = 0) {
+            int start = startingPoint;
+            int index = startingPoint;
+            int end = 0;
+            int state = 1;
+
+            Token nextToken = Tokens[index];
+
+            while (true) {
+                if (state == 1) {
+                    if (nextToken.Type == TokenTypes.Identifier) {
+                        state = 0;
+                    } else {
+                        engine.throwError("Identifier expected!", nextToken);
+                    }
+                } else if (state == 0) {
+                    if (nextToken.Value == ".") {
+                        state = 1;
+                    } else {
+                        break;
+                    }
+                }
+
+                index++;
+                nextToken = Tokens[index];
+            }
+
+            end = index;
+            int delta = index - start;
+
+            return new skipInfo { start = start, end = end, delta = delta };
+        }
+
         /// <summary>
         /// Parses a method call with arguments
         /// </summary>
-        public ParseResult ParseCall(List<Token> Tokens) {
+        public ParseResult ParseCall(List<Token> Tokens, int accessEnd) {
             int index = 0;
             string name = Tokens[index].Value;
-            skipInfo skip = engine.expectValue("(", Tokens);
-            index += skip.delta;
+            Node node = new Node();
+            node.Body = "Call";
+            node.TokenType = "MethodCall";
 
-            ParseResult result = engine.generalParser.parseSurroundedExpressions("(", ")", index, Tokens);
-            Node node = result.node;
-            node.TokenType = "Call";
-            node.Body = name;
-            node.Token = Tokens[0];
-            index += result.delta;
+            List<Token> AccessTokens = Tokens.GetRange(0,accessEnd);
+            Console.WriteLine("Call: " + TokenString(AccessTokens));
+            Node getterNode = new Node();
+            getterNode.Add(ParseExpression(getterNode, AccessTokens));
+            getterNode.Body = "Getter";
+            getterNode.TokenType = "Getter";
+            node.Add(getterNode);
+
+            ParseResult result = engine.generalParser.parseSurroundedExpressions("(", ")", accessEnd, Tokens);
+            Node argumentsNode = result.node;
+            argumentsNode.Body = "Arguments";
+            argumentsNode.TokenType = "Arguments";
+            node.Add(argumentsNode);
+
+            index = Tokens.Count - 1;
+
+            Console.WriteLine(node);
+
+            //skipInfo skip = engine.expectValue("(", Tokens);
+            //index += skip.delta;
+
+            //ParseResult result = engine.generalParser.parseSurroundedExpressions("(", ")", accessEnd, Tokens);
+            //Node node = result.node;
+            //node.TokenType = "Call";
+            //node.Body = name;
+            //node.Token = Tokens[0];
+            //index += result.delta;
 
             return new ParseResult {node=node,delta=index};
         }

@@ -21,8 +21,6 @@ namespace Skrypt.Library.Reflection {
             foreach (MethodInfo M in Methods) {
                 SharpMethod Method = new SharpMethod();
 
-                Console.WriteLine(M);
-
                 Method.method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate),M);
 
                 Method.Name = M.Name;

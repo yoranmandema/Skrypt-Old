@@ -58,8 +58,6 @@ namespace Skrypt.Engine {
             SkryptObject math = ObjectGenerator.MakeObjectFromClass(typeof(SkryptMath));
             GlobalScope.AddVariable("Math", math, true);
 
-            Console.WriteLine(GlobalScope);
-
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
             tokenizer.AddRule(

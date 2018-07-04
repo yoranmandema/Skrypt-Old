@@ -169,6 +169,10 @@ namespace Skrypt.Execution {
                     return result;
                 }
 
+                if (op.OperationName == "access") {
+
+                }
+
                 if (op.OperationName == "assign") {
                     if (node.SubNodes[0].TokenType != "Identifier") {
                         engine.throwError("Can't assign non-variable", node.SubNodes[0].Token);
