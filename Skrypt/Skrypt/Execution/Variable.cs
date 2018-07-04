@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 namespace Skrypt.Execution {
     public class Variable {
         public string Name;
+        public bool IsConstant;
         [JsonIgnore]
         public ScopeContext Scope;
         public SkryptObject Value;

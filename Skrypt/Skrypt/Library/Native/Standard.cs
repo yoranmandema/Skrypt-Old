@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using Skrypt.Library.SkryptClasses;
 
-namespace Skrypt.Library.Methods {
+namespace Skrypt.Library.Native {
     public partial class StandardMethods {
-        public static SkryptObject print(params SkryptObject[] input) {
-            Console.WriteLine(input[0]);
+        public static SkryptObject print(SkryptObject[] Values) {
+            Console.WriteLine(Values[0]);
 
             return new SkryptVoid();
         }

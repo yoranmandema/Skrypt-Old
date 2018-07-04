@@ -9,7 +9,7 @@ using Skrypt.Engine;
 using Skrypt.Library.SkryptClasses;
 
 namespace Skrypt.Library {
-    public delegate SkryptObject SkryptDelegate(params SkryptObject[] input);
+    public delegate SkryptObject SkryptDelegate(SkryptObject[] input);
 
     public class SkryptMethod : SkryptObject {
         public string ReturnType;

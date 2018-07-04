@@ -7,7 +7,7 @@ using Skrypt.Engine;
 using Skrypt.Library.SkryptClasses;
 using System.Reflection;
 
-namespace Skrypt.Library.Methods {
+namespace Skrypt.Library.Native {
     public partial class StandardMethods {
         SkryptEngine engine; 
 

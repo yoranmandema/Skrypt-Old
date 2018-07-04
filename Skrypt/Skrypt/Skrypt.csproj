@@ -50,11 +50,13 @@
     <Compile Include="Execution\Executor.cs" />
     <Compile Include="Execution\MethodExtensions.cs" />
     <Compile Include="Execution\ScopeContext.cs" />
+    <Compile Include="Execution\TypeConverter.cs" />
     <Compile Include="Execution\Variable.cs" />
-    <Compile Include="Library\Methods\Math.cs" />
-    <Compile Include="Library\Methods\Standard.cs" />
-    <Compile Include="Library\Methods\StandardMethods.cs" />
+    <Compile Include="Library\Native\Math.cs" />
+    <Compile Include="Library\Native\Standard.cs" />
+    <Compile Include="Library\Native\StandardMethods.cs" />
     <Compile Include="Library\Operators.cs" />
+    <Compile Include="Library\Reflection\ObjectGenerator.cs" />
     <Compile Include="Library\SkryptClasses\Array.cs" />
     <Compile Include="Library\SkryptClasses\Boolean.cs" />
     <Compile Include="Library\SkryptClasses\Null.cs" />

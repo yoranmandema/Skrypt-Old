@@ -10,8 +10,9 @@ using Skrypt.Analysis;
 using Skrypt.Execution;
 using Skrypt.Library;
 using System.Diagnostics; // Using this so we can check how fast everything is happening
-using Skrypt.Library.Methods;
+using Skrypt.Library.Native;
 using Skrypt.Library.SkryptClasses;
+using Skrypt.Library.Reflection;
 
 namespace Skrypt.Engine {
     public class ParseResult {
@@ -53,6 +54,11 @@ namespace Skrypt.Engine {
 
             Constants["_PI"] = new Numeric(Math.PI);
             Constants["_E"] = new Numeric(Math.E);
+
+            SkryptObject math = ObjectGenerator.MakeObjectFromClass(typeof(SkryptMath));
+            GlobalScope.AddVariable("Math", math, true);
+
+            Console.WriteLine(GlobalScope);
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
@@ -220,7 +226,7 @@ namespace Skrypt.Engine {
             //analizer.Analize(ProgramNode, AnalizeScope);
 
             stopwatch = Stopwatch.StartNew();
-            GlobalScope = executor.ExecuteBlock(ProgramNode, null);
+            GlobalScope = executor.ExecuteBlock(ProgramNode, GlobalScope);
             stopwatch.Stop();
             double T_Execute = stopwatch.ElapsedMilliseconds;
 

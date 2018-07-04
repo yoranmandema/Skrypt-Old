@@ -21,6 +21,15 @@ namespace Skrypt.Execution {
         public override string ToString() {
             return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
         }
+
+        public void AddVariable(string Name, SkryptObject Value, bool IsConstant = false) {
+            Variables[Name] = new Variable {
+                Name = Name,
+                Value = Value,
+                IsConstant = IsConstant,
+                Scope = this
+            };
+        }
     }
 }
 
