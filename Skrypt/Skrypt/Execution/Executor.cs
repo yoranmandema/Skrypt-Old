@@ -138,6 +138,32 @@ namespace Skrypt.Execution {
             return scope; 
         }
 
+        public SkryptObject GetProperty (SkryptObject Object, string ToFind) {
+            var Find = Object.Properties.Find((x) => x.Name == ToFind);
+
+            if (Find == null) {
+                engine.throwError("Object does not contain property '" + ToFind + "'!");
+            }
+
+            return Find.Value;
+        }
+
+        public SkryptObject ExecuteAccess (SkryptObject Object, Node node, ScopeContext scopeContext) {
+            Console.WriteLine(node);
+
+            if (node.SubNodes.Count == 0) {
+                return GetProperty(Object, node.Body);
+            }
+
+            SkryptObject Property = GetProperty(Object, node.SubNodes[0].Body);
+
+            if (node.SubNodes[1].Body == "access") {
+                return ExecuteAccess(Property, node.SubNodes[1], scopeContext);
+            } else {
+                return Property;
+            }
+        }
+
         public SkryptObject ExecuteExpression(Node node, ScopeContext scopeContext) {
             Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
 
@@ -170,7 +196,10 @@ namespace Skrypt.Execution {
                 }
 
                 if (op.OperationName == "access") {
-
+                    SkryptObject Target = ExecuteExpression(node.SubNodes[0], scopeContext);
+                    SkryptObject Result = ExecuteAccess(Target, node.SubNodes[1], scopeContext);
+                    Console.WriteLine("Accessed: " + Result);
+                    return Result;
                 }
 
                 if (op.OperationName == "assign") {
@@ -376,6 +405,8 @@ namespace Skrypt.Execution {
             }
 
             if (node.TokenType == "Call") {
+                Console.WriteLine(node.SubNodes[0].SubNodes[0]);
+
                 List<SkryptObject> Arguments = new List<SkryptObject>();
                 string signature = node.Body;
                 string searchString = node.Body;
@@ -383,7 +414,7 @@ namespace Skrypt.Execution {
                     ParentScope = scopeContext
                 };
 
-                foreach (Node subNode in node.SubNodes) {
+                foreach (Node subNode in node.SubNodes[1].SubNodes) {
                     SkryptObject Result = ExecuteExpression(subNode, scopeContext);
 
                     if (Result.Name == "void") {
@@ -394,6 +425,9 @@ namespace Skrypt.Execution {
 
                     signature += "_" + Result.Name;
                 }
+
+                SkryptObject Method = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
+                Console.WriteLine(Method);
 
                 Variable found = getVariable(node.Body, scopeContext);
 

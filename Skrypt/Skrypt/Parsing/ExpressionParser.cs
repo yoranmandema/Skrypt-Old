@@ -46,7 +46,6 @@ namespace Skrypt.Parsing {
         static List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup> {
             new OperatorGroup(new[] {new Op_Return()}, false, 1),
             new OperatorGroup(new[] {new Op_Assign()}, false),
-            new OperatorGroup(new[] {new Op_Access()}, true, 2, true),
             new OperatorGroup(new[] {new Op_Or()}),
             new OperatorGroup(new[] {new Op_And()}),
             new OperatorGroup(new Operator[] {new Op_NotEqual(),new Op_Equal()}),
@@ -56,6 +55,7 @@ namespace Skrypt.Parsing {
             new OperatorGroup(new[] {new Op_Power()}),
             new OperatorGroup(new Operator[] { new Op_Negate(), new Op_Not() }, false, 1),
             new OperatorGroup(new Operator[] { new Op_PostInc(), new Op_PostDec() }, false, 1, true),
+                        new OperatorGroup(new[] {new Op_Access()}, false, 2, false),
         };
 
         // (debug) Serializes a list of tokens into a string
@@ -401,9 +401,9 @@ namespace Skrypt.Parsing {
             string name = Tokens[index].Value;
             Node node = new Node();
             node.Body = "Call";
-            node.TokenType = "MethodCall";
+            node.TokenType = "Call";
 
-            List<Token> AccessTokens = Tokens.GetRange(0,accessEnd);
+            List<Token> AccessTokens = Tokens.GetRange(0, accessEnd);
             Console.WriteLine("Call: " + TokenString(AccessTokens));
             Node getterNode = new Node();
             getterNode.Add(ParseExpression(getterNode, AccessTokens));
@@ -419,7 +419,7 @@ namespace Skrypt.Parsing {
 
             index = Tokens.Count - 1;
 
-            Console.WriteLine(node);
+            //Console.WriteLine(node);
 
             //skipInfo skip = engine.expectValue("(", Tokens);
             //index += skip.delta;

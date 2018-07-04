@@ -1,3 +1,1 @@
-a = Math.Round();
-
-a = 2;
+a = Math.Round() + 1;
