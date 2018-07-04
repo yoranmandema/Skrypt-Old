@@ -78,7 +78,7 @@ namespace Skrypt.Parsing {
                 return new Node {
                     Body = Tokens[0].Value,
                     //Value = null,
-                    TokenType = Tokens[0].Type,
+                    TokenType = "" + Tokens[0].Type,
                     Token = Tokens[0],
                 };
             }
@@ -128,7 +128,7 @@ namespace Skrypt.Parsing {
                             if (token.Value == "(") {
                                 if (previousToken != null) {
                                     // Previous token was identifier; possible method call
-                                    if (previousToken.Type == "Identifier") {
+                                    if (previousToken.Type == TokenTypes.Identifier) {
                                         skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
                                         i += skip.delta;
 
@@ -151,7 +151,7 @@ namespace Skrypt.Parsing {
                             if (token.Value == "[") {
                                 if (previousToken != null) {
                                     // Previous token was identifier or string; possible indexing
-                                    if (previousToken.Type == "Identifier" || previousToken.Type == "StringLiteral") {
+                                    if (previousToken.Type == TokenTypes.Identifier || previousToken.Type == TokenTypes.StringLiteral) {
                                         skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, i);
                                         i += skip.delta;
 
@@ -192,7 +192,7 @@ namespace Skrypt.Parsing {
                                     // Create operation node with type and body
                                     Node NewNode = new Node();
                                     NewNode.Body = Operator.OperationName;
-                                    NewNode.TokenType = token.Type;
+                                    NewNode.TokenType = "" + token.Type;
                                     NewNode.Token = token;
 
                                     if (OP.Members == 1) {

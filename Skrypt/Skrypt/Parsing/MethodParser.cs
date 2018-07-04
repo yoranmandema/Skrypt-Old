@@ -83,7 +83,7 @@ namespace Skrypt.Parsing {
             skipInfo skip;
             ParseResult result;
 
-            skip = engine.expectType("Identifier", Tokens);
+            skip = engine.expectType(TokenTypes.Identifier, Tokens);
             index += skip.delta;
 
             //skip = engine.expectType("Identifier", Tokens,index);

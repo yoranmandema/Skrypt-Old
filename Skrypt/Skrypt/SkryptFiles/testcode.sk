@@ -1,10 +1,7 @@
+a = "";
+b = 0;
 
-factorial = func (a) {
-	if (a == 0) {
-		return 1;
-	} else {
-		return a * factorial(a - 1);
-	}
-};
-
-print(factorial(1000));
+while (b < 10000) {
+	a = a + "kek";
+	b++;
+}

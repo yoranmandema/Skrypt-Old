@@ -8,6 +8,18 @@ using Skrypt.Engine;
 
 namespace Skrypt.Tokenization {
 
+    public enum TokenTypes {
+        None,
+        NumericLiteral,
+        Identifier,
+        Keyword,
+        BooleanLiteral,
+        NullLiteral,
+        EndOfExpression,
+        Punctuator,
+        StringLiteral
+    }
+
     /// <summary>
     /// The main Tokenization class.
     /// Contains all methods for tokenization.
@@ -20,7 +32,7 @@ namespace Skrypt.Tokenization {
             engine = e;
         }
 
-        public void AddRule (Regex Pattern, string Type) {
+        public void AddRule (Regex Pattern, TokenTypes Type) {
             TokenRules.Add(new TokenRule {
                 Pattern = Pattern,
                 Type = Type
@@ -67,7 +79,7 @@ namespace Skrypt.Tokenization {
                 };
 
                 // Ignore token if it's type equals null
-                if (FoundRule.Type != null) {
+                if (FoundRule.Type != TokenTypes.None) {
                     Tokens.Add(token);
                 }
 

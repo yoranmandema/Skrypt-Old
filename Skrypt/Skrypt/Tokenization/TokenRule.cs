@@ -11,6 +11,6 @@ namespace Skrypt.Tokenization {
     /// </summary>
     class TokenRule {
         public Regex Pattern { get; set; }
-        public string Type { get; set; }
+        public TokenTypes Type { get; set; }
     }
 }

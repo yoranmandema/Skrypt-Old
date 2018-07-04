@@ -58,59 +58,59 @@ namespace Skrypt.Engine {
             // This means you can ignore certain characters, like whitespace in this case, that way.
             tokenizer.AddRule(
                 new Regex(@"\s"),
-                null
+                TokenTypes.None
             );
 
             tokenizer.AddRule(
                 new Regex(@"\d+(\.\d+)?"),
-                "NumericLiteral"
+                TokenTypes.NumericLiteral
             );
 
             tokenizer.AddRule(
                 new Regex(@"[_a-zA-Z]+[_a-zA-Z0-9]*"),
-                "Identifier"
+                TokenTypes.Identifier
             );
 
             tokenizer.AddRule(
                 new Regex(@"class|func|if|elseif|else|while"),
-                "Keyword"
+                TokenTypes.Keyword
             );
 
             tokenizer.AddRule(
                 new Regex("true|false"),
-                "BooleanLiteral"
+                TokenTypes.BooleanLiteral
             );
 
             tokenizer.AddRule(
                 new Regex("null"),
-                "NullLiteral"
+                TokenTypes.NullLiteral
             );
 
             tokenizer.AddRule(
                 new Regex(@"[;]"),
-                "EndOfExpression"
+                TokenTypes.EndOfExpression
             );
 
             tokenizer.AddRule(
                 new Regex(@"(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
-                "Punctuator"
+                TokenTypes.Punctuator
             );
 
             tokenizer.AddRule(
                 new Regex(@""".*?(?<!\\)"""),
-                "StringLiteral"
+                TokenTypes.StringLiteral
             );
 
             // Multi line comment
             tokenizer.AddRule(
                 new Regex(@"\/\*(.|\n)*\*\/"),
-                null
+                TokenTypes.None
             );
 
             // Single line comment
             tokenizer.AddRule(
                 new Regex(@"\/\/.*\n"),
-                null
+                TokenTypes.None
             );
         }
 
@@ -162,7 +162,7 @@ namespace Skrypt.Engine {
         /// <summary>
         /// Skips token if next token has the given value. Throws exception when not found.
         /// </summary>
-        public skipInfo expectType(string Type, List<Token> Tokens, int startingPoint = 0) {
+        public skipInfo expectType(TokenTypes Type, List<Token> Tokens, int startingPoint = 0) {
             int start = startingPoint;
             int index = startingPoint;
             string msg = "Token with type '" + Type + "' expected after " + Tokens[index].Value + " keyword";
@@ -203,10 +203,6 @@ namespace Skrypt.Engine {
 
             // Pre-process tokens so their values are correct
             TokenProcessor.ProcessTokens(Tokens);
-
-            foreach (Token t in Tokens) {
-                Console.WriteLine(t);
-            }
 
             stopwatch.Stop();
             double T_Token = stopwatch.ElapsedMilliseconds;

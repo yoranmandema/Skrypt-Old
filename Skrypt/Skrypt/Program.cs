@@ -28,15 +28,20 @@ namespace Skrypt {
             //   Console.WriteLine(e.Message);
             //}
 
-            //Stopwatch stopwatch = Stopwatch.StartNew();
+            Stopwatch stopwatch = Stopwatch.StartNew();
 
-            //int a = Factorial(100);
-            //Console.WriteLine("Factorial: " + a);
+            int b = 0;
+            string a = "";
 
-            //stopwatch.Stop();
-            //double T_Execute = stopwatch.ElapsedMilliseconds;
+            while (b < 10000) {
+                b++;
+                a = a + "kek";
+            }
 
-            //Console.WriteLine("Test: {0}ms", T_Execute);
+            stopwatch.Stop();
+            double T_Execute = stopwatch.ElapsedMilliseconds;
+
+            Console.WriteLine("Test: {0}ms", T_Execute);
 
             Console.ReadKey();
         }

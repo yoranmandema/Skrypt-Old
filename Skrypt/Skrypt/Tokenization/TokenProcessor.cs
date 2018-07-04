@@ -25,7 +25,7 @@ namespace Skrypt.Tokenization {
         static public void ProcessTokens (List<Token> Tokens) {
             foreach (Token token in Tokens) {
                 switch (token.Type) {
-                    case "StringLiteral":
+                    case TokenTypes.StringLiteral:
                         ProcessStringToken(token);
                         break;
                     default:
