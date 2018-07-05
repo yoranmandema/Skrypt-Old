@@ -104,8 +104,8 @@ namespace Skrypt.Parsing {
                         bool CanLoop = Tokens.Count > 0;
 
                         while (CanLoop) {
-                            //Console.WriteLine("Accessing from: " + TokenString(Tokens));
-                            //Console.WriteLine("sub: " + TokenString(Tokens.GetRange(i, Tokens.Count - i)));
+                            Console.WriteLine("Accessing from: " + TokenString(Tokens));
+                            Console.WriteLine("sub: " + TokenString(Tokens.GetRange(i, Tokens.Count - i)));
                             skipInfo s = skipChain(Tokens, i);
 
                             if (s.delta > 0) {
@@ -424,7 +424,7 @@ namespace Skrypt.Parsing {
             int state = 0;
             Token token = Tokens[index];
             
-            if (token.Type == TokenTypes.Identifier) {
+            if (token.IsValuable()) {
                 state = 0;
             }
 
@@ -433,7 +433,7 @@ namespace Skrypt.Parsing {
             }
 
             while (true) {
-                if (token.Type == TokenTypes.Identifier && state == 0) {
+                if (token.IsValuable() && state == 0) {
                     state = 1;
                 } else if (token.Value == "." && state == 1) {
                     state = 0;
@@ -469,6 +469,12 @@ namespace Skrypt.Parsing {
             int end = 0;
 
             Token token = Tokens[index];
+            Console.WriteLine("Has value: " + token.IsValuable());
+
+            if (!token.IsValuable()) {
+                Console.WriteLine(token.IsValuable());
+                return new skipInfo { start = start, end = end, delta = 0 };
+            }
 
             while (true) {
                 //Console.WriteLine(token);
@@ -484,7 +490,7 @@ namespace Skrypt.Parsing {
                     skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, index);
                     index = skip.end + 1;
                     //Console.WriteLine("Bracket Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
-                } else if (token.Value == "." || token.Type == TokenTypes.Identifier) {
+                } else if (token.Value == "." || token.IsValuable()) {
                     skipInfo skip = engine.expressionParser.SkipAccess(Tokens, index);
                     index = skip.end;
                     //Console.WriteLine("Skip amount: " + skip.delta);
@@ -511,7 +517,11 @@ namespace Skrypt.Parsing {
         public Node ParseChain (List<Token> Tokens) {
             Node node = new Node();
 
-            //Console.WriteLine("Count: " + Tokens.Count);
+            Console.WriteLine("Count: " + Tokens.Count);
+
+            if (Tokens.Count == 2) {
+                engine.throwError("Access operator can only be used after a value!", Tokens[0]);
+            }
 
             if (Tokens.Count == 1) {
                 return ParseExpression(node, Tokens);
@@ -694,6 +704,9 @@ namespace Skrypt.Parsing {
             int pScope = 0;
             int bScope = 0;
             int cScope = 0;
+            int addDelta = 0;
+
+            Token previousToken = null;
 
             // Skip until we hit the end of an expression
             while (true) {
@@ -718,16 +731,29 @@ namespace Skrypt.Parsing {
                         break;
                 }
 
-                //if (Tokens[delta].Value == ";" && pScope == 0 && bScope == 0 && cScope == 0) {
-                //    break;
-                //}
-
                 if (pScope == 0 && bScope == 0 && cScope == 0) {
+                    //if (previousToken != null) {
+                    //    if (previousToken.IsValuable() && Tokens[delta].IsValuable()) {
+                    //        break;
+                    //    }
+
+                    //    if ((previousToken.Value == ")") || (previousToken.Value == "}") ||(previousToken.Value == "]") && Tokens[delta].IsValuable()) {
+                    //        break;
+                    //    }
+
+                    //    if (GeneralParser.Keywords.Contains(Tokens[delta].Value)) {
+                    //        break;
+                    //    }
+                    //}
+
                     // Definite end of expression
                     if (Tokens[delta].Value == ";") {
+                        addDelta = 1;
                         break;
                     }
                 }
+
+                previousToken = Tokens[delta];
 
                 delta++;
 
@@ -738,7 +764,7 @@ namespace Skrypt.Parsing {
 
             Node returnNode = ParseClean(Tokens.GetRange(0, delta));
 
-            delta++;
+            delta += addDelta;
 
             return new ParseResult {node = returnNode, delta = delta};
         }

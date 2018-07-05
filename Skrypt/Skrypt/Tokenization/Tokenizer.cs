@@ -8,7 +8,7 @@ using Skrypt.Engine;
 
 namespace Skrypt.Tokenization {
 
-    public enum TokenTypes {
+    public enum TokenTypes : byte {
         None,
         NumericLiteral,
         Identifier,
@@ -17,7 +17,8 @@ namespace Skrypt.Tokenization {
         NullLiteral,
         EndOfExpression,
         Punctuator,
-        StringLiteral
+        StringLiteral,
+        HasValue = NumericLiteral | Identifier | BooleanLiteral | NullLiteral | StringLiteral
     }
 
     /// <summary>
