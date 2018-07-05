@@ -52,6 +52,8 @@ namespace Skrypt.Engine {
 
             standardMethods.AddMethodsToEngine();
 
+            Console.WriteLine(GlobalScope);
+
             Constants["_PI"] = new Numeric(Math.PI);
             Constants["_E"] = new Numeric(Math.E);
 

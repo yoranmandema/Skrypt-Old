@@ -196,8 +196,8 @@ namespace Skrypt.Execution {
                 }
 
                 if (op.OperationName == "access") {
-                    SkryptObject Target = ExecuteExpression(node.SubNodes[0], scopeContext);
-                    SkryptObject Result = ExecuteAccess(Target, node.SubNodes[1], scopeContext);
+                    SkryptObject Target = ExecuteExpression(node.SubNodes[1], scopeContext);
+                    SkryptObject Result = ExecuteAccess(Target, node.SubNodes[0], scopeContext);
                     Console.WriteLine("Accessed: " + Result);
                     return Result;
                 }
@@ -427,46 +427,78 @@ namespace Skrypt.Execution {
                 }
 
                 SkryptObject Method = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
-                Console.WriteLine(Method);
+                Console.WriteLine("Method that we're calling: " + Method);
 
-                Variable found = getVariable(node.Body, scopeContext);
+                if (Method.GetType() == typeof(UserMethod)) {
+                    UserMethod method = (UserMethod)Method;
 
-                if (found != null) {
-                    SkryptObject functionValue = found.Value;
+                    for (int i = 0; i < method.Parameters.Count; i++) {
+                        string parName = method.Parameters[i];
+                        SkryptObject input;
 
-                    if (functionValue.GetType() == typeof(UserMethod)) {
-                        UserMethod method = (UserMethod)functionValue;
-
-                        for (int i = 0; i < method.Parameters.Count; i++) {
-                            string parName = method.Parameters[i];
-                            SkryptObject input;
-
-                            if (i < Arguments.Count) {
-                                input = Arguments[i];
-                            } else {
-                                input = new SkryptNull ();
-                            }
-
-                            methodContext.Variables[parName] = new Variable {
-                                Name = parName,
-                                Value = input,
-                                Scope = methodContext
-                            };
+                        if (i < Arguments.Count) {
+                            input = Arguments[i];
+                        }
+                        else {
+                            input = new SkryptNull();
                         }
 
-                        SkryptObject MethodResult = method.Execute(engine, Arguments.ToArray(), methodContext);
-
-                        return MethodResult;
+                        methodContext.Variables[parName] = new Variable {
+                            Name = parName,
+                            Value = input,
+                            Scope = methodContext
+                        };
                     }
-                }
-                else if (engine.Methods.Exists((m) => m.Name == searchString)) {
-                    SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, Arguments.ToArray(), methodContext);
+
+                    SkryptObject MethodResult = method.Execute(engine, Arguments.ToArray(), methodContext);
 
                     return MethodResult;
+                } else if (Method.GetType() == typeof(SharpMethod)) {
+                    SkryptObject MethodResult = ((SharpMethod)Method).Execute(engine, Arguments.ToArray(), methodContext);
+
+                    Console.WriteLine("Result from method: " + MethodResult);
+
+                    return MethodResult;
+                } else {
+                    engine.throwError("Cannot call value, as it is not a function!", node.SubNodes[0].SubNodes[0].Token);
                 }
-                else {
-                    engine.throwError("Method '" + node.Body + "(" + String.Join(",", signature.Split('_').Skip(1).ToArray()) + ")' does not exist in the current context!", node.Token);
-                }
+
+                //if (found != null) {
+                //    SkryptObject functionValue = found.Value;
+
+                //    if (Method.GetType() == typeof(UserMethod)) {
+                //        UserMethod method = (UserMethod)functionValue;
+
+                //        for (int i = 0; i < method.Parameters.Count; i++) {
+                //            string parName = method.Parameters[i];
+                //            SkryptObject input;
+
+                //            if (i < Arguments.Count) {
+                //                input = Arguments[i];
+                //            } else {
+                //                input = new SkryptNull ();
+                //            }
+
+                //            methodContext.Variables[parName] = new Variable {
+                //                Name = parName,
+                //                Value = input,
+                //                Scope = methodContext
+                //            };
+                //        }
+
+                //        SkryptObject MethodResult = method.Execute(engine, Arguments.ToArray(), methodContext);
+
+                //        return MethodResult;
+                //    }
+                //}
+                //else if (engine.Methods.Exists((m) => m.Name == searchString)) {
+                //    SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, Arguments.ToArray(), methodContext);
+
+                //    return MethodResult;
+                //}
+                //else {
+                //    engine.throwError("Method '" + node.Body + "(" + String.Join(",", signature.Split('_').Skip(1).ToArray()) + ")' does not exist in the current context!", node.Token);
+                //}
             }
 
             return null;

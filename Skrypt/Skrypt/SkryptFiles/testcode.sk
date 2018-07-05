@@ -1,1 +1,5 @@
-print(1);
+A = func (b) {
+	Math.Round(b);
+};
+
+A(1);
