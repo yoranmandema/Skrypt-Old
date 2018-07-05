@@ -149,8 +149,6 @@ namespace Skrypt.Execution {
         }
 
         public SkryptObject ExecuteAccess (SkryptObject Object, Node node, ScopeContext scopeContext) {
-            Console.WriteLine(node);
-
             if (node.SubNodes.Count == 0) {
                 return GetProperty(Object, node.Body);
             }
@@ -327,7 +325,7 @@ namespace Skrypt.Execution {
 
                 //    engine.throwError("No such operation as " + op.Operation + " " + Left.Name, node.SubNodes[0].Token);
                 //}
-            }
+                }
             }
             else if (node.SubNodes.Count == 0) {
                 switch (node.TokenType) {

@@ -38,6 +38,10 @@ namespace Skrypt.Library.SkryptClasses {
             return new Numeric(d);
         }
 
+        public static implicit operator double(Numeric d) {
+            return d.value;
+        }
+
         public override SkryptObject _Add(SkryptObject X) {
             return new Numeric(value + ((Numeric)X).value);
         }

@@ -21,6 +21,14 @@ namespace Skrypt.Library.SkryptClasses {
             return value;
         }
 
+        public static implicit operator SkryptBoolean(bool d) {
+            return new SkryptBoolean(d);
+        }
+
+        public static implicit operator bool(SkryptBoolean d) {
+            return d.value;
+        }
+
         static public SkryptBoolean _and (SkryptBoolean A, SkryptBoolean B) {
             return new SkryptBoolean { value = A.value && B.value };
         }
