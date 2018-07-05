@@ -168,12 +168,6 @@ namespace Skrypt.Execution {
             Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
 
             if (op != null) {
-                //int Members = node.SubNodes.Count;
-
-                //if (Members < op.Members) {
-                //    engine.throwError("Missing member of operation!", node.Token);
-                //}
-
                 if (op.OperationName == "return") {
                     if (!scopeContext.subContext.InMethod) {
                         engine.throwError("Can't use return operator outside method!", node.SubNodes[0].Token);
@@ -187,10 +181,6 @@ namespace Skrypt.Execution {
                         result = new SkryptVoid();
                     }
 
-                    //if (result.Name != scopeContext.subContext.Method.ReturnType) {
-                    //    engine.throwError("Can't return '" + result.Name + "' in a method that returns '" + scopeContext.subContext.Method.ReturnType + "'!", node.Token);
-                    //}
-
                     scopeContext.subContext.ReturnObject = result;
                     return result;
                 }
@@ -198,7 +188,6 @@ namespace Skrypt.Execution {
                 if (op.OperationName == "access") {
                     SkryptObject Target = ExecuteExpression(node.SubNodes[1], scopeContext);
                     SkryptObject Result = ExecuteAccess(Target, node.SubNodes[0], scopeContext);
-                    Console.WriteLine("Accessed: " + Result);
                     return Result;
                 }
 
@@ -210,7 +199,7 @@ namespace Skrypt.Execution {
                     SkryptObject result = ExecuteExpression(node.SubNodes[1], scopeContext);
 
                     if (result.Name == "void") {
-                        engine.throwError("Can't assign to void", node.SubNodes[1].Token);
+                        engine.throwError("Can't assign to void", node.Token);
                     }
 
                     if (engine.Constants.ContainsKey(node.SubNodes[0].Body)) {
@@ -220,10 +209,6 @@ namespace Skrypt.Execution {
                     Variable foundVariable = getVariable(node.SubNodes[0].Body, scopeContext);
 
                     if (foundVariable != null) {
-                        //if (foundVariable.Value.Name != result.Name) {
-                        //    engine.throwError("Can't assign " + foundVariable.Name + " to " + result.Name, node.SubNodes[1].Token);
-                        //}
-
                         foundVariable.Value = result;
                     }
                     else {

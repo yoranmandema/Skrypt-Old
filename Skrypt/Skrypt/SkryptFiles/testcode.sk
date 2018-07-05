@@ -1,1 +1,1 @@
-a = 1.getType();
+a = print(1);
