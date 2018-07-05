@@ -405,7 +405,7 @@ namespace Skrypt.Execution {
             }
 
             if (node.TokenType == "Call") {
-                Console.WriteLine(node.SubNodes[0].SubNodes[0]);
+                //Console.WriteLine(node.SubNodes[0].SubNodes[0]);
 
                 List<SkryptObject> Arguments = new List<SkryptObject>();
                 string signature = node.Body;

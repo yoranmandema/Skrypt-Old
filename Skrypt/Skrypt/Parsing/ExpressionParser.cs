@@ -92,6 +92,7 @@ namespace Skrypt.Parsing {
             bool isIndexing = false;
             bool isArrayLiteral = false;
             bool isFunctionLiteral = false;
+            bool isChain = false;
 
             int accessEnd = 0;
 
@@ -105,16 +106,20 @@ namespace Skrypt.Parsing {
                         while (CanLoop) {
                             Console.WriteLine("Accessing from: " + TokenString(Tokens));
                             //Console.WriteLine("sub: " + TokenString(Tokens.GetRange(i, Tokens.Count - i)));
-                            skipInfo s = skipAccessChain(Tokens, i);
-                            i += s.delta;
-                            //Console.WriteLine(s.delta);
-                            Console.WriteLine(i);
-                            Console.WriteLine(Tokens.Count - 1);
-                            //Console.WriteLine(Tokens[i]);
-                            if (i == Tokens.Count && s.delta != 0) {
-                                Console.WriteLine("Whole expression is accessing");
-                                ParseChain(Tokens);
-                                return;
+                            skipInfo s = skipChain(Tokens, i);
+
+                            if (s.delta > 0) {
+                                i = s.end - 1;
+                                //Console.WriteLine(s.delta);
+                                Console.WriteLine(i);
+                                Console.WriteLine(s.start);
+                                Console.WriteLine(Tokens.Count - 1);
+                                //Console.WriteLine(Tokens[i]);
+                                if (s.start == 0 && i == Tokens.Count - 1 && s.delta != 0) {
+                                    Console.WriteLine("Whole expression is accessing");
+                                    isChain = true;
+                                    return;
+                                }
                             }
 
                             Token token = Tokens[i];
@@ -245,6 +250,10 @@ namespace Skrypt.Parsing {
                 }
             };
             loop();
+
+            if (isChain) {
+                return ParseChain(Tokens);
+            }
 
             // Parse expression within parenthesis if it's completely surrounded
             if (isInPars) {
@@ -456,7 +465,7 @@ namespace Skrypt.Parsing {
             return new skipInfo { start = start, end = end, delta = delta };
         }
 
-        public skipInfo skipAccessChain (List<Token> Tokens, int startingPoint) {
+        public skipInfo skipChain (List<Token> Tokens, int startingPoint) {
             int start = startingPoint;
             int index = startingPoint;
             int end = 0;
@@ -469,7 +478,8 @@ namespace Skrypt.Parsing {
                 if (token.Value == "(") {
                     skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, index);
                     index = skip.end + 1;
-                    Console.WriteLine(index);
+
+                    Console.WriteLine("Skip amount: " + skip.delta);
                     Console.WriteLine("Par Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
                 }
                 else if (token.Value == "[") {
@@ -479,6 +489,7 @@ namespace Skrypt.Parsing {
                 } else if (token.Value == "." || token.Type == TokenTypes.Identifier) {
                     skipInfo skip = engine.expressionParser.SkipAccess(Tokens, index);
                     index = skip.end;
+                    Console.WriteLine("Skip amount: " + skip.delta);
                     Console.WriteLine("Access Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
                 } else {
                     break;
@@ -541,7 +552,7 @@ namespace Skrypt.Parsing {
                 node.Body = "Index";
                 node.TokenType = "Index";
 
-                Console.WriteLine(node);
+                //Console.WriteLine(node);
             } else if (Reverse[0].Value == ")") {
                 skipInfo skip = SkipFromTo(")", "(", Reverse, 0);
 
@@ -574,7 +585,7 @@ namespace Skrypt.Parsing {
                 node.Body = "Call";
                 node.TokenType = "Call";
 
-                Console.WriteLine(node);
+                //Console.WriteLine(node);
             } else {
                 Console.WriteLine("access");
 
@@ -585,7 +596,7 @@ namespace Skrypt.Parsing {
                 Console.WriteLine(node);
                 node.Add(ParseChain(Tokens.GetRange(0, Tokens.Count - 2)));
 
-                Console.WriteLine(node);
+                //Console.WriteLine(node);
             }
 
             return node;
