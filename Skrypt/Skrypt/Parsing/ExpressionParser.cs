@@ -104,19 +104,19 @@ namespace Skrypt.Parsing {
                         bool CanLoop = Tokens.Count > 0;
 
                         while (CanLoop) {
-                            Console.WriteLine("Accessing from: " + TokenString(Tokens));
+                            //Console.WriteLine("Accessing from: " + TokenString(Tokens));
                             //Console.WriteLine("sub: " + TokenString(Tokens.GetRange(i, Tokens.Count - i)));
                             skipInfo s = skipChain(Tokens, i);
 
                             if (s.delta > 0) {
                                 i = s.end - 1;
                                 //Console.WriteLine(s.delta);
-                                Console.WriteLine(i);
-                                Console.WriteLine(s.start);
-                                Console.WriteLine(Tokens.Count - 1);
+                                //Console.WriteLine(i);
+                                //Console.WriteLine(s.start);
+                                //Console.WriteLine(Tokens.Count - 1);
                                 //Console.WriteLine(Tokens[i]);
                                 if (s.start == 0 && i == Tokens.Count - 1 && s.delta != 0) {
-                                    Console.WriteLine("Whole expression is accessing");
+                                    //Console.WriteLine("Whole expression is accessing");
                                     isChain = true;
                                     return;
                                 }
@@ -333,8 +333,6 @@ namespace Skrypt.Parsing {
             Token firstToken = null;
 
             while (true) {
-                Console.WriteLine("Fromto: " + Tokens[index]);
-
                 if (Tokens[index].Value == upScope) {
                     depth++;
 
@@ -457,7 +455,7 @@ namespace Skrypt.Parsing {
                 }
             }
 
-            Console.WriteLine("Last: " + Tokens[index-1]);
+            //Console.WriteLine("Last: " + Tokens[index-1]);
 
             end = index;
             int delta = index - start;
@@ -473,24 +471,24 @@ namespace Skrypt.Parsing {
             Token token = Tokens[index];
 
             while (true) {
-                Console.WriteLine(token);
+                //Console.WriteLine(token);
 
                 if (token.Value == "(") {
                     skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, index);
                     index = skip.end + 1;
 
-                    Console.WriteLine("Skip amount: " + skip.delta);
-                    Console.WriteLine("Par Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
+                    //Console.WriteLine("Skip amount: " + skip.delta);
+                    //Console.WriteLine("Par Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
                 }
                 else if (token.Value == "[") {
                     skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, index);
                     index = skip.end + 1;
-                    Console.WriteLine("Bracket Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
+                    //Console.WriteLine("Bracket Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
                 } else if (token.Value == "." || token.Type == TokenTypes.Identifier) {
                     skipInfo skip = engine.expressionParser.SkipAccess(Tokens, index);
                     index = skip.end;
-                    Console.WriteLine("Skip amount: " + skip.delta);
-                    Console.WriteLine("Access Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
+                    //Console.WriteLine("Skip amount: " + skip.delta);
+                    //Console.WriteLine("Access Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
                 } else {
                     break;
                 }
@@ -504,8 +502,8 @@ namespace Skrypt.Parsing {
             end = index;
             int delta = index - start;
 
-            Console.WriteLine("Skipped: " + delta);
-            Console.WriteLine("Skipped: " + TokenString(Tokens.GetRange(start, delta)));
+            //Console.WriteLine("Skipped: " + delta);
+            //Console.WriteLine("Skipped: " + TokenString(Tokens.GetRange(start, delta)));
 
             return new skipInfo { start = start, end = end, delta = delta };
         }
@@ -513,7 +511,7 @@ namespace Skrypt.Parsing {
         public Node ParseChain (List<Token> Tokens) {
             Node node = new Node();
 
-            Console.WriteLine("Count: " + Tokens.Count);
+            //Console.WriteLine("Count: " + Tokens.Count);
 
             if (Tokens.Count == 1) {
                 return ParseExpression(node, Tokens);
@@ -523,7 +521,7 @@ namespace Skrypt.Parsing {
             Reverse.Reverse();
 
             // Get last part of the chain tokens
-            Console.WriteLine("First: " + Reverse[0]);
+            //Console.WriteLine("First: " + Reverse[0]);
 
             if (Reverse[0].Value == "]") {
                 skipInfo skip = SkipFromTo("]", "[", Reverse, 0);
@@ -540,13 +538,13 @@ namespace Skrypt.Parsing {
                 getterNode.Body = "Getter";
                 getterNode.TokenType = "Getter";
 
-                Console.WriteLine("Getter: " + TokenString(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
+                //Console.WriteLine("Getter: " + TokenString(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
 
                 node.Add(getterNode);
 
                 List<Token> ExpressionTokens = Reverse.GetRange(1, skip.end - 1);
                 ExpressionTokens.Reverse();
-                Console.WriteLine("Expression: " + TokenString(ExpressionTokens));
+                //Console.WriteLine("Expression: " + TokenString(ExpressionTokens));
                 node.Add(ParseExpression(node, ExpressionTokens));
 
                 node.Body = "Index";
@@ -568,13 +566,13 @@ namespace Skrypt.Parsing {
                 getterNode.Body = "Getter";
                 getterNode.TokenType = "Getter";
 
-                Console.WriteLine("Getter: " + TokenString(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
+                //Console.WriteLine("Getter: " + TokenString(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
 
                 node.Add(getterNode);
 
                 List<Token> ArgumentTokens = Reverse.GetRange(0, skip.end + 1);
                 ArgumentTokens.Reverse();
-                Console.WriteLine("Arguments: " + TokenString(ArgumentTokens));
+                //Console.WriteLine("Arguments: " + TokenString(ArgumentTokens));
 
                 ParseResult result = engine.generalParser.parseSurroundedExpressions("(", ")", 0, ArgumentTokens);
                 Node argumentsNode = result.node;
