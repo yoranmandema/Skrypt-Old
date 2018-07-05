@@ -46,6 +46,7 @@ namespace Skrypt.Parsing {
         static List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup> {
             new OperatorGroup(new[] {new Op_Return()}, false, 1),
             new OperatorGroup(new[] {new Op_Assign()}, false),
+            new OperatorGroup(new[] {new Op_Access()}, false, 2, false),
             new OperatorGroup(new[] {new Op_Or()}),
             new OperatorGroup(new[] {new Op_And()}),
             new OperatorGroup(new Operator[] {new Op_NotEqual(),new Op_Equal()}),
@@ -55,7 +56,6 @@ namespace Skrypt.Parsing {
             new OperatorGroup(new[] {new Op_Power()}),
             new OperatorGroup(new Operator[] { new Op_Negate(), new Op_Not() }, false, 1),
             new OperatorGroup(new Operator[] { new Op_PostInc(), new Op_PostDec() }, false, 1, true),
-                        new OperatorGroup(new[] {new Op_Access()}, false, 2, false),
         };
 
         // (debug) Serializes a list of tokens into a string
@@ -102,9 +102,23 @@ namespace Skrypt.Parsing {
                         int i = 0;
                         bool CanLoop = Tokens.Count > 0;
 
-                        while (CanLoop) {                      
+                        while (CanLoop) {
+                            Console.WriteLine("Accessing from: " + TokenString(Tokens));
+                            //Console.WriteLine("sub: " + TokenString(Tokens.GetRange(i, Tokens.Count - i)));
+                            skipInfo s = skipAccessChain(Tokens, i);
+                            i += s.delta;
+                            //Console.WriteLine(s.delta);
+                            Console.WriteLine(i);
+                            Console.WriteLine(Tokens.Count - 1);
+                            //Console.WriteLine(Tokens[i]);
+                            if (i == Tokens.Count && s.delta != 0) {
+                                Console.WriteLine("Whole expression is accessing");
+                                ParseChain(Tokens);
+                                return;
+                            }
+
                             Token token = Tokens[i];
-                            Token previousToken = i >= 1 ? Tokens[i-1] : null;
+                            Token previousToken = i >= 1 ? Tokens[i - 1] : null;
 
                             if (token.Value == "func") {
                                 skipInfo skip = engine.expectValue("(", Tokens, i);
@@ -131,15 +145,10 @@ namespace Skrypt.Parsing {
                                 if (previousToken != null) {
                                     // Previous token was identifier; possible method call
                                     if (previousToken.Type == TokenTypes.Identifier) {
-                                        skipInfo skip = SkipAccessing(Tokens, 0);
-
-                                        accessEnd = skip.end;
-                                        int iAtEnd = i;
-
-                                        skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
+                                        skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
                                         i += skip.delta;
 
-                                        if (accessEnd == iAtEnd && skip.end == Tokens.Count - 1) {
+                                        if (skip.start == 1 && skip.end == Tokens.Count - 1) {
                                             isMethodCall = true;
                                             Console.WriteLine("Method call tokens: " + TokenString(Tokens));
                                             return;
@@ -310,11 +319,13 @@ namespace Skrypt.Parsing {
         public skipInfo SkipFromTo(string upScope, string downScope, List<Token> Tokens, int startingPoint = 0) {
             int start = startingPoint;
             int depth = 0;
-            int index = 0;
+            int index = startingPoint;
             int end = 0;
             Token firstToken = null;
 
             while (true) {
+                Console.WriteLine("Fromto: " + Tokens[index]);
+
                 if (Tokens[index].Value == upScope) {
                     depth++;
 
@@ -358,7 +369,7 @@ namespace Skrypt.Parsing {
                     engine.throwError("Token '" + Comparator + "' expected", startToken);
                 }
             }
-        }
+        }   
 
         public skipInfo SkipAccessing (List<Token> Tokens, int startingPoint = 0) {
             int start = startingPoint;
@@ -367,6 +378,12 @@ namespace Skrypt.Parsing {
             int state = 1;
 
             Token nextToken = Tokens[index];
+
+            if (nextToken.Type == TokenTypes.Identifier) {
+                state = 1;
+            } else if (nextToken.Value == ".") {
+                state = 0;
+            }
 
             while (true) {
                 if (state == 1) {
@@ -391,6 +408,187 @@ namespace Skrypt.Parsing {
             int delta = index - start;
 
             return new skipInfo { start = start, end = end, delta = delta };
+        }
+
+        public skipInfo SkipAccess (List<Token> Tokens, int startingPoint = 0) {
+            int start = startingPoint;
+            int index = startingPoint;
+            int end = 0;
+            int state = 0;
+            Token token = Tokens[index];
+            
+            if (token.Type == TokenTypes.Identifier) {
+                state = 0;
+            }
+
+            if (token.Value == ".") {
+                state = 1;
+            }
+
+            while (true) {
+                if (token.Type == TokenTypes.Identifier && state == 0) {
+                    state = 1;
+                } else if (token.Value == "." && state == 1) {
+                    state = 0;
+                } else {
+                    break;
+                }
+
+                index++;
+
+                if (index == Tokens.Count)
+                    break;
+
+                token = Tokens[index];
+            }
+
+            if (index > 0) {
+                if (Tokens[index - 1].Value == ".") {
+                    engine.throwError("Identifier expected!", Tokens[index - 1]);
+                }
+            }
+
+            Console.WriteLine("Last: " + Tokens[index-1]);
+
+            end = index;
+            int delta = index - start;
+
+            return new skipInfo { start = start, end = end, delta = delta };
+        }
+
+        public skipInfo skipAccessChain (List<Token> Tokens, int startingPoint) {
+            int start = startingPoint;
+            int index = startingPoint;
+            int end = 0;
+
+            Token token = Tokens[index];
+
+            while (true) {
+                Console.WriteLine(token);
+
+                if (token.Value == "(") {
+                    skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, index);
+                    index = skip.end + 1;
+                    Console.WriteLine(index);
+                    Console.WriteLine("Par Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
+                }
+                else if (token.Value == "[") {
+                    skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, index);
+                    index = skip.end + 1;
+                    Console.WriteLine("Bracket Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
+                } else if (token.Value == "." || token.Type == TokenTypes.Identifier) {
+                    skipInfo skip = engine.expressionParser.SkipAccess(Tokens, index);
+                    index = skip.end;
+                    Console.WriteLine("Access Skipped: " + TokenString(Tokens.GetRange(skip.start, index - skip.start)));
+                } else {
+                    break;
+                }
+
+                if (index == Tokens.Count)
+                    break;
+
+                token = Tokens[index];
+            }
+
+            end = index;
+            int delta = index - start;
+
+            Console.WriteLine("Skipped: " + delta);
+            Console.WriteLine("Skipped: " + TokenString(Tokens.GetRange(start, delta)));
+
+            return new skipInfo { start = start, end = end, delta = delta };
+        }
+
+        public Node ParseChain (List<Token> Tokens) {
+            Node node = new Node();
+
+            Console.WriteLine("Count: " + Tokens.Count);
+
+            if (Tokens.Count == 1) {
+                return ParseExpression(node, Tokens);
+            }
+
+            List<Token> Reverse = Tokens.GetRange(0,Tokens.Count);
+            Reverse.Reverse();
+
+            // Get last part of the chain tokens
+            Console.WriteLine("First: " + Reverse[0]);
+
+            if (Reverse[0].Value == "]") {
+                skipInfo skip = SkipFromTo("]", "[", Reverse, 0);
+
+                if (skip.end + 1 >= Reverse.Count) {
+                    engine.throwError("Indexing operator needs left hand value!", Reverse[skip.end]);
+                }
+                else if (Reverse[skip.end + 1].Value == ".") {
+                    engine.throwError("Indexing operator needs left hand value!", Reverse[skip.end]);
+                }
+
+                Node getterNode = new Node();
+                getterNode.Add(ParseChain(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
+                getterNode.Body = "Getter";
+                getterNode.TokenType = "Getter";
+
+                Console.WriteLine("Getter: " + TokenString(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
+
+                node.Add(getterNode);
+
+                List<Token> ExpressionTokens = Reverse.GetRange(1, skip.end - 1);
+                ExpressionTokens.Reverse();
+                Console.WriteLine("Expression: " + TokenString(ExpressionTokens));
+                node.Add(ParseExpression(node, ExpressionTokens));
+
+                node.Body = "Index";
+                node.TokenType = "Index";
+
+                Console.WriteLine(node);
+            } else if (Reverse[0].Value == ")") {
+                skipInfo skip = SkipFromTo(")", "(", Reverse, 0);
+
+                if (skip.end + 1 >= Reverse.Count) {
+                    engine.throwError("Call operator needs left hand value!", Reverse[skip.end]);
+                }
+                else if (Reverse[skip.end + 1].Value == ".") {
+                    engine.throwError("Call operator needs left hand value!", Reverse[skip.end]);
+                }
+
+                Node getterNode = new Node();
+                getterNode.Add(ParseChain(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
+                getterNode.Body = "Getter";
+                getterNode.TokenType = "Getter";
+
+                Console.WriteLine("Getter: " + TokenString(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
+
+                node.Add(getterNode);
+
+                List<Token> ArgumentTokens = Reverse.GetRange(0, skip.end + 1);
+                ArgumentTokens.Reverse();
+                Console.WriteLine("Arguments: " + TokenString(ArgumentTokens));
+
+                ParseResult result = engine.generalParser.parseSurroundedExpressions("(", ")", 0, ArgumentTokens);
+                Node argumentsNode = result.node;
+                argumentsNode.Body = "Arguments";
+                argumentsNode.TokenType = "Arguments";
+                node.Add(argumentsNode);
+
+                node.Body = "Call";
+                node.TokenType = "Call";
+
+                Console.WriteLine(node);
+            } else {
+                Console.WriteLine("access");
+
+                node.Body = "access";
+                node.TokenType = "" + TokenTypes.Punctuator;
+
+                node.Add(ParseExpression(node,new List<Token> { Reverse[0] }));
+                Console.WriteLine(node);
+                node.Add(ParseChain(Tokens.GetRange(0, Tokens.Count - 2)));
+
+                Console.WriteLine(node);
+            }
+
+            return node;
         }
 
         /// <summary>
