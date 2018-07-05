@@ -34,6 +34,40 @@ namespace Skrypt.Library.Reflection {
                 Object.Properties.Add(property);
             }
 
+            var Fields = Class.GetFields().Where((f) => {
+                Console.WriteLine(f.FieldType.IsSubclassOf(typeof(SkryptObject)));
+
+                if (!f.FieldType.IsSubclassOf(typeof(SkryptObject))) {
+                    return false;
+                }
+
+                return f.IsPublic;
+            });
+
+            foreach (FieldInfo F in Fields) {
+                SkryptProperty property = new SkryptProperty {
+                    Name = F.Name,
+                    Value = (SkryptObject)F.GetValue(null),
+                    Accessibility = Access.Public
+                };
+
+                Object.Properties.Add(property);
+            }
+
+            var Classes = Class.GetNestedTypes();
+
+            foreach (TypeInfo C in Classes) {
+                Console.WriteLine(C);
+
+                SkryptProperty property = new SkryptProperty {
+                    Name = C.Name,
+                    Value = MakeObjectFromClass(C),
+                    Accessibility = Access.Public
+                };
+
+                Object.Properties.Add(property);
+            }
+
             return Object;
         }
     }

@@ -55,6 +55,7 @@
     <Compile Include="Library\Native\Math.cs" />
     <Compile Include="Library\Native\Standard.cs" />
     <Compile Include="Library\Native\StandardMethods.cs" />
+    <Compile Include="Library\Native\System.cs" />
     <Compile Include="Library\Operators.cs" />
     <Compile Include="Library\Reflection\ObjectGenerator.cs" />
     <Compile Include="Library\SkryptClasses\Array.cs" />

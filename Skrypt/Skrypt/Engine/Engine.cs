@@ -52,13 +52,14 @@ namespace Skrypt.Engine {
 
             standardMethods.AddMethodsToEngine();
 
-            Console.WriteLine(GlobalScope);
-
             Constants["_PI"] = new Numeric(Math.PI);
             Constants["_E"] = new Numeric(Math.E);
 
-            SkryptObject math = ObjectGenerator.MakeObjectFromClass(typeof(SkryptMath));
-            GlobalScope.AddVariable("Math", math, true);
+            SkryptObject SystemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System));
+
+            foreach (SkryptProperty property in SystemObject.Properties) {
+                GlobalScope.AddVariable(property.Name, property.Value, true);
+            }
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.

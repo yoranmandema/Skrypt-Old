@@ -15,5 +15,13 @@ namespace Skrypt.Execution {
 
             return (Numeric)Args[Index];
         }
+
+        public static SkryptObject ToAny(SkryptObject[] Args, int Index) {
+            if (Index > Args.Length - 1) {
+                return new SkryptNull();
+            }
+
+            return Args[Index];
+        }
     }
 }

@@ -585,13 +585,10 @@ namespace Skrypt.Parsing {
 
                 //Console.WriteLine(node);
             } else {
-                Console.WriteLine("access");
-
                 node.Body = "access";
                 node.TokenType = "" + TokenTypes.Punctuator;
 
                 node.Add(ParseExpression(node,new List<Token> { Reverse[0] }));
-                Console.WriteLine(node);
                 node.Add(ParseChain(Tokens.GetRange(0, Tokens.Count - 2)));
 
                 //Console.WriteLine(node);
