@@ -29,7 +29,7 @@ namespace Skrypt.Library.Native {
                 return d.value;
             }
 
-            new public List<Operation> Operations = new List<Operation> {
+            public new List<Operation> Operations = new List<Operation> {
                 new Operation("add",typeof(String),typeof(SkryptObject),
                     (SkryptObject[] Input) => {
                         var a = TypeConverter.ToString(Input,0);

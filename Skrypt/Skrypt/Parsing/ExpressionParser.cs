@@ -281,7 +281,7 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Sets parses individual arguments as expressions
         /// </summary>
-        static public void SetArguments(List<List<Token>> Arguments, List<Token> Tokens) {
+        public static void SetArguments(List<List<Token>> Arguments, List<Token> Tokens) {
             int depth = 0;
             int indexDepth = 0;
             int i = 0;
