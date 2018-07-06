@@ -1,1 +1,2 @@
-print(Math.Clamp(1,3,4));
+a = true;
+print(Numeric());

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Engine;
-using Skrypt.Library.SkryptClasses;
 using System.Reflection;
 
 namespace Skrypt.Library.Native {

@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Skrypt.Parsing;
 using Skrypt.Execution;
 using Skrypt.Engine;
-using Skrypt.Library.SkryptClasses;
 
 namespace Skrypt.Library {
     public delegate SkryptObject SkryptDelegate(SkryptObject[] input);
@@ -35,7 +34,7 @@ namespace Skrypt.Library {
             SkryptObject ReturnVariable = ResultingScope.subContext.ReturnObject;
 
             if (ReturnVariable == null) {
-                ReturnVariable = new SkryptVoid();
+                ReturnVariable = new Native.System.Void();
             }
 
             return ReturnVariable;

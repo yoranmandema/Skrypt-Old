@@ -11,7 +11,6 @@ using Skrypt.Execution;
 using Skrypt.Library;
 using System.Diagnostics; // Using this so we can check how fast everything is happening
 using Skrypt.Library.Native;
-using Skrypt.Library.SkryptClasses;
 using Skrypt.Library.Reflection;
 
 namespace Skrypt.Engine {
@@ -52,8 +51,8 @@ namespace Skrypt.Engine {
 
             standardMethods.AddMethodsToEngine();
 
-            Constants["_PI"] = new Numeric(Math.PI);
-            Constants["_E"] = new Numeric(Math.E);
+            //Constants["_PI"] = new Numeric(Math.PI);
+            //Constants["_E"] = new Numeric(Math.E);
 
             SkryptObject SystemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System));
 

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Skrypt.Library.SkryptClasses;
 using Skrypt.Execution;
 
 namespace Skrypt.Library.Native {
@@ -13,7 +12,7 @@ namespace Skrypt.Library.Native {
 
             Console.WriteLine(a);
 
-            return new SkryptVoid();
-        }
+            return new Void();
+        }      
     }
 }

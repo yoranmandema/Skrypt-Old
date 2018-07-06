@@ -4,21 +4,21 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Library;
-using Skrypt.Library.SkryptClasses;
+using Sys = Skrypt.Library.Native.System;
 
 namespace Skrypt.Execution {
     static class TypeConverter {
-        public static Numeric ToNumeric (SkryptObject[] Args, int Index) {
+        public static Sys.Numeric ToNumeric (SkryptObject[] Args, int Index) {
             if (Index > Args.Length - 1) {
-                return new Numeric(0);
+                return new Sys.Numeric(0);
             }
 
-            return (Numeric)Args[Index];
+            return (Sys.Numeric)Args[Index];
         }
 
         public static SkryptObject ToAny(SkryptObject[] Args, int Index) {
             if (Index > Args.Length - 1) {
-                return new SkryptNull();
+                return new Sys.Void();
             }
 
             return Args[Index];

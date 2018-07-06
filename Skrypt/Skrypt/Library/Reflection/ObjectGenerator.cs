@@ -15,12 +15,20 @@ namespace Skrypt.Library.Reflection {
                     return false;
                 }
 
+                if (m.GetParameters().Count() != 1) {
+                    return false;
+                }
+
+                if (m.GetParameters()[0].ParameterType != typeof(SkryptObject[])) {
+                    return false;
+                }
+
                 return m.IsPublic;
             });
 
             foreach (MethodInfo M in Methods) {
                 SharpMethod Method = new SharpMethod();
-
+                Console.WriteLine(M);
                 Method.method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate),M);
 
                 Method.Name = M.Name;
@@ -35,8 +43,6 @@ namespace Skrypt.Library.Reflection {
             }
 
             var Fields = Class.GetFields().Where((f) => {
-                Console.WriteLine(f.FieldType.IsSubclassOf(typeof(SkryptObject)));
-
                 if (!f.FieldType.IsSubclassOf(typeof(SkryptObject))) {
                     return false;
                 }
@@ -58,10 +64,15 @@ namespace Skrypt.Library.Reflection {
 
             foreach (TypeInfo C in Classes) {
                 Console.WriteLine(C);
+                SkryptObject v;
+
+                v = MakeObjectFromClass(C);
+
+                Console.WriteLine("Value: " + v + " (" + C.Name + ")");
 
                 SkryptProperty property = new SkryptProperty {
                     Name = C.Name,
-                    Value = MakeObjectFromClass(C),
+                    Value = v,
                     Accessibility = Access.Public
                 };
 

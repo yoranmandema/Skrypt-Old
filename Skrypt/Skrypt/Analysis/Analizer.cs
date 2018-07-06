@@ -7,7 +7,6 @@ using Skrypt.Engine;
 using Skrypt.Parsing;
 using Skrypt.Execution;
 using Skrypt.Library;
-using Skrypt.Library.SkryptClasses;
 using System.Reflection;
 
 namespace Skrypt.Analysis {

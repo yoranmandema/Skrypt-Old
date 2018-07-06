@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Skrypt.Library.SkryptClasses;
 using System.Reflection;
 using Skrypt.Library;
 using Skrypt.Engine;
 using Skrypt.Parsing;
+using Skrypt.Library.Native;
 
 namespace Skrypt.Execution {
     public class Executor {
@@ -176,7 +176,7 @@ namespace Skrypt.Execution {
                     if (node.SubNodes.Count == 1) {
                         result = ExecuteExpression(node.SubNodes[0], scopeContext);
                     } else {
-                        result = new SkryptVoid();
+                        result = new Library.Native.System.Void();
                     }
 
                     scopeContext.subContext.ReturnObject = result;
@@ -226,22 +226,22 @@ namespace Skrypt.Execution {
 
                     try {
                         switch (op.OperationName) {
-                            case "add":
-                                return Left._Add(Right);
-                            case "subtract":
-                                return Left._Subtract(Right);
-                            case "multiply":
-                                return Left._Multiply(Right);
-                            case "divide":
-                                return Left._Divide(Right);
-                            case "modulo":
-                                return Left._Modulo(Right);
-                            case "lesser":
-                                return Left._Lesser(Right);
-                            case "greater":
-                                return Left._Greater(Right);
-                            case "equal":
-                                return Left._Equal(Right);
+                            //case "add":
+                            //    return Left._Add(Right);
+                            //case "subtract":
+                            //    return Left._Subtract(Right);
+                            //case "multiply":
+                            //    return Left._Multiply(Right);
+                            //case "divide":
+                            //    return Left._Divide(Right);
+                            //case "modulo":
+                            //    return Left._Modulo(Right);
+                            //case "lesser":
+                            //    return Left._Lesser(Right);
+                            //case "greater":
+                            //    return Left._Greater(Right);
+                            //case "equal":
+                            //    return Left._Equal(Right);
                             default:
                                 throw new Exception();
                         }
@@ -294,8 +294,8 @@ namespace Skrypt.Execution {
 
                     try {
                         switch (op.OperationName) {
-                            case "postincrement":
-                                return Left._PostIncrement();
+                            //case "postincrement":
+                            //    return Left._PostIncrement();
                             default:
                                 throw new Exception();
                         }
@@ -330,21 +330,50 @@ namespace Skrypt.Execution {
             else if (node.SubNodes.Count == 0) {
                 switch (node.TokenType) {
                     case "NumericLiteral":
-                        return new Numeric (Double.Parse(node.Body));
+                        //return new Numeric (Double.Parse(node.Body));
+
+                        //Library.Native.System.Numeric numericValue = (Library.Native.System.Numeric)getVariable("Numeric",scopeContext).Value.Clone();
+                        //numericValue.value = Double.Parse(node.Body);
+                        //Console.WriteLine("Number value: " + numericValue);
+
+                        //return numericValue;
+
+                        return new Library.Native.System.Numeric(Double.Parse(node.Body));
                     case "StringLiteral":
-                        return new SkryptString {
-                            value = node.Body,
-                        };
+                        //return new SkryptString {
+                        //    value = node.Body,
+                        //};
+
+                        //Library.Native.System.String stringValue = (Library.Native.System.String)getVariable("String", scopeContext).Value.Clone();
+                        //stringValue.value = node.Body;
+                        //Console.WriteLine("String value: " + stringValue);
+
+                        //return stringValue;
+
+                        return new Library.Native.System.String(node.Body);
                     case "BooleanLiteral":
-                        return new SkryptBoolean {
-                            value = node.Body == "true" ? true : false,
-                        };
+                        //return new SkryptBoolean {
+                        //    value = node.Body == "true" ? true : false,
+                        //};
+
+                        //Library.Native.System.Boolean boolValue = (Library.Native.System.Boolean)getVariable("Boolean", scopeContext).Value.Clone();
+                        //boolValue.value = node.Body == "true" ? true : false;
+                        //Console.WriteLine("Boolean value: " + boolValue);
+
+                        return new Library.Native.System.Boolean(node.Body == "true" ? true : false);
                     case "NullLiteral":
-                        return new SkryptNull ();
+                        //return new SkryptNull ();
+
+                        //Library.Native.System.Null nullValue = (Library.Native.System.Null)getVariable("Null", scopeContext).Value.Clone();
+                        //Console.WriteLine("Null value: " + nullValue);
+
+                        return new Library.Native.System.Null();
                 }
             }
             else if (node.TokenType == "ArrayLiteral") {
-                SkryptArray array = new SkryptArray ();
+                //SkryptArray array = new SkryptArray ();
+
+                Library.Native.System.Array array = new Library.Native.System.Array();
 
                 foreach (Node subNode in node.SubNodes) {
                     SkryptObject Result = ExecuteExpression(subNode, scopeContext);
@@ -410,6 +439,15 @@ namespace Skrypt.Execution {
                 }
 
                 SkryptObject Method = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
+
+                if (Method.GetType() != typeof(SharpMethod)) {
+                    var Find = Method.Properties.Find((x) => x.Name == "Constructor");
+
+                    if (Find != null) {
+                        Method = Find.Value;
+                    }
+                }
+
                 Console.WriteLine("Method that we're calling: " + Method);
 
                 if (Method.GetType() == typeof(UserMethod)) {
@@ -423,7 +461,7 @@ namespace Skrypt.Execution {
                             input = Arguments[i];
                         }
                         else {
-                            input = new SkryptNull();
+                            input = new Library.Native.System.Null();
                         }
 
                         methodContext.Variables[parName] = new Variable {
@@ -487,56 +525,56 @@ namespace Skrypt.Execution {
             return null;
         }
 
-        public SkryptObject Invoke (string Name, params object[] arguments) {
-            string signature = Name;
-            string searchString = Name;
-            ScopeContext methodContext = new ScopeContext {
-                ParentScope = engine.GlobalScope
-            };
+        //public SkryptObject Invoke (string Name, params object[] arguments) {
+        //    string signature = Name;
+        //    string searchString = Name;
+        //    ScopeContext methodContext = new ScopeContext {
+        //        ParentScope = engine.GlobalScope
+        //    };
 
-            SkryptObject[] parameters = new SkryptObject[arguments.Length];
+        //    SkryptObject[] parameters = new SkryptObject[arguments.Length];
 
-            for (int i = 0; i < arguments.Length; i++) {
-                object arg = arguments[i];
+        //    for (int i = 0; i < arguments.Length; i++) {
+        //        object arg = arguments[i];
 
-                if (arg.GetType() == typeof(int) || arg.GetType() == typeof(float) || arg.GetType() == typeof(double)) {
-                    parameters[i] = new Numeric(Convert.ToDouble(arg));
-                } else if (arg.GetType() == typeof(string)) {
-                    parameters[i] = new SkryptString { value = (string)arg };
-                } else if (arg.GetType() == typeof(bool)) {
-                    parameters[i] = new SkryptBoolean { value = (bool)arg };
-                }
+        //        if (arg.GetType() == typeof(int) || arg.GetType() == typeof(float) || arg.GetType() == typeof(double)) {
+        //            parameters[i] = new Numeric(Convert.ToDouble(arg));
+        //        } else if (arg.GetType() == typeof(string)) {
+        //            parameters[i] = new SkryptString { value = (string)arg };
+        //        } else if (arg.GetType() == typeof(bool)) {
+        //            parameters[i] = new SkryptBoolean { value = (bool)arg };
+        //        }
 
-                i++;
-            }
+        //        i++;
+        //    }
 
-            foreach (SkryptObject parameter in parameters) {
-                if (parameter.Name == "void") {
-                    throw new SkryptException("Can't pass void into arguments!");
-                }
+        //    foreach (SkryptObject parameter in parameters) {
+        //        if (parameter.Name == "void") {
+        //            throw new SkryptException("Can't pass void into arguments!");
+        //        }
 
-                signature += "_" + parameter.Name;
-            }
+        //        signature += "_" + parameter.Name;
+        //    }
 
-            foreach (Node method in engine.MethodNodes) {
-                if (method.Body == signature) {
-                    searchString = signature;
+        //    foreach (Node method in engine.MethodNodes) {
+        //        if (method.Body == signature) {
+        //            searchString = signature;
 
-                    for (int i = 0; i < method.SubNodes[0].SubNodes.Count; i++) {
-                        Node par = method.SubNodes[0].SubNodes[i];
-                        methodContext.Variables[par.Body].Value = parameters[i];
-                    }
-                }
-            }
+        //            for (int i = 0; i < method.SubNodes[0].SubNodes.Count; i++) {
+        //                Node par = method.SubNodes[0].SubNodes[i];
+        //                methodContext.Variables[par.Body].Value = parameters[i];
+        //            }
+        //        }
+        //    }
 
-            if (engine.Methods.Exists((m) => m.Name == searchString)) {
-                SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, parameters, methodContext);
+        //    if (engine.Methods.Exists((m) => m.Name == searchString)) {
+        //        SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, parameters, methodContext);
 
-                return MethodResult;
-            }
-            else {
-                throw new SkryptException("Method '" + Name + "(" + String.Join(",", signature.Split('_').Skip(1).ToArray()) + ")' does not exist!");
-            }
-        }
+        //        return MethodResult;
+        //    }
+        //    else {
+        //        throw new SkryptException("Method '" + Name + "(" + String.Join(",", signature.Split('_').Skip(1).ToArray()) + ")' does not exist!");
+        //    }
+        //}
     }
 }

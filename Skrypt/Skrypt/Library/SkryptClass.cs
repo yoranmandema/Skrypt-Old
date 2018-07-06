@@ -17,20 +17,24 @@ namespace Skrypt.Library {
         public delegate SkryptObject operation(SkryptObject A, SkryptObject B);
         public Dictionary<string, operation> Operations;// = new Dictionary<string, operation>();
 
-        public virtual SkryptObject _Add(SkryptObject X) {throw new Exception();}
-        public virtual SkryptObject _Subtract(SkryptObject X) { throw new Exception(); }
-        public virtual SkryptObject _Multiply(SkryptObject X) { throw new Exception(); }
-        public virtual SkryptObject _Divide(SkryptObject X) { throw new Exception(); }
-        public virtual SkryptObject _Modulo(SkryptObject X) { throw new Exception(); }
+        //public virtual SkryptObject _Add(SkryptObject X) {throw new Exception();}
+        //public virtual SkryptObject _Subtract(SkryptObject X) { throw new Exception(); }
+        //public virtual SkryptObject _Multiply(SkryptObject X) { throw new Exception(); }
+        //public virtual SkryptObject _Divide(SkryptObject X) { throw new Exception(); }
+        //public virtual SkryptObject _Modulo(SkryptObject X) { throw new Exception(); }
 
-        public virtual SkryptObject _Lesser(SkryptObject X) { throw new Exception(); }
-        public virtual SkryptObject _Greater(SkryptObject X) { throw new Exception(); }
-        public virtual SkryptObject _Equal(SkryptObject X) { throw new Exception(); }
+        //public virtual SkryptObject _Lesser(SkryptObject X) { throw new Exception(); }
+        //public virtual SkryptObject _Greater(SkryptObject X) { throw new Exception(); }
+        //public virtual SkryptObject _Equal(SkryptObject X) { throw new Exception(); }
 
-        public virtual SkryptObject _PostIncrement() { throw new Exception(); }
+        //public virtual SkryptObject _PostIncrement() { throw new Exception(); }
 
         public virtual bool ToBoolean () {
             return true;
+        }
+
+        public SkryptObject Clone () {
+            return (SkryptObject)MemberwiseClone();
         }
 
         public string toJSON () {
