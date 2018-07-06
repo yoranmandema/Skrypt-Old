@@ -28,7 +28,6 @@ namespace Skrypt.Library.Reflection {
 
             foreach (MethodInfo M in Methods) {
                 SharpMethod Method = new SharpMethod();
-                Console.WriteLine(M);
                 Method.method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate),M);
 
                 Method.Name = M.Name;
@@ -63,12 +62,9 @@ namespace Skrypt.Library.Reflection {
             var Classes = Class.GetNestedTypes();
 
             foreach (TypeInfo C in Classes) {
-                Console.WriteLine(C);
                 SkryptObject v;
 
                 v = MakeObjectFromClass(C);
-
-                Console.WriteLine("Value: " + v + " (" + C.Name + ")");
 
                 SkryptProperty property = new SkryptProperty {
                     Name = C.Name,

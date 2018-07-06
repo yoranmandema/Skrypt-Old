@@ -1,2 +1,7 @@
 a = true;
-print(Numeric());
+b = 0;
+
+while (b < 100000) {
+	a = !a;
+	b++;
+}

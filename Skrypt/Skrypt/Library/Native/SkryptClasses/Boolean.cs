@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Skrypt.Execution;
 
 namespace Skrypt.Library.Native {
     partial class System {
@@ -18,10 +19,6 @@ namespace Skrypt.Library.Native {
                 value = v;
             }
 
-            public override bool ToBoolean() {
-                return value;
-            }
-
             public static implicit operator Boolean(bool d) {
                 return new Boolean(d);
             }
@@ -30,20 +27,35 @@ namespace Skrypt.Library.Native {
                 return d.value;
             }
 
-            static public Boolean _and(Boolean A, Boolean B) {
-                return new Boolean { value = A.value && B.value };
-            }
+            new public List<Operation> Operations = new List<Operation> {
+                new Operation("and",typeof(Boolean),typeof(Boolean),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToBoolean(Input,0);
+                        var b = TypeConverter.ToBoolean(Input,1);
 
-            static public Boolean _or(Boolean A, Boolean B) {
-                return new Boolean { value = A.value || B.value };
-            }
+                        return new Boolean(a && b);
+                    }),
+                new Operation("or",typeof(Boolean),typeof(Boolean),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToBoolean(Input,0);
+                        var b = TypeConverter.ToBoolean(Input,1);
 
-            static public Boolean _not(Boolean A) {
-                return new Boolean { value = !A.value };
-            }
+                        return new Boolean(a || b);
+                    }),
+                new Operation("not",typeof(Boolean),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToBoolean(Input,0);
+
+                        return new Boolean(!a);
+                    }),
+            };
 
             public override string ToString() {
                 return value.ToString();
+            }
+
+            public override Boolean ToBoolean() {
+                return value;
             }
         }
     }

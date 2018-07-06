@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Skrypt.Execution;
 
 namespace Skrypt.Library.Native {
-    partial class System {
+    public partial class System {
         static public SkryptObject print(SkryptObject[] Values) {
             var a = TypeConverter.ToAny(Values, 0);
 

@@ -11,7 +11,7 @@ namespace Skrypt.Library.Native {
                 Name = "null";
             }
 
-            public override bool ToBoolean() {
+            public override Boolean ToBoolean() {
                 return false;
             }
         }

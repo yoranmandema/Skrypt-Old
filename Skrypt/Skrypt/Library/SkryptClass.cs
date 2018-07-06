@@ -8,28 +8,60 @@ using Skrypt.Execution;
 using Newtonsoft.Json;
 
 namespace Skrypt.Library {
+    public delegate SkryptObject OperationDelegate(SkryptObject[] Input);
+
+    public class Operation {
+        public string Name;
+        public Type TypeLeft;
+        public Type TypeRight;
+        public OperationDelegate operation;
+
+        public Operation(string N, Type TL, Type TR, OperationDelegate DEL) {
+            Name = N;
+            TypeLeft = TL;
+            TypeRight = TR;
+            operation = DEL;
+        }
+
+        public Operation(string N, Type TL, OperationDelegate DEL) {
+            Name = N;
+            TypeLeft = TL;
+            TypeRight = null;
+            operation = DEL;
+        }
+    }
+
     public class SkryptObject {
         public string Name { get; set; }
-        //[JsonIgnore]
-        //public ScopeContext Scope { get; set; }
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
 
-        public delegate SkryptObject operation(SkryptObject A, SkryptObject B);
-        public Dictionary<string, operation> Operations;// = new Dictionary<string, operation>();
+        public List<Operation> Operations = new List<Operation>();
 
-        //public virtual SkryptObject _Add(SkryptObject X) {throw new Exception();}
-        //public virtual SkryptObject _Subtract(SkryptObject X) { throw new Exception(); }
-        //public virtual SkryptObject _Multiply(SkryptObject X) { throw new Exception(); }
-        //public virtual SkryptObject _Divide(SkryptObject X) { throw new Exception(); }
-        //public virtual SkryptObject _Modulo(SkryptObject X) { throw new Exception(); }
+        public Operation GetOperation (string N, Type TL, Type TR, List<Operation> Ops) {
+            for (int i = 0; i <Ops.Count; i++) {
+                Operation Op = Ops[i];
 
-        //public virtual SkryptObject _Lesser(SkryptObject X) { throw new Exception(); }
-        //public virtual SkryptObject _Greater(SkryptObject X) { throw new Exception(); }
-        //public virtual SkryptObject _Equal(SkryptObject X) { throw new Exception(); }
+                if (Op.Name != N) {
+                    continue;
+                }
 
-        //public virtual SkryptObject _PostIncrement() { throw new Exception(); }
+                if (!(TL.IsSubclassOf(Op.TypeLeft) || TL == Op.TypeLeft)) {
+                    continue;
+                }
 
-        public virtual bool ToBoolean () {
+                if (Op.TypeRight != null) {
+                    if (!(TR.IsSubclassOf(Op.TypeRight) || TR == Op.TypeRight)) {
+                        continue;
+                    }
+                }
+
+                return Op;
+            }
+
+            return null;
+        }
+
+        public virtual Native.System.Boolean ToBoolean () {
             return true;
         }
 

@@ -11,7 +11,7 @@ namespace Skrypt.Library.Native {
                 Name = "void";
             }
 
-            public override bool ToBoolean() {
+            public override Boolean ToBoolean() {
                 throw new Exception("Can't convert void to boolean!");
             }
         }

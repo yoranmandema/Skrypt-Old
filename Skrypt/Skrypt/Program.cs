@@ -33,7 +33,7 @@ namespace Skrypt {
             int b = 0;
             string a = "";
 
-            while (b < 10000) {
+            while (b < 100000) {
                 b++;
                 a = a + "kek";
             }
