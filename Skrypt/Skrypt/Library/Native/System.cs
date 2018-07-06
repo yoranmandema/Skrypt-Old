@@ -7,7 +7,7 @@ using Skrypt.Execution;
 
 namespace Skrypt.Library.Native {
     public partial class System {
-        static public SkryptObject print(SkryptObject Self, SkryptObject[] Values) {
+        public static SkryptObject print(SkryptObject Self, SkryptObject[] Values){
             var a = TypeConverter.ToAny(Values, 0);
 
             Console.WriteLine(a);

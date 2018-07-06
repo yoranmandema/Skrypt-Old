@@ -33,7 +33,7 @@ namespace Skrypt.Library.Native {
                 return d.value;
             }
 
-            new public List<Operation> Operations = new List<Operation> {
+            public new List<Operation> Operations = new List<Operation> {
                 new Operation("and",typeof(Boolean),typeof(Boolean),
                     (SkryptObject[] Input) => {
                         var a = TypeConverter.ToBoolean(Input,0);

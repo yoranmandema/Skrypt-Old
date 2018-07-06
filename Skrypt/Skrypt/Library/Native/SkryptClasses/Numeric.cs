@@ -26,7 +26,7 @@ namespace Skrypt.Library.Native {
                 return new Numeric(a).SetPropertiesTo(Base);
             }
 
-            new public List<Operation> Operations = new List<Operation> {
+            public new List<Operation> Operations = new List<Operation> {
                 new Operation("add",typeof(Numeric),typeof(Numeric),
                     (SkryptObject[] Input) => {
                         var a = TypeConverter.ToNumeric(Input,0);

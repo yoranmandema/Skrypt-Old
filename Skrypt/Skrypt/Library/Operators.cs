@@ -9,7 +9,7 @@ namespace Skrypt.Library {
         public int Members { get; set; } = 2;
         public string OperationName { get; set; } = "";
         public string Operation = "";
-        static public List<Operator> AllOperators = new List<Operator>();
+        public static List<Operator> AllOperators = new List<Operator>();
     }
 
     class Op_Access : Operator {
