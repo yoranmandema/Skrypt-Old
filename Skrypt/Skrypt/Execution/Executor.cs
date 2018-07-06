@@ -138,25 +138,25 @@ namespace Skrypt.Execution {
             return scope; 
         }
 
-        public SkryptProperty GetProperty (SkryptObject Object, string ToFind) {
+        public SkryptObject GetProperty (SkryptObject Object, string ToFind) {
             var Find = Object.Properties.Find((x) => x.Name == ToFind);
 
             if (Find == null) {
                 engine.throwError("Object does not contain property '" + ToFind + "'!");
             }
 
-            return Find;
+            return Find.Value;
         }
 
-        public SkryptProperty ExecuteAccess (SkryptObject Object, Node node, ScopeContext scopeContext) {
+        public SkryptObject ExecuteAccess (SkryptObject Object, Node node, ScopeContext scopeContext) {
             if (node.SubNodes.Count == 0) {
                 return GetProperty(Object, node.Body);
             }
 
-            SkryptProperty Property = GetProperty(Object, node.SubNodes[0].Body);
+            SkryptObject Property = GetProperty(Object, node.SubNodes[0].Body);
 
             if (node.SubNodes[1].Body == "access") {
-                return ExecuteAccess(Property.Value, node.SubNodes[1], scopeContext);
+                return ExecuteAccess(Property, node.SubNodes[1], scopeContext);
             } else {
                 return Property;
             }
@@ -185,38 +185,36 @@ namespace Skrypt.Execution {
 
                 if (op.OperationName == "access") {
                     SkryptObject Target = ExecuteExpression(node.SubNodes[1], scopeContext);
-                    SkryptObject Result = ExecuteAccess(Target, node.SubNodes[0], scopeContext).Value;
+                    SkryptObject Result = ExecuteAccess(Target, node.SubNodes[0], scopeContext);
                     return Result;
                 }
 
                 if (op.OperationName == "assign") {
+                    if (node.SubNodes[0].TokenType != "Identifier") {
+                        engine.throwError("Can't assign non-variable", node.SubNodes[0].Token);
+                    }
+
                     SkryptObject result = ExecuteExpression(node.SubNodes[1], scopeContext);
 
-                    if (node.SubNodes[0].SubNodes.Count == 0 && node.SubNodes[0].TokenType == "Identifier") {
-                        Variable Variable = getVariable(node.SubNodes[0].Body, scopeContext);
-
-                        if (Variable != null) {
-                            Variable.Value = result;
-                        }
-                        else {
-                            scopeContext.Variables[node.SubNodes[0].Body] = new Variable {
-                                Name = node.SubNodes[0].Body,
-                                Value = result,
-                                Scope = scopeContext
-                            };
-                        }
+                    if (result.Name == "void") {
+                        engine.throwError("Can't assign to void", node.Token);
                     }
-                    else if (node.SubNodes[0].Body == "access") {
-                        SkryptObject Target = ExecuteExpression(node.SubNodes[0].SubNodes[1], scopeContext);
-                        SkryptProperty AccessResult = ExecuteAccess(Target, node.SubNodes[0].SubNodes[0], scopeContext);
 
-                        AccessResult.Value = result;
+                    if (engine.Constants.ContainsKey(node.SubNodes[0].Body)) {
+                        engine.throwError("Can't assign constant " + node.SubNodes[0].Body, node.SubNodes[0].Token);
                     }
-                    else if (node.SubNodes[0].Body == "Index") {
-                        ExecuteIndexSet(result, node.SubNodes[0], scopeContext);
+
+                    Variable foundVariable = getVariable(node.SubNodes[0].Body, scopeContext);
+
+                    if (foundVariable != null) {
+                        foundVariable.Value = result;
                     }
                     else {
-                        engine.throwError("Left hand side needs to be a variable or property!", node.SubNodes[0].Token);
+                        scopeContext.Variables[node.SubNodes[0].Body] = new Variable {
+                            Name = node.SubNodes[0].Body,
+                            Value = result,
+                            Scope = scopeContext
+                        };
                     }
 
                     return result;
@@ -265,23 +263,6 @@ namespace Skrypt.Execution {
                     return Operation(new SkryptObject[] { LeftResult });              
                 }
             }
-            else if (node.TokenType == "ArrayLiteral") {
-                Library.Native.System.Array array = new Library.Native.System.Array();
-
-                for (int i = 0; i < node.SubNodes.Count; i++) {
-                    Node subNode = node.SubNodes[i];
-
-                    SkryptObject Result = ExecuteExpression(subNode, scopeContext);
-
-                    if (Result.Name == "void") {
-                        engine.throwError("Can't add void to array!", node.SubNodes[0].Token);
-                    }
-
-                    array.value["" + i] = Result;
-                }
-
-                return array;
-            }
             else if (node.SubNodes.Count == 0) {
                 switch (node.TokenType) {
                     case "NumericLiteral":
@@ -293,6 +274,21 @@ namespace Skrypt.Execution {
                     case "NullLiteral":
                         return new Library.Native.System.Null();
                 }
+            }
+            else if (node.TokenType == "ArrayLiteral") {
+                Library.Native.System.Array array = new Library.Native.System.Array();
+
+                foreach (Node subNode in node.SubNodes) {
+                    SkryptObject Result = ExecuteExpression(subNode, scopeContext);
+
+                    if (Result.Name == "void") {
+                        engine.throwError("Can't add void to array!", node.SubNodes[0].Token);
+                    }
+
+                    array.value.Add(Result);
+                }
+
+                return array;
             }
             else if (node.TokenType == "FunctionLiteral") { 
                 UserMethod result = new UserMethod();
@@ -323,12 +319,10 @@ namespace Skrypt.Execution {
                 }
             }
 
-            if (node.TokenType == "Index") {
-                return ExecuteIndex(node, scopeContext);
-            }
-
             if (node.TokenType == "Call") {
                 List<SkryptObject> Arguments = new List<SkryptObject>();
+                string signature = node.Body;
+                string searchString = node.Body;
                 ScopeContext methodContext = new ScopeContext {
                     ParentScope = scopeContext
                 };
@@ -341,6 +335,8 @@ namespace Skrypt.Execution {
                     }
 
                     Arguments.Add(Result);
+
+                    signature += "_" + Result.Name;
                 }
 
                 SkryptObject Method = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
@@ -387,81 +383,6 @@ namespace Skrypt.Execution {
             }
 
             return null;
-        }
-
-        public SkryptObject ExecuteIndexSet (SkryptObject Value, Node node, ScopeContext scopeContext) {
-            List<SkryptObject> Arguments = new List<SkryptObject>();
-
-            foreach (Node subNode in node.SubNodes[1].SubNodes) {
-                SkryptObject Result = ExecuteExpression(subNode, scopeContext);
-
-                if (Result.Name == "void") {
-                    engine.throwError("Can't pass void into arguments!", node.SubNodes[0].Token);
-                }
-
-                Arguments.Add(Result);
-            }
-
-            SkryptObject Object = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
-
-            dynamic Left = Convert.ChangeType(Object, Object.GetType());
-
-            Operation OpLeft = Left.GetOperation("indexset", Object.GetType(), Arguments[0].GetType(), Left.Operations);
-
-            OperationDelegate Operation = null;
-
-            if (OpLeft != null) {
-                Operation = OpLeft.operation;
-            }
-            else {
-                engine.throwError("No such operation as index set " + Left.Name + "!", node.SubNodes[0].Token);
-            }
-
-            var inputArray = new List<SkryptObject>(Arguments);
-
-            inputArray.Insert(0, Value);
-            inputArray.Insert(0, Object);
-
-            return Operation(inputArray.ToArray());
-        }
-
-        public SkryptObject ExecuteIndex (Node node, ScopeContext scopeContext) {
-            List<SkryptObject> Arguments = new List<SkryptObject>();
-
-            foreach (Node subNode in node.SubNodes[1].SubNodes) {
-                SkryptObject Result = ExecuteExpression(subNode, scopeContext);
-
-                if (Result.Name == "void") {
-                    engine.throwError("Can't pass void into arguments!", node.SubNodes[0].Token);
-                }
-
-                Arguments.Add(Result);
-            }
-
-            SkryptObject Object = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
-
-            dynamic Left = Convert.ChangeType(Object, Object.GetType());
-
-            Operation OpLeft = Left.GetOperation("index", Object.GetType(), Arguments[0].GetType(), Left.Operations);
-
-            OperationDelegate Operation = null;
-
-            if (OpLeft != null) {
-                Operation = OpLeft.operation;
-            }
-            else {
-                engine.throwError("No such operation as index " + Left.Name + "!", node.SubNodes[0].Token);
-            }
-
-            var inputArray = new List<SkryptObject>(Arguments);
-
-            inputArray.Insert(0, Object);
-
-            //SkryptProperty property = new SkryptProperty {
-            //    Value = Operation(inputArray.ToArray())
-            //};
-
-            return Operation(inputArray.ToArray());
         }
 
         //public SkryptObject Invoke (string Name, params object[] arguments) {

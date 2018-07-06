@@ -522,19 +522,9 @@ namespace Skrypt.Parsing {
                 getterNode.TokenType = "Getter";
                 node.Add(getterNode);
 
-                //List<Token> ExpressionTokens = Reverse.GetRange(1, skip.end - 1);
-                //ExpressionTokens.Reverse();
-                //node.Add(ParseExpression(node, ExpressionTokens));
-
-                List<Token> ArgumentTokens = Reverse.GetRange(0, skip.end + 1);
-                ArgumentTokens.Reverse();
-
-                ParseResult result = engine.generalParser.parseSurroundedExpressions("[", "]", 0, ArgumentTokens);
-                Node argumentsNode = result.node;
-                argumentsNode.Body = "Arguments";
-                argumentsNode.TokenType = "Arguments";
-                node.Add(argumentsNode);
-
+                List<Token> ExpressionTokens = Reverse.GetRange(1, skip.end - 1);
+                ExpressionTokens.Reverse();
+                node.Add(ParseExpression(node, ExpressionTokens));
                 node.Body = "Index";
                 node.TokenType = "Index";
             } else if (Reverse[0].Value == ")") {

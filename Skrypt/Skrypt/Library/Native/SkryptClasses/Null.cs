@@ -14,10 +14,6 @@ namespace Skrypt.Library.Native {
             public override Boolean ToBoolean() {
                 return false;
             }
-
-            public override string ToString() {
-                return "null";
-            }
         }
     }
 }

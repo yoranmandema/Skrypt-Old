@@ -220,7 +220,7 @@ namespace Skrypt.Engine {
             double T_Parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            //Console.WriteLine("Program:\n" + ProgramNode);
+            Console.WriteLine("Program:\n" + ProgramNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
