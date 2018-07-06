@@ -283,13 +283,25 @@ namespace Skrypt.Execution {
                 return array;
             }
             else if (node.SubNodes.Count == 0) {
+                SkryptObject type;
+                SharpMethod Constructor;
+
                 switch (node.TokenType) {
                     case "NumericLiteral":
-                        return new Library.Native.System.Numeric(Double.Parse(node.Body));
+                        type = engine.Types["System.Numeric"];
+                        Constructor = (SharpMethod)GetProperty(type, "Constructor").Value;
+
+                        return Constructor.method(type,new SkryptObject[] { new Library.Native.System.Numeric(Double.Parse(node.Body)) });
                     case "StringLiteral":
-                        return new Library.Native.System.String(node.Body);
+                        type = engine.Types["System.String"];
+                        Constructor = (SharpMethod)GetProperty(type, "Constructor").Value;
+
+                        return Constructor.method(type, new SkryptObject[] { new Library.Native.System.String(node.Body) });
                     case "BooleanLiteral":
-                        return new Library.Native.System.Boolean(node.Body == "true" ? true : false);
+                        type = engine.Types["System.Boolean"];
+                        Constructor = (SharpMethod)GetProperty(type, "Constructor").Value;
+
+                        return Constructor.method(type, new SkryptObject[] { new Library.Native.System.Boolean(node.Body == "true" ? true : false) });
                     case "NullLiteral":
                         return new Library.Native.System.Null();
                 }
@@ -309,10 +321,6 @@ namespace Skrypt.Execution {
             }
 
             if (node.TokenType == "Identifier") {
-                if (engine.Constants.ContainsKey(node.Body)) {
-                    return engine.Constants[node.Body];
-                }
-
                 Variable foundVariable = getVariable(node.Body, scopeContext);
 
                 if (foundVariable != null) {
@@ -374,11 +382,11 @@ namespace Skrypt.Execution {
                         };
                     }
 
-                    SkryptObject MethodResult = method.Execute(engine, Arguments.ToArray(), methodContext);
+                    SkryptObject MethodResult = method.Execute(engine, null, Arguments.ToArray(), methodContext);
 
                     return MethodResult;
                 } else if (Method.GetType() == typeof(SharpMethod)) {
-                    SkryptObject MethodResult = ((SharpMethod)Method).Execute(engine, Arguments.ToArray(), methodContext);
+                    SkryptObject MethodResult = ((SharpMethod)Method).Execute(engine, null, Arguments.ToArray(), methodContext);
 
                     return MethodResult;
                 } else {

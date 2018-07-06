@@ -8,12 +8,12 @@ using Skrypt.Execution;
 using Skrypt.Engine;
 
 namespace Skrypt.Library {
-    public delegate SkryptObject SkryptDelegate(SkryptObject[] input);
+    public delegate SkryptObject SkryptDelegate(SkryptObject self, SkryptObject[] input);
 
     public class SkryptMethod : SkryptObject {
         public string ReturnType;
 
-        public virtual SkryptObject Execute (SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
+        public virtual SkryptObject Execute (SkryptEngine engine, SkryptObject Self, SkryptObject[] parameters, ScopeContext scope) {
             return null;
         }
 
@@ -28,7 +28,7 @@ namespace Skrypt.Library {
         public string CallName;
         public List<string> Parameters = new List<string>();
 
-        public override SkryptObject Execute(SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
+        public override SkryptObject Execute(SkryptEngine engine, SkryptObject Self, SkryptObject[] parameters, ScopeContext scope) {
             ScopeContext ResultingScope = engine.executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
 
             SkryptObject ReturnVariable = ResultingScope.subContext.ReturnObject;
@@ -44,8 +44,8 @@ namespace Skrypt.Library {
     public class SharpMethod : SkryptMethod {
         public SkryptDelegate method;
 
-        public override SkryptObject Execute(SkryptEngine engine, SkryptObject[] parameters, ScopeContext scope) {
-            return method(parameters);
+        public override SkryptObject Execute(SkryptEngine engine, SkryptObject Self, SkryptObject[] parameters, ScopeContext scope) {
+            return method(Self, parameters);
         }
     }
 }

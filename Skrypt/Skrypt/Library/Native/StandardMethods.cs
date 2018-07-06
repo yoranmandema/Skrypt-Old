@@ -15,22 +15,22 @@ namespace Skrypt.Library.Native {
         }
 
         public void AddMethodsToEngine () {
-            var Methods = this.GetType().GetMethods().Where((m) => {
-                if (!m.IsStatic) {
-                    return false;
-                }
+            //var Methods = this.GetType().GetMethods().Where((m) => {
+            //    if (!m.IsStatic) {
+            //        return false;
+            //    }
 
-                return true;
-            });
+            //    return true;
+            //});
 
-            foreach (MethodInfo M in Methods) {
-                SharpMethod Method = new SharpMethod();
+            //foreach (MethodInfo M in Methods) {
+            //    SharpMethod Method = new SharpMethod();
 
-                Method.method = (SkryptDelegate) Delegate.CreateDelegate(typeof(SkryptDelegate), M);
-                Method.Name = M.Name;
+            //    Method.method = (SkryptDelegate) Delegate.CreateDelegate(typeof(SkryptDelegate), M);
+            //    Method.Name = M.Name;
 
-                engine.Methods.Add(Method);
-            }
+            //    engine.Methods.Add(Method);
+            //}
         }
     }
 }

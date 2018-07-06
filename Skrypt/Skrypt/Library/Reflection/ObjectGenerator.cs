@@ -4,22 +4,33 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using Skrypt.Engine;
 
 namespace Skrypt.Library.Reflection {
     static class ObjectGenerator {
-        public static SkryptObject MakeObjectFromClass(Type Class) {
+        public static SkryptObject MakeObjectFromClass(Type Class, SkryptEngine Engine, SkryptObject Parent = null) {
             SkryptObject Object = new SkryptObject();
+            bool isType = false;
+            Object.Name = Class.Name;
+
+            if (Parent != null) {
+                Object.Name = Parent.Name + "." + Object.Name;
+            }
 
             var Methods = Class.GetMethods().Where((m) => {
                 if (m.ReturnType != typeof(SkryptObject)) {
                     return false;
                 }
 
-                if (m.GetParameters().Count() != 1) {
+                if (m.GetParameters().Count() != 2) {
                     return false;
                 }
 
-                if (m.GetParameters()[0].ParameterType != typeof(SkryptObject[])) {
+                if (m.GetParameters()[0].ParameterType != typeof(SkryptObject)) {
+                    return false;
+                }
+
+                if (m.GetParameters()[1].ParameterType != typeof(SkryptObject[])) {
                     return false;
                 }
 
@@ -28,9 +39,16 @@ namespace Skrypt.Library.Reflection {
 
             foreach (MethodInfo M in Methods) {
                 SharpMethod Method = new SharpMethod();
-                Method.method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate),M);
-
+                Console.WriteLine(M);
+                Method.method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), M);
                 Method.Name = M.Name;
+
+                Console.WriteLine("Processing: " + Object.Name);
+                Console.WriteLine("Processing: " + Class.IsSubclassOf(typeof(SkryptType)));
+
+                if (Class.IsSubclassOf(typeof(SkryptType))) {
+                    isType = true;                
+                }
 
                 SkryptProperty property = new SkryptProperty {
                     Name = M.Name,
@@ -64,7 +82,7 @@ namespace Skrypt.Library.Reflection {
             foreach (TypeInfo C in Classes) {
                 SkryptObject v;
 
-                v = MakeObjectFromClass(C);
+                v = MakeObjectFromClass(C, Engine, Object);
 
                 SkryptProperty property = new SkryptProperty {
                     Name = C.Name,
@@ -74,6 +92,15 @@ namespace Skrypt.Library.Reflection {
 
                 Object.Properties.Add(property);
             }
+
+            if (isType) {
+                var Instance = Object.Clone();
+                Engine.Types[Object.Name] = Instance;
+
+                Console.WriteLine("Instance: " + Instance.toJSON());
+            }
+
+            Console.WriteLine("new object: " + Object.Name);
 
             return Object;
         }

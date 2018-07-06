@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Execution;
+using Skrypt.Engine;
 
 namespace Skrypt.Library.Native {
     partial class System {
-        public class Numeric : SkryptObject {
+        public class Numeric : SkryptType {
             public double value;
 
             public Numeric() {
@@ -19,10 +20,10 @@ namespace Skrypt.Library.Native {
                 value = v;
             }
 
-            public static SkryptObject Constructor (SkryptObject[] Input) {
+            public static SkryptObject Constructor(SkryptObject Base, SkryptObject[] Input) {
                 var a = TypeConverter.ToNumeric(Input,0);
 
-                return new Numeric(a);
+                return new Numeric(a).SetPropertiesTo(Base);
             }
 
             new public List<Operation> Operations = new List<Operation> {

@@ -9,7 +9,7 @@ namespace Skrypt.Library.Native {
     partial class System {
         public static StringBuilder stringBuilder = new StringBuilder();
 
-        public class String : SkryptObject {
+        public class String : SkryptType {
             public string value;
 
             public String() {
@@ -19,6 +19,12 @@ namespace Skrypt.Library.Native {
             public String(string v) {
                 Name = "string";
                 value = v;
+            }
+
+            public static SkryptObject Constructor(SkryptObject Base, SkryptObject[] Input) {
+                var a = TypeConverter.ToString(Input, 0);
+
+                return new String(a).SetPropertiesTo(Base);
             }
 
             public static implicit operator String(string d) {
@@ -46,8 +52,8 @@ namespace Skrypt.Library.Native {
                     }),
             };
 
-            static public SkryptObject Length(SkryptObject[] Values) {
-                var a = TypeConverter.ToString(Values, 0);
+            static public SkryptObject Length(SkryptObject Self, SkryptObject[] Values) {
+                var a = (String)Self;
 
                 return (Numeric)a.value.Length;
             }

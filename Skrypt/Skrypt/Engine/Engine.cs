@@ -35,7 +35,7 @@ namespace Skrypt.Engine {
         public List<Node> MethodNodes = new List<Node>();
         public List<SkryptMethod> Methods = new List<SkryptMethod>();
         public ScopeContext GlobalScope = new ScopeContext();
-        public Dictionary<string, SkryptObject> Constants { get; set; } = new Dictionary<string, SkryptObject>();
+        public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
 
         //List<SkryptClass> Classes = new List<SkryptClass>();
 
@@ -51,10 +51,8 @@ namespace Skrypt.Engine {
 
             standardMethods.AddMethodsToEngine();
 
-            //Constants["_PI"] = new Numeric(Math.PI);
-            //Constants["_E"] = new Numeric(Math.E);
 
-            SkryptObject SystemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System));
+            SkryptObject SystemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
 
             foreach (SkryptProperty property in SystemObject.Properties) {
                 GlobalScope.AddVariable(property.Name, property.Value, true);

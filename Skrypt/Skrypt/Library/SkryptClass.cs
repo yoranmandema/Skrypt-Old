@@ -61,11 +61,16 @@ namespace Skrypt.Library {
             return null;
         }
 
+        public SkryptObject SetPropertiesTo (SkryptObject Object) {
+            Properties = new List<SkryptProperty>(Object.Properties);
+            return this;
+        }
+
         public virtual Native.System.Boolean ToBoolean () {
             return true;
         }
 
-        public SkryptObject Clone () {
+        public virtual SkryptObject Clone () {
             return (SkryptObject)MemberwiseClone();
         }
 

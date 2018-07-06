@@ -19,6 +19,12 @@ namespace Skrypt.Library.Native {
                 value = v;
             }
 
+            public static SkryptObject Constructor(SkryptObject Base, SkryptObject[] Input) {
+                var a = TypeConverter.ToBoolean(Input, 0);
+
+                return new Boolean(a).SetPropertiesTo(Base);
+            }
+
             public static implicit operator Boolean(bool d) {
                 return new Boolean(d);
             }

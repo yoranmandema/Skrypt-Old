@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Skrypt.Engine;
 
 namespace Skrypt.Library {
-    class SkryptType : SkryptObject {
-        public static SkryptObject Constructor (SkryptObject[] Input) {
-            return null;
-        }
+    public class SkryptType : SkryptObject {
+        public string TypeName { get; set; }
     }
 }
