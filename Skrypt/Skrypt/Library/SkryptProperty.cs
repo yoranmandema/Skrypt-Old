@@ -11,8 +11,8 @@ namespace Skrypt.Library {
     }
 
     public class SkryptProperty {
-        public string Name;
-        public SkryptObject Value;
-        public Access Accessibility;
+        public string Name { get; set; }
+        public SkryptObject Value { get; set; }
+        public Access Accessibility { get; set; } = Access.Public;
     }
 }

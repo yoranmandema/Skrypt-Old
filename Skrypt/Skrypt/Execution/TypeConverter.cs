@@ -32,9 +32,17 @@ namespace Skrypt.Execution {
             return Args[Index].ToString();
         }
 
+        public static Sys.Array ToArray(SkryptObject[] Args, int Index) {
+            if (Index > Args.Length - 1) {
+                return new Sys.Array();
+            }
+
+            return (Sys.Array)Args[Index];
+        }
+
         public static SkryptObject ToAny(SkryptObject[] Args, int Index) {
             if (Index > Args.Length - 1) {
-                return new Sys.Void();
+                return new Sys.Null();
             }
 
             return Args[Index];
