@@ -9,48 +9,48 @@ using Skrypt.Execution;
 namespace Skrypt.Library.Native {
     partial class System {
         public class Math {
-            static public Numeric PI = new Numeric(SysMath.PI);
-            static public Numeric E = new Numeric(SysMath.E);
+            public static Numeric PI = new Numeric(SysMath.PI);
+            public static Numeric E = new Numeric(SysMath.E);
 
-            static public SkryptObject Round(SkryptObject[] Values) {
+            public static SkryptObject Round(SkryptObject[] Values) {
                 var a = TypeConverter.ToNumeric(Values, 0);
 
                 return (Numeric)SysMath.Round(a);
             }
 
-            static public SkryptObject Floor(SkryptObject[] Values) {
+            public static SkryptObject Floor(SkryptObject[] Values) {
                 var a = TypeConverter.ToNumeric(Values, 0);
 
                 return (Numeric)SysMath.Floor(a);
             }
 
-            static public SkryptObject Ceil(SkryptObject[] Values) {
+            public static SkryptObject Ceil(SkryptObject[] Values) {
                 var a = TypeConverter.ToNumeric(Values, 0);
 
                 return (Numeric)SysMath.Ceiling(a);
             }
 
-            static public SkryptObject Abs(SkryptObject[] Values) {
+            public static SkryptObject Abs(SkryptObject[] Values) {
                 var a = TypeConverter.ToNumeric(Values, 0);
 
                 return (Numeric)SysMath.Abs(a);
             }
 
-            static public SkryptObject Min(SkryptObject[] Values) {
+            public static SkryptObject Min(SkryptObject[] Values) {
                 var a = TypeConverter.ToNumeric(Values, 0);
                 var b = TypeConverter.ToNumeric(Values, 1);
 
                 return (Numeric)SysMath.Min(a, b);
             }
 
-            static public SkryptObject Max(SkryptObject[] Values) {
+            public static SkryptObject Max(SkryptObject[] Values) {
                 var a = TypeConverter.ToNumeric(Values, 0);
                 var b = TypeConverter.ToNumeric(Values, 1);
 
                 return (Numeric)SysMath.Max(a, b);
             }
 
-            static public SkryptObject Clamp(SkryptObject[] Values) {
+            public static SkryptObject Clamp(SkryptObject[] Values) {
                 var x = TypeConverter.ToNumeric(Values, 0);
                 var a = TypeConverter.ToNumeric(Values, 1);
                 var b = TypeConverter.ToNumeric(Values, 2);
