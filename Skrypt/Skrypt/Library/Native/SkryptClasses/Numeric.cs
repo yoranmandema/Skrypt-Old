@@ -19,6 +19,12 @@ namespace Skrypt.Library.Native {
                 value = v;
             }
 
+            public static SkryptObject Constructor (SkryptObject[] Input) {
+                var a = TypeConverter.ToNumeric(Input,0);
+
+                return new Numeric(a);
+            }
+
             new public List<Operation> Operations = new List<Operation> {
                 new Operation("add",typeof(Numeric),typeof(Numeric),
                     (SkryptObject[] Input) => {

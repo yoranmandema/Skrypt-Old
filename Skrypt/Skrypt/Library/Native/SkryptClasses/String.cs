@@ -46,6 +46,12 @@ namespace Skrypt.Library.Native {
                     }),
             };
 
+            static public SkryptObject Length(SkryptObject[] Values) {
+                var a = TypeConverter.ToString(Values, 0);
+
+                return (Numeric)a.value.Length;
+            }
+
             public override string ToString() {
                 return value;
             }
