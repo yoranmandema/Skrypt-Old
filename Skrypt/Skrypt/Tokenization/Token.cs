@@ -29,7 +29,7 @@ namespace Skrypt.Tokenization {
         /// Returns true if value and type are equal
         /// </summary>
         public bool Equals(Token other) {
-            if (this.Value == other.Value && this.Type == other.Type) {
+            if (Value == other.Value && Type == other.Type) {
                 return true;
             }
 
@@ -59,8 +59,8 @@ namespace Skrypt.Tokenization {
         /// Returns true if token has the same type and value. Type and value can be left as null to ignore
         /// </summary>
         public bool LazyEqual (Token other) {
-            bool hasType = this.Type == other.Type;
-            bool hasValue = other.Value != null ? this.Value == other.Value : true;
+            bool hasType = Type == other.Type;
+            bool hasValue = other.Value != null ? Value == other.Value : true;
 
             return hasType && hasValue;
         }
