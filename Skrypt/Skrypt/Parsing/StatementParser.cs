@@ -36,9 +36,11 @@ namespace Skrypt.Parsing {
             Node conditionNode = result.node;
             index += result.delta;
 
-            Node conditionParentNode = new Node();
-            conditionParentNode.Body = "Condition";
-            conditionParentNode.TokenType = "Condition";
+            Node conditionParentNode = new Node
+            {
+                Body = "Condition",
+                TokenType = "Condition"
+            };
 
             if (conditionNode == null) {
                 engine.throwError("Condition can't be empty!", Tokens[index-1], 1);

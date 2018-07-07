@@ -25,9 +25,11 @@ namespace Skrypt.Parsing {
 
             string Name = Tokens[index].Value;
 
-            Node node = new Node();
-            node.Body = Name;
-            node.TokenType = "Parameter";
+            Node node = new Node
+            {
+                Body = Name,
+                TokenType = "Parameter"
+            };
 
             return node;
         }
@@ -66,9 +68,11 @@ namespace Skrypt.Parsing {
             Node BlockNode = result.node;
             index += result.delta + 1;
 
-            Node returnNode = new Node();
-            returnNode.Body = "Function";
-            returnNode.TokenType = "FunctionLiteral";
+            Node returnNode = new Node
+            {
+                Body = "Function",
+                TokenType = "FunctionLiteral"
+            };
             returnNode.SubNodes.Add(BlockNode);
             returnNode.SubNodes.Add(ParameterNode);
 
@@ -132,9 +136,11 @@ namespace Skrypt.Parsing {
             //    BlockNode = BlockNode,
             //});
 
-            Node returnNode = new Node();
-            returnNode.Body = Tokens[1].Value;
-            returnNode.TokenType = "MethodDeclaration";
+            Node returnNode = new Node
+            {
+                Body = Tokens[1].Value,
+                TokenType = "MethodDeclaration"
+            };
             returnNode.SubNodes.Add(BlockNode);
             returnNode.SubNodes.Add(ParameterNode);
 

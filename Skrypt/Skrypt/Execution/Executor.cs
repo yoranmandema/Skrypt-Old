@@ -110,11 +110,13 @@ namespace Skrypt.Execution {
                         }
                     }
 
-                    UserMethod result = new UserMethod();
-                    result.Name = "method";
-                    result.Signature = subNode.Body;
-                    result.BlockNode = subNode.SubNodes[0];
-                    result.CallName = subNode.Body.Split('_')[0];
+                    UserMethod result = new UserMethod
+                    {
+                        Name = "method",
+                        Signature = subNode.Body,
+                        BlockNode = subNode.SubNodes[0],
+                        CallName = subNode.Body.Split('_')[0]
+                    };
 
                     foreach (Node snode in subNode.SubNodes[1].SubNodes) {
                         result.Parameters.Add(snode.Body);
@@ -173,11 +175,7 @@ namespace Skrypt.Execution {
 
                     SkryptObject result = null;
 
-                    if (node.SubNodes.Count == 1) {
-                        result = ExecuteExpression(node.SubNodes[0], scopeContext);
-                    } else {
-                        result = new Library.Native.System.Void();
-                    }
+                    result = node.SubNodes.Count == 1 ? ExecuteExpression(node.SubNodes[0], scopeContext) : new Library.Native.System.Void();
 
                     scopeContext.subContext.ReturnObject = result;
                     return result;
@@ -306,12 +304,14 @@ namespace Skrypt.Execution {
                         return new Library.Native.System.Null();
                 }
             }
-            else if (node.TokenType == "FunctionLiteral") { 
-                UserMethod result = new UserMethod();
-                result.Name = "method";
-                result.Signature = node.Body;
-                result.BlockNode = node.SubNodes[0];
-                result.CallName = node.Body.Split('_')[0];
+            else if (node.TokenType == "FunctionLiteral") {
+                UserMethod result = new UserMethod
+                {
+                    Name = "method",
+                    Signature = node.Body,
+                    BlockNode = node.SubNodes[0],
+                    CallName = node.Body.Split('_')[0]
+                };
 
                 foreach (Node snode in node.SubNodes[1].SubNodes) {
                     result.Parameters.Add(snode.Body);
@@ -368,12 +368,7 @@ namespace Skrypt.Execution {
                         string parName = method.Parameters[i];
                         SkryptObject input;
 
-                        if (i < Arguments.Count) {
-                            input = Arguments[i];
-                        }
-                        else {
-                            input = new Library.Native.System.Null();
-                        }
+                        input = i < Arguments.Count ? Arguments[i] : new Library.Native.System.Null();
 
                         methodContext.Variables[parName] = new Variable {
                             Name = parName,

@@ -203,10 +203,12 @@ namespace Skrypt.Parsing {
 
                                 if (HasRequiredLeftTokens && HasRequiredRightTokens) {
                                     // Create operation node with type and body
-                                    Node NewNode = new Node();
-                                    NewNode.Body = Operator.OperationName;
-                                    NewNode.TokenType = "" + token.Type;
-                                    NewNode.Token = token;
+                                    Node NewNode = new Node
+                                    {
+                                        Body = Operator.OperationName,
+                                        TokenType = "" + token.Type,
+                                        Token = token
+                                    };
 
                                     if (OP.Members == 1) {
                                         // Parse unary and do postfix logic
@@ -581,9 +583,11 @@ namespace Skrypt.Parsing {
         public ParseResult ParseCall(List<Token> Tokens, int accessEnd) {
             int index = 0;
             string name = Tokens[index].Value;
-            Node node = new Node();
-            node.Body = "Call";
-            node.TokenType = "Call";
+            Node node = new Node
+            {
+                Body = "Call",
+                TokenType = "Call"
+            };
 
             List<Token> AccessTokens = Tokens.GetRange(0, accessEnd);
             Console.WriteLine("Call: " + TokenString(AccessTokens));

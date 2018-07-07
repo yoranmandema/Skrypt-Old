@@ -31,11 +31,7 @@ namespace Skrypt.Library {
         public override SkryptObject Execute(SkryptEngine engine, SkryptObject Self, SkryptObject[] parameters, ScopeContext scope) {
             ScopeContext ResultingScope = engine.executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
 
-            SkryptObject ReturnVariable = ResultingScope.subContext.ReturnObject;
-
-            if (ReturnVariable == null) {
-                ReturnVariable = new Native.System.Void();
-            }
+            SkryptObject ReturnVariable = ResultingScope.subContext.ReturnObject ?? new Native.System.Void();
 
             return ReturnVariable;
         }
