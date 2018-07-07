@@ -52,7 +52,7 @@ namespace Skrypt.Library.Native {
                     }),
             };
 
-            static public SkryptObject Length(SkryptObject Self, SkryptObject[] Values) {
+            public static SkryptObject Length(SkryptObject Self, SkryptObject[] Values) {
                 var a = (String)Self;
 
                 return (Numeric)a.value.Length;

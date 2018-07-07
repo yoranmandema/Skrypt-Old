@@ -15,7 +15,7 @@ namespace Skrypt.Library.Native {
                 Name = "array";
             }
 
-            new public List<Operation> Operations = new List<Operation> {
+            public new List<Operation> Operations = new List<Operation> {
                 //new Operation("add",typeof(Array),typeof(SkryptObject),
                 //    (SkryptObject[] Input) => {
                 //        var a = TypeConverter.ToArray(Input,0);
