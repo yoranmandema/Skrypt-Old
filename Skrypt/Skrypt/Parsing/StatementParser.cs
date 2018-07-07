@@ -12,8 +12,7 @@ namespace Skrypt.Parsing {
     /// Contains all methods to parse if, elseif, else and while statements
     /// </summary>
     public class StatementParser {
-
-        SkryptEngine engine;
+        readonly SkryptEngine engine;
 
         public StatementParser (SkryptEngine e) {
             engine = e;

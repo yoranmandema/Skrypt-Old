@@ -27,7 +27,7 @@ namespace Skrypt.Tokenization {
     /// </summary>
     public class Tokenizer {
         List<TokenRule> TokenRules = new List<TokenRule>();
-        SkryptEngine engine;
+        readonly SkryptEngine engine;
 
         public Tokenizer(SkryptEngine e) {
             engine = e;

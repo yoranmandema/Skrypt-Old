@@ -19,7 +19,7 @@ namespace Skrypt.Parsing {
     /// Contains all methods to parse expressions, and helper methods
     /// </summary>
     public class ExpressionParser {
-        SkryptEngine engine;
+        readonly SkryptEngine engine;
 
         public ExpressionParser(SkryptEngine e) {
             engine = e;

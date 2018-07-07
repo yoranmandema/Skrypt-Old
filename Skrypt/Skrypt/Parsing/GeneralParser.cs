@@ -12,7 +12,7 @@ namespace Skrypt.Parsing {
     /// Contains all methods to parse higher-level code, e.g code that contains statements AND expressions
     /// </summary>
     public class GeneralParser {
-        SkryptEngine engine;
+        readonly SkryptEngine engine;
 
         public GeneralParser(SkryptEngine e) {
             engine = e;

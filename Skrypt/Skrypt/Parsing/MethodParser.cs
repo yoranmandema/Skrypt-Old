@@ -13,7 +13,7 @@ namespace Skrypt.Parsing {
     /// Contains all methods to parse user defined methods
     /// </summary>
     public class MethodParser {
-        SkryptEngine engine;
+        readonly SkryptEngine engine;
 
         public MethodParser(SkryptEngine e) {
             engine = e;

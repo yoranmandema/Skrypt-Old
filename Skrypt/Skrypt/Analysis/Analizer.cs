@@ -15,7 +15,7 @@ namespace Skrypt.Analysis {
     /// Analizes nodes to check for errors.
     /// </summary>
     public class Analizer {
-        SkryptEngine engine;
+        readonly SkryptEngine engine;
 
         public Analizer(SkryptEngine e) {
             engine = e;

@@ -11,7 +11,7 @@ using Skrypt.Library.Native;
 
 namespace Skrypt.Execution {
     public class Executor {
-        SkryptEngine engine;
+        readonly SkryptEngine engine;
 
         public Executor(SkryptEngine e) {
             engine = e;
