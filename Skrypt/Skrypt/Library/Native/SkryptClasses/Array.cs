@@ -59,7 +59,9 @@ namespace Skrypt.Library.Native {
 
                         var newArray = new Array();
                         for (int i = 0; i < (int)b.value; i++) {
-                            newArray.value.AddRange(a.value);
+                            for (int j = 0; j < a.value.Count; j++) {
+                                newArray.value.Add(a.value[j].Clone());
+                            }
                         }
 
                         return newArray;

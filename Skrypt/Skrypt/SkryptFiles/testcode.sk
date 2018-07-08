@@ -1,20 +1,5 @@
+a = [0] * 8;
 
-class Vector {
-	x = 0;
-	y = 0;
-	z = 0;
+a[0]++;
 
-	func Constructor (X,Y,Z) {
-		x = X;
-		y = Y;
-		z = Z;
-	}
-
-	func Length () {
-		
-	}
-}
-
-a = Vector(1,1,1);
-
-print();
+print(a);
