@@ -8,5 +8,11 @@ using Skrypt.Engine;
 namespace Skrypt.Library {
     public class SkryptType : SkryptObject {
         public string TypeName { get; set; }
+
+        public void Init (SkryptEngine Engine) {
+            SkryptObject BaseObject = Engine.Types[TypeName];
+
+            SetPropertiesTo(BaseObject);
+        }
     }
 }

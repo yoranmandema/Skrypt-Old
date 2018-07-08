@@ -7,7 +7,7 @@ using Skrypt.Execution;
 
 namespace Skrypt.Library.Native {
     partial class System {
-        public class Boolean : SkryptObject {
+        public class Boolean : SkryptType {
             public bool value;
 
             public Boolean() {

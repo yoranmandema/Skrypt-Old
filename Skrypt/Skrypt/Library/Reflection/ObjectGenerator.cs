@@ -39,12 +39,9 @@ namespace Skrypt.Library.Reflection {
 
             foreach (MethodInfo M in Methods) {
                 SharpMethod Method = new SharpMethod();
-                Console.WriteLine(M);
+
                 Method.method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), M);
                 Method.Name = M.Name;
-
-                Console.WriteLine("Processing: " + Object.Name);
-                Console.WriteLine("Processing: " + Class.IsSubclassOf(typeof(SkryptType)));
 
                 if (Class.IsSubclassOf(typeof(SkryptType))) {
                     isType = true;                
@@ -95,12 +92,8 @@ namespace Skrypt.Library.Reflection {
 
             if (isType) {
                 var Instance = Object.Clone();
-                Engine.Types[Object.Name] = Instance;
-
-                Console.WriteLine("Instance: " + Instance.toJSON());
+                Engine.Types[Object.Name] = Instance;              
             }
-
-            Console.WriteLine("new object: " + Object.Name);
 
             return Object;
         }

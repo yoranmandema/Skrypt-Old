@@ -184,6 +184,11 @@ namespace Skrypt.Execution {
                 if (op.OperationName == "access") {
                     SkryptObject Target = ExecuteExpression(node.SubNodes[1], scopeContext);
                     SkryptObject Result = ExecuteAccess(Target, node.SubNodes[0], scopeContext).Value;
+
+                    if (scopeContext.subContext.GettingCaller) {
+                        scopeContext.subContext.Caller = Target;
+                    }
+
                     return Result;
                 }
 
@@ -205,6 +210,7 @@ namespace Skrypt.Execution {
                         }
                     }
                     else if (node.SubNodes[0].Body == "access") {
+
                         SkryptObject Target = ExecuteExpression(node.SubNodes[0].SubNodes[1], scopeContext);
                         SkryptProperty AccessResult = ExecuteAccess(Target, node.SubNodes[0].SubNodes[0], scopeContext);
 
@@ -278,28 +284,27 @@ namespace Skrypt.Execution {
                     array.value["" + i] = Result;
                 }
 
+                array.Init(engine);
+
                 return array;
             }
             else if (node.SubNodes.Count == 0) {
-                SkryptObject type;
-                SharpMethod Constructor;
-
                 switch (node.TokenType) {
                     case "NumericLiteral":
-                        type = engine.Types["System.Numeric"];
-                        Constructor = (SharpMethod)GetProperty(type, "Constructor").Value;
+                        var newNumeric = new Library.Native.System.Numeric(Double.Parse(node.Body));
+                        newNumeric.Init(engine);
 
-                        return Constructor.method(type,new SkryptObject[] { new Library.Native.System.Numeric(Double.Parse(node.Body)) });
+                        return newNumeric;
                     case "StringLiteral":
-                        type = engine.Types["System.String"];
-                        Constructor = (SharpMethod)GetProperty(type, "Constructor").Value;
+                        var newString = new Library.Native.System.String(node.Body);
+                        newString.SetPropertiesTo(engine.Types[newString.TypeName]);
 
-                        return Constructor.method(type, new SkryptObject[] { new Library.Native.System.String(node.Body) });
+                        return newString;
                     case "BooleanLiteral":
-                        type = engine.Types["System.Boolean"];
-                        Constructor = (SharpMethod)GetProperty(type, "Constructor").Value;
+                        var newBool = new Library.Native.System.Boolean(node.Body == "true" ? true : false);
+                        newBool.Init(engine);
 
-                        return Constructor.method(type, new SkryptObject[] { new Library.Native.System.Boolean(node.Body == "true" ? true : false) });
+                        return newBool;
                     case "NullLiteral":
                         return new Library.Native.System.Null();
                 }
@@ -351,7 +356,12 @@ namespace Skrypt.Execution {
                     Arguments.Add(Result);
                 }
 
-                SkryptObject Method = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
+                ScopeContext findCallerContext = new ScopeContext {
+                    ParentScope = scopeContext
+                };
+
+                findCallerContext.subContext.GettingCaller = true;
+                SkryptObject Method = ExecuteExpression(node.SubNodes[0].SubNodes[0], findCallerContext);
 
                 if (Method.GetType() != typeof(SharpMethod)) {
                     var Find = Method.Properties.Find((x) => x.Name == "Constructor");
@@ -377,11 +387,11 @@ namespace Skrypt.Execution {
                         };
                     }
 
-                    SkryptObject MethodResult = method.Execute(engine, null, Arguments.ToArray(), methodContext);
+                    SkryptObject MethodResult = method.Execute(engine, findCallerContext.subContext.Caller, Arguments.ToArray(), methodContext);
 
                     return MethodResult;
                 } else if (Method.GetType() == typeof(SharpMethod)) {
-                    SkryptObject MethodResult = ((SharpMethod)Method).Execute(engine, null, Arguments.ToArray(), methodContext);
+                    SkryptObject MethodResult = ((SharpMethod)Method).Execute(engine, findCallerContext.subContext.Caller, Arguments.ToArray(), methodContext);
 
                     return MethodResult;
                 } else {

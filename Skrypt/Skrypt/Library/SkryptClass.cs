@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Skrypt.Tokenization;
 using Skrypt.Execution;
 using Newtonsoft.Json;
+using Skrypt.Engine;
 
 namespace Skrypt.Library {
     public delegate SkryptObject OperationDelegate(SkryptObject[] Input);
@@ -36,6 +37,7 @@ namespace Skrypt.Library {
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
 
         public List<Operation> Operations = new List<Operation>();
+
 
         public Operation GetOperation (string N, Type TL, Type TR, List<Operation> Ops) {
             for (int i = 0; i <Ops.Count; i++) {

@@ -7,7 +7,7 @@ using Skrypt.Execution;
 
 namespace Skrypt.Library.Native {
     partial class System {
-        public class Array : SkryptObject {
+        public class Array : SkryptType {
 
             public Dictionary<string, SkryptObject> value {get; set;} = new Dictionary<string,SkryptObject>();
 

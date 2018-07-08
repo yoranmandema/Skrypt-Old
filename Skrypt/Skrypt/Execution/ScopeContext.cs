@@ -10,6 +10,8 @@ namespace Skrypt.Execution {
         public bool InMethod = false;
         public UserMethod Method = null;
         public SkryptObject ReturnObject = null;
+        public bool GettingCaller = false;
+        public SkryptObject Caller;
     }
 
     public class ScopeContext {

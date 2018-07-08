@@ -1,1 +1,1 @@
-print("aaah".Length());
+print(String("test").Length());

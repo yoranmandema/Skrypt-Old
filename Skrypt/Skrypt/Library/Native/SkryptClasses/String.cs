@@ -12,19 +12,16 @@ namespace Skrypt.Library.Native {
         public class String : SkryptType {
             public string value;
 
-            public String() {
+            public String(string v = "") {
                 Name = "string";
-            }
-
-            public String(string v) {
-                Name = "string";
+                TypeName = "System.String";
                 value = v;
             }
 
-            public static SkryptObject Constructor(SkryptObject Base, SkryptObject[] Input) {
+            public static SkryptObject Constructor(SkryptObject Self, SkryptObject[] Input) {
                 var a = TypeConverter.ToString(Input, 0);
 
-                return new String(a).SetPropertiesTo(Base);
+                return new String(a);
             }
 
             public static implicit operator String(string d) {

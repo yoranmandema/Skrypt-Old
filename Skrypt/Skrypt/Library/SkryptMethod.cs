@@ -41,7 +41,13 @@ namespace Skrypt.Library {
         public SkryptDelegate method;
 
         public override SkryptObject Execute(SkryptEngine engine, SkryptObject Self, SkryptObject[] parameters, ScopeContext scope) {
-            return method(Self, parameters);
+            var returnValue = method(Self, parameters);
+
+            if (returnValue.GetType().IsSubclassOf(typeof(SkryptType))) {
+                returnValue.SetPropertiesTo(engine.Types[((SkryptType)returnValue).TypeName]);
+            }
+
+            return returnValue;
         }
     }
 }

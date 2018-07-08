@@ -11,19 +11,16 @@ namespace Skrypt.Library.Native {
         public class Numeric : SkryptType {
             public double value;
 
-            public Numeric() {
+            public Numeric(double v = 0){
                 Name = "numeric";
-            }
-
-            public Numeric(double v) {
-                Name = "numeric";
+                TypeName = "System.Numeric";
                 value = v;
             }
 
-            public static SkryptObject Constructor(SkryptObject Base, SkryptObject[] Input) {
+            public static SkryptObject Constructor(SkryptObject Self, SkryptObject[] Input) {
                 var a = TypeConverter.ToNumeric(Input,0);
 
-                return new Numeric(a).SetPropertiesTo(Base);
+                return new Numeric(a);
             }
 
             public new List<Operation> Operations = new List<Operation> {

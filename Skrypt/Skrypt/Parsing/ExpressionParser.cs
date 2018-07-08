@@ -590,7 +590,7 @@ namespace Skrypt.Parsing {
             };
 
             List<Token> AccessTokens = Tokens.GetRange(0, accessEnd);
-            Console.WriteLine("Call: " + TokenString(AccessTokens));
+            //Console.WriteLine("Call: " + TokenString(AccessTokens));
             Node getterNode = new Node();
             getterNode.Add(ParseExpression(getterNode, AccessTokens));
             getterNode.Body = "Getter";
