@@ -35,7 +35,7 @@ namespace Skrypt.Library.Native {
                         var a = TypeConverter.ToArray(Input,0);
                         var b = TypeConverter.ToAny(Input,1);
 
-                        var newArray = new Array();
+                        var newArray = (Array)a.Clone();
                         newArray.value = new List<SkryptObject>(a.value);
                         newArray.value.Add(b);
 
@@ -57,10 +57,13 @@ namespace Skrypt.Library.Native {
                         var a = TypeConverter.ToArray(Input,0);
                         var b = TypeConverter.ToNumeric(Input,1);
 
+                        int mul = (int)b.value - 1;
+
                         var newArray = new Array();
-                        for (int i = 0; i < (int)b.value; i++) {
-                            for (int j = 0; j < a.value.Count; j++) {
-                                newArray.value.Add(a.value[j].Clone());
+                        newArray.value = new List<SkryptObject>(a.value);
+                        for (int i = 0; i < mul; i++) {
+                            foreach (var obj in a.value) {
+                                newArray.value.Add(obj.Clone());
                             }
                         }
 

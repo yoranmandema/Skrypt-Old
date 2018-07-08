@@ -43,6 +43,20 @@ namespace Skrypt.Library.Native {
 
                         return new Numeric(a - b);
                     }),
+                new Operation("divide",typeof(Numeric),typeof(Numeric),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToNumeric(Input,0);
+                        var b = TypeConverter.ToNumeric(Input,1);
+
+                        return new Numeric(a / b);
+                    }),
+                new Operation("multiply",typeof(Numeric),typeof(Numeric),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToNumeric(Input,0);
+                        var b = TypeConverter.ToNumeric(Input,1);
+
+                        return new Numeric(a * b);
+                    }),
                 new Operation("lesser",typeof(Numeric),typeof(Numeric),
                     (SkryptObject[] Input) => {
                         var a = TypeConverter.ToNumeric(Input,0);

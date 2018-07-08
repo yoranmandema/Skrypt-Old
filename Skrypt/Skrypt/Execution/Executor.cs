@@ -135,8 +135,6 @@ namespace Skrypt.Execution {
                     Object.Name = subNode.Body;
 
                     foreach (var p in Properties) {
-                        Console.WriteLine(p);
-
                         Object.Properties.Add(new SkryptProperty {
                             Name = p.Key,
                             Value = p.Value.Value
@@ -271,7 +269,11 @@ namespace Skrypt.Execution {
                         engine.throwError("No such operation as " + Left.Name + " " + op.Operation + " " + Right.Name, node.SubNodes[0].Token);
                     }
 
-                    return Operation(new SkryptObject[] { LeftResult, RightResult });                    
+                    var result = (SkryptType)Operation(new SkryptObject[] { LeftResult, RightResult });
+
+                    result.SetPropertiesTo(engine.Types[result.TypeName]);
+
+                    return result;                    
                 }
                 else if (op.Members == 1) {
                     SkryptObject LeftResult = ExecuteExpression(node.SubNodes[0], scopeContext);
@@ -289,7 +291,11 @@ namespace Skrypt.Execution {
                         engine.throwError("No such operation as " + Left.Name + " " + op.Operation, node.SubNodes[0].Token);
                     }
 
-                    return Operation(new SkryptObject[] { LeftResult });              
+                    var result = (SkryptType)Operation(new SkryptObject[] { LeftResult });
+
+                    result.SetPropertiesTo(engine.Types[result.TypeName]);
+
+                    return result;              
                 }
             }
             else if (node.TokenType == "ArrayLiteral") {
@@ -371,8 +377,6 @@ namespace Skrypt.Execution {
 
                 foreach (Node subNode in node.SubNodes[1].SubNodes) {
                     SkryptObject Result = ExecuteExpression(subNode, scopeContext);
-
-                    Console.WriteLine(Result.Name);
 
                     if (Result.Name == "void") {
                         engine.throwError("Can't pass void into arguments!", node.SubNodes[0].Token);

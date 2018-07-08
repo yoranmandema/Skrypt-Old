@@ -1,5 +1,5 @@
-a = [0] * 8;
+a = "";
 
-a[0]++;
-
-print(a);
+while (a.Length() < 100000) {
+	a = a + "kek";
+}
