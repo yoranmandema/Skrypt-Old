@@ -11,9 +11,12 @@ namespace Skrypt.Library.Native {
         public class Numeric : SkryptType {
             public double value;
 
+            public Numeric() {
+                Name = "numeric";
+            }
+
             public Numeric(double v = 0){
                 Name = "numeric";
-                TypeName = "System.Numeric";
                 value = v;
             }
 

@@ -12,9 +12,12 @@ namespace Skrypt.Library.Native {
         public class String : SkryptType {
             public string value;
 
+            public String() {
+                Name = "string";
+            }
+
             public String(string v = "") {
                 Name = "string";
-                TypeName = "System.String";
                 value = v;
             }
 

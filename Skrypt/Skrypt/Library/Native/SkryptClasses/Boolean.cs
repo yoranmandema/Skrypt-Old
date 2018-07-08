@@ -14,15 +14,15 @@ namespace Skrypt.Library.Native {
                 Name = "boolean";
             }
 
-            public Boolean(bool v) {
+            public Boolean(bool v = false) {
                 Name = "boolean";
                 value = v;
             }
 
-            public static SkryptObject Constructor(SkryptObject Base, SkryptObject[] Input) {
+            public static SkryptObject Constructor(SkryptObject Self, SkryptObject[] Input) {
                 var a = TypeConverter.ToBoolean(Input, 0);
 
-                return new Boolean(a).SetPropertiesTo(Base);
+                return new Boolean(a);
             }
 
             public static implicit operator Boolean(bool d) {

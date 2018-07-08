@@ -292,7 +292,7 @@ namespace Skrypt.Execution {
                 switch (node.TokenType) {
                     case "NumericLiteral":
                         var newNumeric = new Library.Native.System.Numeric(Double.Parse(node.Body));
-                        newNumeric.Init(engine);
+                        newNumeric.SetPropertiesTo(engine.Types[newNumeric.TypeName]);
 
                         return newNumeric;
                     case "StringLiteral":
@@ -302,7 +302,7 @@ namespace Skrypt.Execution {
                         return newString;
                     case "BooleanLiteral":
                         var newBool = new Library.Native.System.Boolean(node.Body == "true" ? true : false);
-                        newBool.Init(engine);
+                        newBool.SetPropertiesTo(engine.Types[newBool.TypeName]);
 
                         return newBool;
                     case "NullLiteral":

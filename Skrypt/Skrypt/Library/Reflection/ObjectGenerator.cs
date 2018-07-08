@@ -91,8 +91,9 @@ namespace Skrypt.Library.Reflection {
             }
 
             if (isType) {
-                var Instance = Object.Clone();
-                Engine.Types[Object.Name] = Instance;              
+                var Instance = Activator.CreateInstance(Class);
+
+                Engine.Types[Class.ToString()] = ((SkryptObject)Instance).SetPropertiesTo(Object);              
             }
 
             return Object;
