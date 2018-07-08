@@ -152,7 +152,7 @@ namespace Skrypt.Parsing {
                             //        }
                             //    }
                             //}
-                            if (token.Value == "(") {
+                            if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
                                 skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
                                 i += skip.delta;
 
@@ -175,7 +175,7 @@ namespace Skrypt.Parsing {
                             //        }
                             //    }
                             //}
-                            if (token.Value == "[") {
+                            if (token.Value == "[" && token.Type == TokenTypes.Punctuator) {
                                 skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, i);
                                 i += skip.delta;
 
@@ -184,7 +184,7 @@ namespace Skrypt.Parsing {
                                     return;
                                 }
                             }
-                            if (token.Value == Operator.Operation) {
+                            if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator) {
                                 // Fill left and right buffers
                                 leftBuffer = Tokens.GetRange(0, i);
                                 rightBuffer = Tokens.GetRange(i + 1, Tokens.Count - i - 1);
@@ -203,8 +203,7 @@ namespace Skrypt.Parsing {
 
                                 if (HasRequiredLeftTokens && HasRequiredRightTokens) {
                                     // Create operation node with type and body
-                                    Node NewNode = new Node
-                                    {
+                                    Node NewNode = new Node {
                                         Body = Operator.OperationName,
                                         TokenType = "" + token.Type,
                                         Token = token
@@ -218,7 +217,8 @@ namespace Skrypt.Parsing {
 
                                         Node RightNode = OP.IsPostfix ? null : ParseExpression(NewNode, rightBuffer);
                                         NewNode.Add(RightNode);
-                                    } else {
+                                    }
+                                    else {
                                         // Parse operators that need 2 sides
 
                                         Node LeftNode = ParseExpression(NewNode, leftBuffer);
@@ -231,7 +231,9 @@ namespace Skrypt.Parsing {
                                     branch.Add(NewNode);
                                     return;
                                 } else {
-                                    engine.throwError("Missing member of operation!", token, 10);
+                                    if (Operator.FailOnMissingMembers) {
+                                        engine.throwError("Missing member of operation!", token, 10);
+                                    }
                                 }
                             }
 
@@ -293,21 +295,21 @@ namespace Skrypt.Parsing {
             for (i = 0; i < Tokens.Count; i++) {
                 Token token = Tokens[i];
 
-                if (token.Value == "(") {
+                if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
                     depth++;
                 }
-                else if (token.Value == ")") {
+                else if (token.Value == ")" && token.Type == TokenTypes.Punctuator) {
                     depth--;
                 }
 
-                if (token.Value == "[") {
+                if (token.Value == "[" && token.Type == TokenTypes.Punctuator) {
                     indexDepth++;
                 }
-                else if (token.Value == "]") {
+                else if (token.Value == "]" && token.Type == TokenTypes.Punctuator) {
                     indexDepth--;
                 }
 
-                if ((token.Value == "," || i == Tokens.Count - 1) && depth == 0 && indexDepth == 0) {
+                if (((token.Value == "," && token.Type == TokenTypes.Punctuator) || i == Tokens.Count - 1) && depth == 0 && indexDepth == 0) {
                     Buffer = Tokens.GetRange(startArg, (i == Tokens.Count - 1 ? i + 1 : i) - startArg);
                     startArg = i + 1;
                     Arguments.Add(Buffer);
@@ -326,14 +328,14 @@ namespace Skrypt.Parsing {
             Token firstToken = null;
 
             while (true) {
-                if (Tokens[index].Value == upScope) {
+                if (Tokens[index].Value == upScope && Tokens[index].Type == TokenTypes.Punctuator) {
                     depth++;
 
                     if (firstToken == null) {
                         firstToken = Tokens[index];
                     }
                 }
-                else if (Tokens[index].Value == downScope) {
+                else if (Tokens[index].Value == downScope && Tokens[index].Type == TokenTypes.Punctuator) {
                     depth--;
 
                     if (depth == 0) {
@@ -443,7 +445,7 @@ namespace Skrypt.Parsing {
             }
 
             if (index > 0) {
-                if (Tokens[index - 1].Value == ".") {
+                if (Tokens[index - 1].Value == "." && Tokens[index - 1].Type == TokenTypes.Punctuator) {
                     engine.throwError("Identifier expected!", Tokens[index - 1]);
                 }
             }
@@ -468,14 +470,14 @@ namespace Skrypt.Parsing {
             while (true) {
                 //Console.WriteLine(token);
 
-                if (token.Value == "(") {
+                if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
                     skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, index);
                     index = skip.end + 1;
                 }
-                else if (token.Value == "[") {
+                else if (token.Value == "[" && token.Type == TokenTypes.Punctuator) {
                     skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, index);
                     index = skip.end + 1;
-                } else if (token.Value == "." || token.IsValuable()) {
+                } else if ((token.Value == "." && token.Type == TokenTypes.Punctuator) || token.IsValuable()) {
                     skipInfo skip = engine.expressionParser.SkipAccess(Tokens, index);
                     index = skip.end;
                 } else {
@@ -508,13 +510,13 @@ namespace Skrypt.Parsing {
             List<Token> Reverse = Tokens.GetRange(0,Tokens.Count);
             Reverse.Reverse();
 
-            if (Reverse[0].Value == "]") {
+            if (Reverse[0].Value == "]" && Reverse[0].Type == TokenTypes.Punctuator) {
                 skipInfo skip = SkipFromTo("]", "[", Reverse, 0);
 
                 if (skip.end + 1 >= Reverse.Count) {
                     engine.throwError("Indexing operator needs left hand value!", Reverse[skip.end]);
                 }
-                else if (Reverse[skip.end + 1].Value == ".") {
+                else if (Reverse[skip.end + 1].Value == "." && Reverse[skip.end + 1].Type == TokenTypes.Punctuator) {
                     engine.throwError("Indexing operator needs left hand value!", Reverse[skip.end]);
                 }
 
@@ -682,25 +684,27 @@ namespace Skrypt.Parsing {
 
             // Skip until we hit the end of an expression
             while (true) {
-                switch (Tokens[delta].Value) {
-                    case "(":
-                        pScope++;
-                        break;
-                    case ")":
-                        pScope--;
-                        break;
-                    case "[":
-                        bScope++;
-                        break;
-                    case "]":
-                        bScope--;
-                        break;
-                    case "{":
-                        cScope++;
-                        break;
-                    case "}":
-                        cScope--;
-                        break;
+                if (Tokens[delta].Type == TokenTypes.Punctuator) {
+                    switch (Tokens[delta].Value) {
+                        case "(":
+                            pScope++;
+                            break;
+                        case ")":
+                            pScope--;
+                            break;
+                        case "[":
+                            bScope++;
+                            break;
+                        case "]":
+                            bScope--;
+                            break;
+                        case "{":
+                            cScope++;
+                            break;
+                        case "}":
+                            cScope--;
+                            break;
+                    }
                 }
 
                 if (pScope == 0 && bScope == 0 && cScope == 0) {

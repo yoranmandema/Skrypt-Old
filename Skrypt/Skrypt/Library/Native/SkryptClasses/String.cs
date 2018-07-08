@@ -14,11 +14,13 @@ namespace Skrypt.Library.Native {
 
             public String() {
                 Name = "string";
+                CreateCopyOnAssignment = true;
             }
 
             public String(string v = "") {
                 Name = "string";
                 value = v;
+                CreateCopyOnAssignment = true;
             }
 
             public static SkryptObject Constructor(SkryptObject Self, SkryptObject[] Input) {
@@ -57,7 +59,20 @@ namespace Skrypt.Library.Native {
 
                         return (String)a.value[(int)b].ToString();
                     }),
+                new Operation("equal",typeof(String), typeof(String),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToString(Input,0);
+                        var b = TypeConverter.ToString(Input,1);
+
+                        return (Boolean)(a.value == b.value);
+                    }),
             };
+
+            public static SkryptObject Char (SkryptObject Self, SkryptObject[] Values) {
+                var a = TypeConverter.ToNumeric(Values,0);
+
+                return (String)("" + Convert.ToChar((int)a));
+            }
 
             public static SkryptObject Length(SkryptObject Self, SkryptObject[] Values) {
                 var a = (String)Self;

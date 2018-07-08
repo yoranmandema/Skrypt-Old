@@ -12,11 +12,13 @@ namespace Skrypt.Library.Native {
 
             public Boolean() {
                 Name = "boolean";
+                CreateCopyOnAssignment = true;
             }
 
             public Boolean(bool v = false) {
                 Name = "boolean";
                 value = v;
+                CreateCopyOnAssignment = true;
             }
 
             public static SkryptObject Constructor(SkryptObject Self, SkryptObject[] Input) {

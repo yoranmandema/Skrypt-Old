@@ -32,11 +32,11 @@ namespace Skrypt.Execution {
         bool CheckCondition (Node node, ScopeContext scopeContext) {
             bool ConditionResult = false;
 
-            try {
+            //try {
                 ConditionResult = engine.executor.ExecuteExpression(node, scopeContext).ToBoolean();
-            } catch (Exception e) {
-                engine.throwError(e.Message);
-            }
+            //} catch (Exception e) {
+            //    engine.throwError(e.Message);
+            //}
 
             return ConditionResult;
         }
@@ -165,7 +165,7 @@ namespace Skrypt.Execution {
         }
 
         public SkryptObject ExecuteExpression(Node node, ScopeContext scopeContext) {
-            Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body || o.Operation == node.Body);
+            Operator op = Operator.AllOperators.Find(o => o.OperationName == node.Body);
 
             if (op != null) {
                 if (op.OperationName == "return") {
@@ -194,6 +194,12 @@ namespace Skrypt.Execution {
 
                 if (op.OperationName == "assign") {
                     SkryptObject result = ExecuteExpression(node.SubNodes[1], scopeContext);
+
+                    if (result.GetType().IsSubclassOf(typeof(SkryptType))) {
+                        if(((SkryptType)result).CreateCopyOnAssignment) {
+                            result = result.Clone();
+                        }
+                    }
 
                     if (node.SubNodes[0].SubNodes.Count == 0 && node.SubNodes[0].TokenType == "Identifier") {
                         Variable Variable = getVariable(node.SubNodes[0].Body, scopeContext);
@@ -283,8 +289,6 @@ namespace Skrypt.Execution {
 
                     array.value.Add(Result);
                 }
-
-                Console.WriteLine("Literal: " + array.TypeName);
 
                 array.SetPropertiesTo(engine.Types[array.TypeName]);
 

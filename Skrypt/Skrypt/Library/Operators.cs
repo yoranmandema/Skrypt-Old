@@ -8,6 +8,7 @@ namespace Skrypt.Library {
     class Operator {
         public int Members { get; set; } = 2;
         public string OperationName { get; set; } = "";
+        public bool FailOnMissingMembers = true;
         public string Operation = "";
         public static List<Operator> AllOperators = new List<Operator>();
     }
@@ -115,6 +116,7 @@ namespace Skrypt.Library {
         public Op_Subtract() {
             OperationName = "subtract";
             Operation = "-";
+            FailOnMissingMembers = false;
 
             AllOperators.Add(this);
         }

@@ -15,6 +15,7 @@ namespace Skrypt.Parsing {
         public string Body { get; set; }
         //public object Value { get; set; }
         public string TokenType { get; set; }
+        [JsonIgnore]
         public Token Token { get; set; }
         public List<Node> SubNodes { get; set; } = new List<Node>();
 

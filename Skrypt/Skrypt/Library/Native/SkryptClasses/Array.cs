@@ -87,6 +87,12 @@ namespace Skrypt.Library.Native {
                     }),
             };
 
+            public static SkryptObject Length(SkryptObject Self, SkryptObject[] Values) {
+                var a = (Array)Self;
+
+                return (Numeric)a.value.Count;
+            }
+
             public override string ToString() {
                 return "[" + string.Join(",",value) + "]";
             }

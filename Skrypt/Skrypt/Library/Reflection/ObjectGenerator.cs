@@ -92,9 +92,6 @@ namespace Skrypt.Library.Reflection {
 
             if (isType) {
                 var Instance = Activator.CreateInstance(Class);
-
-                Console.WriteLine(Class.ToString());
-
                 Engine.Types[Class.ToString()] = ((SkryptObject)Instance).SetPropertiesTo(Object);              
             }
 

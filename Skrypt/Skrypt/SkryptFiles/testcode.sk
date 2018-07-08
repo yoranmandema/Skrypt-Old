@@ -1,11 +1,43 @@
-memory = [0] * 64;
+func makeSubArray (array,start) {
+	i = start;
+	new = [];
 
+	while (i < array.Length()) {
+		print(array[i]);
 
+		new = new + array[i];
 
-func loop (code) {
-	i = -1;
-
-	while () {
-		
+		i++;
 	}
+
+	return new;
 }
+
+func SelectionSort (array) {
+	sorted = [];
+	i = 0;
+
+	while (i < array.Length()) {
+		smallest = 100000000000000;
+
+		k = i;
+
+		while (k < array.Length()) {
+			print(smallest);
+
+			if (array[k] < smallest) {
+				smallest = array[k];
+			}	
+
+			k++;
+		}	
+		
+		sorted = sorted + smallest;
+
+		i++;
+	}	
+
+	return sorted;
+}
+
+print(SelectionSort([2,3,1,5,9,0]));

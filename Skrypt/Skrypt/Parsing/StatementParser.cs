@@ -98,7 +98,7 @@ namespace Skrypt.Parsing {
                     result.node.Add(elseIfResult.node);
                     index += elseIfResult.delta;
 
-                    if (index == Tokens.Count - 1) {
+                    if (index == Tokens.Count) {
                         break;
                     }
                 }
