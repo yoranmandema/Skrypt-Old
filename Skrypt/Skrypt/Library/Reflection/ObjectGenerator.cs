@@ -17,6 +17,10 @@ namespace Skrypt.Library.Reflection {
                 Object.Name = Parent.Name + "." + Object.Name;
             }
 
+            if (Class.IsSubclassOf(typeof(SkryptType))) {
+                isType = true;
+            }
+
             var Methods = Class.GetMethods().Where((m) => {
                 if (m.ReturnType != typeof(SkryptObject)) {
                     return false;
@@ -42,10 +46,6 @@ namespace Skrypt.Library.Reflection {
 
                 Method.method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), M);
                 Method.Name = M.Name;
-
-                if (Class.IsSubclassOf(typeof(SkryptType))) {
-                    isType = true;                
-                }
 
                 SkryptProperty property = new SkryptProperty {
                     Name = M.Name,
@@ -92,6 +92,8 @@ namespace Skrypt.Library.Reflection {
 
             if (isType) {
                 var Instance = Activator.CreateInstance(Class);
+
+                Console.WriteLine(Class.ToString());
 
                 Engine.Types[Class.ToString()] = ((SkryptObject)Instance).SetPropertiesTo(Object);              
             }

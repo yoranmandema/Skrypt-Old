@@ -9,90 +9,86 @@ namespace Skrypt.Library.Native {
     partial class System {
         public class Array : SkryptType {
 
-            public Dictionary<string, SkryptObject> value {get; set;} = new Dictionary<string,SkryptObject>();
+            public List<SkryptObject> value {get; set;} = new List<SkryptObject>();
+            public int lastIndex = 0;
 
             public Array() {
                 Name = "array";
             }
 
+            static int IndexFromObject (SkryptObject Object) {
+                var index = 0;
+
+                if (Object.GetType() == typeof(String)) {
+                    index = ((String)Object).value.GetHashCode();
+                }
+                else {
+                    index = Convert.ToInt32((Numeric)Object);
+                }
+
+                return index;
+            }
+
             public new List<Operation> Operations = new List<Operation> {
-                //new Operation("add",typeof(Array),typeof(SkryptObject),
-                //    (SkryptObject[] Input) => {
-                //        var a = TypeConverter.ToArray(Input,0);
-                //        var b = TypeConverter.ToAny(Input,1);
-
-                //        var newArray = new Array();
-                //        newArray.value = new List<SkryptObject>(a.value);
-                //        newArray.value.Add(b);
-
-                //        return newArray;
-                //    }),
-                //new Operation("add",typeof(SkryptObject),typeof(Array),
-                //    (SkryptObject[] Input) => {
-                //        var a = TypeConverter.ToAny(Input,0);
-                //        var b = TypeConverter.ToArray(Input,1);
-
-                //        var newArray = new Array();
-                //        newArray.value = new List<SkryptObject>(b.value);
-                //        newArray.value.Insert(0,a);
-
-                //        return newArray;
-                //    }),
-                new Operation("index",typeof(Array), typeof(String),
+                new Operation("add",typeof(Array),typeof(SkryptObject),
                     (SkryptObject[] Input) => {
                         var a = TypeConverter.ToArray(Input,0);
-                        var index = TypeConverter.ToString(Input,1);
+                        var b = TypeConverter.ToAny(Input,1);
 
-                        if (!a.value.ContainsKey(index)) {
-                            return new Null();
+                        var newArray = new Array();
+                        newArray.value = new List<SkryptObject>(a.value);
+                        newArray.value.Add(b);
+
+                        return newArray;
+                    }),
+                new Operation("add",typeof(SkryptObject),typeof(Array),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToAny(Input,0);
+                        var b = TypeConverter.ToArray(Input,1);
+
+                        var newArray = new Array();
+                        newArray.value = new List<SkryptObject>(b.value);
+                        newArray.value.Insert(0,a);
+
+                        return newArray;
+                    }),
+                new Operation("multiply",typeof(Array),typeof(Numeric),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToArray(Input,0);
+                        var b = TypeConverter.ToNumeric(Input,1);
+
+                        var newArray = new Array();
+                        for (int i = 0; i < (int)b.value; i++) {
+                            newArray.value.AddRange(a.value);
                         }
+
+                        return newArray;
+                    }),
+                new Operation("index",typeof(Array), typeof(SkryptObject),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToArray(Input,0);
+                        var b = TypeConverter.ToAny(Input,1);
+
+                        var index = IndexFromObject(b);
 
                         return a.value[index];
                     }),
-                new Operation("index",typeof(Array), typeof(Numeric),
+                new Operation("indexset",typeof(Array), typeof(SkryptObject),
                     (SkryptObject[] Input) => {
                         var a = TypeConverter.ToArray(Input,0);
-                        var index = TypeConverter.ToString(Input,1);
+                        var b = TypeConverter.ToAny(Input,1);
+                        var c = TypeConverter.ToAny(Input,2);
 
-                        if (!a.value.ContainsKey(index)) {
-                            return new Null();
-                        }
+                        var index = IndexFromObject(c);
 
-                        return a.value[index];
-                    }),
-                new Operation("indexset",typeof(Array), typeof(String),
-                    (SkryptObject[] Input) => {
-                        var a = TypeConverter.ToArray(Input,0);
-                        var value = TypeConverter.ToAny(Input,1);
-                        var index = TypeConverter.ToString(Input,2);
-
-                        var newValue = a.value[index] = value;
-
-                        return newValue;
-                    }),
-                new Operation("indexset",typeof(Array), typeof(Numeric),
-                    (SkryptObject[] Input) => {
-                        var a = TypeConverter.ToArray(Input,0);
-                        var value = TypeConverter.ToAny(Input,1);
-                        var index = TypeConverter.ToString(Input,2);
-
-                        var newValue = a.value[index] = value;
+                        var newValue = a.value[index] = b;
 
                         return newValue;
                     }),
             };
 
             public override string ToString() {
-                stringBuilder.Clear();
-                stringBuilder.Append("{\n");
-
-                foreach (KeyValuePair<string,SkryptObject> v in value) {
-                    stringBuilder.Append("\t" + v.Key + ": " + v.Value + ",\n");
-                }
-
-                stringBuilder.Append("}");
-
-                return stringBuilder.ToString();
+                return "[" + string.Join(",",value) + "]";
             }
         }
     }

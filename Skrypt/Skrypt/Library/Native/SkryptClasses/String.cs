@@ -50,6 +50,13 @@ namespace Skrypt.Library.Native {
 
                         return new String(a + b);
                     }),
+                new Operation("index",typeof(String), typeof(Numeric),
+                    (SkryptObject[] Input) => {
+                        var a = TypeConverter.ToString(Input,0);
+                        var b = TypeConverter.ToNumeric(Input,1);
+
+                        return (String)a.value[(int)b].ToString();
+                    }),
             };
 
             public static SkryptObject Length(SkryptObject Self, SkryptObject[] Values) {

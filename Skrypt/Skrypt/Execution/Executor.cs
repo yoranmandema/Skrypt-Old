@@ -281,10 +281,12 @@ namespace Skrypt.Execution {
                         engine.throwError("Can't add void to array!", node.SubNodes[0].Token);
                     }
 
-                    array.value["" + i] = Result;
+                    array.value.Add(Result);
                 }
 
-                array.Init(engine);
+                Console.WriteLine("Literal: " + array.TypeName);
+
+                array.SetPropertiesTo(engine.Types[array.TypeName]);
 
                 return array;
             }

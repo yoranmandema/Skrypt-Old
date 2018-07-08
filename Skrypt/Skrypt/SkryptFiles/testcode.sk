@@ -1,1 +1,11 @@
-print(String("test").Length());
+memory = [0] * 64;
+
+
+
+func loop (code) {
+	i = -1;
+
+	while () {
+		
+	}
+}
