@@ -26,6 +26,7 @@ namespace Skrypt.Parsing {
             "while",
             "for",
             "func",
+            "class",
         };
 
         List<Token> GetSurroundedTokens (string open, string close, int start, List<Token> Tokens) {
@@ -89,7 +90,10 @@ namespace Skrypt.Parsing {
                 return engine.statementParser.Parse(Tokens);
             } else if (Tokens[0].Value == "func") {
                 return engine.methodParser.Parse(Tokens);
-            } else {
+            } else if (Tokens[0].Value == "class") {
+                return engine.classParser.Parse(Tokens);
+            }
+            else {
                 return engine.expressionParser.Parse(Tokens);
             }
         }

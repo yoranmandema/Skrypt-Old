@@ -97,10 +97,10 @@ namespace Skrypt.Execution {
                     switch (subNode.Body) {
                         case "while":
                             ExecuteWhileStatement(subNode, scope);
-                        break;
+                            break;
                         case "if":
                             ExecuteIfStatement(subNode, scope);
-                        break;
+                            break;
                     }
                 }
                 else if (subNode.TokenType == "MethodDeclaration") {
@@ -110,8 +110,7 @@ namespace Skrypt.Execution {
                         }
                     }
 
-                    UserMethod result = new UserMethod
-                    {
+                    UserMethod result = new UserMethod {
                         Name = "method",
                         Signature = subNode.Body,
                         BlockNode = subNode.SubNodes[0],
@@ -127,6 +126,24 @@ namespace Skrypt.Execution {
                         Value = result,
                         Scope = scope
                     };
+                }
+                else if (subNode.TokenType == "ClassDeclaration") {
+                    ScopeContext ContentScope = ExecuteBlock(subNode, scope);
+
+                    var Properties = ContentScope.Variables;
+                    var Object = new SkryptObject();
+                    Object.Name = subNode.Body;
+
+                    foreach (var p in Properties) {
+                        Console.WriteLine(p);
+
+                        Object.Properties.Add(new SkryptProperty {
+                            Name = p.Key,
+                            Value = p.Value.Value
+                        });
+                    }
+
+                    scope.AddVariable(Object.Name, Object);
                 }
                 else {
                     SkryptObject result = engine.executor.ExecuteExpression(subNode, scope);
@@ -355,6 +372,8 @@ namespace Skrypt.Execution {
                 foreach (Node subNode in node.SubNodes[1].SubNodes) {
                     SkryptObject Result = ExecuteExpression(subNode, scopeContext);
 
+                    Console.WriteLine(Result.Name);
+
                     if (Result.Name == "void") {
                         engine.throwError("Can't pass void into arguments!", node.SubNodes[0].Token);
                     }
@@ -368,12 +387,17 @@ namespace Skrypt.Execution {
 
                 findCallerContext.subContext.GettingCaller = true;
                 SkryptObject Method = ExecuteExpression(node.SubNodes[0].SubNodes[0], findCallerContext);
+                SkryptObject Object = findCallerContext.subContext.Caller;
 
                 if (Method.GetType() != typeof(SharpMethod)) {
+                    var Type = Method.Name;
                     var Find = Method.Properties.Find((x) => x.Name == "Constructor");
 
                     if (Find != null) {
                         Method = Find.Value;
+                        Object = new SkryptObject();
+                        Object.SetPropertiesTo(scopeContext.Variables[Type].Value);
+                        return Object;
                     }
                 }
 
@@ -393,11 +417,11 @@ namespace Skrypt.Execution {
                         };
                     }
 
-                    SkryptObject MethodResult = method.Execute(engine, findCallerContext.subContext.Caller, Arguments.ToArray(), methodContext);
+                    SkryptObject MethodResult = method.Execute(engine, Object, Arguments.ToArray(), methodContext);
 
                     return MethodResult;
                 } else if (Method.GetType() == typeof(SharpMethod)) {
-                    SkryptObject MethodResult = ((SharpMethod)Method).Execute(engine, findCallerContext.subContext.Caller, Arguments.ToArray(), methodContext);
+                    SkryptObject MethodResult = ((SharpMethod)Method).Execute(engine, Object, Arguments.ToArray(), methodContext);
 
                     return MethodResult;
                 } else {

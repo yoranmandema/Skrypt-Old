@@ -1,43 +1,20 @@
-func makeSubArray (array,start) {
-	i = start;
-	new = [];
 
-	while (i < array.Length()) {
-		print(array[i]);
+class Vector {
+	x = 0;
+	y = 0;
+	z = 0;
 
-		new = new + array[i];
-
-		i++;
+	func Constructor (X,Y,Z) {
+		x = X;
+		y = Y;
+		z = Z;
 	}
 
-	return new;
-}
-
-func SelectionSort (array) {
-	sorted = [];
-	i = 0;
-
-	while (i < array.Length()) {
-		smallest = 100000000000000;
-
-		k = i;
-
-		while (k < array.Length()) {
-			print(smallest);
-
-			if (array[k] < smallest) {
-				smallest = array[k];
-			}	
-
-			k++;
-		}	
+	func Length () {
 		
-		sorted = sorted + smallest;
-
-		i++;
-	}	
-
-	return sorted;
+	}
 }
 
-print(SelectionSort([2,3,1,5,9,0]));
+a = Vector(1,1,1);
+
+print();

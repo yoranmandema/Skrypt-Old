@@ -26,6 +26,7 @@ namespace Skrypt.Engine {
         public ExpressionParser expressionParser;
         public GeneralParser generalParser;
         public MethodParser methodParser;
+        public ClassParser classParser;
         public Analizer analizer;
         public Executor executor;
         public StandardMethods standardMethods;
@@ -45,6 +46,7 @@ namespace Skrypt.Engine {
             expressionParser = new ExpressionParser(this);
             generalParser = new GeneralParser(this);
             methodParser = new MethodParser(this);
+            classParser = new ClassParser(this);
             analizer = new Analizer(this);
             executor = new Executor(this);
             standardMethods = new StandardMethods(this);
@@ -218,7 +220,7 @@ namespace Skrypt.Engine {
             double T_Parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            //Console.WriteLine("Program:\n" + ProgramNode);
+            Console.WriteLine("Program:\n" + ProgramNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
