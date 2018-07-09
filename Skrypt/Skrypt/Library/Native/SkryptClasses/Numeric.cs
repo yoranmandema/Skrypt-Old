@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Skrypt.Execution;
 
 namespace Skrypt.Library.Native
@@ -57,13 +58,29 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(a > b);
                     }),
+                new Operation("equallesser", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Boolean(a <= b);
+                    }),
+                new Operation("equalgreater", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Boolean(a >= b);
+                    }),
                 new Operation("equal", typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Boolean(a == b);
+                        return new Boolean(Equals(a.Value,b.Value));
                     }),
                 new Operation("postincrement", typeof(Numeric),
                     input =>
@@ -86,6 +103,12 @@ namespace Skrypt.Library.Native
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         return new Numeric(-a.Value);
+                    }),
+                new Operation("not", typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        return new Boolean(a.Value == 0);
                     })
             };
 

@@ -1,7 +1,18 @@
-class Test {
-	static constant a = 2;
+func Sqrt(n, g) {
+    if (!g) {
+        // Take an initial guess at the square root
+        g = n / 2.0;
+    }
+    d = n / g;              // Divide our guess into the number
+    ng = (d + g) / 2.0;     // Use average of g and d as our new guess
+
+    if (g == ng) {   
+        // The new guess is the same as the old guess; further guesses
+        // can get no more accurate so we return this guess
+        return g;
+    }
+    // Recursively solve for closer and closer approximations of the square root
+    return Sqrt(n, ng);
 }
 
-Test.a = 2;
-
-Print(Test.a);
+Print(Sqrt(9));

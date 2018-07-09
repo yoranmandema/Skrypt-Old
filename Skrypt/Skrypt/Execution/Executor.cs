@@ -45,11 +45,7 @@ namespace Skrypt.Execution
         {
             var conditionResult = false;
 
-            //try {
             conditionResult = _engine.Executor.ExecuteExpression(node, scopeContext).ToBoolean();
-            //} catch (Exception e) {
-            //    engine.throwError(e.Message);
-            //}
 
             return conditionResult;
         }
@@ -205,6 +201,8 @@ namespace Skrypt.Execution
                             ExecuteIfStatement(subNode, scope);
                             break;
                     }
+
+                    if (scope.SubContext.ReturnObject != null) return scope;
                 }
                 else if (subNode.TokenType == "MethodDeclaration") {
                     var result = ExecuteMethodDeclaration(subNode, scope);
