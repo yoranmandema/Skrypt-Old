@@ -1,19 +1,7 @@
 class Test {
-	Test () {
-	
-	}
-
-	private b = 0;
-
-	func a() {
-		Print(b);
-	}
-
-	static class Subclass {
-		Subclass (a) {
-			Print(a);
-		}	
-	}
+	static constant a = 2;
 }
 
-Test.Subclass(1);
+Test.a = 2;
+
+Print(Test.a);

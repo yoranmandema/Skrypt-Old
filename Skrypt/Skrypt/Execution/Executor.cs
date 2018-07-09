@@ -293,15 +293,23 @@ namespace Skrypt.Execution
                     {
                         var variable = GetVariable(node.SubNodes[0].Body, scopeContext);
 
-                        if (variable != null)
+                        if (variable != null) {
+                            if (variable.IsConstant)
+                                _engine.ThrowError("Variable is marked as constant and can thus not be modified.");
+
                             variable.Value = result;
-                        else
+                        }
+                        else {
                             scopeContext.AddVariable(node.SubNodes[0].Body, result);
+                        }
                     }
                     else if (node.SubNodes[0].Body == "access")
                     {
                         var target = ExecuteExpression(node.SubNodes[0].SubNodes[1], scopeContext);
                         var accessResult = ExecuteAccess(target, node.SubNodes[0].SubNodes[0], scopeContext);
+
+                        if (accessResult.IsConstant)
+                            _engine.ThrowError("Property is marked as constant and can thus not be modified.");
 
                         accessResult.Value = result;
                     }
