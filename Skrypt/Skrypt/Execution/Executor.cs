@@ -17,25 +17,25 @@ namespace Skrypt.Execution
         }
 
         public Variable GetVariable (string name, ScopeContext scopeContext) {
-            Variable FoundVar = null;
+            Variable foundVar = null;
 
             if (scopeContext.Variables.ContainsKey(name)) {
-                FoundVar = scopeContext.Variables[name];
+                foundVar = scopeContext.Variables[name];
             } else if (scopeContext.ParentScope != null) {
-                FoundVar = GetVariable(name, scopeContext.ParentScope);
+                foundVar = GetVariable(name, scopeContext.ParentScope);
             }
 
-            return FoundVar;
+            return foundVar;
         }
 
         public SkryptObject GetType(string name, ScopeContext scopeContext) {
-            SkryptObject FoundVar = null;
+            SkryptObject foundVar = null;
 
             if (scopeContext.Types.ContainsKey(name)) {
-                FoundVar = scopeContext.Types[name];
+                foundVar = scopeContext.Types[name];
             }
             else if (scopeContext.ParentScope != null) {
-                FoundVar = GetType(name, scopeContext.ParentScope);
+                foundVar = GetType(name, scopeContext.ParentScope);
             }
 
             return foundVar;
@@ -164,7 +164,7 @@ namespace Skrypt.Execution
         public UserMethod ExecuteMethodDeclaration (Node node, ScopeContext scopeContext) {
             foreach (KeyValuePair<string, Variable> pair in scopeContext.Variables.Where((p) => p.Value.Value.Name == "method")) {
                 if (pair.Value.Name == node.Body) {
-                    engine.throwError("A method with this signature already exists in this context!", node.Token);
+                    _engine.ThrowError("A method with this signature already exists in this context!", node.Token);
                 }
             }
 
@@ -232,8 +232,8 @@ namespace Skrypt.Execution
 
             if (find == null) _engine.ThrowError("Object does not contain property '" + toFind + "'!");
 
-            if (Find.Accessibility == Access.Private) {
-                engine.throwError("Property '" + ToFind + "' is inaccessable due to its protection level.");
+            if (find.Accessibility == Access.Private) {
+                _engine.ThrowError("Property '" + toFind + "' is inaccessable due to its protection level.");
             }
 
             return find;
@@ -463,7 +463,7 @@ namespace Skrypt.Execution
                 };
 
                 findCallerContext.SubContext.GettingCaller = true;
-                var method = ExecuteExpression(node.SubNodes[0].SubNodes[0], findCallerContext);
+                var foundMethod = ExecuteExpression(node.SubNodes[0].SubNodes[0], findCallerContext);
                 var Object = findCallerContext.SubContext.Caller;
 
                 if (Object != null) {
@@ -475,31 +475,31 @@ namespace Skrypt.Execution
 
                 bool isConstructor = false;
 
-                if (!Method.GetType().IsSubclassOf(typeof(SkryptMethod))) {
-                    var type = Method.Name;
-                    var find = Method.Properties.Find((x) => x.Name == "Constructor");
+                if (!foundMethod.GetType().IsSubclassOf(typeof(SkryptMethod))) {
+                    var type = foundMethod.Name;
+                    var find = foundMethod.Properties.Find((x) => x.Name == "Constructor");
 
                     if (find != null) {
-                        var typeName = Method.Properties.Find((x) => x.Name == "TypeName").Value.ToString();
+                        var typeName = foundMethod.Properties.Find((x) => x.Name == "TypeName").Value.ToString();
 
-                        Method = Find.Value;
+                        foundMethod = find.Value;
                         Object = new SkryptObject();
-                        Object.SetPropertiesTo(GetType(TypeName, scopeContext));
+                        Object.SetPropertiesTo(GetType(typeName, scopeContext));
 
                         isConstructor = true;
                     } else {
-                        engine.throwError("Object does not have a constructor and can thus not be instanced!");
+                        _engine.ThrowError("Object does not have a constructor and can thus not be instanced!");
                     }
                 }
 
                 SkryptObject MethodResult = null;
 
-                if (Method.GetType() == typeof(UserMethod)) {
-                    UserMethod method = (UserMethod)Method;
+                if (foundMethod.GetType() == typeof(UserMethod)) {
+                    UserMethod method = (UserMethod)foundMethod;
 
-                    for (var i = 0; i < userMethod.Parameters.Count; i++)
+                    for (var i = 0; i < method.Parameters.Count; i++)
                     {
-                        var parName = userMethod.Parameters[i];
+                        var parName = method.Parameters[i];
                         SkryptObject input;
 
                         input = i < arguments.Count ? arguments[i] : new Library.Native.System.Null();
@@ -512,11 +512,11 @@ namespace Skrypt.Execution
                         };
                     }
 
-                    MethodResult = method.Execute(engine, Object, Arguments.ToArray(), methodContext);
-                } else if (Method.GetType() == typeof(SharpMethod)) {
-                    MethodResult = ((SharpMethod)Method).Execute(engine, Object, Arguments.ToArray(), methodContext);
+                    MethodResult = method.Execute(_engine, Object, arguments.ToArray(), methodContext);
+                } else if (foundMethod.GetType() == typeof(SharpMethod)) {
+                    MethodResult = ((SharpMethod)foundMethod).Execute(_engine, Object, arguments.ToArray(), methodContext);
                 } else {
-                    engine.throwError("Cannot call value, as it is not a function!", node.SubNodes[0].SubNodes[0].Token);
+                    _engine.ThrowError("Cannot call value, as it is not a function!", node.SubNodes[0].SubNodes[0].Token);
                 }
 
                 if (isConstructor) {

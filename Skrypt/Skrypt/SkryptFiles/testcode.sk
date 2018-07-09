@@ -6,12 +6,12 @@ class Test {
 	private b = 0;
 
 	func a() {
-		print(b);
+		Print(b);
 	}
 
 	static class Subclass {
 		Subclass (a) {
-			print(a);
+			Print(a);
 		}	
 	}
 }

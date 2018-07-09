@@ -21,7 +21,6 @@ namespace Skrypt.Execution
         public string Type = "";
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
         public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
-        public ScopeContext ParentScope = null;
 
         public override string ToString()
         {

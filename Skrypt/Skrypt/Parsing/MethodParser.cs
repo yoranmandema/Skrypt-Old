@@ -20,8 +20,6 @@ namespace Skrypt.Parsing
         public Node ParseSingleParameter(List<Token> tokens)
         {
             var index = 0;
-            SkipInfo skip;
-
             var name = tokens[index].Value;
 
             var node = new Node

@@ -7,17 +7,17 @@ namespace Skrypt.Library.Reflection
 {
     internal static class ObjectGenerator
     {
-        public static SkryptObject MakeObjectFromClass(Type Class, SkryptEngine engine, SkryptObject parent = null)
+        public static SkryptObject MakeObjectFromClass(Type type, SkryptEngine engine, SkryptObject parent = null)
         {
             var Object = new SkryptObject();
             var isType = false;
-            Object.Name = Class.Name;
+            Object.Name = type.Name;
 
             if (parent != null) Object.Name = parent.Name + "." + Object.Name;
 
-            if (Class.IsSubclassOf(typeof(SkryptType))) isType = true;
+            if (type.IsSubclassOf(typeof(SkryptType))) isType = true;
 
-            var methods = Class.GetMethods().Where(m =>
+            var methods = type.GetMethods().Where(m =>
             {
                 if (m.ReturnType != typeof(SkryptObject)) return false;
 
@@ -47,7 +47,7 @@ namespace Skrypt.Library.Reflection
                 Object.Properties.Add(property);
             }
 
-            var fields = Class.GetFields().Where(f =>
+            var fields = type.GetFields().Where(f =>
             {
                 if (!f.FieldType.IsSubclassOf(typeof(SkryptObject))) return false;
 
@@ -66,7 +66,7 @@ namespace Skrypt.Library.Reflection
                 Object.Properties.Add(property);
             }
 
-            var classes = Class.GetNestedTypes();
+            var classes = type.GetNestedTypes();
 
             foreach (TypeInfo c in classes)
             {
@@ -85,15 +85,15 @@ namespace Skrypt.Library.Reflection
             }
           
             if (isType) {
-                var Instance = (SkryptObject)Activator.CreateInstance(Class);
-                var className = Class.ToString();
+                var Instance = (SkryptObject)Activator.CreateInstance(type);
+                var className = type.ToString();
 
                 Instance.Properties.Add(new SkryptProperty {
                     Name = "TypeName",
                     Value = new Native.System.String(className)
                 });
 
-                Engine.GlobalScope.AddType(className, Instance.SetPropertiesTo(Object));              
+                engine.GlobalScope.AddType(className, Instance.SetPropertiesTo(Object));              
             }
 
             return Object;
