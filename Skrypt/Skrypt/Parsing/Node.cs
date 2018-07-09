@@ -22,13 +22,14 @@ namespace Skrypt.Parsing {
         /// <summary>
         /// Adds a subnode
         /// </summary>
-        public void Add (Node node) {
+        public Node Add (Node node) {
 
             if (node == null) {
-                return;
+                return node;
             }
 
             SubNodes.Add(node);
+            return node;
         }
 
         /// <summary>

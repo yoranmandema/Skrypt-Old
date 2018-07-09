@@ -18,6 +18,7 @@ namespace Skrypt.Execution {
         public string Type = "";
         public SubContext subContext = new SubContext();
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
+        public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
         public ScopeContext ParentScope = null;
 
         public override string ToString() {
@@ -31,6 +32,10 @@ namespace Skrypt.Execution {
                 IsConstant = IsConstant,
                 Scope = this
             };
+        }
+
+        public void AddType(string Name, SkryptObject Value, bool IsConstant = false) {
+            Types[Name] = Value;
         }
     }
 }

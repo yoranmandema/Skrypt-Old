@@ -29,7 +29,7 @@ namespace Skrypt.Parsing {
             "class",
         };
 
-        List<Token> GetSurroundedTokens (string open, string close, int start, List<Token> Tokens) {
+        public List<Token> GetSurroundedTokens (string open, string close, int start, List<Token> Tokens) {
             int index = start;
 
             int i = index + 1;

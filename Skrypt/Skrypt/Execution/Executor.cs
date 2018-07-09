@@ -17,13 +17,26 @@ namespace Skrypt.Execution {
             engine = e;
         }
 
-        Variable getVariable (string name, ScopeContext scopeContext) {
+        public Variable GetVariable (string name, ScopeContext scopeContext) {
             Variable FoundVar = null;
 
             if (scopeContext.Variables.ContainsKey(name)) {
                 FoundVar = scopeContext.Variables[name];
             } else if (scopeContext.ParentScope != null) {
-                FoundVar = getVariable(name, scopeContext.ParentScope);
+                FoundVar = GetVariable(name, scopeContext.ParentScope);
+            }
+
+            return FoundVar;
+        }
+
+        public SkryptObject GetType(string name, ScopeContext scopeContext) {
+            SkryptObject FoundVar = null;
+
+            if (scopeContext.Types.ContainsKey(name)) {
+                FoundVar = scopeContext.Types[name];
+            }
+            else if (scopeContext.ParentScope != null) {
+                FoundVar = GetType(name, scopeContext.ParentScope);
             }
 
             return FoundVar;
@@ -80,6 +93,89 @@ namespace Skrypt.Execution {
             }
         }
 
+        public SkryptObject ExecuteClassDeclaration (Node node, ScopeContext scopeContext, SkryptObject ParentClass = null) {
+            string ClassName = node.Body;
+
+            if (ParentClass != null) {
+                ClassName = ParentClass.Name + "." + ClassName;
+            } 
+
+            SkryptObject Object = new SkryptObject { Name = ClassName };
+            SkryptType TypeObject = new SkryptType { Name = ClassName };
+
+            for (int i = 0; i < node.SubNodes.Count; i++) {
+                Node PropertyNode = node.SubNodes[i];
+                var Properties = PropertyNode.SubNodes[0].SubNodes;
+                SkryptProperty Property = new SkryptProperty();
+
+                if (PropertyNode.SubNodes[1].Body == "assign") {
+                    Property.Name = PropertyNode.SubNodes[1].SubNodes[0].Body;
+                    Property.Value = ExecuteExpression(PropertyNode.SubNodes[1].SubNodes[1], scopeContext);
+                } else if (PropertyNode.SubNodes[1].TokenType == "MethodDeclaration") {
+                    Property.Name = PropertyNode.SubNodes[1].Body;
+                    Property.Value = ExecuteMethodDeclaration(PropertyNode.SubNodes[1], scopeContext);
+
+                    if (Property.Name == "Constructor") {
+                        Property.Accessibility = Access.Private;
+                        Object.Properties.Add(Property);
+
+                        Object.Properties.Add(new SkryptProperty {
+                            Name = "TypeName",
+                            Value = new Library.Native.System.String(ClassName)
+                        });
+
+                        scopeContext.AddType(ClassName,TypeObject);
+                    }
+                } else if (PropertyNode.SubNodes[1].TokenType == "ClassDeclaration") {
+                    Property.Name = PropertyNode.SubNodes[1].Body;
+                    Property.Value = ExecuteClassDeclaration(PropertyNode.SubNodes[1], scopeContext);
+                }
+
+                if (Properties.Find(x => x.Body == "static") != null) {
+                    Object.Properties.Add(Property);
+                } else {
+                    TypeObject.Properties.Add(Property);
+                }
+
+                foreach (var p in Properties) {
+                    switch (p.Body) {
+                        case "private":
+                            Property.Accessibility = Access.Private;
+                            break;
+                        case "public":
+                            Property.Accessibility = Access.Public;
+                            break;
+                        case "constant":
+                            Property.IsConstant = true;
+                            break;
+                    }
+                }
+            }
+
+            return Object;
+        }
+
+        public UserMethod ExecuteMethodDeclaration (Node node, ScopeContext scopeContext) {
+            foreach (KeyValuePair<string, Variable> pair in scopeContext.Variables.Where((p) => p.Value.Value.Name == "method")) {
+                if (pair.Value.Name == node.Body) {
+                    engine.throwError("A method with this signature already exists in this context!", node.Token);
+                }
+            }
+
+            UserMethod result = new UserMethod {
+                Name = "method",
+                Signature = node.Body,
+                BlockNode = node.SubNodes[0],
+                CallName = node.Body
+            };
+
+            foreach (Node snode in node.SubNodes[1].SubNodes) {
+                result.Parameters.Add(snode.Body);
+            }
+
+            return result;
+        }
+
         public ScopeContext ExecuteBlock (Node node, ScopeContext scopeContext, SubContext subContext = null) {
             ScopeContext scope = new ScopeContext();
 
@@ -104,43 +200,14 @@ namespace Skrypt.Execution {
                     }
                 }
                 else if (subNode.TokenType == "MethodDeclaration") {
-                    foreach (KeyValuePair<string, Variable> pair in scope.Variables.Where((p) => p.Value.Value.Name == "method")) {
-                        if (pair.Value.Name == subNode.Body) {
-                            engine.throwError("A method with this signature already exists in this context!", node.Token);
-                        }
-                    }
+                    var result = ExecuteMethodDeclaration(subNode, scope);
 
-                    UserMethod result = new UserMethod {
-                        Name = "method",
-                        Signature = subNode.Body,
-                        BlockNode = subNode.SubNodes[0],
-                        CallName = subNode.Body.Split('_')[0]
-                    };
-
-                    foreach (Node snode in subNode.SubNodes[1].SubNodes) {
-                        result.Parameters.Add(snode.Body);
-                    }
-
-                    scope.Variables[subNode.Body] = new Variable {
-                        Name = result.CallName,
-                        Value = result,
-                        Scope = scope
-                    };
+                    scope.AddVariable(result.CallName, result);
                 }
                 else if (subNode.TokenType == "ClassDeclaration") {
-                    ScopeContext ContentScope = ExecuteBlock(subNode, scope);
+                    var Object = ExecuteClassDeclaration(subNode, scope);
 
-                    var Properties = ContentScope.Variables;
-                    var Object = new SkryptObject();
-                    Object.Name = subNode.Body;
-
-                    foreach (var p in Properties) {
-                        Object.Properties.Add(new SkryptProperty {
-                            Name = p.Key,
-                            Value = p.Value.Value
-                        });
-                    }
-
+                    Console.WriteLine(Object.Name);
                     scope.AddVariable(Object.Name, Object);
                 }
                 else {
@@ -160,6 +227,10 @@ namespace Skrypt.Execution {
 
             if (Find == null) {
                 engine.throwError("Object does not contain property '" + ToFind + "'!");
+            }
+
+            if (Find.Accessibility == Access.Private) {
+                engine.throwError("Property '" + ToFind + "' is inaccessable due to its protection level.");
             }
 
             return Find;
@@ -217,17 +288,13 @@ namespace Skrypt.Execution {
                     }
 
                     if (node.SubNodes[0].SubNodes.Count == 0 && node.SubNodes[0].TokenType == "Identifier") {
-                        Variable Variable = getVariable(node.SubNodes[0].Body, scopeContext);
+                        Variable Variable = GetVariable(node.SubNodes[0].Body, scopeContext);
 
                         if (Variable != null) {
                             Variable.Value = result;
                         }
                         else {
-                            scopeContext.Variables[node.SubNodes[0].Body] = new Variable {
-                                Name = node.SubNodes[0].Body,
-                                Value = result,
-                                Scope = scopeContext
-                            };
+                            scopeContext.AddVariable(node.SubNodes[0].Body, result);
                         }
                     }
                     else if (node.SubNodes[0].Body == "access") {
@@ -271,7 +338,7 @@ namespace Skrypt.Execution {
 
                     var result = (SkryptType)Operation(new SkryptObject[] { LeftResult, RightResult });
 
-                    result.SetPropertiesTo(engine.Types[result.TypeName]);
+                    result.SetPropertiesTo(GetType(result.TypeName, scopeContext));
 
                     return result;                    
                 }
@@ -293,7 +360,7 @@ namespace Skrypt.Execution {
 
                     var result = (SkryptType)Operation(new SkryptObject[] { LeftResult });
 
-                    result.SetPropertiesTo(engine.Types[result.TypeName]);
+                    result.SetPropertiesTo(GetType(result.TypeName, scopeContext));
 
                     return result;              
                 }
@@ -313,7 +380,7 @@ namespace Skrypt.Execution {
                     array.value.Add(Result);
                 }
 
-                array.SetPropertiesTo(engine.Types[array.TypeName]);
+                array.SetPropertiesTo(GetType(array.TypeName, scopeContext));
 
                 return array;
             }
@@ -321,17 +388,17 @@ namespace Skrypt.Execution {
                 switch (node.TokenType) {
                     case "NumericLiteral":
                         var newNumeric = new Library.Native.System.Numeric(Double.Parse(node.Body));
-                        newNumeric.SetPropertiesTo(engine.Types[newNumeric.TypeName]);
+                        newNumeric.SetPropertiesTo(GetType(newNumeric.TypeName, scopeContext));
 
                         return newNumeric;
                     case "StringLiteral":
                         var newString = new Library.Native.System.String(node.Body);
-                        newString.SetPropertiesTo(engine.Types[newString.TypeName]);
+                        newString.SetPropertiesTo(GetType(newString.TypeName, scopeContext));
 
                         return newString;
                     case "BooleanLiteral":
                         var newBool = new Library.Native.System.Boolean(node.Body == "true" ? true : false);
-                        newBool.SetPropertiesTo(engine.Types[newBool.TypeName]);
+                        newBool.SetPropertiesTo(GetType(newBool.TypeName, scopeContext));
 
                         return newBool;
                     case "NullLiteral":
@@ -355,7 +422,7 @@ namespace Skrypt.Execution {
             }
 
             if (node.TokenType == "Identifier") {
-                Variable foundVariable = getVariable(node.Body, scopeContext);
+                Variable foundVariable = GetVariable(node.Body, scopeContext);
 
                 if (foundVariable != null) {
                     return foundVariable.Value;
@@ -393,17 +460,33 @@ namespace Skrypt.Execution {
                 SkryptObject Method = ExecuteExpression(node.SubNodes[0].SubNodes[0], findCallerContext);
                 SkryptObject Object = findCallerContext.subContext.Caller;
 
-                if (Method.GetType() != typeof(SharpMethod)) {
+                if (Object != null) {
+                    for (int i = 0; i < Object.Properties.Count; i++) {
+                        var p = Object.Properties[i];
+                        methodContext.AddVariable(p.Name, p.Value, p.IsConstant);
+                    }
+                }
+
+                bool isConstructor = false;
+
+                if (!Method.GetType().IsSubclassOf(typeof(SkryptMethod))) {
                     var Type = Method.Name;
                     var Find = Method.Properties.Find((x) => x.Name == "Constructor");
 
                     if (Find != null) {
+                        var TypeName = Method.Properties.Find((x) => x.Name == "TypeName").Value.ToString();
+
                         Method = Find.Value;
                         Object = new SkryptObject();
-                        Object.SetPropertiesTo(scopeContext.Variables[Type].Value);
-                        return Object;
+                        Object.SetPropertiesTo(GetType(TypeName, scopeContext));
+
+                        isConstructor = true;
+                    } else {
+                        engine.throwError("Object does not have a constructor and can thus not be instanced!");
                     }
                 }
+
+                SkryptObject MethodResult = null;
 
                 if (Method.GetType() == typeof(UserMethod)) {
                     UserMethod method = (UserMethod)Method;
@@ -421,15 +504,17 @@ namespace Skrypt.Execution {
                         };
                     }
 
-                    SkryptObject MethodResult = method.Execute(engine, Object, Arguments.ToArray(), methodContext);
-
-                    return MethodResult;
+                    MethodResult = method.Execute(engine, Object, Arguments.ToArray(), methodContext);
                 } else if (Method.GetType() == typeof(SharpMethod)) {
-                    SkryptObject MethodResult = ((SharpMethod)Method).Execute(engine, Object, Arguments.ToArray(), methodContext);
-
-                    return MethodResult;
+                    MethodResult = ((SharpMethod)Method).Execute(engine, Object, Arguments.ToArray(), methodContext);
                 } else {
                     engine.throwError("Cannot call value, as it is not a function!", node.SubNodes[0].SubNodes[0].Token);
+                }
+
+                if (isConstructor) {
+                    return Object;
+                } else {
+                    return MethodResult;
                 }
             }
 
