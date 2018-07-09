@@ -11,62 +11,62 @@ namespace Skrypt.Parsing
     /// </summary>
     public class ClassParser
     {
-        private readonly SkryptEngine engine;
+        private readonly SkryptEngine _engine;
 
         public ClassParser(SkryptEngine e)
         {
-            engine = e;
+            _engine = e;
         }
 
-        private ParseResult TryParse(List<Token> Tokens)
+        private ParseResult TryParse(List<Token> tokens)
         {
-            if (Tokens[0].Value == "func")
-                return engine.methodParser.Parse(Tokens);
-            if (Tokens[0].Value == "class")
-                return engine.classParser.Parse(Tokens);
-            return engine.expressionParser.Parse(Tokens);
+            if (tokens[0].Value == "func")
+                return _engine.MethodParser.Parse(tokens);
+            if (tokens[0].Value == "class")
+                return _engine.ClassParser.Parse(tokens);
+            return _engine.ExpressionParser.Parse(tokens);
         }
 
-        private Node ParseContents(List<Token> Tokens)
+        private Node ParseContents(List<Token> tokens)
         {
-            var Node = new Node {Body = "Block", TokenType = "ClassDeclaration"};
+            var node = new Node {Body = "Block", TokenType = "ClassDeclaration"};
             var i = 0;
 
-            Console.WriteLine(ExpressionParser.TokenString(Tokens));
+            Console.WriteLine(ExpressionParser.TokenString(tokens));
 
-            while (i < Tokens.Count - 1)
+            while (i < tokens.Count - 1)
             {
-                var Test = TryParse(Tokens.GetRange(i, Tokens.Count - i));
-                i += Test.delta;
+                var test = TryParse(tokens.GetRange(i, tokens.Count - i));
+                i += test.Delta;
 
-                if (Test.node.TokenType == "MethodDeclaration")
+                if (test.Node.TokenType == "MethodDeclaration")
                 {
-                    Node.AddAsFirst(Test.node);
+                    node.AddAsFirst(test.Node);
                     continue;
                 }
 
-                Node.Add(Test.node);
+                node.Add(test.Node);
             }
 
-            return Node;
+            return node;
         }
 
-        public ParseResult Parse(List<Token> Tokens)
+        public ParseResult Parse(List<Token> tokens)
         {
             var i = 0;
 
-            var skip = engine.expectType(TokenTypes.Identifier, Tokens, i);
-            i += skip.delta;
+            var skip = _engine.ExpectType(TokenTypes.Identifier, tokens, i);
+            i += skip.Delta;
 
-            skip = engine.expectValue("{", Tokens, i);
-            i += skip.delta;
+            skip = _engine.ExpectValue("{", tokens, i);
+            i += skip.Delta;
 
-            var result = engine.generalParser.parseSurrounded("{", "}", i, Tokens, ParseContents);
-            var Node = result.node;
-            Node.Body = Tokens[1].Value;
-            i += result.delta + 1;
+            var result = _engine.GeneralParser.ParseSurrounded("{", "}", i, tokens, ParseContents);
+            var node = result.Node;
+            node.Body = tokens[1].Value;
+            i += result.Delta + 1;
 
-            return new ParseResult {node = Node, delta = i};
+            return new ParseResult {Node = node, Delta = i};
         }
     }
 }

@@ -7,47 +7,47 @@ namespace Skrypt.Library.Native
 {
     partial class System
     {
-        public static StringBuilder stringBuilder = new StringBuilder();
+        public static StringBuilder StringBuilder = new StringBuilder();
 
         public class String : SkryptType
         {
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation("add", typeof(String), typeof(SkryptObject),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToString(Input, 0);
-                        var b = TypeConverter.ToString(Input, 1);
+                        var a = TypeConverter.ToString(input, 0);
+                        var b = TypeConverter.ToString(input, 1);
 
                         return new String(a + b);
                     }),
                 new Operation("add", typeof(SkryptObject), typeof(String),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToString(Input, 0);
-                        var b = TypeConverter.ToString(Input, 1);
+                        var a = TypeConverter.ToString(input, 0);
+                        var b = TypeConverter.ToString(input, 1);
 
                         return new String(a + b);
                     }),
                 new Operation("index", typeof(String), typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToString(Input, 0);
-                        var b = TypeConverter.ToNumeric(Input, 1);
+                        var a = TypeConverter.ToString(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
-                        return (String) a.value[(int) b].ToString();
+                        return (String) a.Value[(int) b].ToString();
                     }),
                 new Operation("equal", typeof(String), typeof(String),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToString(Input, 0);
-                        var b = TypeConverter.ToString(Input, 1);
+                        var a = TypeConverter.ToString(input, 0);
+                        var b = TypeConverter.ToString(input, 1);
 
-                        return (Boolean) (a.value == b.value);
+                        return (Boolean) (a.Value == b.Value);
                     })
             };
 
-            public string value;
+            public string Value;
 
             public String()
             {
@@ -58,13 +58,13 @@ namespace Skrypt.Library.Native
             public String(string v = "")
             {
                 Name = "string";
-                value = v;
+                Value = v;
                 CreateCopyOnAssignment = true;
             }
 
-            public static SkryptObject Constructor(SkryptObject Self, SkryptObject[] Input)
+            public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input)
             {
-                var a = TypeConverter.ToString(Input, 0);
+                var a = TypeConverter.ToString(input, 0);
 
                 return new String(a);
             }
@@ -76,26 +76,26 @@ namespace Skrypt.Library.Native
 
             public static implicit operator string(String d)
             {
-                return d.value;
+                return d.Value;
             }
 
-            public static SkryptObject Char(SkryptObject Self, SkryptObject[] Values)
+            public static SkryptObject Char(SkryptObject self, SkryptObject[] values)
             {
-                var a = TypeConverter.ToNumeric(Values, 0);
+                var a = TypeConverter.ToNumeric(values, 0);
 
                 return (String) ("" + Convert.ToChar((int) a));
             }
 
-            public static SkryptObject Length(SkryptObject Self, SkryptObject[] Values)
+            public static SkryptObject Length(SkryptObject self, SkryptObject[] values)
             {
-                var a = (String) Self;
+                var a = (String) self;
 
-                return (Numeric) a.value.Length;
+                return (Numeric) a.Value.Length;
             }
 
             public override string ToString()
             {
-                return value;
+                return Value;
             }
         }
     }

@@ -11,7 +11,7 @@ namespace Skrypt.Library
     {
         public string ReturnType;
 
-        public virtual SkryptObject Execute(SkryptEngine engine, SkryptObject Self, SkryptObject[] parameters,
+        public virtual SkryptObject Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
         {
             return null;
@@ -30,26 +30,26 @@ namespace Skrypt.Library
         public List<string> Parameters = new List<string>();
         public string Signature;
 
-        public override SkryptObject Execute(SkryptEngine engine, SkryptObject Self, SkryptObject[] parameters,
+        public override SkryptObject Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
         {
-            var ResultingScope =
-                engine.executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
+            var resultingScope =
+                engine.Executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
 
-            var ReturnVariable = ResultingScope.subContext.ReturnObject ?? new Native.System.Void();
+            var returnVariable = resultingScope.SubContext.ReturnObject ?? new Native.System.Void();
 
-            return ReturnVariable;
+            return returnVariable;
         }
     }
 
     public class SharpMethod : SkryptMethod
     {
-        public SkryptDelegate method;
+        public SkryptDelegate Method;
 
-        public override SkryptObject Execute(SkryptEngine engine, SkryptObject Self, SkryptObject[] parameters,
+        public override SkryptObject Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
         {
-            var returnValue = method(Self, parameters);
+            var returnValue = Method(self, parameters);
 
             if (returnValue.GetType().IsSubclassOf(typeof(SkryptType)))
                 returnValue.SetPropertiesTo(engine.Types[((SkryptType) returnValue).TypeName]);

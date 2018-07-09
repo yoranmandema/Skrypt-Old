@@ -11,9 +11,9 @@ namespace Skrypt.Parsing
     /// </summary>
     public class GeneralParser
     {
-        public delegate Node parseArgumentsMethod(List<List<Token>> Args, List<Token> Tokens);
+        public delegate Node ParseArgumentsMethod(List<List<Token>> args, List<Token> tokens);
 
-        public delegate Node parseMethod(List<Token> Tokens);
+        public delegate Node ParseMethod(List<Token> tokens);
 
         public static List<string> Keywords = new List<string>
         {
@@ -24,36 +24,36 @@ namespace Skrypt.Parsing
             "class"
         };
 
-        private readonly SkryptEngine engine;
+        private readonly SkryptEngine _engine;
 
         public GeneralParser(SkryptEngine e)
         {
-            engine = e;
+            _engine = e;
         }
 
-        private List<Token> GetSurroundedTokens(string open, string close, int start, List<Token> Tokens)
+        private List<Token> GetSurroundedTokens(string open, string close, int start, List<Token> tokens)
         {
             var index = start;
 
             var i = index + 1;
-            var skip = engine.expressionParser.SkipFromTo(open, close, Tokens, index);
-            var end = skip.end;
-            index = skip.end;
+            var skip = _engine.ExpressionParser.SkipFromTo(open, close, tokens, index);
+            var end = skip.End;
+            index = skip.End;
 
-            return Tokens.GetRange(i, end - i);
+            return tokens.GetRange(i, end - i);
         }
 
         /// <summary>
         ///     Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
         /// </summary>
-        public ParseResult parseSurrounded(string open, string close, int start, List<Token> Tokens,
-            parseMethod parseMethod)
+        public ParseResult ParseSurrounded(string open, string close, int start, List<Token> tokens,
+            ParseMethod parseMethod)
         {
-            var SurroundedTokens = GetSurroundedTokens(open, close, start, Tokens);
+            var surroundedTokens = GetSurroundedTokens(open, close, start, tokens);
 
-            var node = parseMethod(SurroundedTokens);
+            var node = parseMethod(surroundedTokens);
 
-            return new ParseResult {node = node, delta = SurroundedTokens.Count + 1};
+            return new ParseResult {Node = node, Delta = surroundedTokens.Count + 1};
         }
 
         private Exception GetExceptionBasedOnUrgency(Exception e, ref int highestErrorUrgency)
@@ -64,10 +64,10 @@ namespace Skrypt.Parsing
             {
                 var cast = (SkryptException) e;
 
-                if (cast.urgency >= highestErrorUrgency)
+                if (cast.Urgency >= highestErrorUrgency)
                 {
                     error = e;
-                    highestErrorUrgency = cast.urgency;
+                    highestErrorUrgency = cast.Urgency;
                 }
             }
 
@@ -77,58 +77,58 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
         /// </summary>
-        public ParseResult parseSurroundedExpressions(string open, string close, int start, List<Token> Tokens)
+        public ParseResult ParseSurroundedExpressions(string open, string close, int start, List<Token> tokens)
         {
-            var SurroundedTokens = GetSurroundedTokens(open, close, start, Tokens);
+            var surroundedTokens = GetSurroundedTokens(open, close, start, tokens);
 
             var node = new Node();
-            var Arguments = new List<List<Token>>();
-            ExpressionParser.SetArguments(Arguments, SurroundedTokens);
+            var arguments = new List<List<Token>>();
+            ExpressionParser.SetArguments(arguments, surroundedTokens);
 
-            foreach (var Argument in Arguments)
+            foreach (var argument in arguments)
             {
-                var argNode = engine.expressionParser.ParseClean(Argument);
+                var argNode = _engine.ExpressionParser.ParseClean(argument);
                 node.Add(argNode);
             }
 
-            return new ParseResult {node = node, delta = SurroundedTokens.Count + 1};
+            return new ParseResult {Node = node, Delta = surroundedTokens.Count + 1};
         }
 
-        private ParseResult TryParse(List<Token> Tokens)
+        private ParseResult TryParse(List<Token> tokens)
         {
-            if (Tokens[0].Value == "if" || Tokens[0].Value == "while")
-                return engine.statementParser.Parse(Tokens);
-            if (Tokens[0].Value == "func")
-                return engine.methodParser.Parse(Tokens);
-            if (Tokens[0].Value == "class")
-                return engine.classParser.Parse(Tokens);
-            return engine.expressionParser.Parse(Tokens);
+            if (tokens[0].Value == "if" || tokens[0].Value == "while")
+                return _engine.StatementParser.Parse(tokens);
+            if (tokens[0].Value == "func")
+                return _engine.MethodParser.Parse(tokens);
+            if (tokens[0].Value == "class")
+                return _engine.ClassParser.Parse(tokens);
+            return _engine.ExpressionParser.Parse(tokens);
         }
 
-        public Node Parse(List<Token> Tokens)
+        public Node Parse(List<Token> tokens)
         {
             // Create main node
-            var Node = new Node {Body = "Block", TokenType = "Block"};
+            var node = new Node {Body = "Block", TokenType = "Block"};
 
-            if (Tokens.Count == 0) return Node;
+            if (tokens.Count == 0) return node;
 
             var i = 0;
 
-            while (i < Tokens.Count - 1)
+            while (i < tokens.Count - 1)
             {
-                var Test = TryParse(Tokens.GetRange(i, Tokens.Count - i));
-                i += Test.delta;
+                var test = TryParse(tokens.GetRange(i, tokens.Count - i));
+                i += test.Delta;
 
-                if (Test.node.TokenType == "MethodDeclaration")
+                if (test.Node.TokenType == "MethodDeclaration")
                 {
-                    Node.AddAsFirst(Test.node);
+                    node.AddAsFirst(test.Node);
                     continue;
                 }
 
-                Node.Add(Test.node);
+                node.Add(test.Node);
             }
 
-            return Node;
+            return node;
         }
     }
 }

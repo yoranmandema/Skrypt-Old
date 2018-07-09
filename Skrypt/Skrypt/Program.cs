@@ -37,9 +37,9 @@ namespace Skrypt
             }
 
             stopwatch.Stop();
-            double T_Execute = stopwatch.ElapsedMilliseconds;
+            double execute = stopwatch.ElapsedMilliseconds;
 
-            Console.WriteLine("Test: {0}ms", T_Execute);
+            Console.WriteLine("Test: {0}ms", execute);
 
             Console.ReadKey();
         }

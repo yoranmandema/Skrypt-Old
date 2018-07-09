@@ -17,7 +17,7 @@ namespace Skrypt.Execution
     public class ScopeContext
     {
         public ScopeContext ParentScope = null;
-        public SubContext subContext = new SubContext();
+        public SubContext SubContext = new SubContext();
         public string Type = "";
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
 
@@ -26,13 +26,13 @@ namespace Skrypt.Execution
             return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
         }
 
-        public void AddVariable(string Name, SkryptObject Value, bool IsConstant = false)
+        public void AddVariable(string name, SkryptObject value, bool isConstant = false)
         {
-            Variables[Name] = new Variable
+            Variables[name] = new Variable
             {
-                Name = Name,
-                Value = Value,
-                IsConstant = IsConstant,
+                Name = name,
+                Value = value,
+                IsConstant = isConstant,
                 Scope = this
             };
         }

@@ -8,70 +8,70 @@ namespace Skrypt.Library.Native
     {
         public class Array : SkryptType
         {
-            public int lastIndex = 0;
+            public int LastIndex = 0;
 
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation("add", typeof(Array), typeof(SkryptObject),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToArray(Input, 0);
-                        var b = TypeConverter.ToAny(Input, 1);
+                        var a = TypeConverter.ToArray(input, 0);
+                        var b = TypeConverter.ToAny(input, 1);
 
                         var newArray = (Array) a.Clone();
-                        newArray.value = new List<SkryptObject>(a.value);
-                        newArray.value.Add(b);
+                        newArray.Value = new List<SkryptObject>(a.Value);
+                        newArray.Value.Add(b);
 
                         return newArray;
                     }),
                 new Operation("add", typeof(SkryptObject), typeof(Array),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToAny(Input, 0);
-                        var b = TypeConverter.ToArray(Input, 1);
+                        var a = TypeConverter.ToAny(input, 0);
+                        var b = TypeConverter.ToArray(input, 1);
 
                         var newArray = new Array();
-                        newArray.value = new List<SkryptObject>(b.value);
-                        newArray.value.Insert(0, a);
+                        newArray.Value = new List<SkryptObject>(b.Value);
+                        newArray.Value.Insert(0, a);
 
                         return newArray;
                     }),
                 new Operation("multiply", typeof(Array), typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToArray(Input, 0);
-                        var b = TypeConverter.ToNumeric(Input, 1);
+                        var a = TypeConverter.ToArray(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
-                        var mul = (int) b.value - 1;
+                        var mul = (int) b.Value - 1;
 
                         var newArray = new Array();
-                        newArray.value = new List<SkryptObject>(a.value);
+                        newArray.Value = new List<SkryptObject>(a.Value);
                         for (var i = 0; i < mul; i++)
-                            foreach (var obj in a.value)
-                                newArray.value.Add(obj.Clone());
+                            foreach (var obj in a.Value)
+                                newArray.Value.Add(obj.Clone());
 
                         return newArray;
                     }),
                 new Operation("index", typeof(Array), typeof(SkryptObject),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToArray(Input, 0);
-                        var b = TypeConverter.ToAny(Input, 1);
+                        var a = TypeConverter.ToArray(input, 0);
+                        var b = TypeConverter.ToAny(input, 1);
 
                         var index = IndexFromObject(b);
 
-                        return a.value[index];
+                        return a.Value[index];
                     }),
                 new Operation("indexset", typeof(Array), typeof(SkryptObject),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToArray(Input, 0);
-                        var b = TypeConverter.ToAny(Input, 1);
-                        var c = TypeConverter.ToAny(Input, 2);
+                        var a = TypeConverter.ToArray(input, 0);
+                        var b = TypeConverter.ToAny(input, 1);
+                        var c = TypeConverter.ToAny(input, 2);
 
                         var index = IndexFromObject(c);
 
-                        var newValue = a.value[index] = b;
+                        var newValue = a.Value[index] = b;
 
                         return newValue;
                     })
@@ -82,30 +82,30 @@ namespace Skrypt.Library.Native
                 Name = "array";
             }
 
-            public List<SkryptObject> value { get; set; } = new List<SkryptObject>();
+            public List<SkryptObject> Value { get; set; } = new List<SkryptObject>();
 
             private static int IndexFromObject(SkryptObject Object)
             {
                 var index = 0;
 
                 if (Object.GetType() == typeof(String))
-                    index = ((String) Object).value.GetHashCode();
+                    index = ((String) Object).Value.GetHashCode();
                 else
                     index = Convert.ToInt32((Numeric) Object);
 
                 return index;
             }
 
-            public static SkryptObject Length(SkryptObject Self, SkryptObject[] Values)
+            public static SkryptObject Length(SkryptObject self, SkryptObject[] values)
             {
-                var a = (Array) Self;
+                var a = (Array) self;
 
-                return (Numeric) a.value.Count;
+                return (Numeric) a.Value.Count;
             }
 
             public override string ToString()
             {
-                return "[" + string.Join(",", value) + "]";
+                return "[" + string.Join(",", Value) + "]";
             }
         }
     }

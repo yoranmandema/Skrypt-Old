@@ -5,39 +5,39 @@ namespace Skrypt.Execution
 {
     internal static class TypeConverter
     {
-        public static Sys.Numeric ToNumeric(SkryptObject[] Args, int Index)
+        public static Sys.Numeric ToNumeric(SkryptObject[] args, int index)
         {
-            if (Index > Args.Length - 1) return new Sys.Numeric(0);
+            if (index > args.Length - 1) return new Sys.Numeric(0);
 
-            return (Sys.Numeric) Args[Index];
+            return (Sys.Numeric) args[index];
         }
 
-        public static Sys.Boolean ToBoolean(SkryptObject[] Args, int Index)
+        public static Sys.Boolean ToBoolean(SkryptObject[] args, int index)
         {
-            if (Index > Args.Length - 1) return new Sys.Boolean(false);
+            if (index > args.Length - 1) return new Sys.Boolean(false);
 
-            return Args[Index].ToBoolean();
+            return args[index].ToBoolean();
         }
 
-        public static Sys.String ToString(SkryptObject[] Args, int Index)
+        public static Sys.String ToString(SkryptObject[] args, int index)
         {
-            if (Index > Args.Length - 1) return new Sys.String("");
+            if (index > args.Length - 1) return new Sys.String("");
 
-            return Args[Index].ToString();
+            return args[index].ToString();
         }
 
-        public static Sys.Array ToArray(SkryptObject[] Args, int Index)
+        public static Sys.Array ToArray(SkryptObject[] args, int index)
         {
-            if (Index > Args.Length - 1) return new Sys.Array();
+            if (index > args.Length - 1) return new Sys.Array();
 
-            return (Sys.Array) Args[Index];
+            return (Sys.Array) args[index];
         }
 
-        public static SkryptObject ToAny(SkryptObject[] Args, int Index)
+        public static SkryptObject ToAny(SkryptObject[] args, int index)
         {
-            if (Index > Args.Length - 1) return new Sys.Null();
+            if (index > args.Length - 1) return new Sys.Null();
 
-            return Args[Index];
+            return args[index];
         }
     }
 }

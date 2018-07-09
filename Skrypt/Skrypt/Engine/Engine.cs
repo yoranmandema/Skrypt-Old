@@ -16,106 +16,106 @@ namespace Skrypt.Engine
     public class ParseResult
     {
         //public Exception error;
-        public int delta = -1;
-        public Node node;
+        public int Delta = -1;
+        public Node Node;
     }
 
     public class SkryptEngine
     {
-        public Analizer analizer;
-        public ClassParser classParser;
-        private string Code = "";
-        public Executor executor;
-        public ExpressionParser expressionParser;
-        public GeneralParser generalParser;
+        public Analizer Analizer;
+        public ClassParser ClassParser;
+        private string _code = "";
+        public Executor Executor;
+        public ExpressionParser ExpressionParser;
+        public GeneralParser GeneralParser;
         public ScopeContext GlobalScope = new ScopeContext();
         public List<Node> MethodNodes = new List<Node>();
-        public MethodParser methodParser;
+        public MethodParser MethodParser;
         public List<SkryptMethod> Methods = new List<SkryptMethod>();
-        public StandardMethods standardMethods;
-        public StatementParser statementParser;
-        public Tokenizer tokenizer;
+        public StandardMethods StandardMethods;
+        public StatementParser StatementParser;
+        public Tokenizer Tokenizer;
 
-        private List<Token> Tokens;
+        private List<Token> _tokens;
 
         //List<SkryptClass> Classes = new List<SkryptClass>();
 
         public SkryptEngine()
         {
-            tokenizer = new Tokenizer(this);
-            statementParser = new StatementParser(this);
-            expressionParser = new ExpressionParser(this);
-            generalParser = new GeneralParser(this);
-            methodParser = new MethodParser(this);
-            classParser = new ClassParser(this);
-            analizer = new Analizer(this);
-            executor = new Executor(this);
-            standardMethods = new StandardMethods(this);
+            Tokenizer = new Tokenizer(this);
+            StatementParser = new StatementParser(this);
+            ExpressionParser = new ExpressionParser(this);
+            GeneralParser = new GeneralParser(this);
+            MethodParser = new MethodParser(this);
+            ClassParser = new ClassParser(this);
+            Analizer = new Analizer(this);
+            Executor = new Executor(this);
+            StandardMethods = new StandardMethods(this);
 
-            standardMethods.AddMethodsToEngine();
+            StandardMethods.AddMethodsToEngine();
 
 
-            var SystemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
+            var systemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
 
-            foreach (var property in SystemObject.Properties)
+            foreach (var property in systemObject.Properties)
                 GlobalScope.AddVariable(property.Name, property.Value, true);
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex(@"\s"),
                 TokenTypes.None
             );
 
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex(@"\d+(\.\d+)?"),
                 TokenTypes.NumericLiteral
             );
 
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex(@"[_a-zA-Z]+[_a-zA-Z0-9]*"),
                 TokenTypes.Identifier
             );
 
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex(@"class|func|if|elseif|else|while"),
                 TokenTypes.Keyword
             );
 
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex("true|false"),
                 TokenTypes.BooleanLiteral
             );
 
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex("null"),
                 TokenTypes.NullLiteral
             );
 
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex(@"[;]"),
                 TokenTypes.EndOfExpression
             );
 
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex(
                     @"(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
                 TokenTypes.Punctuator
             );
 
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex(@""".*?(?<!\\)"""),
                 TokenTypes.StringLiteral
             );
 
             // Multi line comment
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex(@"\/\*(.|\n)*\*\/"),
                 TokenTypes.None
             );
 
             // Single line comment
-            tokenizer.AddRule(
+            Tokenizer.AddRule(
                 new Regex(@"\/\/.*\n"),
                 TokenTypes.None
             );
@@ -126,7 +126,7 @@ namespace Skrypt.Engine
         /// <summary>
         ///     Calculates the line and column of a given index
         /// </summary>
-        public string getLineAndRowStringFromIndex(int index)
+        public string GetLineAndRowStringFromIndex(int index)
         {
             var lines = 1;
             var row = 1;
@@ -134,7 +134,7 @@ namespace Skrypt.Engine
 
             while (i < index)
             {
-                if (Code[i] == '\n')
+                if (_code[i] == '\n')
                 {
                     lines++;
                     row = 1;
@@ -153,91 +153,91 @@ namespace Skrypt.Engine
         /// <summary>
         ///     Skips token if next token has the given value. Throws exception when not found.
         /// </summary>
-        public skipInfo expectValue(string Value, List<Token> Tokens, int startingPoint = 0)
+        public SkipInfo ExpectValue(string value, List<Token> tokens, int startingPoint = 0)
         {
             var start = startingPoint;
             var index = startingPoint;
-            var msg = "Token '" + Value + "' expected after " + Tokens[index].Value + " keyword";
+            var msg = "Token '" + value + "' expected after " + tokens[index].Value + " keyword";
 
-            if (index == Tokens.Count - 1) throwError(msg, Tokens[index]);
+            if (index == tokens.Count - 1) ThrowError(msg, tokens[index]);
 
-            if (Tokens[index + 1].Value == Value)
+            if (tokens[index + 1].Value == value)
                 index++;
             else
-                throwError(msg, Tokens[index]);
+                ThrowError(msg, tokens[index]);
 
             var delta = index - startingPoint;
 
-            return new skipInfo {start = start, end = index, delta = delta};
+            return new SkipInfo {Start = start, End = index, Delta = delta};
         }
 
         /// <summary>
         ///     Skips token if next token has the given value. Throws exception when not found.
         /// </summary>
-        public skipInfo expectType(TokenTypes Type, List<Token> Tokens, int startingPoint = 0)
+        public SkipInfo ExpectType(TokenTypes type, List<Token> tokens, int startingPoint = 0)
         {
             var start = startingPoint;
             var index = startingPoint;
-            var msg = "Token with type '" + Type + "' expected after " + Tokens[index].Value + " keyword";
+            var msg = "Token with type '" + type + "' expected after " + tokens[index].Value + " keyword";
 
-            if (index == Tokens.Count - 1) throwError(msg, Tokens[index]);
+            if (index == tokens.Count - 1) ThrowError(msg, tokens[index]);
 
-            if (Tokens[index + 1].Type == Type)
+            if (tokens[index + 1].Type == type)
                 index++;
             else
-                throwError(msg, Tokens[index]);
+                ThrowError(msg, tokens[index]);
 
             var delta = index - startingPoint;
 
-            return new skipInfo {start = start, end = index, delta = delta};
+            return new SkipInfo {Start = start, End = index, Delta = delta};
         }
 
         /// <summary>
         ///     Throws an error with line and colom indicator
         /// </summary>
-        public void throwError(string message, Token token = null, int urgency = -1)
+        public void ThrowError(string message, Token token = null, int urgency = -1)
         {
-            var lineRow = token != null ? " (" + getLineAndRowStringFromIndex(token.Start) + ")" : "";
+            var lineRow = token != null ? " (" + GetLineAndRowStringFromIndex(token.Start) + ")" : "";
 
             throw new SkryptException(message + lineRow, urgency);
         }
 
         public Node Parse(string code)
         {
-            Code = code;
+            _code = code;
 
             var stopwatch = Stopwatch.StartNew();
 
             // Tokenize code
-            Tokens = tokenizer.Tokenize(code);
-            if (Tokens == null) return null;
+            _tokens = Tokenizer.Tokenize(code);
+            if (_tokens == null) return null;
 
             // Pre-process tokens so their values are correct
-            TokenProcessor.ProcessTokens(Tokens);
+            TokenProcessor.ProcessTokens(_tokens);
 
             stopwatch.Stop();
-            double T_Token = stopwatch.ElapsedMilliseconds;
+            double token = stopwatch.ElapsedMilliseconds;
 
             // Generate the program node
             stopwatch = Stopwatch.StartNew();
-            var ProgramNode = generalParser.Parse(Tokens);
+            var programNode = GeneralParser.Parse(_tokens);
             stopwatch.Stop();
-            double T_Parse = stopwatch.ElapsedMilliseconds;
+            double parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            Console.WriteLine("Program:\n" + ProgramNode);
+            Console.WriteLine("Program:\n" + programNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
 
             stopwatch = Stopwatch.StartNew();
-            GlobalScope = executor.ExecuteBlock(ProgramNode, GlobalScope);
+            GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
             stopwatch.Stop();
-            double T_Execute = stopwatch.ElapsedMilliseconds;
+            double execute = stopwatch.ElapsedMilliseconds;
 
-            Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms", T_Execute, T_Parse, T_Token);
+            Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms", execute, parse, token);
 
-            return ProgramNode;
+            return programNode;
         }
     }
 }

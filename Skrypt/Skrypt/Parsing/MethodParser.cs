@@ -10,40 +10,40 @@ namespace Skrypt.Parsing
     /// </summary>
     public class MethodParser
     {
-        private readonly SkryptEngine engine;
+        private readonly SkryptEngine _engine;
 
         public MethodParser(SkryptEngine e)
         {
-            engine = e;
+            _engine = e;
         }
 
-        public Node ParseSingleParameter(List<Token> Tokens)
+        public Node ParseSingleParameter(List<Token> tokens)
         {
             var index = 0;
-            skipInfo skip;
+            SkipInfo skip;
 
-            var Name = Tokens[index].Value;
+            var name = tokens[index].Value;
 
             var node = new Node
             {
-                Body = Name,
+                Body = name,
                 TokenType = "Parameter"
             };
 
             return node;
         }
 
-        public Node ParseParameters(List<Token> Tokens)
+        public Node ParseParameters(List<Token> tokens)
         {
             var node = new Node();
 
-            var ParameterLists = new List<List<Token>>();
-            ExpressionParser.SetArguments(ParameterLists, Tokens);
+            var parameterLists = new List<List<Token>>();
+            ExpressionParser.SetArguments(parameterLists, tokens);
 
-            foreach (var Parameter in ParameterLists)
+            foreach (var parameter in parameterLists)
             {
-                var ParameterNode = ParseSingleParameter(Parameter);
-                node.Add(ParameterNode);
+                var parameterNode = ParseSingleParameter(parameter);
+                node.Add(parameterNode);
             }
 
             node.Body = "Parameters";
@@ -52,63 +52,63 @@ namespace Skrypt.Parsing
             return node;
         }
 
-        public ParseResult ParseFunctionLiteral(List<Token> Tokens)
+        public ParseResult ParseFunctionLiteral(List<Token> tokens)
         {
             var index = 0;
             var node = new Node();
-            skipInfo skip;
+            SkipInfo skip;
             ParseResult result;
 
-            result = engine.generalParser.parseSurrounded("(", ")", index, Tokens, ParseParameters);
-            var ParameterNode = result.node;
-            index += result.delta;
+            result = _engine.GeneralParser.ParseSurrounded("(", ")", index, tokens, ParseParameters);
+            var parameterNode = result.Node;
+            index += result.Delta;
 
-            skip = engine.expectValue("{", Tokens, index);
-            index += skip.delta;
+            skip = _engine.ExpectValue("{", tokens, index);
+            index += skip.Delta;
 
-            result = engine.generalParser.parseSurrounded("{", "}", index, Tokens, engine.generalParser.Parse);
-            var BlockNode = result.node;
-            index += result.delta + 1;
+            result = _engine.GeneralParser.ParseSurrounded("{", "}", index, tokens, _engine.GeneralParser.Parse);
+            var blockNode = result.Node;
+            index += result.Delta + 1;
 
             var returnNode = new Node
             {
                 Body = "Function",
                 TokenType = "FunctionLiteral"
             };
-            returnNode.SubNodes.Add(BlockNode);
-            returnNode.SubNodes.Add(ParameterNode);
+            returnNode.SubNodes.Add(blockNode);
+            returnNode.SubNodes.Add(parameterNode);
 
-            return new ParseResult {node = returnNode, delta = index};
+            return new ParseResult {Node = returnNode, Delta = index};
         }
 
         /// <summary>
         ///     Parses a list of tokens into a method node
         /// </summary>
-        public ParseResult Parse(List<Token> Tokens)
+        public ParseResult Parse(List<Token> tokens)
         {
             var index = 0;
-            skipInfo skip;
+            SkipInfo skip;
             ParseResult result;
 
-            skip = engine.expectType(TokenTypes.Identifier, Tokens);
-            index += skip.delta;
+            skip = _engine.ExpectType(TokenTypes.Identifier, tokens);
+            index += skip.Delta;
 
             //skip = engine.expectType("Identifier", Tokens,index);
             //index += skip.delta;
 
-            skip = engine.expectValue("(", Tokens, index);
-            index += skip.delta;
+            skip = _engine.ExpectValue("(", tokens, index);
+            index += skip.Delta;
 
-            result = engine.generalParser.parseSurrounded("(", ")", index, Tokens, ParseParameters);
-            var ParameterNode = result.node;
-            index += result.delta;
+            result = _engine.GeneralParser.ParseSurrounded("(", ")", index, tokens, ParseParameters);
+            var parameterNode = result.Node;
+            index += result.Delta;
 
-            skip = engine.expectValue("{", Tokens, index);
-            index += skip.delta;
+            skip = _engine.ExpectValue("{", tokens, index);
+            index += skip.Delta;
 
-            result = engine.generalParser.parseSurrounded("{", "}", index, Tokens, engine.generalParser.Parse);
-            var BlockNode = result.node;
-            index += result.delta + 1;
+            result = _engine.GeneralParser.ParseSurrounded("{", "}", index, tokens, _engine.GeneralParser.Parse);
+            var blockNode = result.Node;
+            index += result.Delta + 1;
 
 
             //Node node = new Node();
@@ -140,13 +140,13 @@ namespace Skrypt.Parsing
 
             var returnNode = new Node
             {
-                Body = Tokens[1].Value,
+                Body = tokens[1].Value,
                 TokenType = "MethodDeclaration"
             };
-            returnNode.SubNodes.Add(BlockNode);
-            returnNode.SubNodes.Add(ParameterNode);
+            returnNode.SubNodes.Add(blockNode);
+            returnNode.SubNodes.Add(parameterNode);
 
-            return new ParseResult {node = returnNode, delta = index};
+            return new ParseResult {Node = returnNode, Delta = index};
         }
     }
 }

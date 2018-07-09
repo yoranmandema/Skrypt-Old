@@ -10,86 +10,86 @@ namespace Skrypt.Library.Native
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation("add", typeof(Numeric), typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        var b = TypeConverter.ToNumeric(Input, 1);
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
                         return new Numeric(a + b);
                     }),
                 new Operation("subtract", typeof(Numeric), typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        var b = TypeConverter.ToNumeric(Input, 1);
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
                         return new Numeric(a - b);
                     }),
                 new Operation("divide", typeof(Numeric), typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        var b = TypeConverter.ToNumeric(Input, 1);
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
                         return new Numeric(a / b);
                     }),
                 new Operation("multiply", typeof(Numeric), typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        var b = TypeConverter.ToNumeric(Input, 1);
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
                         return new Numeric(a * b);
                     }),
                 new Operation("lesser", typeof(Numeric), typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        var b = TypeConverter.ToNumeric(Input, 1);
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
                         return new Boolean(a < b);
                     }),
                 new Operation("greater", typeof(Numeric), typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        var b = TypeConverter.ToNumeric(Input, 1);
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
                         return new Boolean(a > b);
                     }),
                 new Operation("equal", typeof(Numeric), typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        var b = TypeConverter.ToNumeric(Input, 1);
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
                         return new Boolean(a == b);
                     }),
                 new Operation("postincrement", typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        var v = a.value;
-                        a.value++;
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var v = a.Value;
+                        a.Value++;
                         return new Numeric(v);
                     }),
                 new Operation("postdecrement", typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        var v = a.value;
-                        a.value--;
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var v = a.Value;
+                        a.Value--;
                         return new Numeric(v);
                     }),
                 new Operation("negate", typeof(Numeric),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToNumeric(Input, 0);
-                        return new Numeric(-a.value);
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        return new Numeric(-a.Value);
                     })
             };
 
-            public double value;
+            public double Value;
 
             public Numeric()
             {
@@ -100,13 +100,13 @@ namespace Skrypt.Library.Native
             public Numeric(double v = 0)
             {
                 Name = "numeric";
-                value = v;
+                Value = v;
                 CreateCopyOnAssignment = true;
             }
 
-            public static SkryptObject Constructor(SkryptObject Self, SkryptObject[] Input)
+            public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input)
             {
-                var a = TypeConverter.ToNumeric(Input, 0);
+                var a = TypeConverter.ToNumeric(input, 0);
 
                 return new Numeric(a);
             }
@@ -118,17 +118,17 @@ namespace Skrypt.Library.Native
 
             public static implicit operator double(Numeric d)
             {
-                return d.value;
+                return d.Value;
             }
 
             public override string ToString()
             {
-                return "" + value;
+                return "" + Value;
             }
 
             public override Boolean ToBoolean()
             {
-                return value != 0;
+                return Value != 0;
             }
         }
     }

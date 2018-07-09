@@ -35,9 +35,9 @@
         /// <summary>
         ///     Returns true if token has the same type and value
         /// </summary>
-        public bool Has(TokenTypes Type, string Value)
+        public bool Has(TokenTypes type, string value)
         {
-            if (this.Value == Value && this.Type == Type) return true;
+            if (this.Value == value && this.Type == type) return true;
 
             return false;
         }

@@ -24,20 +24,20 @@ namespace Skrypt.Tokenization
     /// </summary>
     public class Tokenizer
     {
-        private readonly SkryptEngine engine;
-        private readonly List<TokenRule> TokenRules = new List<TokenRule>();
+        private readonly SkryptEngine _engine;
+        private readonly List<TokenRule> _tokenRules = new List<TokenRule>();
 
         public Tokenizer(SkryptEngine e)
         {
-            engine = e;
+            _engine = e;
         }
 
-        public void AddRule(Regex Pattern, TokenTypes Type)
+        public void AddRule(Regex pattern, TokenTypes type)
         {
-            TokenRules.Add(new TokenRule
+            _tokenRules.Add(new TokenRule
             {
-                Pattern = Pattern,
-                Type = Type
+                Pattern = pattern,
+                Type = type
             });
         }
 
@@ -47,53 +47,53 @@ namespace Skrypt.Tokenization
         /// <returns>
         ///     A list of tokens.
         /// </returns>
-        public List<Token> Tokenize(string Input)
+        public List<Token> Tokenize(string input)
         {
-            var Tokens = new List<Token>();
+            var tokens = new List<Token>();
 
-            var Index = 0;
-            var OriginalInput = Input;
+            var index = 0;
+            var originalInput = input;
 
-            while (Index < OriginalInput.Length)
+            while (index < originalInput.Length)
             {
-                Match FoundMatch = null;
-                TokenRule FoundRule = null;
+                Match foundMatch = null;
+                TokenRule foundRule = null;
 
                 // Check input string for all token rules
-                foreach (var Rule in TokenRules)
+                foreach (var rule in _tokenRules)
                 {
-                    var match = Rule.Pattern.Match(Input);
+                    var match = rule.Pattern.Match(input);
 
                     // Only permit match if it's found at the start of the string
                     if (match.Index == 0 && match.Success)
                     {
-                        FoundMatch = match;
-                        FoundRule = Rule;
+                        foundMatch = match;
+                        foundRule = rule;
                     }
                 }
 
                 // No match was found; this means we encountered an unexpected token.
-                if (FoundMatch == null)
-                    engine.throwError("Unexpected token '" + OriginalInput[Index] + "' found",
-                        new Token {Start = Index});
+                if (foundMatch == null)
+                    _engine.ThrowError("Unexpected token '" + originalInput[index] + "' found",
+                        new Token {Start = index});
 
                 var token = new Token
                 {
-                    Value = FoundMatch.Value,
-                    Type = FoundRule.Type,
-                    Start = Index + FoundMatch.Index,
-                    End = Index + FoundMatch.Index + FoundMatch.Value.Length - 1
+                    Value = foundMatch.Value,
+                    Type = foundRule.Type,
+                    Start = index + foundMatch.Index,
+                    End = index + foundMatch.Index + foundMatch.Value.Length - 1
                 };
 
                 // Ignore token if it's type equals null
-                if (FoundRule.Type != TokenTypes.None) Tokens.Add(token);
+                if (foundRule.Type != TokenTypes.None) tokens.Add(token);
 
                 // Increase current index and cut away part of the string that got matched so we don't repeat it again.
-                Index += FoundMatch.Value.Length;
-                Input = OriginalInput.Substring(Index);
+                index += foundMatch.Value.Length;
+                input = originalInput.Substring(index);
             }
 
-            return Tokens;
+            return tokens;
         }
     }
 }

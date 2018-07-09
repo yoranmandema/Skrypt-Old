@@ -8,11 +8,11 @@ namespace Skrypt.Library
 
         public string TypeName => GetType().ToString();
 
-        public void Init(SkryptEngine Engine)
+        public void Init(SkryptEngine engine)
         {
-            var BaseObject = Engine.Types[TypeName];
+            var baseObject = engine.Types[TypeName];
 
-            SetPropertiesTo(BaseObject);
+            SetPropertiesTo(baseObject);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Skrypt.Tokenization
     /// </summary>
     internal class TokenPatternChecker
     {
-        private List<TokenPattern> Patterns;
+        private List<TokenPattern> _patterns;
 
         //public TokenPatternChecker () {
         //    Patterns.Add(new TokenPattern {
@@ -17,7 +17,7 @@ namespace Skrypt.Tokenization
         //    });
         //}
 
-        public void CheckPatterns(List<Token> Tokens)
+        public void CheckPatterns(List<Token> tokens)
         {
         }
     }

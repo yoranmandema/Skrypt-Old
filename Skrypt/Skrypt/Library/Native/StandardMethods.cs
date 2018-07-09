@@ -4,11 +4,11 @@ namespace Skrypt.Library.Native
 {
     public partial class StandardMethods
     {
-        private SkryptEngine engine;
+        private SkryptEngine _engine;
 
         public StandardMethods(SkryptEngine e)
         {
-            engine = e;
+            _engine = e;
         }
 
         public void AddMethodsToEngine()

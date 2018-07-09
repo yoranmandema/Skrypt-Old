@@ -10,31 +10,31 @@ namespace Skrypt.Library.Native
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation("and", typeof(Boolean), typeof(Boolean),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToBoolean(Input, 0);
-                        var b = TypeConverter.ToBoolean(Input, 1);
+                        var a = TypeConverter.ToBoolean(input, 0);
+                        var b = TypeConverter.ToBoolean(input, 1);
 
                         return new Boolean(a && b);
                     }),
                 new Operation("or", typeof(Boolean), typeof(Boolean),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToBoolean(Input, 0);
-                        var b = TypeConverter.ToBoolean(Input, 1);
+                        var a = TypeConverter.ToBoolean(input, 0);
+                        var b = TypeConverter.ToBoolean(input, 1);
 
                         return new Boolean(a || b);
                     }),
                 new Operation("not", typeof(Boolean),
-                    Input =>
+                    input =>
                     {
-                        var a = TypeConverter.ToBoolean(Input, 0);
+                        var a = TypeConverter.ToBoolean(input, 0);
 
                         return new Boolean(!a);
                     })
             };
 
-            public bool value;
+            public bool Value;
 
             public Boolean()
             {
@@ -45,13 +45,13 @@ namespace Skrypt.Library.Native
             public Boolean(bool v = false)
             {
                 Name = "boolean";
-                value = v;
+                Value = v;
                 CreateCopyOnAssignment = true;
             }
 
-            public static SkryptObject Constructor(SkryptObject Self, SkryptObject[] Input)
+            public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input)
             {
-                var a = TypeConverter.ToBoolean(Input, 0);
+                var a = TypeConverter.ToBoolean(input, 0);
 
                 return new Boolean(a);
             }
@@ -63,17 +63,17 @@ namespace Skrypt.Library.Native
 
             public static implicit operator bool(Boolean d)
             {
-                return d.value;
+                return d.Value;
             }
 
             public override string ToString()
             {
-                return value.ToString();
+                return Value.ToString();
             }
 
             public override Boolean ToBoolean()
             {
-                return value;
+                return Value;
             }
         }
     }

@@ -21,9 +21,9 @@ namespace Skrypt.Tokenization
         /// <summary>
         ///     Process all tokens in a list
         /// </summary>
-        public static void ProcessTokens(List<Token> Tokens)
+        public static void ProcessTokens(List<Token> tokens)
         {
-            foreach (var token in Tokens)
+            foreach (var token in tokens)
                 switch (token.Type)
                 {
                     case TokenTypes.StringLiteral:

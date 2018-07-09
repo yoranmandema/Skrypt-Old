@@ -10,18 +10,18 @@ namespace Skrypt.Analysis
     /// </summary>
     public class Analizer
     {
-        private readonly SkryptEngine engine;
+        private readonly SkryptEngine _engine;
 
         public Analizer(SkryptEngine e)
         {
-            engine = e;
+            _engine = e;
         }
 
         public void AnalizeStatement(Node node, ScopeContext scopeContext)
         {
             // Check statement
             var conditionNode = node.SubNodes[0];
-            var result = engine.executor.ExecuteExpression(conditionNode, scopeContext);
+            var result = _engine.Executor.ExecuteExpression(conditionNode, scopeContext);
 
             // Check block
             var blockNode = node.SubNodes[1];
@@ -50,7 +50,7 @@ namespace Skrypt.Analysis
                 }
                 else
                 {
-                    var result = engine.executor.ExecuteExpression(subNode, scopeContext);
+                    var result = _engine.Executor.ExecuteExpression(subNode, scopeContext);
                 }
         }
     }

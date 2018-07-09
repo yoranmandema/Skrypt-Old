@@ -7,11 +7,11 @@ using Skrypt.Tokenization;
 
 namespace Skrypt.Parsing
 {
-    public class skipInfo
+    public class SkipInfo
     {
-        public int delta;
-        public int end;
-        public int start;
+        public int Delta;
+        public int End;
+        public int Start;
     }
 
     /// <summary>
@@ -23,34 +23,34 @@ namespace Skrypt.Parsing
         // Create list of operator groups with the right precedence order
         private static readonly List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup>
         {
-            new OperatorGroup(new[] {new Op_Return()}, false, 1),
-            new OperatorGroup(new[] {new Op_Assign()}, false),
-            new OperatorGroup(new[] {new Op_Access()}, false, 2, false),
-            new OperatorGroup(new[] {new Op_Or()}),
-            new OperatorGroup(new[] {new Op_And()}),
-            new OperatorGroup(new Operator[] {new Op_NotEqual(), new Op_Equal()}),
+            new OperatorGroup(new[] {new OpReturn()}, false, 1),
+            new OperatorGroup(new[] {new OpAssign()}, false),
+            new OperatorGroup(new[] {new OpAccess()}, false, 2, false),
+            new OperatorGroup(new[] {new OpOr()}),
+            new OperatorGroup(new[] {new OpAnd()}),
+            new OperatorGroup(new Operator[] {new OpNotEqual(), new OpEqual()}),
             new OperatorGroup(new Operator[]
-                {new Op_Lesser(), new Op_Greater(), new Op_LesserEqual(), new Op_GreaterEqual()}),
-            new OperatorGroup(new Operator[] {new Op_Add(), new Op_Subtract()}),
-            new OperatorGroup(new Operator[] {new Op_Multiply(), new Op_Divide(), new Op_Modulo()}),
-            new OperatorGroup(new[] {new Op_Power()}),
-            new OperatorGroup(new Operator[] {new Op_Negate(), new Op_Not()}, false, 1),
-            new OperatorGroup(new Operator[] {new Op_PostInc(), new Op_PostDec()}, false, 1, true)
+                {new OpLesser(), new OpGreater(), new OpLesserEqual(), new OpGreaterEqual()}),
+            new OperatorGroup(new Operator[] {new OpAdd(), new OpSubtract()}),
+            new OperatorGroup(new Operator[] {new OpMultiply(), new OpDivide(), new OpModulo()}),
+            new OperatorGroup(new[] {new OpPower()}),
+            new OperatorGroup(new Operator[] {new OpNegate(), new OpNot()}, false, 1),
+            new OperatorGroup(new Operator[] {new OpPostInc(), new OpPostDec()}, false, 1, true)
         };
 
-        private readonly SkryptEngine engine;
+        private readonly SkryptEngine _engine;
 
         public ExpressionParser(SkryptEngine e)
         {
-            engine = e;
+            _engine = e;
         }
 
         // (debug) Serializes a list of tokens into a string
-        public static string TokenString(List<Token> Tokens)
+        public static string TokenString(List<Token> tokens)
         {
             var sb = "";
 
-            foreach (var token in Tokens) sb += token.Value;
+            foreach (var token in tokens) sb += token.Value;
 
             return sb;
         }
@@ -58,15 +58,15 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses a list of tokens into an expression recursively
         /// </summary>
-        public Node ParseExpression(Node branch, List<Token> Tokens)
+        public Node ParseExpression(Node branch, List<Token> tokens)
         {
-            if (Tokens.Count == 1)
+            if (tokens.Count == 1)
                 return new Node
                 {
-                    Body = Tokens[0].Value,
+                    Body = tokens[0].Value,
                     //Value = null,
-                    TokenType = "" + Tokens[0].Type,
-                    Token = Tokens[0]
+                    TokenType = "" + tokens[0].Type,
+                    Token = tokens[0]
                 };
 
             // Create left and right token buffers
@@ -85,50 +85,50 @@ namespace Skrypt.Parsing
             // Do logic in delegate so we can easily exit out of it when we need to
             Action loop = () =>
             {
-                foreach (var OP in OperatorPrecedence)
-                foreach (var Operator in OP.Operators)
+                foreach (var op in OperatorPrecedence)
+                foreach (var Operator in op.Operators)
                 {
                     var i = 0;
-                    var CanLoop = Tokens.Count > 0;
+                    var canLoop = tokens.Count > 0;
 
-                    while (CanLoop)
+                    while (canLoop)
                     {
-                        var s = skipChain(Tokens, i);
+                        var s = SkipChain(tokens, i);
 
-                        if (s.delta > 0)
+                        if (s.Delta > 0)
                         {
-                            i = s.end - 1;
-                            if (s.start == 0 && i == Tokens.Count - 1 && s.delta != 0)
+                            i = s.End - 1;
+                            if (s.Start == 0 && i == tokens.Count - 1 && s.Delta != 0)
                             {
                                 isChain = true;
                                 return;
                             }
                         }
 
-                        var token = Tokens[i];
-                        var previousToken = i >= 1 ? Tokens[i - 1] : null;
+                        var token = tokens[i];
+                        var previousToken = i >= 1 ? tokens[i - 1] : null;
 
                         if (token.Value == "func")
                         {
-                            var skip = engine.expectValue("(", Tokens, i);
-                            i += skip.delta;
+                            var skip = _engine.ExpectValue("(", tokens, i);
+                            i += skip.Delta;
 
                             var start = i;
-                            skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
-                            i += skip.delta;
+                            skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
+                            i += skip.Delta;
 
-                            skip = engine.expressionParser.SkipFromTo("{", "}", Tokens, i);
-                            i += skip.delta;
+                            skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
+                            i += skip.Delta;
 
-                            if (start == 1 && skip.end == Tokens.Count - 1)
+                            if (start == 1 && skip.End == tokens.Count - 1)
                             {
                                 isFunctionLiteral = true;
                                 return;
                             }
                         }
 
-                        if (GeneralParser.Keywords.Contains(Tokens[i].Value))
-                            engine.throwError("Unexpected keyword '" + Tokens[i].Value + "' found", Tokens[i], 2);
+                        if (GeneralParser.Keywords.Contains(tokens[i].Value))
+                            _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i], 2);
 
                         //if (token.Value == "(") {
                         //    if (previousToken != null) {
@@ -146,10 +146,10 @@ namespace Skrypt.Parsing
                         //}
                         if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
                         {
-                            var skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
-                            i += skip.delta;
+                            var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
+                            i += skip.Delta;
 
-                            if (skip.start == 0 && skip.end == Tokens.Count - 1)
+                            if (skip.Start == 0 && skip.End == tokens.Count - 1)
                             {
                                 isInPars = true;
                                 return;
@@ -171,10 +171,10 @@ namespace Skrypt.Parsing
                         //}
                         if (token.Value == "[" && token.Type == TokenTypes.Punctuator)
                         {
-                            var skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, i);
-                            i += skip.delta;
+                            var skip = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i);
+                            i += skip.Delta;
 
-                            if (skip.start == 0 && skip.end == Tokens.Count - 1)
+                            if (skip.Start == 0 && skip.End == tokens.Count - 1)
                             {
                                 isArrayLiteral = true;
                                 return;
@@ -184,98 +184,98 @@ namespace Skrypt.Parsing
                         if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator)
                         {
                             // Fill left and right buffers
-                            leftBuffer = Tokens.GetRange(0, i);
-                            rightBuffer = Tokens.GetRange(i + 1, Tokens.Count - i - 1);
+                            leftBuffer = tokens.GetRange(0, i);
+                            rightBuffer = tokens.GetRange(i + 1, tokens.Count - i - 1);
 
-                            var HasRequiredLeftTokens = leftBuffer.Count > 0;
-                            var HasRequiredRightTokens = rightBuffer.Count > 0;
+                            var hasRequiredLeftTokens = leftBuffer.Count > 0;
+                            var hasRequiredRightTokens = rightBuffer.Count > 0;
 
-                            if (OP.Members == 1)
+                            if (op.Members == 1)
                             {
-                                if (OP.IsPostfix)
-                                    HasRequiredRightTokens = true;
+                                if (op.IsPostfix)
+                                    hasRequiredRightTokens = true;
                                 else
-                                    HasRequiredLeftTokens = true;
+                                    hasRequiredLeftTokens = true;
                             }
 
-                            if (HasRequiredLeftTokens && HasRequiredRightTokens)
+                            if (hasRequiredLeftTokens && hasRequiredRightTokens)
                             {
                                 // Create operation node with type and body
-                                var NewNode = new Node
+                                var newNode = new Node
                                 {
                                     Body = Operator.OperationName,
                                     TokenType = "" + token.Type,
                                     Token = token
                                 };
 
-                                if (OP.Members == 1)
+                                if (op.Members == 1)
                                 {
                                     // Parse unary and do postfix logic
 
-                                    var LeftNode = !OP.IsPostfix ? null : ParseExpression(NewNode, leftBuffer);
-                                    NewNode.Add(LeftNode);
+                                    var leftNode = !op.IsPostfix ? null : ParseExpression(newNode, leftBuffer);
+                                    newNode.Add(leftNode);
 
-                                    var RightNode = OP.IsPostfix ? null : ParseExpression(NewNode, rightBuffer);
-                                    NewNode.Add(RightNode);
+                                    var rightNode = op.IsPostfix ? null : ParseExpression(newNode, rightBuffer);
+                                    newNode.Add(rightNode);
                                 }
                                 else
                                 {
                                     // Parse operators that need 2 sides
 
-                                    var LeftNode = ParseExpression(NewNode, leftBuffer);
-                                    NewNode.Add(LeftNode);
+                                    var leftNode = ParseExpression(newNode, leftBuffer);
+                                    newNode.Add(leftNode);
 
-                                    var RightNode = ParseExpression(NewNode, rightBuffer);
-                                    NewNode.Add(RightNode);
+                                    var rightNode = ParseExpression(newNode, rightBuffer);
+                                    newNode.Add(rightNode);
                                 }
 
-                                branch.Add(NewNode);
+                                branch.Add(newNode);
                                 return;
                             }
 
                             if (Operator.FailOnMissingMembers)
-                                engine.throwError("Missing member of operation!", token, 10);
+                                _engine.ThrowError("Missing member of operation!", token, 10);
                         }
 
                         // Check if we're still in bounds
-                        CanLoop = OP.LeftAssociate ? i < Tokens.Count - 1 : Tokens.Count - 1 - i > 0;
+                        canLoop = op.LeftAssociate ? i < tokens.Count - 1 : tokens.Count - 1 - i > 0;
                         i++;
                     }
                 }
             };
             loop();
 
-            if (isChain) return ParseChain(Tokens);
+            if (isChain) return ParseChain(tokens);
 
             // Parse expression within parenthesis if it's completely surrounded
-            if (isInPars) return ParseExpression(branch, Tokens.GetRange(1, Tokens.Count - 2));
+            if (isInPars) return ParseExpression(branch, tokens.GetRange(1, tokens.Count - 2));
 
             // Parse method call
             if (isMethodCall)
             {
-                var result = ParseCall(Tokens, accessEnd);
-                return result.node;
+                var result = ParseCall(tokens, accessEnd);
+                return result.Node;
             }
 
             // Parse indexing
             if (isIndexing)
             {
-                var result = ParseIndexing(Tokens);
-                return result.node;
+                var result = ParseIndexing(tokens);
+                return result.Node;
             }
 
             // Parse indexing
             if (isArrayLiteral)
             {
-                var result = ParseArrayLiteral(Tokens);
-                return result.node;
+                var result = ParseArrayLiteral(tokens);
+                return result.Node;
             }
 
             // Parse function literal
             if (isFunctionLiteral)
             {
-                var result = engine.methodParser.ParseFunctionLiteral(Tokens.GetRange(1, Tokens.Count - 1));
-                return result.node;
+                var result = _engine.MethodParser.ParseFunctionLiteral(tokens.GetRange(1, tokens.Count - 1));
+                return result.Node;
             }
 
             return null;
@@ -284,17 +284,17 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Sets parses individual arguments as expressions
         /// </summary>
-        public static void SetArguments(List<List<Token>> Arguments, List<Token> Tokens)
+        public static void SetArguments(List<List<Token>> arguments, List<Token> tokens)
         {
             var depth = 0;
             var indexDepth = 0;
             var i = 0;
             var startArg = 0;
-            var Buffer = new List<Token>();
+            var buffer = new List<Token>();
 
-            for (i = 0; i < Tokens.Count; i++)
+            for (i = 0; i < tokens.Count; i++)
             {
-                var token = Tokens[i];
+                var token = tokens[i];
 
                 if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
                     depth++;
@@ -304,12 +304,12 @@ namespace Skrypt.Parsing
                     indexDepth++;
                 else if (token.Value == "]" && token.Type == TokenTypes.Punctuator) indexDepth--;
 
-                if ((token.Value == "," && token.Type == TokenTypes.Punctuator || i == Tokens.Count - 1) &&
+                if ((token.Value == "," && token.Type == TokenTypes.Punctuator || i == tokens.Count - 1) &&
                     depth == 0 && indexDepth == 0)
                 {
-                    Buffer = Tokens.GetRange(startArg, (i == Tokens.Count - 1 ? i + 1 : i) - startArg);
+                    buffer = tokens.GetRange(startArg, (i == tokens.Count - 1 ? i + 1 : i) - startArg);
                     startArg = i + 1;
-                    Arguments.Add(Buffer);
+                    arguments.Add(buffer);
                 }
             }
         }
@@ -317,7 +317,7 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Skip tokens that are surrounded by 'upScope' and 'downScope'
         /// </summary>
-        public skipInfo SkipFromTo(string upScope, string downScope, List<Token> Tokens, int startingPoint = 0)
+        public SkipInfo SkipFromTo(string upScope, string downScope, List<Token> tokens, int startingPoint = 0)
         {
             var start = startingPoint;
             var depth = 0;
@@ -327,13 +327,13 @@ namespace Skrypt.Parsing
 
             while (true)
             {
-                if (Tokens[index].Value == upScope && Tokens[index].Type == TokenTypes.Punctuator)
+                if (tokens[index].Value == upScope && tokens[index].Type == TokenTypes.Punctuator)
                 {
                     depth++;
 
-                    if (firstToken == null) firstToken = Tokens[index];
+                    if (firstToken == null) firstToken = tokens[index];
                 }
-                else if (Tokens[index].Value == downScope && Tokens[index].Type == TokenTypes.Punctuator)
+                else if (tokens[index].Value == downScope && tokens[index].Type == TokenTypes.Punctuator)
                 {
                     depth--;
 
@@ -342,17 +342,17 @@ namespace Skrypt.Parsing
                         end = index;
                         var delta = index - start;
 
-                        return new skipInfo {start = start, end = end, delta = delta};
+                        return new SkipInfo {Start = start, End = end, Delta = delta};
                     }
                 }
 
                 index++;
 
-                if (index == Tokens.Count)
+                if (index == tokens.Count)
                 {
                     if (depth > 0)
-                        engine.throwError("Closing token '" + downScope + "' not found", firstToken);
-                    else if (depth < 0) engine.throwError("Opening token '" + upScope + "' not found", Tokens[index]);
+                        _engine.ThrowError("Closing token '" + downScope + "' not found", firstToken);
+                    else if (depth < 0) _engine.ThrowError("Opening token '" + upScope + "' not found", tokens[index]);
                 }
             }
         }
@@ -360,15 +360,15 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Skip tokens until we hit a token with the given value
         /// </summary>
-        public void SkipUntil(ref int Index, Token Comparator, List<Token> Tokens)
+        public void SkipUntil(ref int index, Token comparator, List<Token> tokens)
         {
-            var startToken = Tokens[Index];
+            var startToken = tokens[index];
 
-            while (!Tokens[Index].LazyEqual(Comparator))
+            while (!tokens[index].LazyEqual(comparator))
             {
-                Index++;
+                index++;
 
-                if (Index == Tokens.Count - 1) engine.throwError("Token '" + Comparator + "' expected", startToken);
+                if (index == tokens.Count - 1) _engine.ThrowError("Token '" + comparator + "' expected", startToken);
             }
         }
 
@@ -411,13 +411,13 @@ namespace Skrypt.Parsing
         //    return new skipInfo { start = start, end = end, delta = delta };
         //}
 
-        public skipInfo SkipAccess(List<Token> Tokens, int startingPoint = 0)
+        public SkipInfo SkipAccess(List<Token> tokens, int startingPoint = 0)
         {
             var start = startingPoint;
             var index = startingPoint;
             var end = 0;
             var state = 0;
-            var token = Tokens[index];
+            var token = tokens[index];
 
             if (token.IsValuable()) state = 0;
 
@@ -434,31 +434,31 @@ namespace Skrypt.Parsing
 
                 index++;
 
-                if (index == Tokens.Count)
+                if (index == tokens.Count)
                     break;
 
-                token = Tokens[index];
+                token = tokens[index];
             }
 
             if (index > 0)
-                if (Tokens[index - 1].Value == "." && Tokens[index - 1].Type == TokenTypes.Punctuator)
-                    engine.throwError("Identifier expected!", Tokens[index - 1]);
+                if (tokens[index - 1].Value == "." && tokens[index - 1].Type == TokenTypes.Punctuator)
+                    _engine.ThrowError("Identifier expected!", tokens[index - 1]);
 
             end = index;
             var delta = index - start;
 
-            return new skipInfo {start = start, end = end, delta = delta};
+            return new SkipInfo {Start = start, End = end, Delta = delta};
         }
 
-        public skipInfo skipChain(List<Token> Tokens, int startingPoint)
+        public SkipInfo SkipChain(List<Token> tokens, int startingPoint)
         {
             var start = startingPoint;
             var index = startingPoint;
             var end = 0;
 
-            var token = Tokens[index];
+            var token = tokens[index];
 
-            if (!token.IsValuable()) return new skipInfo {start = start, end = end, delta = 0};
+            if (!token.IsValuable()) return new SkipInfo {Start = start, End = end, Delta = 0};
 
             while (true)
             {
@@ -466,58 +466,58 @@ namespace Skrypt.Parsing
 
                 if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
                 {
-                    var skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, index);
-                    index = skip.end + 1;
+                    var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, index);
+                    index = skip.End + 1;
                 }
                 else if (token.Value == "[" && token.Type == TokenTypes.Punctuator)
                 {
-                    var skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, index);
-                    index = skip.end + 1;
+                    var skip = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, index);
+                    index = skip.End + 1;
                 }
                 else if (token.Value == "." && token.Type == TokenTypes.Punctuator || token.IsValuable())
                 {
-                    var skip = engine.expressionParser.SkipAccess(Tokens, index);
-                    index = skip.end;
+                    var skip = _engine.ExpressionParser.SkipAccess(tokens, index);
+                    index = skip.End;
                 }
                 else
                 {
                     break;
                 }
 
-                if (index == Tokens.Count)
+                if (index == tokens.Count)
                     break;
 
-                token = Tokens[index];
+                token = tokens[index];
             }
 
             end = index;
             var delta = index - start;
 
-            return new skipInfo {start = start, end = end, delta = delta};
+            return new SkipInfo {Start = start, End = end, Delta = delta};
         }
 
-        public Node ParseChain(List<Token> Tokens)
+        public Node ParseChain(List<Token> tokens)
         {
             var node = new Node();
 
-            if (Tokens.Count == 2) engine.throwError("Access operator can only be used after a value!", Tokens[0]);
+            if (tokens.Count == 2) _engine.ThrowError("Access operator can only be used after a value!", tokens[0]);
 
-            if (Tokens.Count == 1) return ParseExpression(node, Tokens);
+            if (tokens.Count == 1) return ParseExpression(node, tokens);
 
-            var Reverse = Tokens.GetRange(0, Tokens.Count);
-            Reverse.Reverse();
+            var reverse = tokens.GetRange(0, tokens.Count);
+            reverse.Reverse();
 
-            if (Reverse[0].Value == "]" && Reverse[0].Type == TokenTypes.Punctuator)
+            if (reverse[0].Value == "]" && reverse[0].Type == TokenTypes.Punctuator)
             {
-                var skip = SkipFromTo("]", "[", Reverse, 0);
+                var skip = SkipFromTo("]", "[", reverse, 0);
 
-                if (skip.end + 1 >= Reverse.Count)
-                    engine.throwError("Indexing operator needs left hand value!", Reverse[skip.end]);
-                else if (Reverse[skip.end + 1].Value == "." && Reverse[skip.end + 1].Type == TokenTypes.Punctuator)
-                    engine.throwError("Indexing operator needs left hand value!", Reverse[skip.end]);
+                if (skip.End + 1 >= reverse.Count)
+                    _engine.ThrowError("Indexing operator needs left hand value!", reverse[skip.End]);
+                else if (reverse[skip.End + 1].Value == "." && reverse[skip.End + 1].Type == TokenTypes.Punctuator)
+                    _engine.ThrowError("Indexing operator needs left hand value!", reverse[skip.End]);
 
                 var getterNode = new Node();
-                getterNode.Add(ParseChain(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
+                getterNode.Add(ParseChain(tokens.GetRange(0, tokens.Count - (skip.End + 1))));
                 getterNode.Body = "Getter";
                 getterNode.TokenType = "Getter";
                 node.Add(getterNode);
@@ -526,11 +526,11 @@ namespace Skrypt.Parsing
                 //ExpressionTokens.Reverse();
                 //node.Add(ParseExpression(node, ExpressionTokens));
 
-                var ArgumentTokens = Reverse.GetRange(0, skip.end + 1);
-                ArgumentTokens.Reverse();
+                var argumentTokens = reverse.GetRange(0, skip.End + 1);
+                argumentTokens.Reverse();
 
-                var result = engine.generalParser.parseSurroundedExpressions("[", "]", 0, ArgumentTokens);
-                var argumentsNode = result.node;
+                var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", 0, argumentTokens);
+                var argumentsNode = result.Node;
                 argumentsNode.Body = "Arguments";
                 argumentsNode.TokenType = "Arguments";
                 node.Add(argumentsNode);
@@ -538,26 +538,26 @@ namespace Skrypt.Parsing
                 node.Body = "Index";
                 node.TokenType = "Index";
             }
-            else if (Reverse[0].Value == ")")
+            else if (reverse[0].Value == ")")
             {
-                var skip = SkipFromTo(")", "(", Reverse, 0);
+                var skip = SkipFromTo(")", "(", reverse, 0);
 
-                if (skip.end + 1 >= Reverse.Count)
-                    engine.throwError("Call operator needs left hand value!", Reverse[skip.end]);
-                else if (Reverse[skip.end + 1].Value == ".")
-                    engine.throwError("Call operator needs left hand value!", Reverse[skip.end]);
+                if (skip.End + 1 >= reverse.Count)
+                    _engine.ThrowError("Call operator needs left hand value!", reverse[skip.End]);
+                else if (reverse[skip.End + 1].Value == ".")
+                    _engine.ThrowError("Call operator needs left hand value!", reverse[skip.End]);
 
                 var getterNode = new Node();
-                getterNode.Add(ParseChain(Tokens.GetRange(0, Tokens.Count - (skip.end + 1))));
+                getterNode.Add(ParseChain(tokens.GetRange(0, tokens.Count - (skip.End + 1))));
                 getterNode.Body = "Getter";
                 getterNode.TokenType = "Getter";
                 node.Add(getterNode);
 
-                var ArgumentTokens = Reverse.GetRange(0, skip.end + 1);
-                ArgumentTokens.Reverse();
+                var argumentTokens = reverse.GetRange(0, skip.End + 1);
+                argumentTokens.Reverse();
 
-                var result = engine.generalParser.parseSurroundedExpressions("(", ")", 0, ArgumentTokens);
-                var argumentsNode = result.node;
+                var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", 0, argumentTokens);
+                var argumentsNode = result.Node;
                 argumentsNode.Body = "Arguments";
                 argumentsNode.TokenType = "Arguments";
                 node.Add(argumentsNode);
@@ -570,8 +570,8 @@ namespace Skrypt.Parsing
                 node.Body = "access";
                 node.TokenType = "" + TokenTypes.Punctuator;
 
-                node.Add(ParseExpression(node, new List<Token> {Reverse[0]}));
-                node.Add(ParseChain(Tokens.GetRange(0, Tokens.Count - 2)));
+                node.Add(ParseExpression(node, new List<Token> {reverse[0]}));
+                node.Add(ParseChain(tokens.GetRange(0, tokens.Count - 2)));
             }
 
             return node;
@@ -580,31 +580,31 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses a method call with arguments
         /// </summary>
-        public ParseResult ParseCall(List<Token> Tokens, int accessEnd)
+        public ParseResult ParseCall(List<Token> tokens, int accessEnd)
         {
             var index = 0;
-            var name = Tokens[index].Value;
+            var name = tokens[index].Value;
             var node = new Node
             {
                 Body = "Call",
                 TokenType = "Call"
             };
 
-            var AccessTokens = Tokens.GetRange(0, accessEnd);
+            var accessTokens = tokens.GetRange(0, accessEnd);
             //Console.WriteLine("Call: " + TokenString(AccessTokens));
             var getterNode = new Node();
-            getterNode.Add(ParseExpression(getterNode, AccessTokens));
+            getterNode.Add(ParseExpression(getterNode, accessTokens));
             getterNode.Body = "Getter";
             getterNode.TokenType = "Getter";
             node.Add(getterNode);
 
-            var result = engine.generalParser.parseSurroundedExpressions("(", ")", accessEnd, Tokens);
-            var argumentsNode = result.node;
+            var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", accessEnd, tokens);
+            var argumentsNode = result.Node;
             argumentsNode.Body = "Arguments";
             argumentsNode.TokenType = "Arguments";
             node.Add(argumentsNode);
 
-            index = Tokens.Count - 1;
+            index = tokens.Count - 1;
 
             //Console.WriteLine(node);
 
@@ -618,50 +618,50 @@ namespace Skrypt.Parsing
             //node.Token = Tokens[0];
             //index += result.delta;
 
-            return new ParseResult {node = node, delta = index};
+            return new ParseResult {Node = node, Delta = index};
         }
 
         /// <summary>
         ///     Parses an index operation
         /// </summary>
-        public ParseResult ParseIndexing(List<Token> Tokens)
+        public ParseResult ParseIndexing(List<Token> tokens)
         {
-            var node = new Node {Body = Tokens[0].Value, TokenType = "Index"};
+            var node = new Node {Body = tokens[0].Value, TokenType = "Index"};
             var index = 1;
 
             var result =
-                engine.generalParser.parseSurrounded("[", "]", index, Tokens, engine.expressionParser.ParseClean);
-            var argNode = result.node;
-            index += result.delta;
+                _engine.GeneralParser.ParseSurrounded("[", "]", index, tokens, _engine.ExpressionParser.ParseClean);
+            var argNode = result.Node;
+            index += result.Delta;
             node.Add(argNode);
-            node.Token = Tokens[0];
+            node.Token = tokens[0];
 
-            return new ParseResult {node = node, delta = index};
+            return new ParseResult {Node = node, Delta = index};
         }
 
         /// <summary>
         ///     Parses an array literal
         /// </summary>
-        public ParseResult ParseArrayLiteral(List<Token> Tokens)
+        public ParseResult ParseArrayLiteral(List<Token> tokens)
         {
             var index = 0;
 
-            var result = engine.generalParser.parseSurroundedExpressions("[", "]", 0, Tokens);
-            var node = result.node;
+            var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", 0, tokens);
+            var node = result.Node;
             node.TokenType = "ArrayLiteral";
             node.Body = "Array";
-            index += result.delta;
+            index += result.Delta;
 
-            return new ParseResult {node = node, delta = index};
+            return new ParseResult {Node = node, Delta = index};
         }
 
         /// <summary>
         ///     Parses an expression node without any parenting node
         /// </summary>
-        public Node ParseClean(List<Token> Tokens)
+        public Node ParseClean(List<Token> tokens)
         {
             var node = new Node();
-            node.Add(ParseExpression(node, Tokens));
+            node.Add(ParseExpression(node, tokens));
 
             // Only return the first subnode, so we don't create a messy AST
             Node returnNode = null;
@@ -673,7 +673,7 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses a list of tokens into an expression node
         /// </summary>
-        public ParseResult Parse(List<Token> Tokens)
+        public ParseResult Parse(List<Token> tokens)
         {
             var node = new Node();
             var delta = 0;
@@ -687,8 +687,8 @@ namespace Skrypt.Parsing
             // Skip until we hit the end of an expression
             while (true)
             {
-                if (Tokens[delta].Type == TokenTypes.Punctuator)
-                    switch (Tokens[delta].Value)
+                if (tokens[delta].Type == TokenTypes.Punctuator)
+                    switch (tokens[delta].Value)
                     {
                         case "(":
                             pScope++;
@@ -711,24 +711,24 @@ namespace Skrypt.Parsing
                     }
 
                 if (pScope == 0 && bScope == 0 && cScope == 0)
-                    if (Tokens[delta].Value == ";")
+                    if (tokens[delta].Value == ";")
                     {
                         addDelta = 1;
                         break;
                     }
 
-                previousToken = Tokens[delta];
+                previousToken = tokens[delta];
 
                 delta++;
 
-                if (delta == Tokens.Count) break;
+                if (delta == tokens.Count) break;
             }
 
-            var returnNode = ParseClean(Tokens.GetRange(0, delta));
+            var returnNode = ParseClean(tokens.GetRange(0, delta));
 
             delta += addDelta;
 
-            return new ParseResult {node = returnNode, delta = delta};
+            return new ParseResult {Node = returnNode, Delta = delta};
         }
 
         /// <summary>
@@ -741,12 +741,12 @@ namespace Skrypt.Parsing
             public readonly int Members;
             public readonly List<Operator> Operators = new List<Operator>();
 
-            public OperatorGroup(Operator[] ops, bool LA = true, int mems = 2, bool PF = false)
+            public OperatorGroup(Operator[] ops, bool la = true, int mems = 2, bool pf = false)
             {
                 Operators = ops.ToList();
                 Members = mems;
-                LeftAssociate = LA;
-                IsPostfix = PF;
+                LeftAssociate = la;
+                IsPostfix = pf;
             }
         }
     }

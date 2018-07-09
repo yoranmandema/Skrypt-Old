@@ -4,7 +4,7 @@ namespace Skrypt.Parsing
 {
     internal class SkryptException : Exception
     {
-        public int urgency = -1;
+        public int Urgency = -1;
 
         public SkryptException()
         {
@@ -18,7 +18,7 @@ namespace Skrypt.Parsing
         public SkryptException(string message, int u)
             : base(message)
         {
-            urgency = u;
+            Urgency = u;
         }
     }
 }

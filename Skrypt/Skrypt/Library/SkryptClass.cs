@@ -4,29 +4,29 @@ using Newtonsoft.Json;
 
 namespace Skrypt.Library
 {
-    public delegate SkryptObject OperationDelegate(SkryptObject[] Input);
+    public delegate SkryptObject OperationDelegate(SkryptObject[] input);
 
     public class Operation
     {
         public string Name;
-        public OperationDelegate operation;
+        public OperationDelegate OperationDelegate;
         public Type TypeLeft;
         public Type TypeRight;
 
-        public Operation(string N, Type TL, Type TR, OperationDelegate DEL)
+        public Operation(string n, Type tl, Type tr, OperationDelegate del)
         {
-            Name = N;
-            TypeLeft = TL;
-            TypeRight = TR;
-            operation = DEL;
+            Name = n;
+            TypeLeft = tl;
+            TypeRight = tr;
+            OperationDelegate = del;
         }
 
-        public Operation(string N, Type TL, OperationDelegate DEL)
+        public Operation(string n, Type tl, OperationDelegate del)
         {
-            Name = N;
-            TypeLeft = TL;
+            Name = n;
+            TypeLeft = tl;
             TypeRight = null;
-            operation = DEL;
+            OperationDelegate = del;
         }
     }
 
@@ -37,21 +37,21 @@ namespace Skrypt.Library
         public string Name { get; set; }
 
 
-        public Operation GetOperation(string N, Type TL, Type TR, List<Operation> Ops)
+        public Operation GetOperation(string n, Type tl, Type tr, List<Operation> ops)
         {
-            for (var i = 0; i < Ops.Count; i++)
+            for (var i = 0; i < ops.Count; i++)
             {
-                var Op = Ops[i];
+                var op = ops[i];
 
-                if (Op.Name != N) continue;
+                if (op.Name != n) continue;
 
-                if (!(TL.IsSubclassOf(Op.TypeLeft) || TL == Op.TypeLeft)) continue;
+                if (!(tl.IsSubclassOf(op.TypeLeft) || tl == op.TypeLeft)) continue;
 
-                if (Op.TypeRight != null)
-                    if (!(TR.IsSubclassOf(Op.TypeRight) || TR == Op.TypeRight))
+                if (op.TypeRight != null)
+                    if (!(tr.IsSubclassOf(op.TypeRight) || tr == op.TypeRight))
                         continue;
 
-                return Op;
+                return op;
             }
 
             return null;
@@ -73,7 +73,7 @@ namespace Skrypt.Library
             return (SkryptObject) MemberwiseClone();
         }
 
-        public string toJSON()
+        public string ToJson()
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
         }
