@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Skrypt.Tokenization;
-using Skrypt.Parsing;
-using Skrypt.Library;
 using Skrypt.Engine;
+using Skrypt.Tokenization;
 
-namespace Skrypt.Parsing {
+namespace Skrypt.Parsing
+{
     /// <summary>
-    /// The class parser class.
-    /// Contains all methods to parse class definition code
+    ///     The class parser class.
+    ///     Contains all methods to parse class definition code
     /// </summary>
-    public class ClassParser {
-        readonly SkryptEngine engine;
+    public class ClassParser
+    {
+        private readonly SkryptEngine _engine;
 
-        public ClassParser(SkryptEngine e) {
-            engine = e;
+        public ClassParser(SkryptEngine e)
+        {
+            _engine = e;
         }
 
         static string[] PropertyWords = new[] { "static", "private", "public", "constant" };
@@ -100,25 +98,27 @@ namespace Skrypt.Parsing {
                 var Test = TryParse(Tokens.GetRange(i, Tokens.Count - i), Name);
                 i += Test.delta;
 
-                if (Test.node.TokenType == "MethodDeclaration") {
-                    Node.AddAsFirst(Test.node);
+                if (test.Node.TokenType == "MethodDeclaration")
+                {
+                    node.AddAsFirst(test.Node);
                     continue;
                 }
 
-                Node.Add(Test.node);
+                node.Add(test.Node);
             }
 
-            return Node;
+            return node;
         }
 
-        public ParseResult Parse(List<Token> Tokens) {
-            int i = 0;
+        public ParseResult Parse(List<Token> tokens)
+        {
+            var i = 0;
 
-            var skip = engine.expectType(TokenTypes.Identifier, Tokens, i);
-            i += skip.delta;
+            var skip = _engine.ExpectType(TokenTypes.Identifier, tokens, i);
+            i += skip.Delta;
 
-            skip = engine.expectValue("{", Tokens, i);
-            i += skip.delta;
+            skip = _engine.ExpectValue("{", tokens, i);
+            i += skip.Delta;
 
             List<Token> SurroundedTokens = engine.generalParser.GetSurroundedTokens("{", "}", i, Tokens);
             Node node = ParseContents(SurroundedTokens, Tokens[1].Value);

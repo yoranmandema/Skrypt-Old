@@ -73,15 +73,12 @@
     <Compile Include="Library\Native\SkryptClasses\Numeric.cs" />
     <Compile Include="Library\SkryptMethod.cs" />
     <Compile Include="Parsing\SkryptException.cs" />
-    <Compile Include="Parsing\SkryptOperator.cs" />
     <Compile Include="Library\SkryptProperty.cs" />
     <Compile Include="Parsing\StatementParser.cs" />
     <Compile Include="Tokenization\Tokenizer.cs" />
     <Compile Include="Tokenization\Token.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tokenization\TokenPattern.cs" />
-    <Compile Include="Tokenization\TokenPatternChecker.cs" />
     <Compile Include="Tokenization\TokenProcessor.cs" />
     <Compile Include="Tokenization\TokenRule.cs" />
   </ItemGroup>

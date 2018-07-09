@@ -1,48 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Skrypt.Engine;
 using Skrypt.Tokenization;
-using Skrypt.Library;
 
-namespace Skrypt.Parsing {
+namespace Skrypt.Parsing
+{
     /// <summary>
-    /// The method parser class.
-    /// Contains all methods to parse user defined methods
+    ///     The method parser class.
+    ///     Contains all methods to parse user defined methods
     /// </summary>
-    public class MethodParser {
-        readonly SkryptEngine engine;
+    public class MethodParser
+    {
+        private readonly SkryptEngine _engine;
 
-        public MethodParser(SkryptEngine e) {
-            engine = e;
+        public MethodParser(SkryptEngine e)
+        {
+            _engine = e;
         }
 
-        public Node ParseSingleParameter (List<Token> Tokens) {
-            int index = 0;
-            skipInfo skip;
+        public Node ParseSingleParameter(List<Token> tokens)
+        {
+            var index = 0;
+            SkipInfo skip;
 
-            string Name = Tokens[index].Value;
+            var name = tokens[index].Value;
 
-            Node node = new Node
+            var node = new Node
             {
-                Body = Name,
+                Body = name,
                 TokenType = "Parameter"
             };
 
             return node;
         }
 
-        public Node ParseParameters (List<Token> Tokens) {           
-            Node node = new Node();
+        public Node ParseParameters(List<Token> tokens)
+        {
+            var node = new Node();
 
-            List<List<Token>> ParameterLists = new List<List<Token>>();
-            ExpressionParser.SetArguments(ParameterLists, Tokens);
+            var parameterLists = new List<List<Token>>();
+            ExpressionParser.SetArguments(parameterLists, tokens);
 
-            foreach (List<Token> Parameter in ParameterLists) {
-                Node ParameterNode = ParseSingleParameter(Parameter);
-                node.Add(ParameterNode);
+            foreach (var parameter in parameterLists)
+            {
+                var parameterNode = ParseSingleParameter(parameter);
+                node.Add(parameterNode);
             }
 
             node.Body = "Parameters";
@@ -51,62 +52,63 @@ namespace Skrypt.Parsing {
             return node;
         }
 
-        public ParseResult ParseFunctionLiteral (List<Token> Tokens) {
-            int index = 0;
-            Node node = new Node();
-            skipInfo skip;
+        public ParseResult ParseFunctionLiteral(List<Token> tokens)
+        {
+            var index = 0;
+            var node = new Node();
+            SkipInfo skip;
             ParseResult result;
 
-            result = engine.generalParser.parseSurrounded("(", ")", index, Tokens, ParseParameters);
-            Node ParameterNode = result.node;
-            index += result.delta;
+            result = _engine.GeneralParser.ParseSurrounded("(", ")", index, tokens, ParseParameters);
+            var parameterNode = result.Node;
+            index += result.Delta;
 
-            skip = engine.expectValue("{", Tokens, index);
-            index += skip.delta;
+            skip = _engine.ExpectValue("{", tokens, index);
+            index += skip.Delta;
 
-            result = engine.generalParser.parseSurrounded("{", "}", index, Tokens, engine.generalParser.Parse);
-            Node BlockNode = result.node;
-            index += result.delta + 1;
+            result = _engine.GeneralParser.ParseSurrounded("{", "}", index, tokens, _engine.GeneralParser.Parse);
+            var blockNode = result.Node;
+            index += result.Delta + 1;
 
-            Node returnNode = new Node
+            var returnNode = new Node
             {
                 Body = "Function",
                 TokenType = "FunctionLiteral"
             };
-            returnNode.SubNodes.Add(BlockNode);
-            returnNode.SubNodes.Add(ParameterNode);
+            returnNode.SubNodes.Add(blockNode);
+            returnNode.SubNodes.Add(parameterNode);
 
-            return new ParseResult { node = returnNode, delta = index };
+            return new ParseResult {Node = returnNode, Delta = index};
         }
 
         /// <summary>
-        /// Parses a list of tokens into a method node
+        ///     Parses a list of tokens into a method node
         /// </summary>
-        public ParseResult Parse(List<Token> Tokens) {
-            int index = 0;
-            skipInfo skip;
+        public ParseResult Parse(List<Token> tokens)
+        {
+            var index = 0;
+            SkipInfo skip;
             ParseResult result;
 
-            skip = engine.expectType(TokenTypes.Identifier, Tokens);
-            index += skip.delta;
+            skip = _engine.ExpectType(TokenTypes.Identifier, tokens);
+            index += skip.Delta;
 
             //skip = engine.expectType("Identifier", Tokens,index);
             //index += skip.delta;
 
-            skip = engine.expectValue("(", Tokens, index);
-            index += skip.delta;
+            skip = _engine.ExpectValue("(", tokens, index);
+            index += skip.Delta;
 
-            result = engine.generalParser.parseSurrounded("(", ")", index, Tokens, ParseParameters);
-            Node ParameterNode = result.node;
-            index += result.delta;
+            result = _engine.GeneralParser.ParseSurrounded("(", ")", index, tokens, ParseParameters);
+            var parameterNode = result.Node;
+            index += result.Delta;
 
-            skip = engine.expectValue("{", Tokens, index);
-            index += skip.delta;
+            skip = _engine.ExpectValue("{", tokens, index);
+            index += skip.Delta;
 
-            result = engine.generalParser.parseSurrounded("{", "}", index, Tokens, engine.generalParser.Parse);
-            Node BlockNode = result.node;
-            index += result.delta + 1;
-
+            result = _engine.GeneralParser.ParseSurrounded("{", "}", index, tokens, _engine.GeneralParser.Parse);
+            var blockNode = result.Node;
+            index += result.Delta + 1;
 
 
             //Node node = new Node();
@@ -136,15 +138,15 @@ namespace Skrypt.Parsing {
             //    BlockNode = BlockNode,
             //});
 
-            Node returnNode = new Node
+            var returnNode = new Node
             {
-                Body = Tokens[1].Value,
+                Body = tokens[1].Value,
                 TokenType = "MethodDeclaration"
             };
-            returnNode.SubNodes.Add(BlockNode);
-            returnNode.SubNodes.Add(ParameterNode);
+            returnNode.SubNodes.Add(blockNode);
+            returnNode.SubNodes.Add(parameterNode);
 
-            return new ParseResult { node = returnNode, delta = index };
+            return new ParseResult {Node = returnNode, Delta = index};
         }
     }
 }

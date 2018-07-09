@@ -1,69 +1,79 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Skrypt.Execution;
 
-namespace Skrypt.Library.Native {
-    partial class System {
-        public class Boolean : SkryptType {
-            public bool value;
+namespace Skrypt.Library.Native
+{
+    partial class System
+    {
+        public class Boolean : SkryptType
+        {
+            public new List<Operation> Operations = new List<Operation>
+            {
+                new Operation("and", typeof(Boolean), typeof(Boolean),
+                    input =>
+                    {
+                        var a = TypeConverter.ToBoolean(input, 0);
+                        var b = TypeConverter.ToBoolean(input, 1);
 
-            public Boolean() {
+                        return new Boolean(a && b);
+                    }),
+                new Operation("or", typeof(Boolean), typeof(Boolean),
+                    input =>
+                    {
+                        var a = TypeConverter.ToBoolean(input, 0);
+                        var b = TypeConverter.ToBoolean(input, 1);
+
+                        return new Boolean(a || b);
+                    }),
+                new Operation("not", typeof(Boolean),
+                    input =>
+                    {
+                        var a = TypeConverter.ToBoolean(input, 0);
+
+                        return new Boolean(!a);
+                    })
+            };
+
+            public bool Value;
+
+            public Boolean()
+            {
                 Name = "boolean";
                 CreateCopyOnAssignment = true;
             }
 
-            public Boolean(bool v = false) {
+            public Boolean(bool v = false)
+            {
                 Name = "boolean";
-                value = v;
+                Value = v;
                 CreateCopyOnAssignment = true;
             }
 
-            public static SkryptObject Constructor(SkryptObject Self, SkryptObject[] Input) {
-                var a = TypeConverter.ToBoolean(Input, 0);
+            public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input)
+            {
+                var a = TypeConverter.ToBoolean(input, 0);
 
                 return new Boolean(a);
             }
 
-            public static implicit operator Boolean(bool d) {
+            public static implicit operator Boolean(bool d)
+            {
                 return new Boolean(d);
             }
 
-            public static implicit operator bool(Boolean d) {
-                return d.value;
+            public static implicit operator bool(Boolean d)
+            {
+                return d.Value;
             }
 
-            public new List<Operation> Operations = new List<Operation> {
-                new Operation("and",typeof(Boolean),typeof(Boolean),
-                    (SkryptObject[] Input) => {
-                        var a = TypeConverter.ToBoolean(Input,0);
-                        var b = TypeConverter.ToBoolean(Input,1);
-
-                        return new Boolean(a && b);
-                    }),
-                new Operation("or",typeof(Boolean),typeof(Boolean),
-                    (SkryptObject[] Input) => {
-                        var a = TypeConverter.ToBoolean(Input,0);
-                        var b = TypeConverter.ToBoolean(Input,1);
-
-                        return new Boolean(a || b);
-                    }),
-                new Operation("not",typeof(Boolean),
-                    (SkryptObject[] Input) => {
-                        var a = TypeConverter.ToBoolean(Input,0);
-
-                        return new Boolean(!a);
-                    }),
-            };
-
-            public override string ToString() {
-                return value.ToString();
+            public override string ToString()
+            {
+                return Value.ToString();
             }
 
-            public override Boolean ToBoolean() {
-                return value;
+            public override Boolean ToBoolean()
+            {
+                return Value;
             }
         }
     }

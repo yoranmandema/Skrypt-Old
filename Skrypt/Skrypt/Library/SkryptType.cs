@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Skrypt.Engine;
+﻿using Skrypt.Engine;
 
-namespace Skrypt.Library {
-    public class SkryptType : SkryptObject {
-        public string TypeName { get { return GetType().ToString(); } }
+namespace Skrypt.Library
+{
+    public class SkryptType : SkryptObject
+    {
         public bool CreateCopyOnAssignment = false;
+        public string TypeName => GetType().ToString();
     }
 }

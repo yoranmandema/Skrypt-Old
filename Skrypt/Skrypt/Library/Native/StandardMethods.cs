@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Skrypt.Engine;
-using System.Reflection;
+﻿using Skrypt.Engine;
 
-namespace Skrypt.Library.Native {
-    public partial class StandardMethods {
-        SkryptEngine engine; 
+namespace Skrypt.Library.Native
+{
+    public partial class StandardMethods
+    {
+        private SkryptEngine _engine;
 
-        public StandardMethods (SkryptEngine e) {
-            engine = e;
+        public StandardMethods(SkryptEngine e)
+        {
+            _engine = e;
         }
 
-        public void AddMethodsToEngine () {
+        public void AddMethodsToEngine()
+        {
             //var Methods = this.GetType().GetMethods().Where((m) => {
             //    if (!m.IsStatic) {
             //        return false;

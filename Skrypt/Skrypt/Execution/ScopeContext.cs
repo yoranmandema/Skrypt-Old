@@ -1,35 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Skrypt.Library;
+﻿using System.Collections.Generic;
 using Newtonsoft.Json;
+using Skrypt.Library;
 
-namespace Skrypt.Execution {
-    public class SubContext {
+namespace Skrypt.Execution
+{
+    public class SubContext
+    {
+        public SkryptObject Caller;
+        public bool GettingCaller = false;
         public bool InLoop = false;
         public bool InMethod = false;
         public UserMethod Method = null;
         public SkryptObject ReturnObject = null;
-        public bool GettingCaller = false;
-        public SkryptObject Caller;
     }
 
-    public class ScopeContext {
+    public class ScopeContext
+    {
+        public ScopeContext ParentScope = null;
+        public SubContext SubContext = new SubContext();
         public string Type = "";
-        public SubContext subContext = new SubContext();
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
         public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
         public ScopeContext ParentScope = null;
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
         }
 
-        public void AddVariable(string Name, SkryptObject Value, bool IsConstant = false) {
-            Variables[Name] = new Variable {
-                Name = Name,
-                Value = Value,
-                IsConstant = IsConstant,
+        public void AddVariable(string name, SkryptObject value, bool isConstant = false)
+        {
+            Variables[name] = new Variable
+            {
+                Name = name,
+                Value = value,
+                IsConstant = isConstant,
                 Scope = this
             };
         }
@@ -39,4 +44,3 @@ namespace Skrypt.Execution {
         }
     }
 }
-

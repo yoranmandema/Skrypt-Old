@@ -1,51 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Skrypt.Library;
+﻿using Skrypt.Library;
 using Sys = Skrypt.Library.Native.System;
 
-namespace Skrypt.Execution {
-    static class TypeConverter {
-        public static Sys.Numeric ToNumeric (SkryptObject[] Args, int Index) {
-            if (Index > Args.Length - 1) {
-                return new Sys.Numeric(0);
-            }
+namespace Skrypt.Execution
+{
+    internal static class TypeConverter
+    {
+        public static Sys.Numeric ToNumeric(SkryptObject[] args, int index)
+        {
+            if (index > args.Length - 1) return new Sys.Numeric(0);
 
-            return (Sys.Numeric)Args[Index];
+            return (Sys.Numeric) args[index];
         }
 
-        public static Sys.Boolean ToBoolean(SkryptObject[] Args, int Index) {
-            if (Index > Args.Length - 1) {
-                return new Sys.Boolean(false);
-            }
+        public static Sys.Boolean ToBoolean(SkryptObject[] args, int index)
+        {
+            if (index > args.Length - 1) return new Sys.Boolean(false);
 
-            return Args[Index].ToBoolean();
+            return args[index].ToBoolean();
         }
 
-        public static Sys.String ToString(SkryptObject[] Args, int Index) {
-            if (Index > Args.Length - 1) {
-                return new Sys.String("");
-            }
+        public static Sys.String ToString(SkryptObject[] args, int index)
+        {
+            if (index > args.Length - 1) return new Sys.String("");
 
-            return Args[Index].ToString();
+            return args[index].ToString();
         }
 
-        public static Sys.Array ToArray(SkryptObject[] Args, int Index) {
-            if (Index > Args.Length - 1) {
-                return new Sys.Array();
-            }
+        public static Sys.Array ToArray(SkryptObject[] args, int index)
+        {
+            if (index > args.Length - 1) return new Sys.Array();
 
-            return (Sys.Array)Args[Index];
+            return (Sys.Array) args[index];
         }
 
-        public static SkryptObject ToAny(SkryptObject[] Args, int Index) {
-            if (Index > Args.Length - 1) {
-                return new Sys.Null();
-            }
+        public static SkryptObject ToAny(SkryptObject[] args, int index)
+        {
+            if (index > args.Length - 1) return new Sys.Null();
 
-            return Args[Index];
+            return args[index];
         }
     }
 }

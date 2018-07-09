@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Skrypt.Engine;
 
-namespace Skrypt.Tokenization {
-
-    public enum TokenTypes : byte {
+namespace Skrypt.Tokenization
+{
+    public enum TokenTypes : byte
+    {
         None,
         NumericLiteral,
         Identifier,
@@ -22,74 +19,81 @@ namespace Skrypt.Tokenization {
     }
 
     /// <summary>
-    /// The main Tokenization class.
-    /// Contains all methods for tokenization.
+    ///     The main Tokenization class.
+    ///     Contains all methods for tokenization.
     /// </summary>
-    public class Tokenizer {
-        List<TokenRule> TokenRules = new List<TokenRule>();
-        readonly SkryptEngine engine;
+    public class Tokenizer
+    {
+        private readonly SkryptEngine _engine;
+        private readonly List<TokenRule> _tokenRules = new List<TokenRule>();
 
-        public Tokenizer(SkryptEngine e) {
-            engine = e;
+        public Tokenizer(SkryptEngine e)
+        {
+            _engine = e;
         }
 
-        public void AddRule (Regex Pattern, TokenTypes Type) {
-            TokenRules.Add(new TokenRule {
-                Pattern = Pattern,
-                Type = Type
+        public void AddRule(Regex pattern, TokenTypes type)
+        {
+            _tokenRules.Add(new TokenRule
+            {
+                Pattern = pattern,
+                Type = type
             });
         }
 
         /// <summary>
-        /// Tokenizes the given input string according to the token rules given to this object.
+        ///     Tokenizes the given input string according to the token rules given to this object.
         /// </summary>
         /// <returns>
-        /// A list of tokens.
+        ///     A list of tokens.
         /// </returns>
-        public List<Token> Tokenize (string Input) {
-            List<Token> Tokens = new List<Token>();
+        public List<Token> Tokenize(string input)
+        {
+            var tokens = new List<Token>();
 
-            int Index = 0;
-            string OriginalInput = Input;
+            var index = 0;
+            var originalInput = input;
 
-            while (Index < OriginalInput.Length) {
-                Match FoundMatch = null;
-                TokenRule FoundRule = null;
+            while (index < originalInput.Length)
+            {
+                Match foundMatch = null;
+                TokenRule foundRule = null;
 
                 // Check input string for all token rules
-                foreach (TokenRule Rule in TokenRules) {
-                    Match match = Rule.Pattern.Match(Input);
+                foreach (var rule in _tokenRules)
+                {
+                    var match = rule.Pattern.Match(input);
 
                     // Only permit match if it's found at the start of the string
-                    if (match.Index == 0 && match.Success) {
-                        FoundMatch = match;
-                        FoundRule = Rule;
+                    if (match.Index == 0 && match.Success)
+                    {
+                        foundMatch = match;
+                        foundRule = rule;
                     }
                 }
 
                 // No match was found; this means we encountered an unexpected token.
-                if (FoundMatch == null) {
-                    engine.throwError("Unexpected token '" + OriginalInput[Index] + "' found", new Token {Start = Index});
-                }
+                if (foundMatch == null)
+                    _engine.ThrowError("Unexpected token '" + originalInput[index] + "' found",
+                        new Token {Start = index});
 
-                Token token = new Token {
-                    Value = FoundMatch.Value,
-                    Type = FoundRule.Type,
-                    Start = Index + FoundMatch.Index,
-                    End = Index + FoundMatch.Index + FoundMatch.Value.Length - 1,
+                var token = new Token
+                {
+                    Value = foundMatch.Value,
+                    Type = foundRule.Type,
+                    Start = index + foundMatch.Index,
+                    End = index + foundMatch.Index + foundMatch.Value.Length - 1
                 };
 
                 // Ignore token if it's type equals null
-                if (FoundRule.Type != TokenTypes.None) {
-                    Tokens.Add(token);
-                }
+                if (foundRule.Type != TokenTypes.None) tokens.Add(token);
 
                 // Increase current index and cut away part of the string that got matched so we don't repeat it again.
-                Index += FoundMatch.Value.Length;       
-                Input = OriginalInput.Substring(Index);
+                index += foundMatch.Value.Length;
+                input = originalInput.Substring(index);
             }
 
-            return Tokens;
+            return tokens;
         }
     }
 }

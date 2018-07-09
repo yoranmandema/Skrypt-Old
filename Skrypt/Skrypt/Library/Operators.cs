@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace Skrypt.Library {
-    class Operator {
-        public int Members { get; set; } = 2;
-        public string OperationName { get; set; } = "";
+namespace Skrypt.Library
+{
+    internal class Operator
+    {
+        public static List<Operator> AllOperators = new List<Operator>();
         public bool FailOnMissingMembers = true;
         public string Operation = "";
-        public static List<Operator> AllOperators = new List<Operator>();
+        public int Members { get; set; } = 2;
+        public string OperationName { get; set; } = "";
     }
 
-    class Op_Access : Operator {
-        public Op_Access() {
+    internal class OpAccess : Operator
+    {
+        public OpAccess()
+        {
             OperationName = "access";
             Operation = ".";
 
@@ -22,8 +22,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Assign : Operator {
-        public Op_Assign() {
+    internal class OpAssign : Operator
+    {
+        public OpAssign()
+        {
             OperationName = "assign";
             Operation = "=";
 
@@ -31,8 +33,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Or : Operator {
-        public Op_Or() {
+    internal class OpOr : Operator
+    {
+        public OpOr()
+        {
             OperationName = "or";
             Operation = "||";
 
@@ -40,8 +44,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_And : Operator {
-        public Op_And() {
+    internal class OpAnd : Operator
+    {
+        public OpAnd()
+        {
             OperationName = "and";
             Operation = "&&";
 
@@ -49,8 +55,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_NotEqual : Operator {
-        public Op_NotEqual() {
+    internal class OpNotEqual : Operator
+    {
+        public OpNotEqual()
+        {
             OperationName = "notequal";
             Operation = "!=";
 
@@ -58,8 +66,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Equal : Operator {
-        public Op_Equal() {
+    internal class OpEqual : Operator
+    {
+        public OpEqual()
+        {
             OperationName = "equal";
             Operation = "==";
 
@@ -67,8 +77,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Greater : Operator {
-        public Op_Greater() {
+    internal class OpGreater : Operator
+    {
+        public OpGreater()
+        {
             OperationName = "greater";
             Operation = ">";
 
@@ -76,8 +88,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Lesser : Operator {
-        public Op_Lesser() {
+    internal class OpLesser : Operator
+    {
+        public OpLesser()
+        {
             OperationName = "lesser";
             Operation = "<";
 
@@ -85,8 +99,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_GreaterEqual : Operator {
-        public Op_GreaterEqual() {
+    internal class OpGreaterEqual : Operator
+    {
+        public OpGreaterEqual()
+        {
             OperationName = "equalgreater";
             Operation = ">=";
 
@@ -94,8 +110,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_LesserEqual : Operator {
-        public Op_LesserEqual() {
+    internal class OpLesserEqual : Operator
+    {
+        public OpLesserEqual()
+        {
             OperationName = "equallesser";
             Operation = "<=";
 
@@ -103,8 +121,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Add : Operator {
-        public Op_Add() {
+    internal class OpAdd : Operator
+    {
+        public OpAdd()
+        {
             OperationName = "add";
             Operation = "+";
 
@@ -112,8 +132,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Subtract : Operator {
-        public Op_Subtract() {
+    internal class OpSubtract : Operator
+    {
+        public OpSubtract()
+        {
             OperationName = "subtract";
             Operation = "-";
             FailOnMissingMembers = false;
@@ -122,8 +144,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Multiply : Operator {
-        public Op_Multiply() {
+    internal class OpMultiply : Operator
+    {
+        public OpMultiply()
+        {
             OperationName = "multiply";
             Operation = "*";
 
@@ -131,8 +155,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Divide : Operator {
-        public Op_Divide() {
+    internal class OpDivide : Operator
+    {
+        public OpDivide()
+        {
             OperationName = "divide";
             Operation = "/";
 
@@ -140,8 +166,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Modulo : Operator {
-        public Op_Modulo() {
+    internal class OpModulo : Operator
+    {
+        public OpModulo()
+        {
             OperationName = "modulo";
             Operation = "%";
 
@@ -149,8 +177,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Power : Operator {
-        public Op_Power() {
+    internal class OpPower : Operator
+    {
+        public OpPower()
+        {
             OperationName = "power";
             Operation = "^";
 
@@ -158,8 +188,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Negate : Operator {
-        public Op_Negate() {
+    internal class OpNegate : Operator
+    {
+        public OpNegate()
+        {
             OperationName = "negate";
             Members = 1;
             Operation = "-";
@@ -168,8 +200,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Not : Operator {
-        public Op_Not() {
+    internal class OpNot : Operator
+    {
+        public OpNot()
+        {
             OperationName = "not";
             Members = 1;
             Operation = "!";
@@ -178,8 +212,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_PostInc : Operator {
-        public Op_PostInc() {
+    internal class OpPostInc : Operator
+    {
+        public OpPostInc()
+        {
             OperationName = "postincrement";
             Members = 1;
             Operation = "++";
@@ -188,8 +224,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_PostDec : Operator {
-        public Op_PostDec() {
+    internal class OpPostDec : Operator
+    {
+        public OpPostDec()
+        {
             OperationName = "postdecrement";
             Members = 1;
             Operation = "--";
@@ -198,8 +236,10 @@ namespace Skrypt.Library {
         }
     }
 
-    class Op_Return : Operator {
-        public Op_Return() {
+    internal class OpReturn : Operator
+    {
+        public OpReturn()
+        {
             OperationName = "return";
             Members = 0;
             Operation = "return";

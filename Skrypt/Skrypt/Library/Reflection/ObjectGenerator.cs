@@ -1,105 +1,99 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 using Skrypt.Engine;
 
-namespace Skrypt.Library.Reflection {
-    static class ObjectGenerator {
-        public static SkryptObject MakeObjectFromClass(Type Class, SkryptEngine Engine, SkryptObject Parent = null) {
-            SkryptObject Object = new SkryptObject();
-            bool isType = false;
+namespace Skrypt.Library.Reflection
+{
+    internal static class ObjectGenerator
+    {
+        public static SkryptObject MakeObjectFromClass(Type Class, SkryptEngine engine, SkryptObject parent = null)
+        {
+            var Object = new SkryptObject();
+            var isType = false;
             Object.Name = Class.Name;
 
-            if (Parent != null) {
-                Object.Name = Parent.Name + "." + Object.Name;
-            }
+            if (parent != null) Object.Name = parent.Name + "." + Object.Name;
 
-            if (Class.IsSubclassOf(typeof(SkryptType))) {
-                isType = true;
-            }
+            if (Class.IsSubclassOf(typeof(SkryptType))) isType = true;
 
-            var Methods = Class.GetMethods().Where((m) => {
-                if (m.ReturnType != typeof(SkryptObject)) {
-                    return false;
-                }
+            var methods = Class.GetMethods().Where(m =>
+            {
+                if (m.ReturnType != typeof(SkryptObject)) return false;
 
-                if (m.GetParameters().Count() != 2) {
-                    return false;
-                }
+                if (m.GetParameters().Count() != 2) return false;
 
-                if (m.GetParameters()[0].ParameterType != typeof(SkryptObject)) {
-                    return false;
-                }
+                if (m.GetParameters()[0].ParameterType != typeof(SkryptObject)) return false;
 
-                if (m.GetParameters()[1].ParameterType != typeof(SkryptObject[])) {
-                    return false;
-                }
+                if (m.GetParameters()[1].ParameterType != typeof(SkryptObject[])) return false;
 
                 return m.IsPublic;
             });
 
-            foreach (MethodInfo M in Methods) {
-                SharpMethod Method = new SharpMethod();
+            foreach (var m in methods)
+            {
+                var method = new SharpMethod();
 
-                Method.method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), M);
-                Method.Name = M.Name;
+                method.Method = (SkryptDelegate) Delegate.CreateDelegate(typeof(SkryptDelegate), m);
+                method.Name = m.Name;
 
-                SkryptProperty property = new SkryptProperty {
-                    Name = M.Name,
-                    Value = Method,
+                var property = new SkryptProperty
+                {
+                    Name = m.Name,
+                    Value = method,
                     Accessibility = Access.Public
                 };
 
                 Object.Properties.Add(property);
             }
 
-            var Fields = Class.GetFields().Where((f) => {
-                if (!f.FieldType.IsSubclassOf(typeof(SkryptObject))) {
-                    return false;
-                }
+            var fields = Class.GetFields().Where(f =>
+            {
+                if (!f.FieldType.IsSubclassOf(typeof(SkryptObject))) return false;
 
                 return f.IsPublic;
             });
 
-            foreach (FieldInfo F in Fields) {
-                SkryptProperty property = new SkryptProperty {
-                    Name = F.Name,
-                    Value = (SkryptObject)F.GetValue(null),
+            foreach (var f in fields)
+            {
+                var property = new SkryptProperty
+                {
+                    Name = f.Name,
+                    Value = (SkryptObject) f.GetValue(null),
                     Accessibility = Access.Public
                 };
 
                 Object.Properties.Add(property);
             }
 
-            var Classes = Class.GetNestedTypes();
+            var classes = Class.GetNestedTypes();
 
-            foreach (TypeInfo C in Classes) {
+            foreach (TypeInfo c in classes)
+            {
                 SkryptObject v;
 
-                v = MakeObjectFromClass(C, Engine, Object);
+                v = MakeObjectFromClass(c, engine, Object);
 
-                SkryptProperty property = new SkryptProperty {
-                    Name = C.Name,
+                var property = new SkryptProperty
+                {
+                    Name = c.Name,
                     Value = v,
                     Accessibility = Access.Public
                 };
 
                 Object.Properties.Add(property);
             }
-
+          
             if (isType) {
                 var Instance = (SkryptObject)Activator.CreateInstance(Class);
-                var ClassName = Class.ToString();
+                var className = Class.ToString();
 
                 Instance.Properties.Add(new SkryptProperty {
                     Name = "TypeName",
-                    Value = new Native.System.String(ClassName)
+                    Value = new Native.System.String(className)
                 });
 
-                Engine.GlobalScope.AddType(ClassName, Instance.SetPropertiesTo(Object));              
+                Engine.GlobalScope.AddType(className, Instance.SetPropertiesTo(Object));              
             }
 
             return Object;

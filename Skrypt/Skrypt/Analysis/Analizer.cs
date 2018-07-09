@@ -1,60 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Skrypt.Engine;
-using Skrypt.Parsing;
+﻿using Skrypt.Engine;
 using Skrypt.Execution;
-using Skrypt.Library;
-using System.Reflection;
+using Skrypt.Parsing;
 
-namespace Skrypt.Analysis {
+namespace Skrypt.Analysis
+{
     /// <summary>
-    /// The node analizer class.
-    /// Analizes nodes to check for errors.
+    ///     The node analizer class.
+    ///     Analizes nodes to check for errors.
     /// </summary>
-    public class Analizer {
-        readonly SkryptEngine engine;
+    public class Analizer
+    {
+        private readonly SkryptEngine _engine;
 
-        public Analizer(SkryptEngine e) {
-            engine = e;
+        public Analizer(SkryptEngine e)
+        {
+            _engine = e;
         }
-        
-        public void AnalizeStatement (Node node, ScopeContext scopeContext) {
-            
+
+        public void AnalizeStatement(Node node, ScopeContext scopeContext)
+        {
             // Check statement
-            Node conditionNode = node.SubNodes[0];
-            SkryptObject result = engine.executor.ExecuteExpression(conditionNode, scopeContext);
+            var conditionNode = node.SubNodes[0];
+            var result = _engine.Executor.ExecuteExpression(conditionNode, scopeContext);
 
             // Check block
-            Node blockNode = node.SubNodes[1];
+            var blockNode = node.SubNodes[1];
             Analize(blockNode, scopeContext);
 
             // Check else/elseif
-            if (node.SubNodes.Count > 2) {
-                for (int i = 2; i < node.SubNodes.Count; i++) {
+            if (node.SubNodes.Count > 2)
+                for (var i = 2; i < node.SubNodes.Count; i++)
+                {
                     // elseif block
-                    Node elseNode = node.SubNodes[i];
+                    var elseNode = node.SubNodes[i];
 
-                    if (elseNode.Body == "elseif") {
+                    if (elseNode.Body == "elseif")
                         AnalizeStatement(elseNode, scopeContext);
-                    } else {
+                    else
                         Analize(elseNode, scopeContext);
-                    }
                 }
-            }
         }
 
-        public void Analize (Node node, ScopeContext scopeContext) {
-            foreach (Node subNode in node.SubNodes) {
-                if (subNode.TokenType == "Statement") {
+        public void Analize(Node node, ScopeContext scopeContext)
+        {
+            foreach (var subNode in node.SubNodes)
+                if (subNode.TokenType == "Statement")
+                {
                     AnalizeStatement(subNode, scopeContext);
                 }
-                else {
-                    SkryptObject result = engine.executor.ExecuteExpression(subNode, scopeContext);
+                else
+                {
+                    var result = _engine.Executor.ExecuteExpression(subNode, scopeContext);
                 }
-            }
         }
     }
 }
