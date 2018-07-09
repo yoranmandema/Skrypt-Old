@@ -1,63 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Skrypt.Tokenization;
 using Skrypt.Engine;
+using Skrypt.Tokenization;
 
-namespace Skrypt.Parsing {
+namespace Skrypt.Parsing
+{
     /// <summary>
-    /// The general parser class.
-    /// Contains all methods to parse higher-level code, e.g code that contains statements AND expressions
+    ///     The general parser class.
+    ///     Contains all methods to parse higher-level code, e.g code that contains statements AND expressions
     /// </summary>
-    public class GeneralParser {
-        readonly SkryptEngine engine;
-
-        public GeneralParser(SkryptEngine e) {
-            engine = e;
-        }
-
-        public delegate Node parseMethod(List<Token> Tokens);
+    public class GeneralParser
+    {
         public delegate Node parseArgumentsMethod(List<List<Token>> Args, List<Token> Tokens);
 
-        public static List<string> Keywords = new List<string> {
+        public delegate Node parseMethod(List<Token> Tokens);
+
+        public static List<string> Keywords = new List<string>
+        {
             "if",
             "while",
             "for",
             "func",
-            "class",
+            "class"
         };
 
-        List<Token> GetSurroundedTokens (string open, string close, int start, List<Token> Tokens) {
-            int index = start;
+        private readonly SkryptEngine engine;
 
-            int i = index + 1;
-            skipInfo skip = engine.expressionParser.SkipFromTo(open, close, Tokens, index);
-            int end = skip.end;
+        public GeneralParser(SkryptEngine e)
+        {
+            engine = e;
+        }
+
+        private List<Token> GetSurroundedTokens(string open, string close, int start, List<Token> Tokens)
+        {
+            var index = start;
+
+            var i = index + 1;
+            var skip = engine.expressionParser.SkipFromTo(open, close, Tokens, index);
+            var end = skip.end;
             index = skip.end;
 
             return Tokens.GetRange(i, end - i);
         }
 
         /// <summary>
-        /// Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
+        ///     Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
         /// </summary>
-        public ParseResult parseSurrounded(string open, string close, int start, List<Token> Tokens, parseMethod parseMethod) {
-            List<Token> SurroundedTokens = GetSurroundedTokens(open, close, start, Tokens);
+        public ParseResult parseSurrounded(string open, string close, int start, List<Token> Tokens,
+            parseMethod parseMethod)
+        {
+            var SurroundedTokens = GetSurroundedTokens(open, close, start, Tokens);
 
-            Node node = parseMethod(SurroundedTokens);
+            var node = parseMethod(SurroundedTokens);
 
-            return new ParseResult { node = node, delta = SurroundedTokens.Count + 1 };
+            return new ParseResult {node = node, delta = SurroundedTokens.Count + 1};
         }
 
-        Exception GetExceptionBasedOnUrgency (Exception e, ref int highestErrorUrgency) {
+        private Exception GetExceptionBasedOnUrgency(Exception e, ref int highestErrorUrgency)
+        {
             Exception error = null;
 
-            if (e.GetType() == typeof(SkryptException)) {
-                SkryptException cast = (SkryptException)e;
+            if (e.GetType() == typeof(SkryptException))
+            {
+                var cast = (SkryptException) e;
 
-                if (cast.urgency >= highestErrorUrgency) {
+                if (cast.urgency >= highestErrorUrgency)
+                {
                     error = e;
                     highestErrorUrgency = cast.urgency;
                 }
@@ -67,52 +75,52 @@ namespace Skrypt.Parsing {
         }
 
         /// <summary>
-        /// Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
+        ///     Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
         /// </summary>
-        public ParseResult parseSurroundedExpressions (string open, string close, int start, List<Token> Tokens) {
-            List<Token> SurroundedTokens = GetSurroundedTokens(open, close, start, Tokens);
+        public ParseResult parseSurroundedExpressions(string open, string close, int start, List<Token> Tokens)
+        {
+            var SurroundedTokens = GetSurroundedTokens(open, close, start, Tokens);
 
-            Node node = new Node ();
-            List<List<Token>> Arguments = new List<List<Token>>();
+            var node = new Node();
+            var Arguments = new List<List<Token>>();
             ExpressionParser.SetArguments(Arguments, SurroundedTokens);
 
-            foreach (List<Token> Argument in Arguments) {
-                Node argNode = engine.expressionParser.ParseClean(Argument);
+            foreach (var Argument in Arguments)
+            {
+                var argNode = engine.expressionParser.ParseClean(Argument);
                 node.Add(argNode);
             }
 
-            return new ParseResult { node = node, delta = SurroundedTokens.Count + 1 };
+            return new ParseResult {node = node, delta = SurroundedTokens.Count + 1};
         }
 
-        ParseResult TryParse(List<Token> Tokens) {
-
-            if (Tokens[0].Value == "if" || Tokens[0].Value == "while") {
+        private ParseResult TryParse(List<Token> Tokens)
+        {
+            if (Tokens[0].Value == "if" || Tokens[0].Value == "while")
                 return engine.statementParser.Parse(Tokens);
-            } else if (Tokens[0].Value == "func") {
+            if (Tokens[0].Value == "func")
                 return engine.methodParser.Parse(Tokens);
-            } else if (Tokens[0].Value == "class") {
+            if (Tokens[0].Value == "class")
                 return engine.classParser.Parse(Tokens);
-            }
-            else {
-                return engine.expressionParser.Parse(Tokens);
-            }
+            return engine.expressionParser.Parse(Tokens);
         }
 
-        public Node Parse(List<Token> Tokens) {
+        public Node Parse(List<Token> Tokens)
+        {
             // Create main node
-            Node Node = new Node { Body = "Block", TokenType = "Block" };
+            var Node = new Node {Body = "Block", TokenType = "Block"};
 
-            if (Tokens.Count == 0) {
-                return Node;
-            }
+            if (Tokens.Count == 0) return Node;
 
-            int i = 0;
+            var i = 0;
 
-            while (i < Tokens.Count - 1) {
-                var Test = TryParse(Tokens.GetRange(i,Tokens.Count - i));
+            while (i < Tokens.Count - 1)
+            {
+                var Test = TryParse(Tokens.GetRange(i, Tokens.Count - i));
                 i += Test.delta;
 
-                if (Test.node.TokenType == "MethodDeclaration") {
+                if (Test.node.TokenType == "MethodDeclaration")
+                {
                     Node.AddAsFirst(Test.node);
                     continue;
                 }

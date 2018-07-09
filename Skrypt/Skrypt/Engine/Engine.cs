@@ -1,46 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Skrypt.Tokenization;
+using System.Diagnostics;
 using System.Text.RegularExpressions;
-using Skrypt.Parsing;
 using Skrypt.Analysis;
 using Skrypt.Execution;
 using Skrypt.Library;
-using System.Diagnostics; // Using this so we can check how fast everything is happening
 using Skrypt.Library.Native;
 using Skrypt.Library.Reflection;
+using Skrypt.Parsing;
+using Skrypt.Tokenization;
+// Using this so we can check how fast everything is happening
 
-namespace Skrypt.Engine {
-    public class ParseResult {
-        public Node node;
+namespace Skrypt.Engine
+{
+    public class ParseResult
+    {
         //public Exception error;
         public int delta = -1;
+        public Node node;
     }
 
-    public class SkryptEngine {
-        public Tokenizer tokenizer;
-        public StatementParser statementParser;
+    public class SkryptEngine
+    {
+        public Analizer analizer;
+        public ClassParser classParser;
+        private string Code = "";
+        public Executor executor;
         public ExpressionParser expressionParser;
         public GeneralParser generalParser;
-        public MethodParser methodParser;
-        public ClassParser classParser;
-        public Analizer analizer;
-        public Executor executor;
-        public StandardMethods standardMethods;
-
-        List<Token> Tokens;
-        string Code = "";
-        public List<Node> MethodNodes = new List<Node>();
-        public List<SkryptMethod> Methods = new List<SkryptMethod>();
         public ScopeContext GlobalScope = new ScopeContext();
-        public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
+        public List<Node> MethodNodes = new List<Node>();
+        public MethodParser methodParser;
+        public List<SkryptMethod> Methods = new List<SkryptMethod>();
+        public StandardMethods standardMethods;
+        public StatementParser statementParser;
+        public Tokenizer tokenizer;
+
+        private List<Token> Tokens;
 
         //List<SkryptClass> Classes = new List<SkryptClass>();
 
-        public SkryptEngine() {
+        public SkryptEngine()
+        {
             tokenizer = new Tokenizer(this);
             statementParser = new StatementParser(this);
             expressionParser = new ExpressionParser(this);
@@ -54,11 +55,10 @@ namespace Skrypt.Engine {
             standardMethods.AddMethodsToEngine();
 
 
-            SkryptObject SystemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
+            var SystemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
 
-            foreach (SkryptProperty property in SystemObject.Properties) {
+            foreach (var property in SystemObject.Properties)
                 GlobalScope.AddVariable(property.Name, property.Value, true);
-            }
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
@@ -98,7 +98,8 @@ namespace Skrypt.Engine {
             );
 
             tokenizer.AddRule(
-                new Regex(@"(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
+                new Regex(
+                    @"(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
                 TokenTypes.Punctuator
             );
 
@@ -120,19 +121,26 @@ namespace Skrypt.Engine {
             );
         }
 
-        /// <summary>
-        /// Calculates the line and column of a given index
-        /// </summary>
-        public string getLineAndRowStringFromIndex(int index) {
-            int lines = 1;
-            int row = 1;
-            int i = 0;
+        public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
 
-            while (i < index) {
-                if (Code[i] == '\n') {
+        /// <summary>
+        ///     Calculates the line and column of a given index
+        /// </summary>
+        public string getLineAndRowStringFromIndex(int index)
+        {
+            var lines = 1;
+            var row = 1;
+            var i = 0;
+
+            while (i < index)
+            {
+                if (Code[i] == '\n')
+                {
                     lines++;
                     row = 1;
-                } else {
+                }
+                else
+                {
                     row++;
                 }
 
@@ -143,69 +151,66 @@ namespace Skrypt.Engine {
         }
 
         /// <summary>
-        /// Skips token if next token has the given value. Throws exception when not found.
+        ///     Skips token if next token has the given value. Throws exception when not found.
         /// </summary>
-        public skipInfo expectValue(string Value, List<Token> Tokens, int startingPoint = 0) {
-            int start = startingPoint;
-            int index = startingPoint;
-            string msg = "Token '" + Value + "' expected after " + Tokens[index].Value + " keyword";
+        public skipInfo expectValue(string Value, List<Token> Tokens, int startingPoint = 0)
+        {
+            var start = startingPoint;
+            var index = startingPoint;
+            var msg = "Token '" + Value + "' expected after " + Tokens[index].Value + " keyword";
 
-            if (index == Tokens.Count - 1) {
-                throwError(msg, Tokens[index]);
-            }
+            if (index == Tokens.Count - 1) throwError(msg, Tokens[index]);
 
-            if (Tokens[index + 1].Value == Value) {
+            if (Tokens[index + 1].Value == Value)
                 index++;
-            } else {
+            else
                 throwError(msg, Tokens[index]);
-            }
 
-            int delta = index - startingPoint;
+            var delta = index - startingPoint;
 
-            return new skipInfo {start=start, end=index, delta=delta};
+            return new skipInfo {start = start, end = index, delta = delta};
         }
 
         /// <summary>
-        /// Skips token if next token has the given value. Throws exception when not found.
+        ///     Skips token if next token has the given value. Throws exception when not found.
         /// </summary>
-        public skipInfo expectType(TokenTypes Type, List<Token> Tokens, int startingPoint = 0) {
-            int start = startingPoint;
-            int index = startingPoint;
-            string msg = "Token with type '" + Type + "' expected after " + Tokens[index].Value + " keyword";
+        public skipInfo expectType(TokenTypes Type, List<Token> Tokens, int startingPoint = 0)
+        {
+            var start = startingPoint;
+            var index = startingPoint;
+            var msg = "Token with type '" + Type + "' expected after " + Tokens[index].Value + " keyword";
 
-            if (index == Tokens.Count - 1) {
-                throwError(msg, Tokens[index]);
-            }
+            if (index == Tokens.Count - 1) throwError(msg, Tokens[index]);
 
-            if (Tokens[index + 1].Type == Type) {
+            if (Tokens[index + 1].Type == Type)
                 index++;
-            }
-            else {
+            else
                 throwError(msg, Tokens[index]);
-            }
 
-            int delta = index - startingPoint;
+            var delta = index - startingPoint;
 
-            return new skipInfo { start = start, end = index, delta = delta };
+            return new skipInfo {start = start, end = index, delta = delta};
         }
 
         /// <summary>
-        /// Throws an error with line and colom indicator
+        ///     Throws an error with line and colom indicator
         /// </summary>
-        public void throwError (string message, Token token = null, int urgency = -1) {
-            string lineRow = token != null ? " (" + getLineAndRowStringFromIndex(token.Start) + ")" : "";
+        public void throwError(string message, Token token = null, int urgency = -1)
+        {
+            var lineRow = token != null ? " (" + getLineAndRowStringFromIndex(token.Start) + ")" : "";
 
             throw new SkryptException(message + lineRow, urgency);
         }
 
-        public Node Parse (string code) {
+        public Node Parse(string code)
+        {
             Code = code;
 
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
 
             // Tokenize code
-            Tokens = tokenizer.Tokenize(code);      
-            if (Tokens == null) { return null; }
+            Tokens = tokenizer.Tokenize(code);
+            if (Tokens == null) return null;
 
             // Pre-process tokens so their values are correct
             TokenProcessor.ProcessTokens(Tokens);
@@ -215,7 +220,7 @@ namespace Skrypt.Engine {
 
             // Generate the program node
             stopwatch = Stopwatch.StartNew();
-            Node ProgramNode = generalParser.Parse(Tokens);
+            var ProgramNode = generalParser.Parse(Tokens);
             stopwatch.Stop();
             double T_Parse = stopwatch.ElapsedMilliseconds;
 
@@ -230,7 +235,7 @@ namespace Skrypt.Engine {
             stopwatch.Stop();
             double T_Execute = stopwatch.ElapsedMilliseconds;
 
-            Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms",T_Execute, T_Parse, T_Token);
+            Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms", T_Execute, T_Parse, T_Token);
 
             return ProgramNode;
         }

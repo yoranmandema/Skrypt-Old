@@ -1,39 +1,37 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Skrypt.Tokenization;
-using Skrypt.Parsing;
-using Skrypt.Engine;
-using System.Text.RegularExpressions;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using Skrypt.Engine;
 
-namespace Skrypt {
-    class Program {
-        static void Main(string[] args) {
-
+namespace Skrypt
+{
+    internal class Program
+    {
+        private static void Main(string[] args)
+        {
             // Get skrypt test code
-            var path = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), @"..\..\SkryptFiles\testcode.sk");
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                @"..\..\SkryptFiles\testcode.sk");
             var code = File.ReadAllText(path);
 
             // Creating a skrypt engine object
-            SkryptEngine engine = new SkryptEngine();
+            var engine = new SkryptEngine();
 
             // Parsing code using the engine
             //try {
-                engine.Parse(code);
+            engine.Parse(code);
             //} catch (Exception e) {
             //   Console.WriteLine(e.Message);
             //}
 
-            Stopwatch stopwatch = Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
 
-            int b = 0;
-            string a = "";
+            var b = 0;
+            var a = "";
 
-            while (b < 100000) {
+            while (b < 100000)
+            {
                 b++;
                 a = a + "kek";
             }
@@ -46,6 +44,4 @@ namespace Skrypt {
             Console.ReadKey();
         }
     }
-
-
 }
