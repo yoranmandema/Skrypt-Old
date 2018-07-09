@@ -30,7 +30,7 @@ namespace Skrypt.Parsing
         {
             _engine = e;
         }
-
+      
         private List<Token> GetSurroundedTokens(string open, string close, int start, List<Token> tokens)
         {
             var index = start;

@@ -1,5 +1,19 @@
-a = "";
+class Test {
+	Test () {
+	
+	}
 
-while (a.Length() < 100000) {
-	a = a + "kek";
+	private b = 0;
+
+	func a() {
+		print(b);
+	}
+
+	static class Subclass {
+		Subclass (a) {
+			print(a);
+		}	
+	}
 }
+
+Test.Subclass(1);

@@ -83,11 +83,17 @@ namespace Skrypt.Library.Reflection
 
                 Object.Properties.Add(property);
             }
+          
+            if (isType) {
+                var Instance = (SkryptObject)Activator.CreateInstance(Class);
+                var className = Class.ToString();
 
-            if (isType)
-            {
-                var instance = Activator.CreateInstance(Class);
-                engine.Types[Class.ToString()] = ((SkryptObject) instance).SetPropertiesTo(Object);
+                Instance.Properties.Add(new SkryptProperty {
+                    Name = "TypeName",
+                    Value = new Native.System.String(className)
+                });
+
+                Engine.GlobalScope.AddType(className, Instance.SetPropertiesTo(Object));              
             }
 
             return Object;

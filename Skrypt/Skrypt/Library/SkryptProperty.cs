@@ -11,5 +11,7 @@
         public string Name { get; set; }
         public SkryptObject Value { get; set; }
         public Access Accessibility { get; set; } = Access.Public;
+        public bool IsStatic { get; set; } = false;
+        public bool IsConstant { get; set; } = false;
     }
 }

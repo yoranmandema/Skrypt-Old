@@ -51,8 +51,9 @@ namespace Skrypt.Library
         {
             var returnValue = Method(self, parameters);
 
-            if (returnValue.GetType().IsSubclassOf(typeof(SkryptType)))
-                returnValue.SetPropertiesTo(engine.Types[((SkryptType) returnValue).TypeName]);
+            if (returnValue.GetType().IsSubclassOf(typeof(SkryptType))) {
+                returnValue.SetPropertiesTo(engine.executor.GetType(((SkryptType)returnValue).TypeName, scope));
+            }
 
             return returnValue;
         }
