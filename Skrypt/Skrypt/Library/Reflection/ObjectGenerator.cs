@@ -116,7 +116,7 @@ namespace Skrypt.Library.Reflection
                     Value = new Native.System.String(className)
                 });
 
-                engine.GlobalScope.AddType(className, Instance.SetPropertiesTo(Object));              
+                engine.GlobalScope.AddType(className, Instance);              
             }
 
             Console.WriteLine(Object.Name);
