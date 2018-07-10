@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using Skrypt.Engine;
+using Skrypt.Library.Native;
 
 namespace Skrypt.Library.Reflection
 {
@@ -16,6 +17,12 @@ namespace Skrypt.Library.Reflection
             if (parent != null) Object.Name = parent.Name + "." + Object.Name;
 
             if (type.IsSubclassOf(typeof(SkryptType))) isType = true;
+
+            SkryptObject Instance = null;
+
+            if (isType) {
+                Instance = (SkryptObject)Activator.CreateInstance(type);
+            }
 
             var methods = type.GetMethods().Where(m =>
             {
@@ -32,19 +39,24 @@ namespace Skrypt.Library.Reflection
 
             foreach (var m in methods)
             {
-                var method = new SharpMethod();
-
-                method.Method = (SkryptDelegate) Delegate.CreateDelegate(typeof(SkryptDelegate), m);
-                method.Name = m.Name;
-
-                var property = new SkryptProperty
-                {
-                    Name = m.Name,
-                    Value = method,
-                    Accessibility = Access.Public
+                var method = new SharpMethod {
+                    Method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), m),
+                    Name = m.Name
                 };
 
-                Object.Properties.Add(property);
+                var property = new SkryptProperty {
+                    Name = m.Name,
+                    Value = method,
+                    Accessibility = Attribute.GetCustomAttribute(m,typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    IsConstant = Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null
+                };
+
+                if (Attribute.GetCustomAttribute(m, typeof(InstanceAttribute)) != null) {
+                    Instance?.Properties.Add(property);
+                }
+                else {
+                    Object.Properties.Add(property);
+                }
             }
 
             var fields = type.GetFields().Where(f =>
@@ -60,15 +72,21 @@ namespace Skrypt.Library.Reflection
                 {
                     Name = f.Name,
                     Value = (SkryptObject) f.GetValue(null),
-                    Accessibility = Access.Public
+                    Accessibility = Attribute.GetCustomAttribute(f, typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    IsConstant = Attribute.GetCustomAttribute(f, typeof(ConstantAttribute)) != null
                 };
 
-                Object.Properties.Add(property);
+                if (Attribute.GetCustomAttribute(f, typeof(InstanceAttribute)) != null) {
+                    Instance?.Properties.Add(property);
+                }
+                else {
+                    Object.Properties.Add(property);
+                }
             }
 
             var classes = type.GetNestedTypes();
 
-            foreach (TypeInfo c in classes)
+            foreach (var c in classes)
             {
                 SkryptObject v;
 
@@ -78,14 +96,19 @@ namespace Skrypt.Library.Reflection
                 {
                     Name = c.Name,
                     Value = v,
-                    Accessibility = Access.Public
+                    Accessibility = Attribute.GetCustomAttribute(c, typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    IsConstant = Attribute.GetCustomAttribute(c, typeof(ConstantAttribute)) != null
                 };
 
-                Object.Properties.Add(property);
+                if (Attribute.GetCustomAttribute(c, typeof(InstanceAttribute)) != null) {
+                    Instance?.Properties.Add(property);
+                }
+                else {
+                    Object.Properties.Add(property);
+                }
             }
           
             if (isType) {
-                var Instance = (SkryptObject)Activator.CreateInstance(type);
                 var className = type.ToString();
 
                 Instance.Properties.Add(new SkryptProperty {
@@ -95,6 +118,8 @@ namespace Skrypt.Library.Reflection
 
                 engine.GlobalScope.AddType(className, Instance.SetPropertiesTo(Object));              
             }
+
+            Console.WriteLine(Object.Name);
 
             return Object;
         }

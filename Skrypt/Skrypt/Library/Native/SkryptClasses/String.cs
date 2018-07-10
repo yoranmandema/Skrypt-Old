@@ -7,8 +7,7 @@ namespace Skrypt.Library.Native
 {
     partial class System
     {
-        public static StringBuilder StringBuilder = new StringBuilder();
-
+        [Constant]
         public class String : SkryptType
         {
             public new List<Operation> Operations = new List<Operation>
@@ -79,6 +78,7 @@ namespace Skrypt.Library.Native
                 return d.Value;
             }
 
+            [Instance, Constant]
             public static SkryptObject Char(SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToNumeric(values, 0);
@@ -86,6 +86,7 @@ namespace Skrypt.Library.Native
                 return (String) ("" + Convert.ToChar((int) a));
             }
 
+            [Instance, Constant]
             public static SkryptObject Length(SkryptObject self, SkryptObject[] values)
             {
                 var a = (String) self;

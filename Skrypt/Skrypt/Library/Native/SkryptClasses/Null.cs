@@ -5,6 +5,7 @@ namespace Skrypt.Library.Native
 {
     partial class System
     {
+        [Constant]
         public class Null : SkryptObject
         {
             public new List<Operation> Operations = new List<Operation>

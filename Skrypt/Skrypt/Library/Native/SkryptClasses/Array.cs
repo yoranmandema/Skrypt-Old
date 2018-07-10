@@ -6,6 +6,7 @@ namespace Skrypt.Library.Native
 {
     partial class System
     {
+        [Constant]
         public class Array : SkryptType
         {
             public int LastIndex = 0;
@@ -96,6 +97,7 @@ namespace Skrypt.Library.Native
                 return index;
             }
 
+            [Instance,Constant]
             public static SkryptObject Length(SkryptObject self, SkryptObject[] values)
             {
                 var a = (Array) self;

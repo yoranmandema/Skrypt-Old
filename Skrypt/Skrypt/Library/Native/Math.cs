@@ -5,11 +5,15 @@ namespace Skrypt.Library.Native
 {
     partial class System
     {
+        [Constant]
         public class Math
         {
+            [Constant]
             public static Numeric Pi = new Numeric(SysMath.PI);
+            [Constant]
             public static Numeric E = new Numeric(SysMath.E);
 
+            [Constant]
             public static SkryptObject Round(SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToNumeric(values, 0);
@@ -17,6 +21,7 @@ namespace Skrypt.Library.Native
                 return (Numeric) SysMath.Round(a);
             }
 
+            [Constant]
             public static SkryptObject Floor(SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToNumeric(values, 0);
@@ -24,6 +29,7 @@ namespace Skrypt.Library.Native
                 return (Numeric) SysMath.Floor(a);
             }
 
+            [Constant]
             public static SkryptObject Ceil(SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToNumeric(values, 0);
@@ -31,6 +37,7 @@ namespace Skrypt.Library.Native
                 return (Numeric) SysMath.Ceiling(a);
             }
 
+            [Constant]
             public static SkryptObject Abs(SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToNumeric(values, 0);
@@ -38,6 +45,7 @@ namespace Skrypt.Library.Native
                 return (Numeric) SysMath.Abs(a);
             }
 
+            [Constant]
             public static SkryptObject Min(SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToNumeric(values, 0);
@@ -46,6 +54,7 @@ namespace Skrypt.Library.Native
                 return (Numeric) SysMath.Min(a, b);
             }
 
+            [Constant]
             public static SkryptObject Max(SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToNumeric(values, 0);
@@ -54,6 +63,7 @@ namespace Skrypt.Library.Native
                 return (Numeric) SysMath.Max(a, b);
             }
 
+            [Constant]
             public static SkryptObject Clamp(SkryptObject self, SkryptObject[] values)
             {
                 var x = TypeConverter.ToNumeric(values, 0);

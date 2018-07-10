@@ -52,6 +52,7 @@
     <Compile Include="Execution\ScopeContext.cs" />
     <Compile Include="Execution\TypeConverter.cs" />
     <Compile Include="Execution\Variable.cs" />
+    <Compile Include="Library\Native\Attributes.cs" />
     <Compile Include="Library\Native\Math.cs" />
     <Compile Include="Library\Native\Standard.cs" />
     <Compile Include="Library\Native\StandardMethods.cs" />
