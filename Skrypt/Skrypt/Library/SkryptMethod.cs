@@ -36,7 +36,7 @@ namespace Skrypt.Library
             var resultingScope =
                 engine.Executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
 
-            var returnVariable = resultingScope.SubContext.ReturnObject ?? new Native.System.Void();
+            var returnVariable = resultingScope.SubContext.ReturnObject ?? new Native.System.Null();
 
             return returnVariable;
         }

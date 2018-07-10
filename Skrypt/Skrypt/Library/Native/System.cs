@@ -12,7 +12,7 @@ namespace Skrypt.Library.Native
 
             Console.WriteLine(a);
 
-            return new Void();
+            return new Null();
         }
     }
 }
