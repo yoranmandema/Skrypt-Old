@@ -1,3 +1,2 @@
-v = Vector(1,0,0);
 
-Print(v.Length);
+Print(Vector(1,3,4).Cross(Vector(2,3,4)));

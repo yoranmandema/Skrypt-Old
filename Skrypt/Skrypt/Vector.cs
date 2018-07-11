@@ -13,7 +13,7 @@ namespace Skrypt {
     [Constant]
     public class Vector : SkryptType {
         static Vector ToVector (SkryptObject[] args, int index) {
-            if (index > args.Length - 1) return new Vector();
+            if (index > args.Length - 1) return new Vector(0,0,0);
 
             return (Vector)args[index];
         }
@@ -26,11 +26,47 @@ namespace Skrypt {
                     var a = ToVector(input, 0);
                     var b = ToVector(input, 1);
 
-                    return new Vector(
-                        a.X + b.X,
-                        a.Y + b.Y,
-                        b.Z + b.Z
-                        );
+                    return new Vector(a.X + b.X,a.Y + b.Y,a.Z + b.Z);
+                }),
+            new Operation("add", typeof(Vector), typeof(Classes.Numeric),
+                input =>
+                {
+                    var a = ToVector(input, 0);
+                    var b = TypeConverter.ToNumeric(input, 1);
+
+                    return new Vector(a.X + b,a.Y + b,a.Z + b);
+                }),
+            new Operation("add", typeof(Classes.Numeric), typeof(Vector),
+                input =>
+                {
+                    var a = TypeConverter.ToNumeric(input, 0);
+                    var b = ToVector(input, 1);
+
+                    return new Vector(a + b.X,a + b.Y,a + b.Z);
+                }),
+            new Operation("multiply", typeof(Vector), typeof(Vector),
+                input =>
+                {
+                    var a = ToVector(input, 0);
+                    var b = ToVector(input, 1);
+
+                    return new Vector(a.X * b.X,a.Y * b.Y,a.Z * b.Z);
+                }),
+            new Operation("multiply", typeof(Vector), typeof(Classes.Numeric),
+                input =>
+                {
+                    var a = ToVector(input, 0);
+                    var b = TypeConverter.ToNumeric(input, 1);
+
+                    return new Vector(a.X * b,a.Y * b,a.Z * b);
+                }),
+            new Operation("multiply", typeof(Classes.Numeric), typeof(Vector),
+                input =>
+                {
+                    var a = TypeConverter.ToNumeric(input, 0);
+                    var b = ToVector(input, 1);
+
+                    return new Vector(a * b.X,a * b.Y,a * b.Z);
                 }),
         };
 
@@ -49,6 +85,34 @@ namespace Skrypt {
             Y = y;
             Z = z;
             CreateCopyOnAssignment = true;
+        }
+
+        private static double Length2 (Vector v) {
+            return (Math.Pow(v.X, 2) + Math.Pow(v.Y, 2) + Math.Pow(v.Z, 2));
+        }
+
+        private static double Length(Vector v) {
+            return Math.Sqrt(Length2(v));
+        }
+
+        private static Vector Normalize(Vector v) {
+            return new Vector(v.X / Length(v),v.Y / Length(v),v.Z / Length(v));
+        }
+
+        private static Vector Cross(Vector v1, Vector v2) {
+            return new Vector(
+                v1.Y * v2.Z - v1.Z * v2.Y,
+                v1.Z * v2.X - v1.X * v2.Z,
+                v1.X * v2.Y - v1.Y * v2.X
+                );
+        }
+
+        private static double Dot (Vector v1, Vector v2) {
+            return v1.X * v2.X + v1.Y * v2.Y + v1.Z * v2.Z;
+        }
+
+        public override string ToString() {
+            return $"Vector({X},{Y},{Z})";
         }
 
         public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input) {
@@ -80,16 +144,24 @@ namespace Skrypt {
             return ((Vector)self).Z;
         }
 
-        [Instance, Getter] // Get length of the vector
-        public static SkryptObject _Length(SkryptObject self, SkryptObject[] values) {
-            var e = (Math.Pow(((Vector)self).X, 2) + Math.Pow(((Vector)self).Y, 2) + Math.Pow(((Vector)self).Z, 2));
-            var r = Math.Sqrt(e);
-
-            return (Classes.Numeric)r;
+        [Instance, Getter]
+        public static SkryptObject Length(SkryptObject self, SkryptObject[] values) {
+            return (Classes.Numeric)Length((Vector)self);
         }
 
-        public override string ToString() {
-            return $"Vector({X},{Y},{Z})";
+        [Instance, Getter]
+        public static SkryptObject Normalized(SkryptObject self, SkryptObject[] values) {
+            return Normalize((Vector)self);
+        }
+
+        [Instance, Constant]
+        public static SkryptObject Cross(SkryptObject self, SkryptObject[] values) {
+            return Cross((Vector)self, ToVector(values,0));
+        }
+
+        [Instance, Constant]
+        public static SkryptObject Dot(SkryptObject self, SkryptObject[] values) {
+            return (Classes.Numeric)Dot((Vector)self, ToVector(values, 0));
         }
     }
 }
