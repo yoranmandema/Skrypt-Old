@@ -123,6 +123,11 @@ namespace Skrypt.Engine
 
         public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
 
+        public void AddClass(Type type) {
+            var generated = ObjectGenerator.MakeObjectFromClass(type, this);
+            GlobalScope.AddVariable(generated.Name, generated, true);
+        }
+
         /// <summary>
         ///     Calculates the line and column of a given index
         /// </summary>
@@ -225,7 +230,7 @@ namespace Skrypt.Engine
             double parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            Console.WriteLine("Program:\n" + programNode);
+            //Console.WriteLine("Program:\n" + programNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);

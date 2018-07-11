@@ -62,6 +62,14 @@ namespace Skrypt.Library
             return this;
         }
 
+        public SkryptObject GetProperty(string name) {
+            return Properties.Find(x => x.Name == name).Value;
+        }
+
+        public void SetProperty(string name, SkryptObject value) {
+            Properties.Find(x => x.Name == name).Value = value;
+        }
+
         public virtual Native.System.Boolean ToBoolean()
         {
             return true;

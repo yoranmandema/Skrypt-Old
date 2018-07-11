@@ -18,12 +18,8 @@ namespace Skrypt
             // Creating a skrypt engine object
             var engine = new SkryptEngine();
 
-            // Parsing code using the engine
-            //try {
+            engine.AddClass(typeof(Vector));
             engine.Parse(code);
-            //} catch (Exception e) {
-            //   Console.WriteLine(e.Message);
-            //}
 
             var stopwatch = Stopwatch.StartNew();
 

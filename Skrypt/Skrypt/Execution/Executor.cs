@@ -272,11 +272,17 @@ namespace Skrypt.Execution
                 if (op.OperationName == "access")
                 {
                     var target = ExecuteExpression(node.SubNodes[1], scopeContext);
-                    var result = ExecuteAccess(target, node.SubNodes[0], scopeContext).Value;
+                    var result = ExecuteAccess(target, node.SubNodes[0], scopeContext);
 
                     if (scopeContext.SubContext.GettingCaller) scopeContext.SubContext.Caller = target;
 
-                    return result;
+                    if (result.IsGetter) {
+                        var getResult = ((SharpMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext {ParentScope = scopeContext});
+
+                        return getResult;
+                    } else {
+                        return result.Value;
+                    }
                 }
 
                 if (op.OperationName == "assign")
@@ -309,7 +315,14 @@ namespace Skrypt.Execution
                         if (accessResult.IsConstant)
                             _engine.ThrowError("Property is marked as constant and can thus not be modified.");
 
-                        accessResult.Value = result;
+                        if (accessResult.IsGetter) {
+                            var getResult = ((SharpMethod)accessResult.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext { ParentScope = scopeContext });
+
+                            getResult = result;
+                        }
+                        else {
+                            accessResult.Value = result;
+                        }
                     }
                     else if (node.SubNodes[0].Body == "Index")
                     {
@@ -457,9 +470,6 @@ namespace Skrypt.Execution
                 {
                     var result = ExecuteExpression(subNode, scopeContext);
 
-                    if (result.Name == "void")
-                        _engine.ThrowError("Can't pass void into arguments!", node.SubNodes[0].Token);
-
                     arguments.Add(result);
                 }
 
@@ -489,8 +499,7 @@ namespace Skrypt.Execution
                         var typeName = foundMethod.Properties.Find((x) => x.Name == "TypeName").Value.ToString();
 
                         foundMethod = find.Value;
-                        Object = new SkryptObject();
-                        Object.SetPropertiesTo(GetType(typeName, scopeContext));
+                        Object = GetType(typeName, scopeContext).Clone();
 
                         isConstructor = true;
                     } else {

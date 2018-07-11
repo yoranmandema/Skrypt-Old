@@ -16,4 +16,7 @@ namespace Skrypt.Library.Native {
 
     public class ConstantAttribute : Attribute {
     }
+
+    public class GetterAttribute : Attribute {
+    }
 }

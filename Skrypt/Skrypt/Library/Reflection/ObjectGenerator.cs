@@ -48,8 +48,13 @@ namespace Skrypt.Library.Reflection
                     Name = m.Name,
                     Value = method,
                     Accessibility = Attribute.GetCustomAttribute(m,typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
-                    IsConstant = Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null
+                    IsConstant = Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null,
+                    IsGetter = Attribute.GetCustomAttribute(m, typeof(GetterAttribute)) != null
                 };
+
+                if (property.IsGetter) {
+                    property.Name = property.Name.TrimStart('_');
+                }
 
                 if (Attribute.GetCustomAttribute(m, typeof(InstanceAttribute)) != null) {
                     Instance?.Properties.Add(property);
@@ -61,7 +66,8 @@ namespace Skrypt.Library.Reflection
 
             var fields = type.GetFields().Where(f =>
             {
-                if (!f.FieldType.IsSubclassOf(typeof(SkryptObject))) return false;
+                if (!(f.FieldType.IsSubclassOf(typeof(SkryptObject)) || f.FieldType == typeof(SkryptObject))) return false;
+                if (!f.IsStatic) return false;
 
                 return f.IsPublic;
             });
@@ -113,13 +119,18 @@ namespace Skrypt.Library.Reflection
 
                 Instance.Properties.Add(new SkryptProperty {
                     Name = "TypeName",
-                    Value = new Native.System.String(className)
+                    Value = new Native.System.String(className),
+                    IsConstant = true
+                });
+
+                Object.Properties.Add(new SkryptProperty {
+                    Name = "TypeName",
+                    Value = new Native.System.String(className),
+                    IsConstant = true
                 });
 
                 engine.GlobalScope.AddType(className, Instance);              
             }
-
-            Console.WriteLine(Object.Name);
 
             return Object;
         }
