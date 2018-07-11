@@ -8,6 +8,8 @@ namespace Skrypt.Tokenization
     {
         None,
         NumericLiteral,
+        BinaryLiteral,
+        HexadecimalLiteral,
         Identifier,
         Keyword,
         BooleanLiteral,

@@ -68,8 +68,18 @@ namespace Skrypt.Engine
             );
 
             Tokenizer.AddRule(
-                new Regex(@"\d+(\.\d+)?"),
+                new Regex(@"\d+(\.\d+)?([eE][-+]?\d+)?"),
                 TokenTypes.NumericLiteral
+            );
+
+            Tokenizer.AddRule(
+                new Regex(@"0x([A-Fa-f\d])+"),
+                TokenTypes.HexadecimalLiteral
+            );
+
+            Tokenizer.AddRule(
+                new Regex(@"0b([01])+"),
+                TokenTypes.BinaryLiteral
             );
 
             Tokenizer.AddRule(
