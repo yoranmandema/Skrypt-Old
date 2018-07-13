@@ -1,9 +1,0 @@
-using System
-
-while (true) {
-	Print("XD");
-
-	continue;
-
-	Print(1);
-}

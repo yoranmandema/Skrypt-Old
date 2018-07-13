@@ -338,6 +338,10 @@ namespace Skrypt.Execution
 
                     if (node.SubNodes[0].SubNodes.Count == 0 && node.SubNodes[0].TokenType == "Identifier")
                     {
+                        if (GeneralParser.Keywords.Contains(node.SubNodes[0].Body)) {
+                            _engine.ThrowError("Setting variable names to keywords is disallowed");
+                        }
+
                         var variable = GetVariable(node.SubNodes[0].Body, scopeContext);
 
                         if (variable != null) {
