@@ -25,7 +25,7 @@ namespace Skrypt.Tokenization
 
             if (token.Type == TokenTypes.NumericLiteral) {
                 str = token.Value.Replace("e", "E");
-                str = "" + Decimal.Parse(str, System.Globalization.NumberStyles.Any);
+                str = "" + Decimal.Parse(str, NumberStyles.Any);
 
                 token.Value = str;
             }

@@ -12,7 +12,7 @@ namespace Skrypt
         {
             // Get skrypt test code
             var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                @"..\..\SkryptFiles\testcode.sk");
+                @"..\..\SkryptFiles\testcode.skt");
             var code = File.ReadAllText(path);
 
             // Creating a skrypt engine object
