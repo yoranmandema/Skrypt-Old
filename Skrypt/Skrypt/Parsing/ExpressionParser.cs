@@ -29,8 +29,7 @@ namespace Skrypt.Parsing
             new OperatorGroup(new[] {new OpOr()}),
             new OperatorGroup(new[] {new OpAnd()}),
             new OperatorGroup(new Operator[] {new OpNotEqual(), new OpEqual()}),
-            new OperatorGroup(new Operator[]
-                {new OpLesser(), new OpGreater(), new OpLesserEqual(), new OpGreaterEqual()}),
+            new OperatorGroup(new Operator[] {new OpLesser(), new OpGreater(), new OpLesserEqual(), new OpGreaterEqual()}),
             new OperatorGroup(new Operator[] {new OpAdd(), new OpSubtract()}),
             new OperatorGroup(new Operator[] {new OpMultiply(), new OpDivide(), new OpModulo()}),
             new OperatorGroup(new[] {new OpPower()}),
@@ -130,20 +129,6 @@ namespace Skrypt.Parsing
                         if (GeneralParser.Keywords.Contains(tokens[i].Value))
                             _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i], 2);
 
-                        //if (token.Value == "(") {
-                        //    if (previousToken != null) {
-                        //        // Previous token was identifier; possible method call
-                        //        if (previousToken.Type == TokenTypes.Identifier) {
-                        //            skipInfo skip = engine.expressionParser.SkipFromTo("(", ")", Tokens, i);
-                        //            i += skip.delta;
-
-                        //            if (skip.start == 1 && skip.end == Tokens.Count - 1) {
-                        //                isMethodCall = true;
-                        //                return;
-                        //            }
-                        //        }
-                        //    }
-                        //}
                         if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
                         {
                             var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
@@ -155,20 +140,6 @@ namespace Skrypt.Parsing
                                 return;
                             }
                         }
-                        //if (token.Value == "[") {
-                        //    if (previousToken != null) {
-                        //        // Previous token was identifier or string; possible indexing
-                        //        if (previousToken.Type == TokenTypes.Identifier || previousToken.Type == TokenTypes.StringLiteral) {
-                        //            skipInfo skip = engine.expressionParser.SkipFromTo("[", "]", Tokens, i);
-                        //            i += skip.delta;
-
-                        //            if (skip.start == 1 && skip.end == Tokens.Count - 1) {
-                        //                isIndexing = true;
-                        //                return;
-                        //            }
-                        //        }
-                        //    }
-                        //}
                         if (token.Value == "[" && token.Type == TokenTypes.Punctuator)
                         {
                             var skip = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i);
@@ -522,10 +493,6 @@ namespace Skrypt.Parsing
                 getterNode.TokenType = "Getter";
                 node.Add(getterNode);
 
-                //List<Token> ExpressionTokens = Reverse.GetRange(1, skip.end - 1);
-                //ExpressionTokens.Reverse();
-                //node.Add(ParseExpression(node, ExpressionTokens));
-
                 var argumentTokens = reverse.GetRange(0, skip.End + 1);
                 argumentTokens.Reverse();
 
@@ -591,7 +558,6 @@ namespace Skrypt.Parsing
             };
 
             var accessTokens = tokens.GetRange(0, accessEnd);
-            //Console.WriteLine("Call: " + TokenString(AccessTokens));
             var getterNode = new Node();
             getterNode.Add(ParseExpression(getterNode, accessTokens));
             getterNode.Body = "Getter";
@@ -605,18 +571,6 @@ namespace Skrypt.Parsing
             node.Add(argumentsNode);
 
             index = tokens.Count - 1;
-
-            //Console.WriteLine(node);
-
-            //skipInfo skip = engine.expectValue("(", Tokens);
-            //index += skip.delta;
-
-            //ParseResult result = engine.generalParser.parseSurroundedExpressions("(", ")", accessEnd, Tokens);
-            //Node node = result.node;
-            //node.TokenType = "Call";
-            //node.Body = name;
-            //node.Token = Tokens[0];
-            //index += result.delta;
 
             return new ParseResult {Node = node, Delta = index};
         }
@@ -653,6 +607,27 @@ namespace Skrypt.Parsing
             index += result.Delta;
 
             return new ParseResult {Node = node, Delta = index};
+        }
+
+        public ParseResult ParseUsing(List<Token> tokens) {
+            var node = new Node {
+                Body = "Using",
+                TokenType = "Using"
+            };
+
+            int i = 0;
+            var skip = _engine.ExpectType(TokenTypes.Identifier, tokens);
+            i += skip.Delta;
+
+            skip = SkipAccess(tokens,1);
+            i += skip.Delta;
+
+            Console.WriteLine(TokenString(tokens.GetRange(1, skip.Delta)));
+
+            var dir = ParseChain(tokens.GetRange(1, skip.Delta));
+            node.Add(dir);
+
+            return new ParseResult { Node = node, Delta = i };
         }
 
         /// <summary>

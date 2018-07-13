@@ -102,6 +102,9 @@ namespace Skrypt.Parsing
                 return _engine.MethodParser.Parse(tokens);
             if (tokens[0].Value == "class")
                 return _engine.ClassParser.Parse(tokens);
+            if (tokens[0].Value == "using")
+                return _engine.ExpressionParser.ParseUsing(tokens);
+
             return _engine.ExpressionParser.Parse(tokens);
         }
 

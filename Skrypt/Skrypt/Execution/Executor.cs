@@ -178,6 +178,15 @@ namespace Skrypt.Execution
             return result;
         }
 
+        public ScopeContext ExecuteUsing(Node node, ScopeContext scopeContext) {
+            var Object = ExecuteExpression(node.SubNodes[0], scopeContext);
+
+            foreach (var property in Object.Properties)
+                scopeContext.AddVariable(property.Name, property.Value, true);
+
+            return scopeContext;
+        }
+
         public ScopeContext ExecuteBlock (Node node, ScopeContext scopeContext, SubContext subContext = null) {
             ScopeContext scope = new ScopeContext();
 
@@ -213,6 +222,9 @@ namespace Skrypt.Execution
                     var Object = ExecuteClassDeclaration(subNode, scope);
 
                     scope.AddVariable(Object.Name, Object);
+                }
+                else if (subNode.TokenType == "Using") {
+                    var _scope = ExecuteUsing(subNode, scope);
                 }
                 else
                 {

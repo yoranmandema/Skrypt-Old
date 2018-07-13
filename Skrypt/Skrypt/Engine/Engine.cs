@@ -57,8 +57,10 @@ namespace Skrypt.Engine
 
             var systemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
 
-            foreach (var property in systemObject.Properties)
-                GlobalScope.AddVariable(property.Name, property.Value, true);
+            //foreach (var property in systemObject.Properties)
+            //    GlobalScope.AddVariable(property.Name, property.Value, true);
+
+            GlobalScope.AddVariable(systemObject.Name, systemObject, true);
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
@@ -109,7 +111,7 @@ namespace Skrypt.Engine
 
             Tokenizer.AddRule(
                 new Regex(
-                    @"(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
+                    @"(using)|(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
                 TokenTypes.Punctuator
             );
 
@@ -240,7 +242,7 @@ namespace Skrypt.Engine
             double parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            //Console.WriteLine("Program:\n" + programNode);
+            Console.WriteLine("Program:\n" + programNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
