@@ -247,4 +247,24 @@ namespace Skrypt.Library
             AllOperators.Add(this);
         }
     }
+
+    internal class OpBreak : Operator {
+        public OpBreak() {
+            OperationName = "break";
+            Members = 0;
+            Operation = "break";
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpContinue : Operator {
+        public OpContinue() {
+            OperationName = "continue";
+            Members = 0;
+            Operation = "continue";
+
+            AllOperators.Add(this);
+        }
+    }
 }

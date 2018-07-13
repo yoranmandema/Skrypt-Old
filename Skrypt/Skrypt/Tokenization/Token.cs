@@ -51,6 +51,13 @@
                    Type == TokenTypes.StringLiteral;
         }
 
+        public bool IsLiteral() {
+            return Type == TokenTypes.NumericLiteral ||
+                   Type == TokenTypes.BooleanLiteral ||
+                   Type == TokenTypes.NullLiteral ||
+                   Type == TokenTypes.StringLiteral;
+        }
+
         /// <summary>
         ///     Returns true if token has the same type and value. Type and value can be left as null to ignore
         /// </summary>

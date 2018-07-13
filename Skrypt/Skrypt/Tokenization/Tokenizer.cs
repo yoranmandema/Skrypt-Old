@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Skrypt.Engine;
+using System;
+using Skrypt.Parsing;
+using System.Linq;
 
 namespace Skrypt.Tokenization
 {
@@ -17,7 +20,8 @@ namespace Skrypt.Tokenization
         EndOfExpression,
         Punctuator,
         StringLiteral,
-        HasValue = NumericLiteral | Identifier | BooleanLiteral | NullLiteral | StringLiteral
+        HasValue = NumericLiteral | Identifier | BooleanLiteral | NullLiteral | StringLiteral,
+        IsLiteral = NumericLiteral | BooleanLiteral | NullLiteral | StringLiteral,
     }
 
     /// <summary>
@@ -55,6 +59,11 @@ namespace Skrypt.Tokenization
 
             var index = 0;
             var originalInput = input;
+            var pScope = 0;
+            var bScope = 0;
+            var cScope = 0;
+
+            Token previousToken = null;
 
             while (index < originalInput.Length)
             {
@@ -87,8 +96,72 @@ namespace Skrypt.Tokenization
                     End = index + foundMatch.Index + foundMatch.Value.Length - 1
                 };
 
+                switch (foundMatch.Value) {
+                    case "(":
+                        pScope++;
+                        break;
+                    case ")":
+                        pScope--;
+                        break;
+                    case "[":
+                        bScope++;
+                        break;
+                    case "]":
+                        bScope--;
+                        break;
+                    case "{":
+                        cScope++;
+                        break;
+                    case "}":
+                        cScope--;
+                        break;
+                }
+
+                if (previousToken != null && foundRule.Type != TokenTypes.None) {
+                    if (pScope == 0 && bScope == 0 && cScope == 0) {
+                        if (previousToken.IsLiteral() && token.Type == TokenTypes.Identifier) {
+                            //_engine.ThrowError("Identifier starts immediately after literal", new Token { Start = index });
+                            tokens.Add(new Token {
+                                Type = TokenTypes.EndOfExpression,
+                                Start = previousToken.End,
+                                End = index + foundMatch.Index + foundMatch.Value.Length - 1
+                            });
+                        }
+
+                        if (previousToken.IsValuable() && token.IsValuable()) {
+                            //_engine.ThrowError("Semicolon ; expected", new Token { Start = index });
+                            tokens.Add(new Token {
+                                Type = TokenTypes.EndOfExpression,
+                                Start = previousToken.End,
+                                End = index + foundMatch.Index + foundMatch.Value.Length - 1
+                            });
+                        }
+
+                        if (GeneralParser.NotPermittedInExpression.Contains(token.Value) && previousToken.IsValuable()) {
+                            tokens.Add(new Token {
+                                Type = TokenTypes.EndOfExpression,
+                                Start = previousToken.End,
+                                End = index + foundMatch.Index + foundMatch.Value.Length - 1
+                            });
+                        }
+
+                        if (token.IsValuable() && (new[] { "}", ")", "]" }).Contains(previousToken.Value)) {
+                            //addDelta = 1;
+                            //_engine.ThrowError("Semicolon ; expected'", token);
+                            tokens.Add(new Token {
+                                Type = TokenTypes.EndOfExpression,
+                                Start = previousToken.End,
+                                End = index + foundMatch.Index + foundMatch.Value.Length - 1
+                            });
+                        }
+                    }
+                }
+
                 // Ignore token if it's type equals null
-                if (foundRule.Type != TokenTypes.None) tokens.Add(token);
+                if (foundRule.Type != TokenTypes.None) {
+                    tokens.Add(token);
+                    previousToken = token;
+                }
 
                 // Increase current index and cut away part of the string that got matched so we don't repeat it again.
                 index += foundMatch.Value.Length;

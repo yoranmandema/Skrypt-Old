@@ -58,7 +58,15 @@ namespace Skrypt.Execution
 
                 if (!conditionResult) break;
 
-                ExecuteBlock(node.SubNodes[1], scopeContext);
+                var scope = ExecuteBlock(node.SubNodes[1], scopeContext, new SubContext { InLoop = true });
+
+                if (scope.SubContext.BrokeLoop) {
+                    break;
+                }
+
+                if (scope.SubContext.SkippedLoop) {
+                    continue;
+                }
             }
         }
 
@@ -181,8 +189,11 @@ namespace Skrypt.Execution
         public ScopeContext ExecuteUsing(Node node, ScopeContext scopeContext) {
             var Object = ExecuteExpression(node.SubNodes[0], scopeContext);
 
-            foreach (var property in Object.Properties)
-                scopeContext.AddVariable(property.Name, property.Value, true);
+            foreach (var property in Object.Properties) {
+                if (property.Accessibility == Library.Access.Public) {
+                    scopeContext.AddVariable(property.Name, property.Value, true);
+                }
+            }
 
             return scopeContext;
         }
@@ -211,6 +222,8 @@ namespace Skrypt.Execution
                             break;
                     }
 
+                    if (scope.SubContext.SkippedLoop == true) return scope;
+                    if (scope.SubContext.BrokeLoop == true) return scope;
                     if (scope.SubContext.ReturnObject != null) return scope;
                 }
                 else if (subNode.TokenType == "MethodDeclaration") {
@@ -230,6 +243,8 @@ namespace Skrypt.Execution
                 {
                     var result = _engine.Executor.ExecuteExpression(subNode, scope);
 
+                    if (scope.SubContext.SkippedLoop == true) return scope;
+                    if (scope.SubContext.BrokeLoop == true) return scope;
                     if (scope.SubContext.ReturnObject != null) return scope;
                 }
 
@@ -269,16 +284,32 @@ namespace Skrypt.Execution
                 if (op.OperationName == "return")
                 {
                     if (!scopeContext.SubContext.InMethod)
-                        _engine.ThrowError("Can't use return operator outside method!", node.SubNodes[0].Token);
+                        _engine.ThrowError("Can't use return operator outside method", node.SubNodes[0].Token);
 
                     SkryptObject result = null;
 
                     result = node.SubNodes.Count == 1
                         ? ExecuteExpression(node.SubNodes[0], scopeContext)
-                        : new Library.Native.System.Void();
+                        : new Library.Native.System.Null();
 
                     scopeContext.SubContext.ReturnObject = result;
                     return result;
+                }
+
+                if (op.OperationName == "break") {
+                    if (!scopeContext.SubContext.InLoop)
+                        _engine.ThrowError("Can't use break operator outside loop", node.Token);
+
+                    scopeContext.SubContext.BrokeLoop = true;
+                    return null;
+                }
+
+                if (op.OperationName == "continue") {
+                    if (!scopeContext.SubContext.InLoop)
+                        _engine.ThrowError("Can't use continue operator outside loop", node.Token);
+
+                    scopeContext.SubContext.SkippedLoop = true;
+                    return null;
                 }
 
                 if (op.OperationName == "access")

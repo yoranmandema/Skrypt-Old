@@ -111,7 +111,7 @@ namespace Skrypt.Engine
 
             Tokenizer.AddRule(
                 new Regex(
-                    @"(using)|(return)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
+                    @"(using)|(return)|(continue)|(break)|(&&)|(\|\|)|(\|\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>)|(>>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}]"),
                 TokenTypes.Punctuator
             );
 
@@ -234,6 +234,8 @@ namespace Skrypt.Engine
 
             stopwatch.Stop();
             double token = stopwatch.ElapsedMilliseconds;
+
+            //foreach (var t in _tokens) Console.WriteLine(t);
 
             // Generate the program node
             stopwatch = Stopwatch.StartNew();

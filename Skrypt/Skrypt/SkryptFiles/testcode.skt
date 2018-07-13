@@ -1,12 +1,9 @@
 using System
 
-if (true) {
-	using Math
+while (true) {
+	Print("XD");
 
-	A = Round(1.23);
+	continue;
 
-	Print(A);
+	Print(1);
 }
-
-B = Round(1.23);
-Print(B);

@@ -23,7 +23,8 @@ namespace Skrypt.Parsing
         // Create list of operator groups with the right precedence order
         private static readonly List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup>
         {
-            new OperatorGroup(new[] {new OpReturn()}, false, 1),
+            new OperatorGroup(new Operator[] {new OpBreak(),new OpContinue() }, false, 0),
+            new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
             new OperatorGroup(new[] {new OpAssign()}, false),
             new OperatorGroup(new[] {new OpAccess()}, false, 2, false),
             new OperatorGroup(new[] {new OpOr()}),
@@ -126,7 +127,7 @@ namespace Skrypt.Parsing
                             }
                         }
 
-                        if (GeneralParser.Keywords.Contains(tokens[i].Value))
+                        if (GeneralParser.NotPermittedInExpression.Contains(tokens[i].Value))
                             _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i], 2);
 
                         if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
@@ -622,12 +623,10 @@ namespace Skrypt.Parsing
             skip = SkipAccess(tokens,1);
             i += skip.Delta;
 
-            Console.WriteLine(TokenString(tokens.GetRange(1, skip.Delta)));
-
             var dir = ParseChain(tokens.GetRange(1, skip.Delta));
             node.Add(dir);
 
-            return new ParseResult { Node = node, Delta = i };
+            return new ParseResult { Node = node, Delta = i + 1};
         }
 
         /// <summary>
@@ -685,12 +684,12 @@ namespace Skrypt.Parsing
                             break;
                     }
 
-                if (pScope == 0 && bScope == 0 && cScope == 0)
-                    if (tokens[delta].Value == ";")
-                    {
+                if (pScope == 0 && bScope == 0 && cScope == 0) {
+                    if (tokens[delta].Type == TokenTypes.EndOfExpression) {
                         addDelta = 1;
                         break;
                     }
+                }
 
                 previousToken = tokens[delta];
 

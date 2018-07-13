@@ -21,7 +21,30 @@ namespace Skrypt.Parsing
             "while",
             "for",
             "func",
-            "class"
+            "class",
+            "using"
+        };
+
+        public static List<string> NotPermittedInExpression = new List<string>
+        {
+            "if",
+            "while",
+            "for",
+            "func",
+            "class",
+            "using",
+        };
+
+        public static List<string> ExpressionBreakWords = new List<string>
+        {
+            "if",
+            "while",
+            "for",
+            "func",
+            "class",
+            "using",
+            //"break",
+            //"continue",
         };
 
         private readonly SkryptEngine _engine;

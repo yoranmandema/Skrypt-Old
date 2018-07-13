@@ -9,6 +9,8 @@ namespace Skrypt.Execution
         public SkryptObject Caller;
         public bool GettingCaller = false;
         public bool InLoop = false;
+        public bool BrokeLoop = false;
+        public bool SkippedLoop = false;
         public bool InMethod = false;
         public UserMethod Method = null;
         public SkryptObject ReturnObject = null;
