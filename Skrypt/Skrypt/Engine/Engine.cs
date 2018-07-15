@@ -251,7 +251,7 @@ namespace Skrypt.Engine
             double parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            Console.WriteLine("Program:\n" + programNode);
+            //Console.WriteLine("Program:\n" + programNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
@@ -262,6 +262,14 @@ namespace Skrypt.Engine
             double execute = stopwatch.ElapsedMilliseconds;
 
             Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms, Total: {3}ms", execute, parse, token, execute + parse + token);
+
+            int instances = 10;
+            stopwatch = Stopwatch.StartNew();
+            for (int i = 0; i < instances; i++) {
+                GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
+            }
+            stopwatch.Stop();
+            Console.WriteLine($"Average ({instances} instances): {stopwatch.ElapsedMilliseconds / instances}ms");
 
             return programNode;
         }

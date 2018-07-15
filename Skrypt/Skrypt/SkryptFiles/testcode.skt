@@ -1,15 +1,10 @@
 using System;
 
-//func test () {
-	for (i = 0; i < 10; i++) {
-		Print(i);
+s = "";
+i = 0;
 
-		if (i == 5) {
-			while (true) {
-				return "test";
-			}
-		}
-	}
-//}
+while (i < 100000) {
+	s = s + "kek";
 
-Print(test());
+	i++;
+}

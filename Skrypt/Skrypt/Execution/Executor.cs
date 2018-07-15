@@ -300,8 +300,6 @@ namespace Skrypt.Execution
                 {
                     var result = _engine.Executor.ExecuteExpression(subNode, scope);
 
-                    if (scope.SubContext.ReturnObject != null) Console.WriteLine("Block: " + scope.SubContext.ReturnObject);
-
                     if (scope.SubContext.SkippedLoop == true) return scope;
                     if (scope.SubContext.BrokeLoop == true) return scope;
                     if (scope.SubContext.ReturnObject != null) return scope;
