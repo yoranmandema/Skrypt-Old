@@ -1,5 +1,4 @@
 using System;
 
-true ? 1 : ;
-
-Print(a);
+a = 1;
+a = (a == true) ? 1 : 0;

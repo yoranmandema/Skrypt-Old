@@ -73,9 +73,6 @@ namespace Skrypt.Parsing
                 if (token.Value == "?" && token.Type == TokenTypes.Punctuator && depth == 0) {
                     isConditional = true;
                     SkipInfo skip = SkipFromTo("?", ":", tokens, i);
-
-                    Console.WriteLine("success:" + TokenString(tokens.GetRange(i+1, skip.Delta-1)));
-                    Console.WriteLine("remaining:" + TokenString(tokens.GetRange(skip.End + 1, tokens.Count - (skip.End + 1))));
                 }
             }
 
@@ -95,6 +92,8 @@ namespace Skrypt.Parsing
                     TokenType = "" + tokens[0].Type,
                     Token = tokens[0]
                 };
+
+            Console.WriteLine(TokenString(tokens));
 
             // Create left and right token buffers
             var leftBuffer = new List<Token>();
@@ -186,9 +185,7 @@ namespace Skrypt.Parsing
                         {
                             if (token.Value == ":" && token.Type == TokenTypes.Punctuator) {
                                 _engine.ThrowError("Incomplete conditional statement.",token);
-                            }
-
-                            if (token.Value == "?" && token.Type == TokenTypes.Punctuator) {
+                            } else if (token.Value == "?" && token.Type == TokenTypes.Punctuator) {
                                 if (IsConditional(tokens)) {
                                     isConditional = true;
                                     return;
@@ -271,7 +268,11 @@ namespace Skrypt.Parsing
             if (isChain) return ParseChain(tokens);
 
             // Parse expression within parenthesis if it's completely surrounded
-            if (isInPars) return ParseExpression(branch, tokens.GetRange(1, tokens.Count - 2));
+            if (isInPars) {
+                Console.WriteLine("Returning: " + ParseExpression(branch, tokens.GetRange(1, tokens.Count - 2)));
+
+                return ParseExpression(branch, tokens.GetRange(1, tokens.Count - 2));
+            }
 
             // Parse method call
             if (isMethodCall)
@@ -661,14 +662,14 @@ namespace Skrypt.Parsing
                 }
 
                 if (token.Value == "?" && token.Type == TokenTypes.Punctuator && depth == 0) {
-                    var conditionNode = ParseExpression(node, tokens.GetRange(0, i));
+                    var conditionNode = ParseClean(tokens.GetRange(0, i));
 
                     SkipInfo skip = SkipFromTo("?", ":", tokens, i);
 
-                    var successNode = ParseExpression(node, tokens.GetRange(i + 1, skip.Delta - 1));
-                    var failNode = ParseExpression(node, tokens.GetRange(skip.End + 1, tokens.Count - (skip.End + 1)));
+                    var successNode = ParseClean(tokens.GetRange(i + 1, skip.Delta - 1));
+                    var failNode = ParseClean(tokens.GetRange(skip.End + 1, tokens.Count - (skip.End + 1)));
 
-                    if(node.Add(conditionNode) == null) throw new SkryptException("Condition statement can't be empty");
+                    if (node.Add(conditionNode) == null) throw new SkryptException("Condition statement can't be empty");
                     if (node.Add(successNode) == null) throw new SkryptException("Consequent statement can't be empty");
                     if (node.Add(failNode) == null) throw new SkryptException("Alternative statement can't be empty");
 
