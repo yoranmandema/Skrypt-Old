@@ -1,0 +1,15 @@
+using System;
+
+//func test () {
+	for (i = 0; i < 10; i++) {
+		Print(i);
+
+		if (i == 5) {
+			while (true) {
+				return "test";
+			}
+		}
+	}
+//}
+
+Print(test());

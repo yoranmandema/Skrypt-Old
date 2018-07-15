@@ -261,7 +261,7 @@ namespace Skrypt.Engine
             stopwatch.Stop();
             double execute = stopwatch.ElapsedMilliseconds;
 
-            Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms", execute, parse, token);
+            Console.WriteLine("Execution: {0}ms, Parsing: {1}ms, Tokenization: {2}ms, Total: {3}ms", execute, parse, token, execute + parse + token);
 
             return programNode;
         }

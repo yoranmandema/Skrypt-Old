@@ -90,6 +90,22 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(Equals(a.Value,b.Value));
                     }),
+                new Operation("and", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Boolean((a.Value != 0d) && (b.Value != 0d));
+                    }),
+                new Operation("or", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Boolean((a.Value != 0d) || (b.Value != 0d));
+                    }),
                 new Operation("bitshiftl", typeof(Numeric), typeof(Numeric),
                     input =>
                     {
@@ -111,8 +127,6 @@ namespace Skrypt.Library.Native
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
-
-                        //(double)((uint)Convert.ToInt32(Convert.ToDouble(LeftVar.Value)) >> Convert.ToInt32(Convert.ToDouble(RightVar.Value)))
 
                         return new Numeric((double)((uint)Convert.ToInt32(Convert.ToDouble(a.Value)) >> Convert.ToInt32(Convert.ToDouble(b.Value))));
                     }),              

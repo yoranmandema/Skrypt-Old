@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using Skrypt.Engine;
 using Skrypt.Library;
 using Skrypt.Parsing;
@@ -64,9 +65,48 @@ namespace Skrypt.Execution
                     break;
                 }
 
-                if (scope.SubContext.SkippedLoop) {
-                    continue;
+                if (scope.SubContext.ReturnObject != null) {
+                    scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                    break;
                 }
+            }
+        }
+
+        public void ExecuteForStatement(Node node, ScopeContext scopeContext) {
+            var initNode = node.SubNodes[0];
+            var condNode = node.SubNodes[1];
+            var modiNode = node.SubNodes[2];
+            var block = node.SubNodes[3];
+
+            ScopeContext loopScope = new ScopeContext();
+            loopScope.SubContext.StrictlyLocal = true;
+
+            if (scopeContext != null) {
+                loopScope.ParentScope = scopeContext;
+            }
+
+            var initResult = ExecuteExpression(initNode, loopScope);
+
+            if (scopeContext != null) {
+                loopScope.SubContext.Merge(scopeContext.SubContext);
+            }
+
+            loopScope.SubContext.StrictlyLocal = false;
+
+            while (true) {
+                var conditionResult = CheckCondition(condNode, loopScope);
+
+                if (!conditionResult) break;
+
+                var scope = ExecuteBlock(block, loopScope, new SubContext { InLoop = true });
+
+                if (scope.SubContext.BrokeLoop) break;
+                if (scope.SubContext.ReturnObject != null) {
+                    scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                    break;
+                }
+
+                var modiResult = ExecuteExpression(modiNode, loopScope);
             }
         }
 
@@ -76,7 +116,12 @@ namespace Skrypt.Execution
 
             if (conditionResult)
             {
-                ExecuteBlock(node.SubNodes[1], scopeContext);
+                var scope = ExecuteBlock(node.SubNodes[1], scopeContext);
+
+                if (scope.SubContext.ReturnObject != null) {
+                    scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                }
+
                 return;
             }
 
@@ -92,13 +137,22 @@ namespace Skrypt.Execution
 
                         if (conditionResult)
                         {
-                            ExecuteBlock(elseNode.SubNodes[1], scopeContext);
+                            var scope = ExecuteBlock(elseNode.SubNodes[1], scopeContext);
+
+                            if (scope.SubContext.ReturnObject != null) {
+                                scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                            }
+
                             return;
                         }
                     }
                     else
                     {
-                        ExecuteBlock(elseNode, scopeContext);
+                        var scope = ExecuteBlock(elseNode, scopeContext);
+
+                        if (scope.SubContext.ReturnObject != null) {
+                            scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                        }
                     }
                 }
         }
@@ -203,11 +257,11 @@ namespace Skrypt.Execution
 
             if (scopeContext != null)
             {
-                scope.SubContext = scopeContext.SubContext;
+                scope.SubContext.Merge(scopeContext.SubContext);
                 scope.ParentScope = scopeContext;
             }
 
-            if (subContext != null) scope.SubContext = subContext;
+            if (subContext != null) scope.SubContext.Merge(subContext);            
 
             foreach (var subNode in node.SubNodes)
                 if (subNode.TokenType == "Statement")
@@ -219,6 +273,9 @@ namespace Skrypt.Execution
                             break;
                         case "if":
                             ExecuteIfStatement(subNode, scope);
+                            break;
+                        case "for":
+                            ExecuteForStatement(subNode, scope);
                             break;
                     }
 
@@ -242,6 +299,8 @@ namespace Skrypt.Execution
                 else
                 {
                     var result = _engine.Executor.ExecuteExpression(subNode, scope);
+
+                    if (scope.SubContext.ReturnObject != null) Console.WriteLine("Block: " + scope.SubContext.ReturnObject);
 
                     if (scope.SubContext.SkippedLoop == true) return scope;
                     if (scope.SubContext.BrokeLoop == true) return scope;
@@ -344,7 +403,7 @@ namespace Skrypt.Execution
 
                         var variable = GetVariable(node.SubNodes[0].Body, scopeContext);
 
-                        if (variable != null) {
+                        if (variable != null && !scopeContext.SubContext.StrictlyLocal) {
                             if (variable.IsConstant)
                                 _engine.ThrowError("Variable is marked as constant and can thus not be modified.");
 

@@ -121,7 +121,7 @@ namespace Skrypt.Parsing
 
         private ParseResult TryParse(List<Token> tokens)
         {
-            if (tokens[0].Value == "if" || tokens[0].Value == "while")
+            if (tokens[0].Value == "if" || tokens[0].Value == "while" || tokens[0].Value == "for")
                 return _engine.StatementParser.Parse(tokens);
             if (tokens[0].Value == "func")
                 return _engine.MethodParser.Parse(tokens);

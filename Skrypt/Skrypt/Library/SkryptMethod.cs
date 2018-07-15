@@ -2,6 +2,7 @@
 using Skrypt.Engine;
 using Skrypt.Execution;
 using Skrypt.Parsing;
+using System;
 
 namespace Skrypt.Library
 {

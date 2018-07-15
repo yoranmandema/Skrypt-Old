@@ -27,7 +27,7 @@ namespace Skrypt.Parsing
             new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
             new OperatorGroup(new[] {new OpAssign()}, false),
             new OperatorGroup(new[] {new OpAccess()}, false, 2, false),
-            new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, false, 0),
+            new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, true, 0),
             new OperatorGroup(new[] {new OpOr()}),
             new OperatorGroup(new[] {new OpAnd()}),
             new OperatorGroup(new[] {new OpBitOr()}),

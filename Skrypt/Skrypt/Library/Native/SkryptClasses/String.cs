@@ -78,15 +78,18 @@ namespace Skrypt.Library.Native
                 return d.Value;
             }
 
-            [Instance, Constant]
+            [Constant]
             public static SkryptObject Char(SkryptObject self, SkryptObject[] values)
             {
-                var a = TypeConverter.ToNumeric(values, 0);
-
-                return (String) ("" + Convert.ToChar((int) a));
+                return (String) ("" + Convert.ToChar((int)TypeConverter.ToNumeric(values, 0)));
             }
 
-            [Instance, Constant]
+            [Constant]
+            public static SkryptObject Byte(SkryptObject self, SkryptObject[] values) {
+                return (Numeric) (Convert.ToByte(TypeConverter.ToString(values, 0).Value[0]));
+            }
+
+            [Instance, Constant, Getter]
             public static SkryptObject Length(SkryptObject self, SkryptObject[] values)
             {
                 var a = (String) self;

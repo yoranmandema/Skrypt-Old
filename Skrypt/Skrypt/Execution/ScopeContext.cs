@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Newtonsoft.Json;
 using Skrypt.Library;
+using System;
 
 namespace Skrypt.Execution
 {
@@ -12,8 +13,22 @@ namespace Skrypt.Execution
         public bool BrokeLoop = false;
         public bool SkippedLoop = false;
         public bool InMethod = false;
+        public bool StrictlyLocal = false;
         public UserMethod Method = null;
         public SkryptObject ReturnObject = null;
+
+        public void Merge(SubContext other) {
+            //Console.WriteLine("bef: " + JsonConvert.SerializeObject(this, Formatting.None).Replace("\"", ""));
+
+            GettingCaller = GettingCaller || other.GettingCaller;
+            InLoop = InLoop || other.InLoop;
+            BrokeLoop = BrokeLoop || other.BrokeLoop;
+            SkippedLoop = SkippedLoop || other.SkippedLoop;
+            InMethod = InMethod || other.InMethod;
+            StrictlyLocal = StrictlyLocal || other.StrictlyLocal;
+
+            //Console.WriteLine("aft: " + JsonConvert.SerializeObject(this, Formatting.None).Replace("\"", ""));
+        }
     }
 
     public class ScopeContext
