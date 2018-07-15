@@ -139,6 +139,15 @@ namespace Skrypt.Library
         }
     }
 
+    internal class OpBitShiftRZ : Operator {
+        public OpBitShiftRZ() {
+            OperationName = "bitshiftrz";
+            Operation = ">>>";
+
+            AllOperators.Add(this);
+        }
+    }
+
     internal class OpBitAnd : Operator {
         public OpBitAnd() {
             OperationName = "bitand";
@@ -161,6 +170,16 @@ namespace Skrypt.Library
         public OpBitOr() {
             OperationName = "bitor";
             Operation = "|";
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpBitNot : Operator {
+        public OpBitNot() {
+            OperationName = "bitnot";
+            Members = 1;
+            Operation = "~";
 
             AllOperators.Add(this);
         }

@@ -90,6 +90,62 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(Equals(a.Value,b.Value));
                     }),
+                new Operation("bitshiftl", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Numeric((int)(a.Value) << (int)(b.Value));
+                    }),
+                new Operation("bitshiftr", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Numeric((int)(a.Value) >> (int)(b.Value));
+                    }),
+                new Operation("bitshiftrz", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        //(double)((uint)Convert.ToInt32(Convert.ToDouble(LeftVar.Value)) >> Convert.ToInt32(Convert.ToDouble(RightVar.Value)))
+
+                        return new Numeric((double)((uint)Convert.ToInt32(Convert.ToDouble(a.Value)) >> Convert.ToInt32(Convert.ToDouble(b.Value))));
+                    }),              
+                new Operation("bitand", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Numeric((int)(a.Value) & (int)(b.Value));
+                    }),
+                new Operation("bitxor", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Numeric((int)(a.Value) ^ (int)(b.Value));
+                    }),
+                new Operation("bitor", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Numeric((int)(a.Value) | (int)(b.Value));
+                    }),
+                new Operation("bitnot", typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        return new Numeric(~(int)a.Value);
+                    }),
                 new Operation("postincrement", typeof(Numeric),
                     input =>
                     {

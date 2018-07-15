@@ -35,10 +35,11 @@ namespace Skrypt.Parsing
             new OperatorGroup(new[] {new OpBitAnd()}),
             new OperatorGroup(new Operator[] {new OpNotEqual(), new OpEqual()}),
             new OperatorGroup(new Operator[] {new OpLesser(), new OpGreater(), new OpLesserEqual(), new OpGreaterEqual()}),
-            new OperatorGroup(new Operator[] {new OpBitShiftL(), new OpBitShiftR()}),
+            new OperatorGroup(new Operator[] {new OpBitShiftL(), new OpBitShiftR(), new OpBitShiftRZ()}),
             new OperatorGroup(new Operator[] {new OpAdd(), new OpSubtract()}),
             new OperatorGroup(new Operator[] {new OpMultiply(), new OpDivide(), new OpModulo()}),
             new OperatorGroup(new[] {new OpPower()}),
+            new OperatorGroup(new[] {new OpBitNot()}, false, 1),
             new OperatorGroup(new Operator[] {new OpNegate(), new OpNot()}, false, 1),
             new OperatorGroup(new Operator[] {new OpPostInc(), new OpPostDec()}, false, 1, true)
         };
