@@ -6,7 +6,19 @@ while (a < 10) {
 	a++;
 
 	if (a % 2) {
-		continue 2;
+		b = 0;
+
+		while (b < 10) {
+			b++;
+
+			if (b % 2) {
+				continue;
+			}
+
+			Print("\t" + b);
+		}
+
+		continue;
 	}
 
 	Print(a);

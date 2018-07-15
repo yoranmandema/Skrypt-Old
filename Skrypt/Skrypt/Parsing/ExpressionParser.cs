@@ -205,8 +205,17 @@ namespace Skrypt.Parsing
                                 return;
                             }
 
-                            if (Operator.FailOnMissingMembers)
-                                _engine.ThrowError("Missing member of operation!", token);
+                            if (Operator.FailOnMissingMembers) {
+                                if (op.Members == 0) {
+                                    _engine.ThrowError("'" + Operator.Operation + "' operator cannot be part of expression.", token);
+                                } else {
+                                    if (hasRequiredLeftTokens) {
+                                        _engine.ThrowError("Missing right hand operand.", token);
+                                    } else if (hasRequiredLeftTokens) {
+                                        _engine.ThrowError("Missing left hand operand.", token);
+                                    }
+                                }                                
+                            }
                         }
 
                         // Check if we're still in bounds
