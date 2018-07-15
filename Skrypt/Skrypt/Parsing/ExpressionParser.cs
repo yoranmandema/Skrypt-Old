@@ -26,7 +26,7 @@ namespace Skrypt.Parsing
             new OperatorGroup(new Operator[] {new OpBreak(),new OpContinue() }, false, 0),
             new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
             new OperatorGroup(new[] {new OpAssign()}, false),
-            new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, true, 0),
+            new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, false, 0),
             new OperatorGroup(new[] {new OpAccess()}, false, 2, false),
             new OperatorGroup(new[] {new OpOr()}),
             new OperatorGroup(new[] {new OpAnd()}),
@@ -59,10 +59,18 @@ namespace Skrypt.Parsing
         private bool IsConditional(List<Token> tokens) {
             bool isConditional = false;
 
+            int depth = 0;
+
             for (int i = 0; i < tokens.Count; i++) {
                 var token = tokens[i];
 
-                if (token.Value == "?" && token.Type == TokenTypes.Punctuator) {
+                if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
+                    depth++;
+                } else if (token.Value == ")" && token.Type == TokenTypes.Punctuator) {
+                    depth--;
+                }
+
+                if (token.Value == "?" && token.Type == TokenTypes.Punctuator && depth == 0) {
                     isConditional = true;
                     SkipInfo skip = SkipFromTo("?", ":", tokens, i);
 
@@ -160,9 +168,10 @@ namespace Skrypt.Parsing
                                 isInPars = true;
                                 return;
                             }
-                        }
 
-                        if (token.Value == "[" && token.Type == TokenTypes.Punctuator)
+                            token = tokens[i];
+                        }
+                        else if (token.Value == "[" && token.Type == TokenTypes.Punctuator)
                         {
                             var skip = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i);
                             i += skip.Delta;
@@ -173,8 +182,7 @@ namespace Skrypt.Parsing
                                 return;
                             }
                         }
-
-                        if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator)
+                        else if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator)
                         {
                             if (token.Value == ":" && token.Type == TokenTypes.Punctuator) {
                                 _engine.ThrowError("Incomplete conditional statement.",token);
@@ -640,24 +648,38 @@ namespace Skrypt.Parsing
 
         public ParseResult ParseConditional(List<Token> tokens) {
             var node = new Node();
-            int i = 0;
-            SkipUntil(ref i, new Token { Value = "?", Type = TokenTypes.Punctuator }, tokens);
+            int depth = 0;
 
-            var conditionNode = ParseExpression(node, tokens.GetRange(0, i));
-                            
-            SkipInfo skip = SkipFromTo("?", ":", tokens, i);
+            for (int i = 0; i < tokens.Count; i++) {
+                var token = tokens[i];
 
-            var successNode = ParseExpression(node, tokens.GetRange(i + 1, skip.Delta - 1));
-            var failNode = ParseExpression(node, tokens.GetRange(skip.End + 1, tokens.Count - (skip.End + 1)));
+                if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
+                    depth++;
+                }
+                else if (token.Value == ")" && token.Type == TokenTypes.Punctuator) {
+                    depth--;
+                }
 
-            node.Add(conditionNode);
-            node.Add(successNode);
-            node.Add(failNode);
+                if (token.Value == "?" && token.Type == TokenTypes.Punctuator && depth == 0) {
+                    var conditionNode = ParseExpression(node, tokens.GetRange(0, i));
 
-            node.Body = "Conditional";
-            node.TokenType = "Conditional";
+                    SkipInfo skip = SkipFromTo("?", ":", tokens, i);
 
-            return new ParseResult { Node = node, Delta = i + 1 };
+                    var successNode = ParseExpression(node, tokens.GetRange(i + 1, skip.Delta - 1));
+                    var failNode = ParseExpression(node, tokens.GetRange(skip.End + 1, tokens.Count - (skip.End + 1)));
+
+                    if(node.Add(conditionNode) == null) throw new SkryptException("Condition statement can't be empty");
+                    if (node.Add(successNode) == null) throw new SkryptException("Consequent statement can't be empty");
+                    if (node.Add(failNode) == null) throw new SkryptException("Alternative statement can't be empty");
+
+                    node.Body = "Conditional";
+                    node.TokenType = "Conditional";
+
+                    return new ParseResult { Node = node, Delta = tokens.Count };
+                }
+            }
+
+            throw new SkryptException("Conditional statement incomplete");
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
 using System;
 
-a = 1 ? 0
+true ? 1 : ;
 
 Print(a);
