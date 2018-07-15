@@ -2,7 +2,7 @@
 
 namespace Skrypt.Library
 {
-    internal class Operator
+    public class Operator
     {
         public static List<Operator> AllOperators = new List<Operator>();
         public bool FailOnMissingMembers = true;
@@ -116,6 +116,51 @@ namespace Skrypt.Library
         {
             OperationName = "equallesser";
             Operation = "<=";
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpBitShiftL : Operator {
+        public OpBitShiftL() {
+            OperationName = "bitshiftl";
+            Operation = "<<";
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpBitShiftR : Operator {
+        public OpBitShiftR() {
+            OperationName = "bitshiftr";
+            Operation = ">>";
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpBitAnd : Operator {
+        public OpBitAnd() {
+            OperationName = "bitand";
+            Operation = "&";
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpBitXor : Operator {
+        public OpBitXor() {
+            OperationName = "bitxor";
+            Operation = "|||";
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpBitOr : Operator {
+        public OpBitOr() {
+            OperationName = "bitor";
+            Operation = "|";
 
             AllOperators.Add(this);
         }

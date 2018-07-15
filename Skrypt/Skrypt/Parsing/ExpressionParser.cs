@@ -21,17 +21,21 @@ namespace Skrypt.Parsing
     public class ExpressionParser
     {
         // Create list of operator groups with the right precedence order
-        private static readonly List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup>
+        public static readonly List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup>
         {
             new OperatorGroup(new Operator[] {new OpBreak(),new OpContinue() }, false, 0),
             new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
             new OperatorGroup(new[] {new OpAssign()}, false),
-            new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, false, 0),
             new OperatorGroup(new[] {new OpAccess()}, false, 2, false),
+            new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, false, 0),
             new OperatorGroup(new[] {new OpOr()}),
             new OperatorGroup(new[] {new OpAnd()}),
+            new OperatorGroup(new[] {new OpBitOr()}),
+            new OperatorGroup(new[] {new OpBitXor()}),
+            new OperatorGroup(new[] {new OpBitAnd()}),
             new OperatorGroup(new Operator[] {new OpNotEqual(), new OpEqual()}),
             new OperatorGroup(new Operator[] {new OpLesser(), new OpGreater(), new OpLesserEqual(), new OpGreaterEqual()}),
+            new OperatorGroup(new Operator[] {new OpBitShiftL(), new OpBitShiftR()}),
             new OperatorGroup(new Operator[] {new OpAdd(), new OpSubtract()}),
             new OperatorGroup(new Operator[] {new OpMultiply(), new OpDivide(), new OpModulo()}),
             new OperatorGroup(new[] {new OpPower()}),
@@ -84,16 +88,14 @@ namespace Skrypt.Parsing
         /// </summary>
         public Node ParseExpression(Node branch, List<Token> tokens)
         {
-            if (tokens.Count == 1)
-                return new Node
-                {
+            if (tokens.Count == 1) {
+                return new Node {
                     Body = tokens[0].Value,
                     //Value = null,
                     TokenType = "" + tokens[0].Type,
                     Token = tokens[0]
                 };
-
-            Console.WriteLine(TokenString(tokens));
+            }
 
             // Create left and right token buffers
             var leftBuffer = new List<Token>();
@@ -269,8 +271,6 @@ namespace Skrypt.Parsing
 
             // Parse expression within parenthesis if it's completely surrounded
             if (isInPars) {
-                Console.WriteLine("Returning: " + ParseExpression(branch, tokens.GetRange(1, tokens.Count - 2)));
-
                 return ParseExpression(branch, tokens.GetRange(1, tokens.Count - 2));
             }
 
@@ -762,7 +762,7 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Class representing an operator group
         /// </summary>
-        private class OperatorGroup
+        public class OperatorGroup
         {
             public readonly bool IsPostfix;
             public readonly bool LeftAssociate = true;

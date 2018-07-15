@@ -1,4 +1,2 @@
-using System;
 
-a = 1;
-a = (a == true) ? 1 : 0;
+a = 1 << 2;

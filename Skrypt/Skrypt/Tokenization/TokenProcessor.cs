@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Skrypt.Engine;
+using Skrypt.Parsing;
+using Skrypt.Library;
 
 namespace Skrypt.Tokenization
 {
@@ -9,8 +12,14 @@ namespace Skrypt.Tokenization
     ///     The token processor class.
     ///     Contains all methods to process existing tokens
     /// </summary>
-    internal static class TokenProcessor
+    public class TokenProcessor
     {
+        private readonly SkryptEngine _engine;
+
+        public TokenProcessor(SkryptEngine e) {
+            _engine = e;
+        }
+
         /// <summary>
         ///     Unescape string and remove outer " characters
         /// </summary>
@@ -44,14 +53,21 @@ namespace Skrypt.Tokenization
             token.Type = TokenTypes.NumericLiteral;
         }
 
+        private Operator FindOperator (Token token) {
+            var group = ExpressionParser.OperatorPrecedence.Find(x => x.Operators.Find(y => y.Operation == token.Value) != null);
+
+            return group.Operators.Find(y => y.Operation == token.Value);
+        }
+
         /// <summary>
         ///     Process all tokens in a list
         /// </summary>
-        public static void ProcessTokens(List<Token> tokens)
+        public void ProcessTokens(List<Token> tokens)
         {
-            foreach (var token in tokens)
-                switch (token.Type)
-                {
+            for(int i = 0; i < tokens.Count; i++) {
+                var token = tokens[i];
+                
+                switch (token.Type) {
                     case TokenTypes.StringLiteral:
                         ProcessStringToken(token);
                         break;
@@ -63,6 +79,15 @@ namespace Skrypt.Tokenization
                     default:
                         break;
                 }
+            }
+
+
+
+            for (int i = 0; i < tokens.Count; i++) {
+                var token = tokens[i];
+
+                
+            }
         }
     }
 }

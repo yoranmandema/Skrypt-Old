@@ -35,6 +35,7 @@ namespace Skrypt.Engine
         public StandardMethods StandardMethods;
         public StatementParser StatementParser;
         public Tokenizer Tokenizer;
+        public TokenProcessor TokenProcessor;
 
         private List<Token> _tokens;
 
@@ -43,6 +44,7 @@ namespace Skrypt.Engine
         public SkryptEngine()
         {
             Tokenizer = new Tokenizer(this);
+            TokenProcessor = new TokenProcessor(this);
             StatementParser = new StatementParser(this);
             ExpressionParser = new ExpressionParser(this);
             GeneralParser = new GeneralParser(this);
@@ -108,6 +110,11 @@ namespace Skrypt.Engine
                 new Regex(@"[;]"),
                 TokenTypes.EndOfExpression
             );
+
+            //Tokenizer.AddRule(
+            //    new Regex(@"\n"),
+            //    TokenTypes.NewLine
+            //);
 
             Tokenizer.AddRule(
                 new Regex(
@@ -235,7 +242,7 @@ namespace Skrypt.Engine
             stopwatch.Stop();
             double token = stopwatch.ElapsedMilliseconds;
 
-            //foreach (var t in _tokens) Console.WriteLine(t);
+            foreach (var t in _tokens) Console.WriteLine(t);
 
             // Generate the program node
             stopwatch = Stopwatch.StartNew();
