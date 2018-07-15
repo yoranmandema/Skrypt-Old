@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Sys = System;
 using System.Collections.Generic;
 using Skrypt.Execution;
 
@@ -49,6 +49,14 @@ namespace Skrypt.Library.Native
                         var b = TypeConverter.ToNumeric(input, 1);
 
                         return new Numeric(a % b);
+                    }),
+                new Operation("power", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Numeric(Sys.Math.Pow(a.Value,b.Value));
                     }),
                 new Operation("lesser", typeof(Numeric), typeof(Numeric),
                     input =>
@@ -128,7 +136,7 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric((double)((uint)Convert.ToInt32(Convert.ToDouble(a.Value)) >> Convert.ToInt32(Convert.ToDouble(b.Value))));
+                        return new Numeric((double)((uint)Sys.Convert.ToInt32(Sys.Convert.ToDouble(a.Value)) >> Sys.Convert.ToInt32(Sys.Convert.ToDouble(b.Value))));
                     }),              
                 new Operation("bitand", typeof(Numeric), typeof(Numeric),
                     input =>
@@ -192,17 +200,16 @@ namespace Skrypt.Library.Native
 
             public double Value;
 
+            public override bool CreateCopyOnAssignment => true;
+            public override string Name => "numeric";
+
             public Numeric()
             {
-                Name = "numeric";
-                CreateCopyOnAssignment = true;
             }
 
             public Numeric(double v = 0)
             {
-                Name = "numeric";
                 Value = v;
-                CreateCopyOnAssignment = true;
             }
 
             public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input)

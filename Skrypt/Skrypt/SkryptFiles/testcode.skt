@@ -1,10 +1,7 @@
 using System;
 
-s = "";
-i = 0;
-
-while (i < 100000) {
-	s = s + "kek";
-
-	i++;
+func bezier (p0,p1,p2,t) {
+	return (1-t)^2 * p0 + (2 * (1-t) * t * p1) + t^2 * p2;
 }
+
+Print(bezier(Vector(0,0,0),Vector(21,0,0),Vector(20,20,0),0.5));

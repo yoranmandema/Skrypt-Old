@@ -4,7 +4,7 @@ namespace Skrypt.Library
 {
     public class SkryptType : SkryptObject
     {
-        public bool CreateCopyOnAssignment = false;
-        public string TypeName => GetType().ToString();
+        public virtual bool CreateCopyOnAssignment { get; set; } = false;
+        public virtual string TypeName => GetType().ToString();
     }
 }

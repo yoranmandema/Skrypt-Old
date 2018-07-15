@@ -34,7 +34,7 @@ namespace Skrypt.Library
     {
         public List<Operation> Operations = new List<Operation>();
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
 
 
         public Operation GetOperation(string n, Type tl, Type tr, List<Operation> ops)

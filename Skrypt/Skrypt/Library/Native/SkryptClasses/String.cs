@@ -48,17 +48,16 @@ namespace Skrypt.Library.Native
 
             public string Value;
 
+            public override bool CreateCopyOnAssignment => true;
+            public override string Name => "string";
+
             public String()
             {
-                Name = "string";
-                CreateCopyOnAssignment = true;
             }
 
             public String(string v = "")
             {
-                Name = "string";
                 Value = v;
-                CreateCopyOnAssignment = true;
             }
 
             public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input)

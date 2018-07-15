@@ -74,17 +74,17 @@ namespace Skrypt {
         public Classes.Numeric Y;
         public Classes.Numeric Z;
 
+        public override bool CreateCopyOnAssignment => true;
+        public override string Name => "vector";
+
         public Vector() {
-            Name = "vector";
-            CreateCopyOnAssignment = true;
+
         }
 
         public Vector(double x, double y, double z) {
-            Name = "vector";
             X = x;
             Y = y;
             Z = z;
-            CreateCopyOnAssignment = true;
         }
 
         private static double Length2 (Vector v) {

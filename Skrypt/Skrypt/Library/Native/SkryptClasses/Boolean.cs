@@ -37,17 +37,16 @@ namespace Skrypt.Library.Native
 
             public bool Value;
 
+            public override bool CreateCopyOnAssignment => true;
+            public override string Name => "boolean";
+
             public Boolean()
             {
-                Name = "boolean";
-                CreateCopyOnAssignment = true;
             }
 
             public Boolean(bool v = false)
             {
-                Name = "boolean";
                 Value = v;
-                CreateCopyOnAssignment = true;
             }
 
             public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input)

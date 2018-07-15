@@ -78,9 +78,11 @@ namespace Skrypt.Library.Native
                     })
             };
 
+            public override string Name => "array";
+
             public Array()
             {
-                Name = "array";
+
             }
 
             public List<SkryptObject> Value { get; set; } = new List<SkryptObject>();
