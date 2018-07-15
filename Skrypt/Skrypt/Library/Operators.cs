@@ -267,4 +267,23 @@ namespace Skrypt.Library
             AllOperators.Add(this);
         }
     }
+
+    internal class OpConditional : Operator {
+        public OpConditional() {
+            OperationName = "conditional";
+            Members = 0;
+            Operation = "?";
+
+            AllOperators.Add(this);
+        }
+    }
+    internal class OpConditionalElse : Operator {
+        public OpConditionalElse() {
+            OperationName = "else";
+            Members = 0;
+            Operation = ":";
+
+            AllOperators.Add(this);
+        }
+    }
 }

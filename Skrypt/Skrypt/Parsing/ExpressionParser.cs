@@ -26,6 +26,7 @@ namespace Skrypt.Parsing
             new OperatorGroup(new Operator[] {new OpBreak(),new OpContinue() }, false, 0),
             new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
             new OperatorGroup(new[] {new OpAssign()}, false),
+            new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, true, 0),
             new OperatorGroup(new[] {new OpAccess()}, false, 2, false),
             new OperatorGroup(new[] {new OpOr()}),
             new OperatorGroup(new[] {new OpAnd()}),
@@ -55,6 +56,24 @@ namespace Skrypt.Parsing
             return sb;
         }
 
+        private bool IsConditional(List<Token> tokens) {
+            bool isConditional = false;
+
+            for (int i = 0; i < tokens.Count; i++) {
+                var token = tokens[i];
+
+                if (token.Value == "?" && token.Type == TokenTypes.Punctuator) {
+                    isConditional = true;
+                    SkipInfo skip = SkipFromTo("?", ":", tokens, i);
+
+                    Console.WriteLine("success:" + TokenString(tokens.GetRange(i+1, skip.Delta-1)));
+                    Console.WriteLine("remaining:" + TokenString(tokens.GetRange(skip.End + 1, tokens.Count - (skip.End + 1))));
+                }
+            }
+
+            return isConditional;
+        }
+
         /// <summary>
         ///     Parses a list of tokens into an expression recursively
         /// </summary>
@@ -79,6 +98,7 @@ namespace Skrypt.Parsing
             var isArrayLiteral = false;
             var isFunctionLiteral = false;
             var isChain = false;
+            var isConditional = false;
 
             var accessEnd = 0;
 
@@ -141,6 +161,7 @@ namespace Skrypt.Parsing
                                 return;
                             }
                         }
+
                         if (token.Value == "[" && token.Type == TokenTypes.Punctuator)
                         {
                             var skip = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i);
@@ -155,6 +176,19 @@ namespace Skrypt.Parsing
 
                         if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator)
                         {
+                            if (token.Value == ":" && token.Type == TokenTypes.Punctuator) {
+                                _engine.ThrowError("Incomplete conditional statement.",token);
+                            }
+
+                            if (token.Value == "?" && token.Type == TokenTypes.Punctuator) {
+                                if (IsConditional(tokens)) {
+                                    isConditional = true;
+                                    return;
+                                } else {
+                                    _engine.ThrowError("Incomplete conditional statement.", token);
+                                }
+                            }
+
                             // Fill left and right buffers
                             leftBuffer = tokens.GetRange(0, i);
                             rightBuffer = tokens.GetRange(i + 1, tokens.Count - i - 1);
@@ -259,6 +293,11 @@ namespace Skrypt.Parsing
                 return result.Node;
             }
 
+            if (isConditional) {
+                var result = ParseConditional(tokens);
+                return result.Node;
+            }
+
             return null;
         }
 
@@ -352,46 +391,7 @@ namespace Skrypt.Parsing
                 if (index == tokens.Count - 1) _engine.ThrowError("Token '" + comparator + "' expected", startToken);
             }
         }
-
-        //public skipInfo SkipAccessing (List<Token> Tokens, int startingPoint = 0) {
-        //    int start = startingPoint;
-        //    int index = startingPoint;
-        //    int end = 0;
-        //    int state = 1;
-
-        //    Token nextToken = Tokens[index];
-
-        //    if (nextToken.Type == TokenTypes.Identifier) {
-        //        state = 1;
-        //    } else if (nextToken.Value == ".") {
-        //        state = 0;
-        //    }
-
-        //    while (true) {
-        //        if (state == 1) {
-        //            if (nextToken.Type == TokenTypes.Identifier) {
-        //                state = 0;
-        //            } else {
-        //                engine.throwError("Identifier expected!", nextToken);
-        //            }
-        //        } else if (state == 0) {
-        //            if (nextToken.Value == ".") {
-        //                state = 1;
-        //            } else {
-        //                break;
-        //            }
-        //        }
-
-        //        index++;
-        //        nextToken = Tokens[index];
-        //    }
-
-        //    end = index;
-        //    int delta = index - start;
-
-        //    return new skipInfo { start = start, end = end, delta = delta };
-        //}
-
+       
         public SkipInfo SkipAccess(List<Token> tokens, int startingPoint = 0)
         {
             var start = startingPoint;
@@ -636,6 +636,28 @@ namespace Skrypt.Parsing
             node.Add(dir);
 
             return new ParseResult { Node = node, Delta = i + 1};
+        }
+
+        public ParseResult ParseConditional(List<Token> tokens) {
+            var node = new Node();
+            int i = 0;
+            SkipUntil(ref i, new Token { Value = "?", Type = TokenTypes.Punctuator }, tokens);
+
+            var conditionNode = ParseExpression(node, tokens.GetRange(0, i));
+                            
+            SkipInfo skip = SkipFromTo("?", ":", tokens, i);
+
+            var successNode = ParseExpression(node, tokens.GetRange(i + 1, skip.Delta - 1));
+            var failNode = ParseExpression(node, tokens.GetRange(skip.End + 1, tokens.Count - (skip.End + 1)));
+
+            node.Add(conditionNode);
+            node.Add(successNode);
+            node.Add(failNode);
+
+            node.Body = "Conditional";
+            node.TokenType = "Conditional";
+
+            return new ParseResult { Node = node, Delta = i + 1 };
         }
 
         /// <summary>

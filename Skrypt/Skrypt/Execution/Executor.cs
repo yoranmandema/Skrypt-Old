@@ -302,7 +302,7 @@ namespace Skrypt.Execution
 
                     scopeContext.SubContext.BrokeLoop = true;
                     return null;
-                }
+                }                
 
                 if (op.OperationName == "continue") {
                     if (!scopeContext.SubContext.InLoop)
@@ -492,7 +492,16 @@ namespace Skrypt.Execution
 
                 return result;
             }
-          
+            else if (node.TokenType == "Conditional") {
+                var conditionBool = ExecuteExpression(node.SubNodes[0], scopeContext);
+                
+                if (conditionBool.ToBoolean()) {
+                    return ExecuteExpression(node.SubNodes[1], scopeContext);
+                } else {
+                    return ExecuteExpression(node.SubNodes[2], scopeContext);
+                }
+            }
+
             if (node.TokenType == "Identifier")
             {
                 var foundVariable = GetVariable(node.Body, scopeContext);
