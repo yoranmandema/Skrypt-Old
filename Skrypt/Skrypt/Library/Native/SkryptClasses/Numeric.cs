@@ -42,6 +42,14 @@ namespace Skrypt.Library.Native
 
                         return new Numeric(a * b);
                     }),
+                new Operation("modulo", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Numeric(a % b);
+                    }),
                 new Operation("lesser", typeof(Numeric), typeof(Numeric),
                     input =>
                     {

@@ -128,7 +128,7 @@ namespace Skrypt.Parsing
                         }
 
                         if (GeneralParser.NotPermittedInExpression.Contains(tokens[i].Value))
-                            _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i], 2);
+                            _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i]);
 
                         if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
                         {
@@ -206,7 +206,7 @@ namespace Skrypt.Parsing
                             }
 
                             if (Operator.FailOnMissingMembers)
-                                _engine.ThrowError("Missing member of operation!", token, 10);
+                                _engine.ThrowError("Missing member of operation!", token);
                         }
 
                         // Check if we're still in bounds

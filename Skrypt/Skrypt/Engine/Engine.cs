@@ -212,11 +212,11 @@ namespace Skrypt.Engine
         /// <summary>
         ///     Throws an error with line and colom indicator
         /// </summary>
-        public void ThrowError(string message, Token token = null, int urgency = -1)
+        public void ThrowError(string message, Token token = null)
         {
             var lineRow = token != null ? " (" + GetLineAndRowStringFromIndex(token.Start) + ")" : "";
 
-            throw new SkryptException(message + lineRow, urgency);
+            throw new SkryptException(message + lineRow);
         }
 
         public Node Parse(string code)

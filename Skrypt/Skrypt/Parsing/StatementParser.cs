@@ -42,7 +42,7 @@ namespace Skrypt.Parsing
                 TokenType = "Condition"
             };
 
-            if (conditionNode == null) _engine.ThrowError("Condition can't be empty!", tokens[index - 1], 1);
+            if (conditionNode == null) _engine.ThrowError("Condition can't be empty!", tokens[index - 1]);
 
             conditionParentNode.Add(conditionNode);
 

@@ -1,0 +1,13 @@
+using System;
+
+a = 0;
+
+while (a < 10) {
+	a++;
+
+	if (a % 2) {
+		continue 2;
+	}
+
+	Print(a);
+}
