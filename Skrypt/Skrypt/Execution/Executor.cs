@@ -157,8 +157,9 @@ namespace Skrypt.Execution
                 }
         }
 
-        public SkryptObject ExecuteClassDeclaration (Node node, ScopeContext scopeContext, SkryptObject ParentClass = null) {
+        public SkryptObject ExecuteClassDeclaration (Node node, ScopeContext scopeContext) {
             string ClassName = node.Body;
+            var ParentClass = scopeContext.SubContext.ParentClass;
 
             if (ParentClass != null) {
                 ClassName = ParentClass.Name + "." + ClassName;
@@ -167,14 +168,14 @@ namespace Skrypt.Execution
             SkryptObject Object = new SkryptObject { Name = ClassName };
             SkryptType TypeObject = new SkryptType { Name = ClassName };
 
-            var scope = ExecuteBlock(node,scopeContext, new SubContext { InClassDeclaration = true});
+            var scope = ExecuteBlock(node,scopeContext, new SubContext { InClassDeclaration = true, ParentClass = Object });
 
             Object.Properties.Add(new SkryptProperty {
                 Name = "TypeName",
                 Value = new Library.Native.System.String(ClassName)
             });
 
-            scopeContext.AddType(ClassName, TypeObject);
+            _engine.GlobalScope.AddType(ClassName, TypeObject);
 
             foreach (var v in scope.Variables) {
                 if (v.Value.Modifiers != Modifier.None) {
@@ -191,6 +192,8 @@ namespace Skrypt.Execution
                     }
                 }
             }
+
+            Object.Name = node.Body;
 
             return Object;
         }
@@ -239,6 +242,12 @@ namespace Skrypt.Execution
 
             if (subContext != null) scope.SubContext.Merge(subContext);            
 
+            if (!scope.SubContext.InClassDeclaration) {
+                if ((node.Modifiers & Modifier.Static) != 0 || (node.Modifiers & Modifier.Public) != 0 || (node.Modifiers & Modifier.Private) != 0) {
+                    _engine.ThrowError("Property modifiers cannot be used outside class", node.Token);
+                }
+            }
+
             foreach (var subNode in node.SubNodes)
                 if (subNode.TokenType == "Statement")
                 {
@@ -265,9 +274,9 @@ namespace Skrypt.Execution
                     scope.AddVariable(result.CallName, result, subNode.Modifiers);
                 }
                 else if (subNode.TokenType == "ClassDeclaration") {
-                    var Object = ExecuteClassDeclaration(subNode, scope);
+                    var createdClass = ExecuteClassDeclaration(subNode, scope);
 
-                    scope.AddVariable(Object.Name, Object);
+                    scope.AddVariable(createdClass.Name, createdClass, subNode.Modifiers);
                 }
                 else if (subNode.TokenType == "Using") {
                     var _scope = ExecuteUsing(subNode, scope);
@@ -394,6 +403,11 @@ namespace Skrypt.Execution
                         if (variable != null && !scopeContext.SubContext.StrictlyLocal) {
                             if ((variable.Modifiers & Modifier.Const) != 0)
                                 _engine.ThrowError("Variable is marked as constant and can thus not be modified.");
+
+                            if ((variable.Modifiers & Modifier.Strong) != 0) {
+                                if (variable.Value.Name != result.Name) 
+                                    _engine.ThrowError($"Can't set strong variable of type {variable.Value.Name} to {result.Name}");
+                            }
 
                             variable.Value = result;
                         }
@@ -583,13 +597,6 @@ namespace Skrypt.Execution
                 var foundMethod = ExecuteExpression(node.SubNodes[0].SubNodes[0], findCallerContext);
                 var Object = findCallerContext.SubContext.Caller;
 
-                if (Object != null) {
-                    for (int i = 0; i < Object.Properties.Count; i++) {
-                        var p = Object.Properties[i];
-                        methodContext.AddVariable(p.Name, p.Value, p.Modifiers);
-                    }
-                }
-
                 bool isConstructor = false;
 
                 if (!typeof(SkryptMethod).IsAssignableFrom(foundMethod.GetType())) {
@@ -605,6 +612,13 @@ namespace Skrypt.Execution
                         isConstructor = true;
                     } else {
                         _engine.ThrowError("Object does not have a constructor and can thus not be instanced!");
+                    }
+                }
+
+                if (Object != null) {
+                    for (int i = 0; i < Object.Properties.Count; i++) {
+                        var p = Object.Properties[i];
+                        methodContext.AddVariable(p.Name, p.Value, p.Modifiers);
                     }
                 }
 
@@ -635,13 +649,19 @@ namespace Skrypt.Execution
                     _engine.ThrowError("Cannot call value, as it is not a function!", node.SubNodes[0].SubNodes[0].Token);
                 }
 
-                foreach (var v in methodContext.Variables) {
-                    var prop = Object.Properties.Find(x => x.Name == v.Key);
+                if (Object != null) {
+                    foreach (var v in methodContext.Variables) {
+                        var prop = Object.Properties.Find(x => x.Name == v.Key);
 
-                    if (prop != null) {
-                        prop.Value = v.Value.Value;
+                        if (prop != null) {
+                            prop.Value = v.Value.Value;
+                        }
                     }
                 }
+
+                //foreach (var p in Object.Properties) {
+                //    Console.WriteLine(p.Name + " " + p.Value);
+                //}
 
                 if (isConstructor) {
                     return Object;

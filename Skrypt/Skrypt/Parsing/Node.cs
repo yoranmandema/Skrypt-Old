@@ -9,7 +9,8 @@ namespace Skrypt.Parsing
         Public = 4,
         Private = 8,
         Static = 16,
-        Const = 32
+        Const = 32,
+        Strong = 64,
     }
 
     /// <summary>
@@ -22,7 +23,7 @@ namespace Skrypt.Parsing
         public string TokenType { get; set; }
         [JsonIgnore] public Token Token { get; set; }
         public List<Node> SubNodes { get; set; } = new List<Node>();
-        public Modifier Modifiers { get; set; } = Modifier.None;
+        [JsonIgnore] public Modifier Modifiers { get; set; } = Modifier.None;
 
         /// <summary>
         ///     Adds a subnode

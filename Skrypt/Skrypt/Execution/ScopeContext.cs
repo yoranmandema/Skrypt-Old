@@ -18,6 +18,8 @@ namespace Skrypt.Execution
         public bool InClassDeclaration = true;
         public UserMethod Method = null;
         public SkryptObject ReturnObject = null;
+        public SkryptObject ParentClass = null;
+        //public SkryptObject CreatedClass = null;
 
         public void Merge(SubContext other) {
             //Console.WriteLine("bef: " + JsonConvert.SerializeObject(this, Formatting.None).Replace("\"", ""));
@@ -29,7 +31,7 @@ namespace Skrypt.Execution
             InMethod = InMethod || other.InMethod;
             StrictlyLocal = StrictlyLocal || other.StrictlyLocal;
             InClassDeclaration = InClassDeclaration || other.InClassDeclaration;
-
+            ParentClass = other.ParentClass;
             //Console.WriteLine("aft: " + JsonConvert.SerializeObject(this, Formatting.None).Replace("\"", ""));
         }
     }

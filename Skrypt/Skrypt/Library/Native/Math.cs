@@ -42,6 +42,13 @@ namespace Skrypt.Library.Native
             }
 
             [Constant]
+            public static SkryptObject Sqrt(SkryptObject self, SkryptObject[] values) {
+                var a = TypeConverter.ToNumeric(values, 0);
+
+                return (Numeric)SysMath.Sqrt(a);
+            }
+
+            [Constant]
             public static SkryptObject Min(SkryptObject self, SkryptObject[] values) {
                 var a = TypeConverter.ToNumeric(values, 0);
                 var b = TypeConverter.ToNumeric(values, 1);

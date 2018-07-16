@@ -219,10 +219,10 @@ namespace Skrypt.Library.Reflection
                 }
 
                 if (c.IsPublic) {
-                    property.Modifiers = property.Modifiers | Parsing.Modifier.Public;
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Private;
                 }
                 else {
-                    property.Modifiers = property.Modifiers | Parsing.Modifier.Private;
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Public;
                 }
 
                 if (Attribute.GetCustomAttribute(c, typeof(StaticAttribute)) == null) {

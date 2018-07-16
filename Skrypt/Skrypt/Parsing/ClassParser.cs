@@ -32,8 +32,6 @@ namespace Skrypt.Parsing
                 TokenType = "Properties",
             });
 
-            Console.WriteLine(ExpressionParser.TokenString(Tokens));
-
             List<Token> FurtherTokens = null;
 
             for (int i = 0; i < Tokens.Count; i++) {
@@ -90,7 +88,7 @@ namespace Skrypt.Parsing
             return new ParseResult { Node = propertyNode, Delta = FurtherResult.Delta + Properties.Count};
         }
 
-        Node ParseContents (List<Token> Tokens, string Name) {
+        Node ParseContents (List<Token> tokens, string name) {
             //Node node = new Node { Body = "Block", TokenType = "ClassDeclaration" };
             //int i = 0;
 
@@ -107,7 +105,57 @@ namespace Skrypt.Parsing
             //    node.Add(test.Node);
             //}
 
-            var result = _engine.GeneralParser.Parse(Tokens);
+            var constructorStart = -1;
+
+            for (int i = 0; i < tokens.Count; i++) {
+                var t = tokens[i];
+
+                if (t.Value == name) {
+                    constructorStart = i;
+                    continue;
+                }
+
+                if (constructorStart != -1) {
+                    if ((t.Value == "(") && (t.Type == TokenTypes.Punctuator) && (i == (constructorStart + 1))) {
+                        SkipInfo skip = _engine.ExpressionParser.SkipFromTo("(",")",tokens,i);
+                        
+                        if (skip.End + 1 < tokens.Count) {
+                            var t2 = tokens[skip.End + 1];
+
+                            if ((t2.Value == "{") && (t2.Type == TokenTypes.Punctuator)) {
+                                skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
+
+                                tokens.RemoveAt(constructorStart);
+
+                                tokens.Insert(constructorStart,new Token {
+                                    Value = "Constructor",
+                                    Type = TokenTypes.Identifier,
+                                    Start = tokens[constructorStart].Start,
+                                    End = tokens[constructorStart].Start,
+                                });
+
+                                tokens.Insert(constructorStart, new Token {
+                                    Value = "func",
+                                    Type = TokenTypes.Keyword,
+                                    Start = tokens[constructorStart].Start,
+                                    End = tokens[constructorStart].Start,
+                                });
+
+                                tokens.Insert(constructorStart, new Token {
+                                    Value = "static",
+                                    Type = TokenTypes.Keyword,
+                                    Start = tokens[constructorStart].Start,
+                                    End = tokens[constructorStart].Start,
+                                });
+
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            var result = _engine.GeneralParser.Parse(tokens);
             result.TokenType = "ClassDeclaration";
 
             return result;

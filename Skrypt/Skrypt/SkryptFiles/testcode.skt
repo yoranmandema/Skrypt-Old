@@ -1,19 +1,5 @@
 using System;
 
-class Test {
-	public const a = 1;
+strong a = 1;
 
-	public func DoStuff () {
-		a = 2;
-	}
-
-	static func Constructor () {
-		a = 2;
-	}
-}
-
-object = Test();
-
-object.DoStuff();
-
-Print("After " + object.a);
+a = Vector(1,2,3);

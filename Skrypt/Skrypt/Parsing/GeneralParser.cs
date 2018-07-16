@@ -56,7 +56,8 @@ namespace Skrypt.Parsing
             "public",
             "private",
             "const",
-            "static"
+            "static",
+            "strong"
         };
 
         private readonly SkryptEngine _engine;
@@ -145,6 +146,9 @@ namespace Skrypt.Parsing
                         break;
                     case "const":
                         appliedModifiers = appliedModifiers | Modifier.Const;
+                        break;
+                    case "strong":
+                        appliedModifiers = appliedModifiers | Modifier.Strong;
                         break;
                 }
 
