@@ -169,17 +169,26 @@ namespace Skrypt.Execution
 
             var scope = ExecuteBlock(node,scopeContext, new SubContext { InClassDeclaration = true});
 
+            Object.Properties.Add(new SkryptProperty {
+                Name = "TypeName",
+                Value = new Library.Native.System.String(ClassName)
+            });
+
+            scopeContext.AddType(ClassName, TypeObject);
+
             foreach (var v in scope.Variables) {
-                Console.WriteLine(v.Key);
-                Console.WriteLine("\t Name: " + v.Value.Value);
-                Console.WriteLine("\t Const: " + ((v.Value.Modifiers & Modifier.Const) != 0));
-                Console.WriteLine("\t Static: " + ((v.Value.Modifiers & Modifier.Static) != 0));
-                Console.WriteLine("\t Public: " + ((v.Value.Modifiers & Modifier.Public) != 0));
-                Console.WriteLine("\t Private: " + ((v.Value.Modifiers & Modifier.Private) != 0));
-                Console.WriteLine("\t None: " + (v.Value.Modifiers == Modifier.None));
-
                 if (v.Value.Modifiers != Modifier.None) {
+                    var property = new SkryptProperty {
+                        Name = v.Key,
+                        Value = v.Value.Value,
+                        Modifiers = v.Value.Modifiers
+                    };
 
+                    if ((v.Value.Modifiers & Modifier.Static) != 0) {
+                        Object.Properties.Add(property);
+                    } else {
+                        TypeObject.Properties.Add(property);
+                    }
                 }
             }
 
@@ -211,7 +220,7 @@ namespace Skrypt.Execution
             var Object = ExecuteExpression(node.SubNodes[0], scopeContext);
 
             foreach (var property in Object.Properties) {
-                if ((property.Modifiers & Modifier.Private) != 0) {
+                if ((property.Modifiers & Modifier.Public) != 0) {
                     scopeContext.AddVariable(property.Name, property.Value, Modifier.Const);
                 }
             }
@@ -389,8 +398,6 @@ namespace Skrypt.Execution
                             variable.Value = result;
                         }
                         else {
-
-                            Console.WriteLine(node.Modifiers);
                             scopeContext.AddVariable(node.SubNodes[0].Body, result, node.Modifiers);
                         }
                     }
@@ -626,6 +633,14 @@ namespace Skrypt.Execution
                     MethodResult = ((SharpMethod)foundMethod).Execute(_engine, Object, arguments.ToArray(), methodContext);
                 } else {
                     _engine.ThrowError("Cannot call value, as it is not a function!", node.SubNodes[0].SubNodes[0].Token);
+                }
+
+                foreach (var v in methodContext.Variables) {
+                    var prop = Object.Properties.Find(x => x.Name == v.Key);
+
+                    if (prop != null) {
+                        prop.Value = v.Value.Value;
+                    }
                 }
 
                 if (isConstructor) {
