@@ -118,6 +118,7 @@ namespace Skrypt {
             return $"Vector({X},{Y},{Z})";
         }
 
+        [Constant]
         public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input) {
             var x = TypeConverter.ToNumeric(input, 0);
             var y = TypeConverter.ToNumeric(input, 1);

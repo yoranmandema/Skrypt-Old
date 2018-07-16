@@ -21,6 +21,8 @@ namespace Skrypt
             engine.AddClass(typeof(Vector));
             engine.Parse(code);
 
+            engine.Executor.Invoke("Update");
+
             Console.ReadKey();
         }
     }

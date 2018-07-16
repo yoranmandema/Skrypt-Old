@@ -740,6 +740,71 @@ namespace Skrypt.Execution
             return operation(inputArray.ToArray());
         }
 
+        public SkryptObject GetValue (string name) {
+            return GetVariable(name, _engine.GlobalScope).Value;
+        }
+
+        public SkryptObject Invoke (string name, params object[] arguments) {
+            var parameters = new SkryptObject[arguments.Length];
+            var foundMethod = GetVariable(name, _engine.GlobalScope).Value;
+            var input = new List<SkryptObject>();
+            var methodContext = new ScopeContext {
+                ParentScope = _engine.GlobalScope
+            };
+
+            for (int i = 0; i < arguments.Length; i++) {
+                object arg = arguments[i];
+
+                if (arg.GetType() == typeof(int) || arg.GetType() == typeof(float) || arg.GetType() == typeof(double)) {
+                    parameters[i] = new Library.Native.System.Numeric((double)arg);
+                }
+                else if (arg.GetType() == typeof(string)) {
+                    parameters[i] = new Library.Native.System.String((string)arg);                  
+                }
+                else if (arg.GetType() == typeof(bool)) {
+                    parameters[i] = new Library.Native.System.Boolean((bool)arg);
+                }
+                else if (arg == null) {
+                    parameters[i] = new Library.Native.System.Null();
+                }
+
+                parameters[i].SetPropertiesTo(GetType(((SkryptType)parameters[i]).TypeName, _engine.GlobalScope));
+
+                i++;
+
+                input.Add(parameters[i]);
+            }
+
+            SkryptObject MethodResult = null;
+
+            if (foundMethod.GetType() == typeof(UserMethod)) {
+                UserMethod method = (UserMethod)foundMethod;
+
+                for (var i = 0; i < method.Parameters.Count; i++) {
+                    var parName = method.Parameters[i];
+                    SkryptObject inp;
+
+                    inp = i < input.Count ? input[i] : new Library.Native.System.Null();
+
+                    methodContext.Variables[parName] = new Variable {
+                        Name = parName,
+                        Value = inp,
+                        Scope = methodContext
+                    };
+                }
+
+                MethodResult = method.Execute(_engine, null, input.ToArray(), methodContext);
+            }
+            else if (foundMethod.GetType() == typeof(SharpMethod)) {
+                MethodResult = ((SharpMethod)foundMethod).Execute(_engine, null, input.ToArray(), methodContext);
+            }
+            else {
+                _engine.ThrowError("Cannot call value, as it is not a function!");
+            }
+
+            return MethodResult;
+        }
+
         //public SkryptObject Invoke (string Name, params object[] arguments) {
         //    string signature = Name;
         //    string searchString = Name;

@@ -6,7 +6,7 @@ namespace Skrypt.Library.Native
 {
     partial class System
     {
-        [Constant]
+        [Constant, Static]
         public class Array : SkryptType
         {
             public new List<Operation> Operations = new List<Operation>

@@ -7,7 +7,7 @@ namespace Skrypt.Library.Native
 {
     partial class System
     {
-        [Constant]
+        [Constant,Static]
         public class String : SkryptType
         {
             public new List<Operation> Operations = new List<Operation>
@@ -60,13 +60,6 @@ namespace Skrypt.Library.Native
             public String(string v = "")
             {
                 Value = v;
-            }
-
-            public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input)
-            {
-                var a = TypeConverter.ToString(input, 0);
-
-                return new String(a);
             }
 
             public static implicit operator String(string d)

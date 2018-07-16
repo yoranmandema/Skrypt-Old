@@ -6,6 +6,7 @@ namespace Skrypt.Library.Native
 {
     partial class System
     {
+        [Constant, Static]
         public class Numeric : SkryptType
         {
             public new List<Operation> Operations = new List<Operation>
@@ -210,13 +211,6 @@ namespace Skrypt.Library.Native
             public Numeric(double v = 0)
             {
                 Value = v;
-            }
-
-            public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input)
-            {
-                var a = TypeConverter.ToNumeric(input, 0);
-
-                return new Numeric(a);
             }
 
             public static implicit operator Numeric(double d)

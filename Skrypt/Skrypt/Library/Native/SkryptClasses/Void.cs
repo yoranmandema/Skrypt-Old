@@ -4,6 +4,7 @@ namespace Skrypt.Library.Native
 {
     partial class System
     {
+        [Constant, Static]
         public class Void : SkryptObject
         {
             public Void()
