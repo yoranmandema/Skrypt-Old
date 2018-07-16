@@ -21,22 +21,6 @@ namespace Skrypt
             engine.AddClass(typeof(Vector));
             engine.Parse(code);
 
-            var stopwatch = Stopwatch.StartNew();
-
-            var b = 0;
-            var a = "";
-
-            while (b < 100000)
-            {
-                b++;
-                a = a + "kek";
-            }
-
-            stopwatch.Stop();
-            double execute = stopwatch.ElapsedMilliseconds;
-
-            Console.WriteLine("Test: {0}ms", execute);
-
             Console.ReadKey();
         }
     }

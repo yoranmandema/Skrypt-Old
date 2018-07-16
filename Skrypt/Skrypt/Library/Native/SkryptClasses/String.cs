@@ -48,6 +48,8 @@ namespace Skrypt.Library.Native
 
             public string Value;
 
+            public Numeric Length => this.Value.Length;
+
             public override bool CreateCopyOnAssignment => true;
             public override string Name => "string";
 
@@ -86,14 +88,6 @@ namespace Skrypt.Library.Native
             [Constant]
             public static SkryptObject Byte(SkryptObject self, SkryptObject[] values) {
                 return (Numeric) (Convert.ToByte(TypeConverter.ToString(values, 0).Value[0]));
-            }
-
-            [Instance, Constant, Getter]
-            public static SkryptObject Length(SkryptObject self, SkryptObject[] values)
-            {
-                var a = (String) self;
-
-                return (Numeric) a.Value.Length;
             }
 
             public override string ToString()

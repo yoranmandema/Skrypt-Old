@@ -308,9 +308,23 @@ namespace Skrypt.Execution
             return scope;
         }
 
-        public SkryptProperty GetProperty(SkryptObject Object, string toFind)
+        public SkryptProperty GetProperty(SkryptObject Object, string toFind, bool setter = false)
         {
-            var find = Object.Properties.Find(x => x.Name == toFind);
+            var find = Object.Properties.Find((x) => {
+                    if (x.Name == toFind) {
+                        if (!setter) {
+                            if (x.IsSetter) return false;
+
+                            return true;
+                        } else {
+                            if (x.IsGetter) return false;
+
+                            return true;
+                        }
+                    }
+
+                    return false;
+                });
 
             if (find == null) _engine.ThrowError("Object does not contain property '" + toFind + "'!");
 
@@ -321,14 +335,14 @@ namespace Skrypt.Execution
             return find;
         }
 
-        public SkryptProperty ExecuteAccess(SkryptObject Object, Node node, ScopeContext scopeContext)
+        public SkryptProperty ExecuteAccess(SkryptObject Object, Node node, ScopeContext scopeContext, bool setter = false)
         {
-            if (node.SubNodes.Count == 0) return GetProperty(Object, node.Body);
+            if (node.SubNodes.Count == 0) return GetProperty(Object, node.Body, setter);
 
-            var property = GetProperty(Object, node.SubNodes[0].Body);
+            var property = GetProperty(Object, node.SubNodes[0].Body, setter);
 
             if (node.SubNodes[1].Body == "access")
-                return ExecuteAccess(property.Value, node.SubNodes[1], scopeContext);
+                return ExecuteAccess(property.Value, node.SubNodes[1], scopeContext, setter);
             return property;
         }
 
@@ -389,7 +403,7 @@ namespace Skrypt.Execution
                 {
                     var result = ExecuteExpression(node.SubNodes[1], scopeContext);
 
-                    if (result.GetType().IsSubclassOf(typeof(SkryptType)))
+                    if (typeof(SkryptType).IsAssignableFrom(result.GetType()))
                         if (((SkryptType) result).CreateCopyOnAssignment)
                             result = result.Clone();
 
@@ -414,15 +428,13 @@ namespace Skrypt.Execution
                     else if (node.SubNodes[0].Body == "access")
                     {
                         var target = ExecuteExpression(node.SubNodes[0].SubNodes[1], scopeContext);
-                        var accessResult = ExecuteAccess(target, node.SubNodes[0].SubNodes[0], scopeContext);
+                        var accessResult = ExecuteAccess(target, node.SubNodes[0].SubNodes[0], scopeContext, true);
 
                         if (accessResult.IsConstant)
                             _engine.ThrowError("Property is marked as constant and can thus not be modified.");
 
-                        if (accessResult.IsGetter) {
-                            var getResult = ((SharpMethod)accessResult.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext { ParentScope = scopeContext });
-
-                            getResult = result;
+                        if (accessResult.IsSetter) {
+                            ((SetMethod)accessResult.Value).Execute(_engine, target, result, new ScopeContext { ParentScope = scopeContext });
                         }
                         else {
                             accessResult.Value = result;
@@ -604,7 +616,7 @@ namespace Skrypt.Execution
 
                 bool isConstructor = false;
 
-                if (!foundMethod.GetType().IsSubclassOf(typeof(SkryptMethod))) {
+                if (!typeof(SkryptMethod).IsAssignableFrom(foundMethod.GetType())) {
                     var type = foundMethod.Name;
                     var find = foundMethod.Properties.Find((x) => x.Name == "Constructor");
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using Skrypt.Engine;
 using Skrypt.Library.Native;
 
@@ -16,7 +17,7 @@ namespace Skrypt.Library.Reflection
 
             if (parent != null) Object.Name = parent.Name + "." + Object.Name;
 
-            if (type.IsSubclassOf(typeof(SkryptType))) isType = true;
+            if (typeof(SkryptType).IsAssignableFrom(type)) isType = true;
 
             SkryptObject Instance = null;
 
@@ -48,8 +49,7 @@ namespace Skrypt.Library.Reflection
                     Name = m.Name,
                     Value = method,
                     Accessibility = Attribute.GetCustomAttribute(m,typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
-                    IsConstant = Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null,
-                    IsGetter = Attribute.GetCustomAttribute(m, typeof(GetterAttribute)) != null
+                    IsConstant = Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null
                 };
 
                 if (property.IsGetter) {
@@ -66,7 +66,7 @@ namespace Skrypt.Library.Reflection
 
             var fields = type.GetFields().Where(f =>
             {
-                if (!(f.FieldType.IsSubclassOf(typeof(SkryptObject)) || f.FieldType == typeof(SkryptObject))) return false;
+                if (!typeof(SkryptObject).IsAssignableFrom(f.FieldType)) return false;
                 if (!f.IsStatic) return false;
 
                 return f.IsPublic;
@@ -88,6 +88,81 @@ namespace Skrypt.Library.Reflection
                 else {
                     Object.Properties.Add(property);
                 }
+            }
+
+            var properties = type.GetProperties().Where(p => typeof(SkryptObject).IsAssignableFrom(p.PropertyType));
+
+            foreach (var p in properties) {
+                var getter = p.GetGetMethod();
+
+                if (!getter.IsPublic) continue;
+
+                DynamicMethod dm = new DynamicMethod("GetValue",typeof(SkryptObject), new Type[] { typeof(SkryptObject), typeof(SkryptObject[]) }, typeof(SkryptObject), true);
+                ILGenerator lgen = dm.GetILGenerator();
+
+                lgen.Emit(OpCodes.Ldarg_0);
+                lgen.Emit(OpCodes.Call, getter);
+
+                if (getter.ReturnType.GetTypeInfo().IsValueType) {
+                    lgen.Emit(OpCodes.Box,getter.ReturnType);
+                }
+
+                lgen.Emit(OpCodes.Ret);
+
+                var del = dm.CreateDelegate(typeof(SkryptDelegate)) as SkryptDelegate;
+
+                var method = new SharpMethod {
+                    Method = del,
+                    Name = p.Name
+                };
+
+                var property = new SkryptProperty {
+                    Name = p.Name,
+                    Value = method,
+                    Accessibility = Attribute.GetCustomAttribute(p, typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    IsConstant = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null,
+                    IsGetter = true
+                };
+
+                Instance?.Properties.Add(property);
+
+                var setter = p.GetSetMethod(false);
+
+                if (setter == null) continue;
+
+                if (!setter.IsPublic) continue;
+
+                dm = new DynamicMethod("SetValue", typeof(void), new Type[] { typeof(SkryptObject), typeof(SkryptObject) }, typeof(SkryptObject), true);
+                lgen = dm.GetILGenerator();
+
+                lgen.Emit(OpCodes.Ldarg_0);
+                lgen.Emit(OpCodes.Ldarg_1);
+
+                Type parameterType = setter.GetParameters()[0].ParameterType;
+
+                if (parameterType.GetTypeInfo().IsValueType) {
+                    lgen.Emit(OpCodes.Unbox_Any, setter.ReturnType);
+                }
+
+                lgen.Emit(OpCodes.Call, setter);
+                lgen.Emit(OpCodes.Ret);
+
+                var setdel = dm.CreateDelegate(typeof(SkryptSetDelegate)) as SkryptSetDelegate;
+
+                var setMethod = new SetMethod {
+                    Method = setdel,
+                    Name = p.Name
+                };
+
+                property = new SkryptProperty {
+                    Name = p.Name,
+                    Value = setMethod,
+                    Accessibility = Attribute.GetCustomAttribute(p, typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    IsConstant = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null,
+                    IsSetter = true
+                };
+
+                Instance?.Properties.Add(property);
             }
 
             var classes = type.GetNestedTypes();
@@ -131,7 +206,7 @@ namespace Skrypt.Library.Reflection
 
                 engine.GlobalScope.AddType(className, Instance);              
             }
-
+             
             return Object;
         }
     }

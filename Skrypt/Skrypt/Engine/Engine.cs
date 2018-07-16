@@ -59,9 +59,6 @@ namespace Skrypt.Engine
 
             var systemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
 
-            //foreach (var property in systemObject.Properties)
-            //    GlobalScope.AddVariable(property.Name, property.Value, true);
-
             GlobalScope.AddVariable(systemObject.Name, systemObject, true);
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
@@ -251,7 +248,7 @@ namespace Skrypt.Engine
             double parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            Console.WriteLine("Program:\n" + programNode);
+            //Console.WriteLine("Program:\n" + programNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
@@ -261,7 +258,7 @@ namespace Skrypt.Engine
             stopwatch.Stop();
             double execute = stopwatch.ElapsedMilliseconds;
 
-            Console.WriteLine($"Execution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
+            Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
             int instances = 1000;
             stopwatch = Stopwatch.StartNew();

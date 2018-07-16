@@ -12,8 +12,8 @@ namespace Skrypt {
 
     [Constant]
     public class Vector : SkryptType {
-        static Vector ToVector (SkryptObject[] args, int index) {
-            if (index > args.Length - 1) return new Vector(0,0,0);
+        static Vector ToVector(SkryptObject[] args, int index) {
+            if (index > args.Length - 1) return new Vector(0, 0, 0);
 
             return (Vector)args[index];
         }
@@ -70,9 +70,12 @@ namespace Skrypt {
                 }),
         };
 
-        public Classes.Numeric X;
-        public Classes.Numeric Y;
-        public Classes.Numeric Z;
+        public Classes.Numeric X { get; set; } = 0;
+        public Classes.Numeric Y { get; set; } = 0;
+        public Classes.Numeric Z { get; set; } = 0;
+        public Classes.Numeric Length => length(this);
+        public Classes.Numeric Length2 => length2(this);
+        public Vector Normalized => normalize(this);
 
         public override bool CreateCopyOnAssignment => true;
         public override string Name => "vector";
@@ -87,16 +90,16 @@ namespace Skrypt {
             Z = z;
         }
 
-        private static double Length2 (Vector v) {
+        private static double length2 (Vector v) {
             return (Math.Pow(v.X, 2) + Math.Pow(v.Y, 2) + Math.Pow(v.Z, 2));
         }
 
-        private static double Length(Vector v) {
-            return Math.Sqrt(Length2(v));
+        private static double length(Vector v) {
+            return Math.Sqrt(length2(v));
         }
 
-        private static Vector Normalize(Vector v) {
-            return new Vector(v.X / Length(v),v.Y / Length(v),v.Z / Length(v));
+        private static Vector normalize(Vector v) {
+            return new Vector(v.X / length(v),v.Y / length(v),v.Z / length(v));
         }
 
         private static Vector Cross(Vector v1, Vector v2) {
@@ -127,31 +130,6 @@ namespace Skrypt {
             vec.Z = z;
 
             return new SkryptObject();
-        }
-
-        [Instance, Getter] // Get X component
-        public static SkryptObject _X(SkryptObject self, SkryptObject[] values) {
-            return ((Vector)self).X;
-        }
-
-        [Instance, Getter] // Get Y component
-        public static SkryptObject _Y(SkryptObject self, SkryptObject[] values) {
-            return ((Vector)self).Y;
-        }
-
-        [Instance, Getter] // Get Z component
-        public static SkryptObject _Z(SkryptObject self, SkryptObject[] values) {
-            return ((Vector)self).Z;
-        }
-
-        [Instance, Getter]
-        public static SkryptObject Length(SkryptObject self, SkryptObject[] values) {
-            return (Classes.Numeric)Length((Vector)self);
-        }
-
-        [Instance, Getter]
-        public static SkryptObject Normalized(SkryptObject self, SkryptObject[] values) {
-            return Normalize((Vector)self);
         }
 
         [Instance, Constant]

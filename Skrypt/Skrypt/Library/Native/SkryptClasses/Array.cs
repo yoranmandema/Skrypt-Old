@@ -9,8 +9,6 @@ namespace Skrypt.Library.Native
         [Constant]
         public class Array : SkryptType
         {
-            public int LastIndex = 0;
-
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation("add", typeof(Array), typeof(SkryptObject),
@@ -78,14 +76,16 @@ namespace Skrypt.Library.Native
                     })
             };
 
+            public List<SkryptObject> Value { get; set; } = new List<SkryptObject>();
+
+            public Numeric Length => this.Value.Count;
+
             public override string Name => "array";
 
             public Array()
             {
 
             }
-
-            public List<SkryptObject> Value { get; set; } = new List<SkryptObject>();
 
             private static int IndexFromObject(SkryptObject Object)
             {
@@ -97,14 +97,6 @@ namespace Skrypt.Library.Native
                     index = Convert.ToInt32((Numeric) Object);
 
                 return index;
-            }
-
-            [Instance,Constant]
-            public static SkryptObject Length(SkryptObject self, SkryptObject[] values)
-            {
-                var a = (Array) self;
-
-                return (Numeric) a.Value.Count;
             }
 
             public override string ToString()

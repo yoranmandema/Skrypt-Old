@@ -7,6 +7,7 @@ using System;
 namespace Skrypt.Library
 {
     public delegate SkryptObject SkryptDelegate(SkryptObject self, SkryptObject[] input);
+    public delegate void SkryptSetDelegate(SkryptObject self, SkryptObject value);
 
     public class SkryptMethod : SkryptObject
     {
@@ -52,11 +53,20 @@ namespace Skrypt.Library
         {
             var returnValue = Method(self, parameters);
 
-            if (returnValue.GetType().IsSubclassOf(typeof(SkryptType))) {
+            if (typeof(SkryptType).IsAssignableFrom(returnValue.GetType())) {
                 returnValue.SetPropertiesTo(engine.Executor.GetType(((SkryptType)returnValue).TypeName, scope));
             }
 
             return returnValue;
+        }
+    }
+
+    public class SetMethod : SkryptMethod {
+        public SkryptSetDelegate Method;
+
+        public void Execute(SkryptEngine engine, SkryptObject self, SkryptObject value,
+            ScopeContext scope) {
+            Method(self, value);
         }
     }
 }

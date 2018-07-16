@@ -45,10 +45,10 @@ namespace Skrypt.Library
 
                 if (op.Name != n) continue;
 
-                if (!(tl.IsSubclassOf(op.TypeLeft) || tl == op.TypeLeft)) continue;
+                if (!op.TypeLeft.IsAssignableFrom(tl)) continue;
 
                 if (op.TypeRight != null)
-                    if (!(tr.IsSubclassOf(op.TypeRight) || tr == op.TypeRight))
+                    if (!op.TypeRight.IsAssignableFrom(tr))
                         continue;
 
                 return op;
