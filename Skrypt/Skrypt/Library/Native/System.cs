@@ -3,7 +3,8 @@ using Skrypt.Execution;
 
 namespace Skrypt.Library.Native
 {
-    public partial class System
+    [Constant, Static]
+    public partial class System : SkryptObject
     {
         [Constant]
         public static SkryptObject Print(SkryptObject self, SkryptObject[] values)

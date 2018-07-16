@@ -32,6 +32,7 @@ namespace Skrypt.Library
 
     public class SkryptObject
     {
+        [JsonIgnore]
         public List<Operation> Operations = new List<Operation>();
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
         public virtual string Name { get; set; }

@@ -1,6 +1,3 @@
 using System;
 
-a = "";
-a.Length = 1;
-
-Print("lmao".Length);
+Print(Math.Pi);

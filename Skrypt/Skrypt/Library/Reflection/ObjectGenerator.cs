@@ -9,8 +9,7 @@ namespace Skrypt.Library.Reflection
 {
     internal static class ObjectGenerator
     {
-        public static SkryptObject MakeObjectFromClass(Type type, SkryptEngine engine, SkryptObject parent = null)
-        {
+        public static SkryptObject MakeObjectFromClass(Type type, SkryptEngine engine, SkryptObject parent = null) {
             var Object = new SkryptObject();
             var isType = false;
             Object.Name = type.Name;
@@ -18,12 +17,11 @@ namespace Skrypt.Library.Reflection
             if (parent != null) Object.Name = parent.Name + "." + Object.Name;
 
             if (typeof(SkryptType).IsAssignableFrom(type)) isType = true;
-
             SkryptObject Instance = null;
 
-            if (isType) {
+            //if (isType) {
                 Instance = (SkryptObject)Activator.CreateInstance(type);
-            }
+            //}
 
             var methods = type.GetMethods().Where(m =>
             {
@@ -35,20 +33,28 @@ namespace Skrypt.Library.Reflection
 
                 if (m.GetParameters()[1].ParameterType != typeof(SkryptObject[])) return false;
 
-                return m.IsPublic;
+                return true;
             });
 
             foreach (var m in methods)
             {
+                SkryptDelegate del;
+
+                if (m.IsStatic) {
+                    del = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), m);
+                } else {
+                    del = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), Instance, m);
+                }
+
                 var method = new SharpMethod {
-                    Method = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), m),
+                    Method = del,
                     Name = m.Name
                 };
 
                 var property = new SkryptProperty {
                     Name = m.Name,
                     Value = method,
-                    Accessibility = Attribute.GetCustomAttribute(m,typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    Accessibility = m.IsPublic ? Access.Public : Access.Private,
                     IsConstant = Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null
                 };
 
@@ -56,7 +62,7 @@ namespace Skrypt.Library.Reflection
                     property.Name = property.Name.TrimStart('_');
                 }
 
-                if (Attribute.GetCustomAttribute(m, typeof(InstanceAttribute)) != null) {
+                if (!m.IsStatic) {
                     Instance?.Properties.Add(property);
                 }
                 else {
@@ -64,25 +70,19 @@ namespace Skrypt.Library.Reflection
                 }
             }
 
-            var fields = type.GetFields().Where(f =>
-            {
-                if (!typeof(SkryptObject).IsAssignableFrom(f.FieldType)) return false;
-                if (!f.IsStatic) return false;
-
-                return f.IsPublic;
-            });
+            var fields = type.GetFields().Where(f => typeof(SkryptObject).IsAssignableFrom(f.FieldType));
 
             foreach (var f in fields)
             {
                 var property = new SkryptProperty
                 {
                     Name = f.Name,
-                    Value = (SkryptObject) f.GetValue(null),
-                    Accessibility = Attribute.GetCustomAttribute(f, typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    Value = (SkryptObject) f.GetValue(Instance),
+                    Accessibility = f.IsPublic ? Access.Public : Access.Private,
                     IsConstant = Attribute.GetCustomAttribute(f, typeof(ConstantAttribute)) != null
                 };
 
-                if (Attribute.GetCustomAttribute(f, typeof(InstanceAttribute)) != null) {
+                if (!f.IsStatic) {
                     Instance?.Properties.Add(property);
                 }
                 else {
@@ -119,7 +119,7 @@ namespace Skrypt.Library.Reflection
                 var property = new SkryptProperty {
                     Name = p.Name,
                     Value = method,
-                    Accessibility = Attribute.GetCustomAttribute(p, typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    Accessibility = getter.IsPublic ? Access.Public : Access.Private,
                     IsConstant = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null,
                     IsGetter = true
                 };
@@ -157,7 +157,7 @@ namespace Skrypt.Library.Reflection
                 property = new SkryptProperty {
                     Name = p.Name,
                     Value = setMethod,
-                    Accessibility = Attribute.GetCustomAttribute(p, typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    Accessibility = setter.IsPublic ? Access.Public : Access.Private,
                     IsConstant = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null,
                     IsSetter = true
                 };
@@ -177,15 +177,15 @@ namespace Skrypt.Library.Reflection
                 {
                     Name = c.Name,
                     Value = v,
-                    Accessibility = Attribute.GetCustomAttribute(c, typeof(PrivateAttribute)) != null ? Access.Private : Access.Public,
+                    Accessibility = Access.Public,
                     IsConstant = Attribute.GetCustomAttribute(c, typeof(ConstantAttribute)) != null
                 };
 
-                if (Attribute.GetCustomAttribute(c, typeof(InstanceAttribute)) != null) {
+                if (Attribute.GetCustomAttribute(c, typeof(StaticAttribute)) == null) {
                     Instance?.Properties.Add(property);
                 }
                 else {
-                    Object.Properties.Add(property);
+                    Object.Properties.Add(property);                  
                 }
             }
           
@@ -201,7 +201,8 @@ namespace Skrypt.Library.Reflection
                 Object.Properties.Add(new SkryptProperty {
                     Name = "TypeName",
                     Value = new Native.System.String(className),
-                    IsConstant = true
+                    IsConstant = true,
+                    IsStatic = true                    
                 });
 
                 engine.GlobalScope.AddType(className, Instance);              

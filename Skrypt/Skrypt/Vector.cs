@@ -132,13 +132,13 @@ namespace Skrypt {
             return new SkryptObject();
         }
 
-        [Instance, Constant]
-        public static SkryptObject Cross(SkryptObject self, SkryptObject[] values) {
+        [Constant]
+        public SkryptObject Cross(SkryptObject self, SkryptObject[] values) {
             return Cross((Vector)self, ToVector(values,0));
         }
 
-        [Instance, Constant]
-        public static SkryptObject Dot(SkryptObject self, SkryptObject[] values) {
+        [Constant]
+        public SkryptObject Dot(SkryptObject self, SkryptObject[] values) {
             return (Classes.Numeric)Dot((Vector)self, ToVector(values, 0));
         }
     }

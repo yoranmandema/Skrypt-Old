@@ -56,7 +56,6 @@ namespace Skrypt.Engine
 
             StandardMethods.AddMethodsToEngine();
 
-
             var systemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
 
             GlobalScope.AddVariable(systemObject.Name, systemObject, true);
