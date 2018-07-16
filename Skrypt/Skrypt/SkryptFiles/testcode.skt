@@ -1,5 +1,3 @@
-const func a () {
-
+class a {
+	public a = 1;
 }
-
-a = 2;

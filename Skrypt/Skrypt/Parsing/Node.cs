@@ -7,8 +7,9 @@ namespace Skrypt.Parsing
     public enum Modifier : byte {
         None = 2,
         Public = 4,
-        Static = 8,
-        Const = 16
+        Private = 8,
+        Static = 16,
+        Const = 32
     }
 
     /// <summary>

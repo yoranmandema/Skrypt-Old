@@ -167,56 +167,71 @@ namespace Skrypt.Execution
             SkryptObject Object = new SkryptObject { Name = ClassName };
             SkryptType TypeObject = new SkryptType { Name = ClassName };
 
-            for (int i = 0; i < node.SubNodes.Count; i++) {
-                Node PropertyNode = node.SubNodes[i];
-                var Properties = PropertyNode.SubNodes[0].SubNodes;
-                SkryptProperty Property = new SkryptProperty();
+            var scope = ExecuteBlock(node,scopeContext, new SubContext { InClassDeclaration = true});
 
-                if (PropertyNode.SubNodes[1].Body == "assign") {
-                    Property.Name = PropertyNode.SubNodes[1].SubNodes[0].Body;
-                    Property.Value = ExecuteExpression(PropertyNode.SubNodes[1].SubNodes[1], scopeContext);
-                } else if (PropertyNode.SubNodes[1].TokenType == "MethodDeclaration") {
-                    Property.Name = PropertyNode.SubNodes[1].Body;
-                    Property.Value = ExecuteMethodDeclaration(PropertyNode.SubNodes[1], scopeContext);
+            foreach (var v in scope.Variables) {
+                Console.WriteLine(v.Key);
+                Console.WriteLine("\t Name: " + v.Value.Value);
+                Console.WriteLine("\t Const: " + ((v.Value.Modifiers & Modifier.Const) != 0));
+                Console.WriteLine("\t Static: " + ((v.Value.Modifiers & Modifier.Const) != 0));
+                Console.WriteLine("\t Public: " + ((v.Value.Modifiers & Modifier.Const) != 0));
+                Console.WriteLine("\t Private: " + ((v.Value.Modifiers & Modifier.Const) != 0));
+                Console.WriteLine("\t None: " + (v.Value.Modifiers == Modifier.None));
 
-                    if (Property.Name == "Constructor") {
-                        Property.Accessibility = Access.Private;
-                        Object.Properties.Add(Property);
-
-                        Object.Properties.Add(new SkryptProperty {
-                            Name = "TypeName",
-                            Value = new Library.Native.System.String(ClassName)
-                        });
-
-                        scopeContext.AddType(ClassName,TypeObject);
-                    }
-                } else if (PropertyNode.SubNodes[1].TokenType == "ClassDeclaration") {
-                    Property.Name = PropertyNode.SubNodes[1].Body;
-                    Property.Value = ExecuteClassDeclaration(PropertyNode.SubNodes[1], scopeContext);
-                }
-
-                if (Properties.Find(x => x.Body == "static") != null) {
-                    Object.Properties.Add(Property);
-                } else {
-                    TypeObject.Properties.Add(Property);
-                }
-
-                foreach (var p in Properties) {
-                    switch (p.Body) {
-                        case "private":
-                            Property.Accessibility = Access.Private;
-                            break;
-                        case "public":
-                            Property.Accessibility = Access.Public;
-                            break;
-                        case "constant":
-                            Property.IsConstant = true;
-                            break;
-                    }
-                }
             }
 
             return Object;
+
+            //for (int i = 0; i < node.SubNodes.Count; i++) {
+            //    Node PropertyNode = node.SubNodes[i];
+            //    var Properties = PropertyNode.SubNodes[0].SubNodes;
+            //    SkryptProperty Property = new SkryptProperty();
+
+            //    if (PropertyNode.SubNodes[1].Body == "assign") {
+            //        Property.Name = PropertyNode.SubNodes[1].SubNodes[0].Body;
+            //        Property.Value = ExecuteExpression(PropertyNode.SubNodes[1].SubNodes[1], scopeContext);
+            //    } else if (PropertyNode.SubNodes[1].TokenType == "MethodDeclaration") {
+            //        Property.Name = PropertyNode.SubNodes[1].Body;
+            //        Property.Value = ExecuteMethodDeclaration(PropertyNode.SubNodes[1], scopeContext);
+
+            //        if (Property.Name == "Constructor") {
+            //            Property.Accessibility = Access.Private;
+            //            Object.Properties.Add(Property);
+
+            //            Object.Properties.Add(new SkryptProperty {
+            //                Name = "TypeName",
+            //                Value = new Library.Native.System.String(ClassName)
+            //            });
+
+            //            scopeContext.AddType(ClassName,TypeObject);
+            //        }
+            //    } else if (PropertyNode.SubNodes[1].TokenType == "ClassDeclaration") {
+            //        Property.Name = PropertyNode.SubNodes[1].Body;
+            //        Property.Value = ExecuteClassDeclaration(PropertyNode.SubNodes[1], scopeContext);
+            //    }
+
+            //    if (Properties.Find(x => x.Body == "static") != null) {
+            //        Object.Properties.Add(Property);
+            //    } else {
+            //        TypeObject.Properties.Add(Property);
+            //    }
+
+            //    foreach (var p in Properties) {
+            //        switch (p.Body) {
+            //            case "private":
+            //                Property.Accessibility = Access.Private;
+            //                break;
+            //            case "public":
+            //                Property.Accessibility = Access.Public;
+            //                break;
+            //            case "constant":
+            //                Property.IsConstant = true;
+            //                break;
+            //        }
+            //    }
+            //}
+
+            //return Object;
         }
 
         public UserMethod ExecuteMethodDeclaration (Node node, ScopeContext scopeContext) {
@@ -245,7 +260,7 @@ namespace Skrypt.Execution
 
             foreach (var property in Object.Properties) {
                 if (property.Accessibility == Library.Access.Public) {
-                    scopeContext.AddVariable(property.Name, property.Value, true);
+                    scopeContext.AddVariable(property.Name, property.Value, Modifier.Const);
                 }
             }
 
@@ -286,7 +301,7 @@ namespace Skrypt.Execution
                 else if (subNode.TokenType == "MethodDeclaration") {
                     var result = ExecuteMethodDeclaration(subNode, scope);
 
-                    scope.AddVariable(result.CallName, result, (subNode.Modifiers & Modifier.Const) != 0);
+                    scope.AddVariable(result.CallName, result, subNode.Modifiers);
                 }
                 else if (subNode.TokenType == "ClassDeclaration") {
                     var Object = ExecuteClassDeclaration(subNode, scope);
@@ -416,13 +431,13 @@ namespace Skrypt.Execution
                         var variable = GetVariable(node.SubNodes[0].Body, scopeContext);
 
                         if (variable != null && !scopeContext.SubContext.StrictlyLocal) {
-                            if (variable.IsConstant)
+                            if ((variable.Modifiers & Modifier.Const) != 0)
                                 _engine.ThrowError("Variable is marked as constant and can thus not be modified.");
 
                             variable.Value = result;
                         }
                         else {
-                            scopeContext.AddVariable(node.SubNodes[0].Body, result, (node.Modifiers & Modifier.Const) != 0);
+                            scopeContext.AddVariable(node.SubNodes[0].Body, result, node.Modifiers);
                         }
                     }
                     else if (node.SubNodes[0].Body == "access")
@@ -430,7 +445,7 @@ namespace Skrypt.Execution
                         var target = ExecuteExpression(node.SubNodes[0].SubNodes[1], scopeContext);
                         var accessResult = ExecuteAccess(target, node.SubNodes[0].SubNodes[0], scopeContext, true);
 
-                        if (accessResult.IsConstant)
+                        if ((accessResult.Modifiers & Modifier.Const) != 0)
                             _engine.ThrowError("Property is marked as constant and can thus not be modified.");
 
                         if (accessResult.IsSetter) {
@@ -610,7 +625,7 @@ namespace Skrypt.Execution
                 if (Object != null) {
                     for (int i = 0; i < Object.Properties.Count; i++) {
                         var p = Object.Properties[i];
-                        methodContext.AddVariable(p.Name, p.Value, p.IsConstant);
+                        methodContext.AddVariable(p.Name, p.Value, p.Modifiers);
                     }
                 }
 

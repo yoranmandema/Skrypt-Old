@@ -91,23 +91,23 @@ namespace Skrypt.Parsing
         }
 
         Node ParseContents (List<Token> Tokens, string Name) {
-            Node node = new Node { Body = "Block", TokenType = "ClassDeclaration" };
-            int i = 0;
+            //Node node = new Node { Body = "Block", TokenType = "ClassDeclaration" };
+            //int i = 0;
 
-            while (i < Tokens.Count - 1) {
-                var test = TryParse(Tokens.GetRange(i, Tokens.Count - i), Name);
-                i += test.Delta;
+            //while (i < Tokens.Count - 1) {
+            //    var test = TryParse(Tokens.GetRange(i, Tokens.Count - i), Name);
+            //    i += test.Delta;
 
-                if (test.Node.TokenType == "MethodDeclaration")
-                {
-                    node.AddAsFirst(test.Node);
-                    continue;
-                }
+            //    if (test.Node.TokenType == "MethodDeclaration")
+            //    {
+            //        node.AddAsFirst(test.Node);
+            //        continue;
+            //    }
 
-                node.Add(test.Node);
-            }
+            //    node.Add(test.Node);
+            //}
 
-            return node;
+            return _engine.GeneralParser.Parse(Tokens);
         }
 
         public ParseResult Parse(List<Token> tokens)

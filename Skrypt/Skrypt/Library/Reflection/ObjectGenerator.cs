@@ -55,7 +55,7 @@ namespace Skrypt.Library.Reflection
                     Name = m.Name,
                     Value = method,
                     Accessibility = m.IsPublic ? Access.Public : Access.Private,
-                    IsConstant = Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null
+                    Modifiers = Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None
                 };
 
                 if (property.IsGetter) {
@@ -79,7 +79,7 @@ namespace Skrypt.Library.Reflection
                     Name = f.Name,
                     Value = (SkryptObject) f.GetValue(Instance),
                     Accessibility = f.IsPublic ? Access.Public : Access.Private,
-                    IsConstant = Attribute.GetCustomAttribute(f, typeof(ConstantAttribute)) != null
+                    Modifiers = Attribute.GetCustomAttribute(f, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None
                 };
 
                 if (!f.IsStatic) {
@@ -120,7 +120,7 @@ namespace Skrypt.Library.Reflection
                     Name = p.Name,
                     Value = method,
                     Accessibility = getter.IsPublic ? Access.Public : Access.Private,
-                    IsConstant = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null,
+                    Modifiers = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None,
                     IsGetter = true
                 };
 
@@ -158,7 +158,7 @@ namespace Skrypt.Library.Reflection
                     Name = p.Name,
                     Value = setMethod,
                     Accessibility = setter.IsPublic ? Access.Public : Access.Private,
-                    IsConstant = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null,
+                    Modifiers = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None,
                     IsSetter = true
                 };
 
@@ -178,7 +178,7 @@ namespace Skrypt.Library.Reflection
                     Name = c.Name,
                     Value = v,
                     Accessibility = Access.Public,
-                    IsConstant = Attribute.GetCustomAttribute(c, typeof(ConstantAttribute)) != null
+                    Modifiers = Attribute.GetCustomAttribute(c, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None
                 };
 
                 if (Attribute.GetCustomAttribute(c, typeof(StaticAttribute)) == null) {
@@ -195,14 +195,13 @@ namespace Skrypt.Library.Reflection
                 Instance.Properties.Add(new SkryptProperty {
                     Name = "TypeName",
                     Value = new Native.System.String(className),
-                    IsConstant = true
+                    Modifiers = Parsing.Modifier.Const
                 });
 
                 Object.Properties.Add(new SkryptProperty {
                     Name = "TypeName",
                     Value = new Native.System.String(className),
-                    IsConstant = true,
-                    IsStatic = true                    
+                    Modifiers = Parsing.Modifier.Const | Parsing.Modifier.Static        
                 });
 
                 engine.GlobalScope.AddType(className, Instance);              

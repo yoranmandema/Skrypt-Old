@@ -138,7 +138,7 @@ namespace Skrypt.Parsing
                         appliedModifiers = appliedModifiers | Modifier.Public;
                         break;
                     case "private":
-                        appliedModifiers = appliedModifiers & ~Modifier.Public;
+                        appliedModifiers = appliedModifiers | Modifier.Private;
                         break;
                     case "static":
                         appliedModifiers = appliedModifiers | Modifier.Static;

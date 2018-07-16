@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Skrypt.Library;
 using System;
+using Skrypt.Parsing;
 
 namespace Skrypt.Execution
 {
@@ -14,6 +15,7 @@ namespace Skrypt.Execution
         public bool SkippedLoop = false;
         public bool InMethod = false;
         public bool StrictlyLocal = false;
+        public bool InClassDeclaration = true;
         public UserMethod Method = null;
         public SkryptObject ReturnObject = null;
 
@@ -26,6 +28,7 @@ namespace Skrypt.Execution
             SkippedLoop = SkippedLoop || other.SkippedLoop;
             InMethod = InMethod || other.InMethod;
             StrictlyLocal = StrictlyLocal || other.StrictlyLocal;
+            InClassDeclaration = InClassDeclaration || other.InClassDeclaration;
 
             //Console.WriteLine("aft: " + JsonConvert.SerializeObject(this, Formatting.None).Replace("\"", ""));
         }
@@ -44,13 +47,13 @@ namespace Skrypt.Execution
             return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
         }
 
-        public void AddVariable(string name, SkryptObject value, bool isConstant = false)
+        public void AddVariable(string name, SkryptObject value, Modifier modifiers = Modifier.None)
         {
             Variables[name] = new Variable
             {
                 Name = name,
                 Value = value,
-                IsConstant = isConstant,
+                Modifiers = modifiers,
                 Scope = this
             };
         }

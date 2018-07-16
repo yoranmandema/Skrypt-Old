@@ -60,7 +60,7 @@ namespace Skrypt.Engine
 
             var systemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
 
-            GlobalScope.AddVariable(systemObject.Name, systemObject, true);
+            GlobalScope.AddVariable(systemObject.Name, systemObject, Modifier.Const);
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
@@ -142,7 +142,7 @@ namespace Skrypt.Engine
 
         public void AddClass(Type type) {
             var generated = ObjectGenerator.MakeObjectFromClass(type, this);
-            GlobalScope.AddVariable(generated.Name, generated, true);
+            GlobalScope.AddVariable(generated.Name, generated, Modifier.Const);
         }
 
         /// <summary>
