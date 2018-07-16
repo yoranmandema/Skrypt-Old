@@ -173,65 +173,17 @@ namespace Skrypt.Execution
                 Console.WriteLine(v.Key);
                 Console.WriteLine("\t Name: " + v.Value.Value);
                 Console.WriteLine("\t Const: " + ((v.Value.Modifiers & Modifier.Const) != 0));
-                Console.WriteLine("\t Static: " + ((v.Value.Modifiers & Modifier.Const) != 0));
-                Console.WriteLine("\t Public: " + ((v.Value.Modifiers & Modifier.Const) != 0));
-                Console.WriteLine("\t Private: " + ((v.Value.Modifiers & Modifier.Const) != 0));
+                Console.WriteLine("\t Static: " + ((v.Value.Modifiers & Modifier.Static) != 0));
+                Console.WriteLine("\t Public: " + ((v.Value.Modifiers & Modifier.Public) != 0));
+                Console.WriteLine("\t Private: " + ((v.Value.Modifiers & Modifier.Private) != 0));
                 Console.WriteLine("\t None: " + (v.Value.Modifiers == Modifier.None));
 
+                if (v.Value.Modifiers != Modifier.None) {
+
+                }
             }
 
             return Object;
-
-            //for (int i = 0; i < node.SubNodes.Count; i++) {
-            //    Node PropertyNode = node.SubNodes[i];
-            //    var Properties = PropertyNode.SubNodes[0].SubNodes;
-            //    SkryptProperty Property = new SkryptProperty();
-
-            //    if (PropertyNode.SubNodes[1].Body == "assign") {
-            //        Property.Name = PropertyNode.SubNodes[1].SubNodes[0].Body;
-            //        Property.Value = ExecuteExpression(PropertyNode.SubNodes[1].SubNodes[1], scopeContext);
-            //    } else if (PropertyNode.SubNodes[1].TokenType == "MethodDeclaration") {
-            //        Property.Name = PropertyNode.SubNodes[1].Body;
-            //        Property.Value = ExecuteMethodDeclaration(PropertyNode.SubNodes[1], scopeContext);
-
-            //        if (Property.Name == "Constructor") {
-            //            Property.Accessibility = Access.Private;
-            //            Object.Properties.Add(Property);
-
-            //            Object.Properties.Add(new SkryptProperty {
-            //                Name = "TypeName",
-            //                Value = new Library.Native.System.String(ClassName)
-            //            });
-
-            //            scopeContext.AddType(ClassName,TypeObject);
-            //        }
-            //    } else if (PropertyNode.SubNodes[1].TokenType == "ClassDeclaration") {
-            //        Property.Name = PropertyNode.SubNodes[1].Body;
-            //        Property.Value = ExecuteClassDeclaration(PropertyNode.SubNodes[1], scopeContext);
-            //    }
-
-            //    if (Properties.Find(x => x.Body == "static") != null) {
-            //        Object.Properties.Add(Property);
-            //    } else {
-            //        TypeObject.Properties.Add(Property);
-            //    }
-
-            //    foreach (var p in Properties) {
-            //        switch (p.Body) {
-            //            case "private":
-            //                Property.Accessibility = Access.Private;
-            //                break;
-            //            case "public":
-            //                Property.Accessibility = Access.Public;
-            //                break;
-            //            case "constant":
-            //                Property.IsConstant = true;
-            //                break;
-            //        }
-            //    }
-            //}
-
-            //return Object;
         }
 
         public UserMethod ExecuteMethodDeclaration (Node node, ScopeContext scopeContext) {
@@ -259,7 +211,7 @@ namespace Skrypt.Execution
             var Object = ExecuteExpression(node.SubNodes[0], scopeContext);
 
             foreach (var property in Object.Properties) {
-                if (property.Accessibility == Library.Access.Public) {
+                if ((property.Modifiers & Modifier.Private) != 0) {
                     scopeContext.AddVariable(property.Name, property.Value, Modifier.Const);
                 }
             }
@@ -343,7 +295,7 @@ namespace Skrypt.Execution
 
             if (find == null) _engine.ThrowError("Object does not contain property '" + toFind + "'!");
 
-            if (find.Accessibility == Access.Private) {
+            if ((find.Modifiers & Modifier.Private) != 0) {
                 _engine.ThrowError("Property '" + toFind + "' is inaccessable due to its protection level.");
             }
 
@@ -437,6 +389,8 @@ namespace Skrypt.Execution
                             variable.Value = result;
                         }
                         else {
+
+                            Console.WriteLine(node.Modifiers);
                             scopeContext.AddVariable(node.SubNodes[0].Body, result, node.Modifiers);
                         }
                     }

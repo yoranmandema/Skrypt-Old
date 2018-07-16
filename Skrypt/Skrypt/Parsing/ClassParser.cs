@@ -107,7 +107,10 @@ namespace Skrypt.Parsing
             //    node.Add(test.Node);
             //}
 
-            return _engine.GeneralParser.Parse(Tokens);
+            var result = _engine.GeneralParser.Parse(Tokens);
+            result.TokenType = "ClassDeclaration";
+
+            return result;
         }
 
         public ParseResult Parse(List<Token> tokens)

@@ -53,10 +53,18 @@ namespace Skrypt.Library.Reflection
 
                 var property = new SkryptProperty {
                     Name = m.Name,
-                    Value = method,
-                    Accessibility = m.IsPublic ? Access.Public : Access.Private,
-                    Modifiers = Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None
+                    Value = method
                 };
+
+                if (Attribute.GetCustomAttribute(m, typeof(ConstantAttribute)) != null) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Const;
+                }
+
+                if (m.IsPublic) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Public;
+                } else {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Private;
+                }
 
                 if (property.IsGetter) {
                     property.Name = property.Name.TrimStart('_');
@@ -77,10 +85,19 @@ namespace Skrypt.Library.Reflection
                 var property = new SkryptProperty
                 {
                     Name = f.Name,
-                    Value = (SkryptObject) f.GetValue(Instance),
-                    Accessibility = f.IsPublic ? Access.Public : Access.Private,
-                    Modifiers = Attribute.GetCustomAttribute(f, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None
+                    Value = (SkryptObject) f.GetValue(Instance)
                 };
+
+                if (Attribute.GetCustomAttribute(f, typeof(ConstantAttribute)) != null) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Const;
+                }
+
+                if (f.IsPublic) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Public;
+                }
+                else {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Private;
+                }
 
                 if (!f.IsStatic) {
                     Instance?.Properties.Add(property);
@@ -119,10 +136,19 @@ namespace Skrypt.Library.Reflection
                 var property = new SkryptProperty {
                     Name = p.Name,
                     Value = method,
-                    Accessibility = getter.IsPublic ? Access.Public : Access.Private,
-                    Modifiers = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None,
                     IsGetter = true
                 };
+
+                if (Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Const;
+                }
+
+                if (getter.IsPublic) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Public;
+                }
+                else {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Private;
+                }
 
                 Instance?.Properties.Add(property);
 
@@ -157,10 +183,19 @@ namespace Skrypt.Library.Reflection
                 property = new SkryptProperty {
                     Name = p.Name,
                     Value = setMethod,
-                    Accessibility = setter.IsPublic ? Access.Public : Access.Private,
-                    Modifiers = Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None,
                     IsSetter = true
                 };
+
+                if (Attribute.GetCustomAttribute(p, typeof(ConstantAttribute)) != null) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Const;
+                }
+
+                if (setter.IsPublic) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Public;
+                }
+                else {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Private;
+                }
 
                 Instance?.Properties.Add(property);
             }
@@ -177,9 +212,18 @@ namespace Skrypt.Library.Reflection
                 {
                     Name = c.Name,
                     Value = v,
-                    Accessibility = Access.Public,
-                    Modifiers = Attribute.GetCustomAttribute(c, typeof(ConstantAttribute)) != null ? Parsing.Modifier.Const : Parsing.Modifier.None
                 };
+
+                if (Attribute.GetCustomAttribute(c, typeof(ConstantAttribute)) != null) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Const;
+                }
+
+                if (c.IsPublic) {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Public;
+                }
+                else {
+                    property.Modifiers = property.Modifiers | Parsing.Modifier.Private;
+                }
 
                 if (Attribute.GetCustomAttribute(c, typeof(StaticAttribute)) == null) {
                     Instance?.Properties.Add(property);
