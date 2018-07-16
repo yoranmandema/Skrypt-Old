@@ -37,7 +37,6 @@ namespace Skrypt.Library
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
         public virtual string Name { get; set; }
 
-
         public Operation GetOperation(string n, Type tl, Type tr, List<Operation> ops)
         {
             for (var i = 0; i < ops.Count; i++)

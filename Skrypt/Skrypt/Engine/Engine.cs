@@ -31,6 +31,7 @@ namespace Skrypt.Engine
         public ScopeContext GlobalScope = new ScopeContext();
         public List<Node> MethodNodes = new List<Node>();
         public MethodParser MethodParser;
+        public ModifierChecker ModifierChecker;
         public List<SkryptMethod> Methods = new List<SkryptMethod>();
         public StandardMethods StandardMethods;
         public StatementParser StatementParser;
@@ -49,6 +50,7 @@ namespace Skrypt.Engine
             ExpressionParser = new ExpressionParser(this);
             GeneralParser = new GeneralParser(this);
             MethodParser = new MethodParser(this);
+            ModifierChecker = new ModifierChecker(this);
             ClassParser = new ClassParser(this);
             Analizer = new Analizer(this);
             Executor = new Executor(this);
@@ -88,7 +90,7 @@ namespace Skrypt.Engine
             );
 
             Tokenizer.AddRule(
-                new Regex(@"class|func|if|elseif|else|while"),
+                new Regex(@"const|using|public|static|class|func|if|elseif|else|while"),
                 TokenTypes.Keyword
             );
 
@@ -247,7 +249,7 @@ namespace Skrypt.Engine
             double parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            //Console.WriteLine("Program:\n" + programNode);
+            Console.WriteLine("Program:\n" + programNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
@@ -265,7 +267,7 @@ namespace Skrypt.Engine
                 GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
             }
             stopwatch.Stop();
-            Console.WriteLine($"Average ({instances} instances): {stopwatch.ElapsedMilliseconds / instances}ms");
+            Console.WriteLine($"Average ({instances} instances): {stopwatch.Elapsed.TotalMilliseconds / instances}ms");
 
             return programNode;
         }

@@ -4,6 +4,13 @@ using Skrypt.Tokenization;
 
 namespace Skrypt.Parsing
 {
+    public enum Modifier : byte {
+        None = 2,
+        Public = 4,
+        Static = 8,
+        Const = 16
+    }
+
     /// <summary>
     ///     Class representing a node or AST
     /// </summary>
@@ -11,10 +18,10 @@ namespace Skrypt.Parsing
     {
         public string Body { get; set; }
 
-        //public object Value { get; set; }
         public string TokenType { get; set; }
         [JsonIgnore] public Token Token { get; set; }
         public List<Node> SubNodes { get; set; } = new List<Node>();
+        public Modifier Modifiers { get; set; } = Modifier.None;
 
         /// <summary>
         ///     Adds a subnode

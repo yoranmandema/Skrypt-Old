@@ -1,5 +1,5 @@
-using System;
+const func a () {
 
-func Update () {
-	Print("Update!");
 }
+
+a = 2;

@@ -24,7 +24,8 @@ namespace Skrypt.Parsing
             "class",
             "using",
             "break",
-            "continue"
+            "continue",
+            "const"
         };
 
         public static List<string> NotPermittedInExpression = new List<string>
@@ -35,6 +36,7 @@ namespace Skrypt.Parsing
             "func",
             "class",
             "using",
+            "const"
         };
 
         public static List<string> ExpressionBreakWords = new List<string>
@@ -47,6 +49,14 @@ namespace Skrypt.Parsing
             "using",
             //"break",
             //"continue",
+        };
+
+        public static List<string> Modifiers = new List<string>
+        {
+            "public",
+            "private",
+            "const",
+            "static"
         };
 
         private readonly SkryptEngine _engine;
@@ -81,24 +91,6 @@ namespace Skrypt.Parsing
             return new ParseResult {Node = node, Delta = surroundedTokens.Count + 1};
         }
 
-        private Exception GetExceptionBasedOnUrgency(Exception e, ref int highestErrorUrgency)
-        {
-            Exception error = null;
-
-            if (e.GetType() == typeof(SkryptException))
-            {
-                var cast = (SkryptException) e;
-
-                if (cast.Urgency >= highestErrorUrgency)
-                {
-                    error = e;
-                    highestErrorUrgency = cast.Urgency;
-                }
-            }
-
-            return error;
-        }
-
         /// <summary>
         ///     Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
         /// </summary>
@@ -121,16 +113,66 @@ namespace Skrypt.Parsing
 
         private ParseResult TryParse(List<Token> tokens)
         {
-            if (tokens[0].Value == "if" || tokens[0].Value == "while" || tokens[0].Value == "for")
-                return _engine.StatementParser.Parse(tokens);
-            if (tokens[0].Value == "func")
-                return _engine.MethodParser.Parse(tokens);
-            if (tokens[0].Value == "class")
-                return _engine.ClassParser.Parse(tokens);
-            if (tokens[0].Value == "using")
-                return _engine.ExpressionParser.ParseUsing(tokens);
+            var i = 0;
+            var t = tokens[i];
+            var usedModifiers = new List<string>();
+            Modifier appliedModifiers = Modifier.None;
 
-            return _engine.ExpressionParser.Parse(tokens);
+            while (Modifiers.Contains(t.Value)) {
+                if (usedModifiers.Contains(t.Value)) {
+                    _engine.ThrowError("Object can't be marked with multiple of the same modifiers", t);
+                }
+
+                if (usedModifiers.Contains("public") && t.Value == "private") {
+                    _engine.ThrowError("Object can't be marked as both private and public", t);
+                }
+
+                if (usedModifiers.Contains("private") && t.Value == "public") {
+                    _engine.ThrowError("Object can't be marked as both private and public", t);
+                }
+
+                usedModifiers.Add(t.Value);
+
+                switch (t.Value) {
+                    case "public":
+                        appliedModifiers = appliedModifiers | Modifier.Public;
+                        break;
+                    case "private":
+                        appliedModifiers = appliedModifiers & ~Modifier.Public;
+                        break;
+                    case "static":
+                        appliedModifiers = appliedModifiers | Modifier.Static;
+                        break;
+                    case "const":
+                        appliedModifiers = appliedModifiers | Modifier.Const;
+                        break;
+                }
+
+                i++;
+                t = tokens[i];
+            }
+
+            var parseTokens = tokens.GetRange(i, tokens.Count - i);
+            ParseResult result = null;
+
+            if (parseTokens[0].Value == "if" || parseTokens[0].Value == "while" || parseTokens[0].Value == "for")
+                result = _engine.StatementParser.Parse(parseTokens);
+            else if (parseTokens[0].Value == "func")
+                result = _engine.MethodParser.Parse(parseTokens);
+            else if (parseTokens[0].Value == "class")
+                result = _engine.ClassParser.Parse(parseTokens);
+            else if (parseTokens[0].Value == "using")
+                result = _engine.ExpressionParser.ParseUsing(parseTokens);
+            else
+                result = _engine.ExpressionParser.Parse(parseTokens);
+
+            result.Node.Modifiers = appliedModifiers;
+
+            _engine.ModifierChecker.CheckModifiers(result.Node);
+
+            result.Delta += usedModifiers.Count;
+
+            return result;
         }
 
         public Node Parse(List<Token> tokens)

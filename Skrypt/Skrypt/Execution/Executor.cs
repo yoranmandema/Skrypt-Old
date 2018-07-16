@@ -286,7 +286,7 @@ namespace Skrypt.Execution
                 else if (subNode.TokenType == "MethodDeclaration") {
                     var result = ExecuteMethodDeclaration(subNode, scope);
 
-                    scope.AddVariable(result.CallName, result);
+                    scope.AddVariable(result.CallName, result, (subNode.Modifiers & Modifier.Const) != 0);
                 }
                 else if (subNode.TokenType == "ClassDeclaration") {
                     var Object = ExecuteClassDeclaration(subNode, scope);
@@ -422,7 +422,7 @@ namespace Skrypt.Execution
                             variable.Value = result;
                         }
                         else {
-                            scopeContext.AddVariable(node.SubNodes[0].Body, result);
+                            scopeContext.AddVariable(node.SubNodes[0].Body, result, (node.Modifiers & Modifier.Const) != 0);
                         }
                     }
                     else if (node.SubNodes[0].Body == "access")
@@ -756,7 +756,7 @@ namespace Skrypt.Execution
                 object arg = arguments[i];
 
                 if (arg.GetType() == typeof(int) || arg.GetType() == typeof(float) || arg.GetType() == typeof(double)) {
-                    parameters[i] = new Library.Native.System.Numeric((double)arg);
+                    parameters[i] = new Library.Native.System.Numeric(Convert.ToDouble(arg));
                 }
                 else if (arg.GetType() == typeof(string)) {
                     parameters[i] = new Library.Native.System.String((string)arg);                  
@@ -769,8 +769,6 @@ namespace Skrypt.Execution
                 }
 
                 parameters[i].SetPropertiesTo(GetType(((SkryptType)parameters[i]).TypeName, _engine.GlobalScope));
-
-                i++;
 
                 input.Add(parameters[i]);
             }
@@ -803,58 +801,6 @@ namespace Skrypt.Execution
             }
 
             return MethodResult;
-        }
-
-        //public SkryptObject Invoke (string Name, params object[] arguments) {
-        //    string signature = Name;
-        //    string searchString = Name;
-        //    ScopeContext methodContext = new ScopeContext {
-        //        ParentScope = engine.GlobalScope
-        //    };
-
-        //    SkryptObject[] parameters = new SkryptObject[arguments.Length];
-
-        //    for (int i = 0; i < arguments.Length; i++) {
-        //        object arg = arguments[i];
-
-        //        if (arg.GetType() == typeof(int) || arg.GetType() == typeof(float) || arg.GetType() == typeof(double)) {
-        //            parameters[i] = new Numeric(Convert.ToDouble(arg));
-        //        } else if (arg.GetType() == typeof(string)) {
-        //            parameters[i] = new SkryptString { value = (string)arg };
-        //        } else if (arg.GetType() == typeof(bool)) {
-        //            parameters[i] = new SkryptBoolean { value = (bool)arg };
-        //        }
-
-        //        i++;
-        //    }
-
-        //    foreach (SkryptObject parameter in parameters) {
-        //        if (parameter.Name == "void") {
-        //            throw new SkryptException("Can't pass void into arguments!");
-        //        }
-
-        //        signature += "_" + parameter.Name;
-        //    }
-
-        //    foreach (Node method in engine.MethodNodes) {
-        //        if (method.Body == signature) {
-        //            searchString = signature;
-
-        //            for (int i = 0; i < method.SubNodes[0].SubNodes.Count; i++) {
-        //                Node par = method.SubNodes[0].SubNodes[i];
-        //                methodContext.Variables[par.Body].Value = parameters[i];
-        //            }
-        //        }
-        //    }
-
-        //    if (engine.Methods.Exists((m) => m.Name == searchString)) {
-        //        SkryptObject MethodResult = engine.Methods.Find((m) => m.Name == searchString).Execute(engine, parameters, methodContext);
-
-        //        return MethodResult;
-        //    }
-        //    else {
-        //        throw new SkryptException("Method '" + Name + "(" + String.Join(",", signature.Split('_').Skip(1).ToArray()) + ")' does not exist!");
-        //    }
-        //}
+        }        
     }
 }

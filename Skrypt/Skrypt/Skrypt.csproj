@@ -55,6 +55,7 @@
     <Compile Include="Execution\Variable.cs" />
     <Compile Include="Library\Native\Attributes.cs" />
     <Compile Include="Library\Native\Math.cs" />
+    <Compile Include="Library\Native\Memory.cs" />
     <Compile Include="Library\Native\Standard.cs" />
     <Compile Include="Library\Native\StandardMethods.cs" />
     <Compile Include="Library\Native\System.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Parsing\ExpressionParser.cs" />
     <Compile Include="Parsing\GeneralParser.cs" />
     <Compile Include="Parsing\MethodParser.cs" />
+    <Compile Include="Parsing\ModifierChecker.cs" />
     <Compile Include="Parsing\Node.cs" />
     <Compile Include="Library\SkryptClass.cs" />
     <Compile Include="Library\Native\SkryptClasses\Numeric.cs" />
