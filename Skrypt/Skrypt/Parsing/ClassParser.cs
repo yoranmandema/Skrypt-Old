@@ -113,7 +113,6 @@ namespace Skrypt.Parsing
 
                 if (t.Value == name) {
                     constructorStart = i;
-                    Console.WriteLine("Found name: " + t);
                     continue;
                 }
 
@@ -123,12 +122,9 @@ namespace Skrypt.Parsing
 
                         if (skip.End + 1 < clone.Count) {
                             var t2 = clone[skip.End + 1];
-                            Console.WriteLine("Found args: " + t2);
 
                             if ((t2.Value == "{") && (t2.Type == TokenTypes.Punctuator)) {
                                 skip = _engine.ExpressionParser.SkipFromTo("{", "}", clone, i);
-
-                                Console.WriteLine("Found body: " + clone);
 
                                 clone.RemoveAt(constructorStart);
 
@@ -159,8 +155,6 @@ namespace Skrypt.Parsing
                     }
                 }
             }
-
-            Console.WriteLine(ExpressionParser.TokenString(clone));
 
             var result = _engine.GeneralParser.Parse(clone);
             result.TokenType = "ClassDeclaration";

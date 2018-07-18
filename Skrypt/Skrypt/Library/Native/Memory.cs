@@ -14,7 +14,7 @@ namespace Skrypt.Library.Native {
                 var a = TypeConverter.ToAny(input,0);
 
                 long before = GC.GetTotalMemory(true);
-                var b = a.Clone();
+                var b = ObjectExtensions.Copy(a);
                 long after = GC.GetTotalMemory(true);
 
                 return new Numeric(after - before);

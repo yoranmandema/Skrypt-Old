@@ -33,7 +33,6 @@ namespace Skrypt.Engine
         public MethodParser MethodParser;
         public ModifierChecker ModifierChecker;
         public List<SkryptMethod> Methods = new List<SkryptMethod>();
-        public StandardMethods StandardMethods;
         public StatementParser StatementParser;
         public Tokenizer Tokenizer;
         public TokenProcessor TokenProcessor;
@@ -54,9 +53,6 @@ namespace Skrypt.Engine
             ClassParser = new ClassParser(this);
             Analizer = new Analizer(this);
             Executor = new Executor(this);
-            StandardMethods = new StandardMethods(this);
-
-            StandardMethods.AddMethodsToEngine();
 
             var systemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
 
@@ -249,7 +245,7 @@ namespace Skrypt.Engine
             double parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            Console.WriteLine("Program:\n" + programNode);
+            //Console.WriteLine("Program:\n" + programNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
@@ -261,7 +257,7 @@ namespace Skrypt.Engine
 
             Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
-            int instances = 0;
+            int instances = 1000;
             stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < instances; i++) {
                 GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);

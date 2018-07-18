@@ -30,8 +30,7 @@ namespace Skrypt.Library
         }
     }
 
-    public class SkryptObject
-    {
+    public class SkryptObject {
         [JsonIgnore]
         public List<Operation> Operations = new List<Operation>();
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
@@ -57,6 +56,10 @@ namespace Skrypt.Library
             return null;
         }
 
+        public SkryptObject Clone () {
+            return (SkryptObject)MemberwiseClone();
+        }
+
         public SkryptObject SetPropertiesTo (SkryptObject Object) {
             Properties.AddRange(new List<SkryptProperty>(Object.Properties));
             return this;
@@ -73,11 +76,6 @@ namespace Skrypt.Library
         public virtual Native.System.Boolean ToBoolean()
         {
             return true;
-        }
-
-        public virtual SkryptObject Clone()
-        {
-            return (SkryptObject) MemberwiseClone();
         }
 
         public string ToJson()

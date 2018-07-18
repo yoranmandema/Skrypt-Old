@@ -17,7 +17,7 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToAny(input, 1);
 
-                        var newArray = (Array) a.Clone();
+                        var newArray = (Array) ObjectExtensions.Copy(a);
                         newArray.Value = new List<SkryptObject>(a.Value);
                         newArray.Value.Add(b);
 
@@ -47,7 +47,7 @@ namespace Skrypt.Library.Native
                         newArray.Value = new List<SkryptObject>(a.Value);
                         for (var i = 0; i < mul; i++)
                             foreach (var obj in a.Value)
-                                newArray.Value.Add(obj.Clone());
+                                newArray.Value.Add(ObjectExtensions.Copy(obj));
 
                         return newArray;
                     }),

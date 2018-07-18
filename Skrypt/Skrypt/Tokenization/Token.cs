@@ -1,4 +1,6 @@
-﻿namespace Skrypt.Tokenization
+﻿using System;
+
+namespace Skrypt.Tokenization
 {
     /// <summary>
     ///     Represents part of a string with a type.

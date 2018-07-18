@@ -379,7 +379,6 @@ namespace Skrypt.Execution
                     if (result.IsGetter) {
                         var getResult = ((SharpMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext {ParentScope = scopeContext});
 
-
                         return getResult.SubContext.ReturnObject;
                     } else {
                         return result.Value;
@@ -424,6 +423,10 @@ namespace Skrypt.Execution
 
                         if ((accessResult.Modifiers & Modifier.Const) != 0)
                             _engine.ThrowError("Property is marked as constant and can thus not be modified.");
+
+                        if ((accessResult.Modifiers & Modifier.Strong) != 0)
+                            if (accessResult.Value.Name != result.Name)
+                                _engine.ThrowError($"Can't set strong property of type {accessResult.Value.Name} to {result.Name}");
 
                         if (accessResult.IsSetter) {
                             ((SetMethod)accessResult.Value).Execute(_engine, target, result, new ScopeContext { ParentScope = scopeContext });
@@ -598,7 +601,7 @@ namespace Skrypt.Execution
                 findCallerContext.SubContext.GettingCaller = true;
                 var foundMethod = ExecuteExpression(node.SubNodes[0].SubNodes[0], findCallerContext);
                 var caller = findCallerContext.SubContext.Caller;
-                var originalCaller = caller?.Clone();
+                SkryptObject BaseType = null;
 
                 bool isConstructor = false;
 
@@ -610,7 +613,10 @@ namespace Skrypt.Execution
                         var typeName = foundMethod.Properties.Find((x) => x.Name == "TypeName").Value.ToString();
 
                         foundMethod = find.Value;
-                        caller = GetType(typeName, scopeContext).Clone();
+
+                        BaseType = GetType(typeName, scopeContext);
+
+                        caller = ObjectExtensions.Copy(BaseType);
 
                         isConstructor = true;
                     } else {
@@ -620,13 +626,8 @@ namespace Skrypt.Execution
 
                 if (caller != null) {
                     methodContext.AddVariable("self", caller);
-                    //for (int i = 0; i < caller.Properties.Count; i++) {
-                    //    var p = caller.Properties[i];
-                    //    methodContext.AddVariable(p.Name, p.Value, p.Modifiers);
-                    //}
                 }
 
-                SkryptObject MethodResult = null;
                 ScopeContext methodScopeResult = null;
 
                 if (foundMethod.GetType() == typeof(UserMethod)) {
@@ -769,7 +770,6 @@ namespace Skrypt.Execution
             }
 
             ScopeContext methodScopeResult = null;
-            SkryptObject MethodResult = null;
 
             if (foundMethod.GetType() == typeof(UserMethod)) {
                 UserMethod method = (UserMethod)foundMethod;
