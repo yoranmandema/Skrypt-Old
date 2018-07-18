@@ -120,9 +120,10 @@ namespace Skrypt.Engine
                 TokenTypes.Punctuator
             );
 
+            // Single line comment
             Tokenizer.AddRule(
-                new Regex(@""".*?(?<!\\)"""),
-                TokenTypes.StringLiteral
+                new Regex(@"\/\/.*\n"),
+                TokenTypes.None
             );
 
             // Multi line comment
@@ -131,10 +132,9 @@ namespace Skrypt.Engine
                 TokenTypes.None
             );
 
-            // Single line comment
             Tokenizer.AddRule(
-                new Regex(@"\/\/.*\n"),
-                TokenTypes.None
+                new Regex(@""".*?(?<!\\)"""),
+                TokenTypes.StringLiteral
             );
         }
 

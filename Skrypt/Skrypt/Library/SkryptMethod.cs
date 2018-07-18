@@ -13,7 +13,7 @@ namespace Skrypt.Library
     {
         public string ReturnType;
 
-        public virtual SkryptObject Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
+        public virtual ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
         {
             return null;
@@ -32,15 +32,16 @@ namespace Skrypt.Library
         public List<string> Parameters = new List<string>();
         public string Signature;
 
-        public override SkryptObject Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
+        public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
         {
             var resultingScope =
                 engine.Executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
 
-            var returnVariable = resultingScope.SubContext.ReturnObject ?? new Native.System.Null();
+            resultingScope.SubContext.ReturnObject = resultingScope.SubContext.ReturnObject ?? new Native.System.Null();
+            resultingScope.Variables = new Dictionary<string, Variable>(scope.Variables);
 
-            return returnVariable;
+            return resultingScope;
         }
     }
 
@@ -48,7 +49,7 @@ namespace Skrypt.Library
     {
         public SkryptDelegate Method;
 
-        public override SkryptObject Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
+        public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
         {
             var returnValue = Method(self, parameters);
@@ -57,7 +58,15 @@ namespace Skrypt.Library
                 returnValue.SetPropertiesTo(engine.Executor.GetType(((SkryptType)returnValue).TypeName, scope));
             }
 
-            return returnValue;
+            var newScope = new ScopeContext {
+                ParentScope = scope,
+                SubContext = scope.SubContext
+            };
+
+            newScope.SubContext.ReturnObject = returnValue;
+            newScope.Variables = new Dictionary<string, Variable>(scope.Variables);
+
+            return newScope;
         }
     }
 

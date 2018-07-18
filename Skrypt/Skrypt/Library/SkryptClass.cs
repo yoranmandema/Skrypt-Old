@@ -84,5 +84,21 @@ namespace Skrypt.Library
         {
             return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
         }
+
+        public override string ToString() {
+            string str = Name;
+
+            if (Properties.Count > 0) {
+                str += " {\n";
+
+                foreach (var p in Properties) {
+                    str += $"\t{p.Name}: {p.Value}\n";
+                }
+
+                str += "}";
+            }
+
+            return str;
+        }
     }
 }

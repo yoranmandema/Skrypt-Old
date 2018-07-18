@@ -1,5 +1,23 @@
 using System;
 
-strong a = 1;
+class Vector {
+	public X = 0;
+	public Y = 0;
+	public Z = 0;
 
-a = Vector(1,2,3);
+	// Constructor
+	Vector (x,y,z) {
+		self.X = x;
+		self.Y = y;
+		self.Z = z;
+	}
+
+	public func MakeVector() {
+		return Vector();
+	}
+
+	public func Modify () {
+		self.X = 2;
+	}
+}
+

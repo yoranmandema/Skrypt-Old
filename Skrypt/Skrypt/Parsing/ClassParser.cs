@@ -106,46 +106,51 @@ namespace Skrypt.Parsing
             //}
 
             var constructorStart = -1;
+            var clone = new List<Token>(tokens);
 
-            for (int i = 0; i < tokens.Count; i++) {
-                var t = tokens[i];
+            for (int i = 0; i < clone.Count; i++) {
+                var t = clone[i];
 
                 if (t.Value == name) {
                     constructorStart = i;
+                    Console.WriteLine("Found name: " + t);
                     continue;
                 }
 
                 if (constructorStart != -1) {
                     if ((t.Value == "(") && (t.Type == TokenTypes.Punctuator) && (i == (constructorStart + 1))) {
-                        SkipInfo skip = _engine.ExpressionParser.SkipFromTo("(",")",tokens,i);
-                        
-                        if (skip.End + 1 < tokens.Count) {
-                            var t2 = tokens[skip.End + 1];
+                        SkipInfo skip = _engine.ExpressionParser.SkipFromTo("(", ")", clone, i);
+
+                        if (skip.End + 1 < clone.Count) {
+                            var t2 = clone[skip.End + 1];
+                            Console.WriteLine("Found args: " + t2);
 
                             if ((t2.Value == "{") && (t2.Type == TokenTypes.Punctuator)) {
-                                skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
+                                skip = _engine.ExpressionParser.SkipFromTo("{", "}", clone, i);
 
-                                tokens.RemoveAt(constructorStart);
+                                Console.WriteLine("Found body: " + clone);
 
-                                tokens.Insert(constructorStart,new Token {
+                                clone.RemoveAt(constructorStart);
+
+                                clone.Insert(constructorStart, new Token {
                                     Value = "Constructor",
                                     Type = TokenTypes.Identifier,
-                                    Start = tokens[constructorStart].Start,
-                                    End = tokens[constructorStart].Start,
+                                    Start = clone[constructorStart].Start,
+                                    End = clone[constructorStart].Start,
                                 });
 
-                                tokens.Insert(constructorStart, new Token {
+                                clone.Insert(constructorStart, new Token {
                                     Value = "func",
                                     Type = TokenTypes.Keyword,
-                                    Start = tokens[constructorStart].Start,
-                                    End = tokens[constructorStart].Start,
+                                    Start = clone[constructorStart].Start,
+                                    End = clone[constructorStart].Start,
                                 });
 
-                                tokens.Insert(constructorStart, new Token {
+                                clone.Insert(constructorStart, new Token {
                                     Value = "static",
                                     Type = TokenTypes.Keyword,
-                                    Start = tokens[constructorStart].Start,
-                                    End = tokens[constructorStart].Start,
+                                    Start = clone[constructorStart].Start,
+                                    End = clone[constructorStart].Start,
                                 });
 
                                 break;
@@ -155,7 +160,9 @@ namespace Skrypt.Parsing
                 }
             }
 
-            var result = _engine.GeneralParser.Parse(tokens);
+            Console.WriteLine(ExpressionParser.TokenString(clone));
+
+            var result = _engine.GeneralParser.Parse(clone);
             result.TokenType = "ClassDeclaration";
 
             return result;

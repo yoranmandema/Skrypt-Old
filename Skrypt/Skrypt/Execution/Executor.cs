@@ -340,7 +340,7 @@ namespace Skrypt.Execution
                 if (op.OperationName == "return")
                 {
                     if (!scopeContext.SubContext.InMethod)
-                        _engine.ThrowError("Can't use return operator outside method", node.SubNodes[0].Token);
+                        _engine.ThrowError("Can't use return operator outside method", node.Token);
 
                     SkryptObject result = null;
 
@@ -349,7 +349,8 @@ namespace Skrypt.Execution
                         : new Library.Native.System.Null();
 
                     scopeContext.SubContext.ReturnObject = result;
-                    return result;
+
+                    return null;
                 }
 
                 if (op.OperationName == "break") {
@@ -378,7 +379,8 @@ namespace Skrypt.Execution
                     if (result.IsGetter) {
                         var getResult = ((SharpMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext {ParentScope = scopeContext});
 
-                        return getResult;
+
+                        return getResult.SubContext.ReturnObject;
                     } else {
                         return result.Value;
                     }
@@ -595,7 +597,8 @@ namespace Skrypt.Execution
 
                 findCallerContext.SubContext.GettingCaller = true;
                 var foundMethod = ExecuteExpression(node.SubNodes[0].SubNodes[0], findCallerContext);
-                var Object = findCallerContext.SubContext.Caller;
+                var caller = findCallerContext.SubContext.Caller;
+                var originalCaller = caller?.Clone();
 
                 bool isConstructor = false;
 
@@ -607,7 +610,7 @@ namespace Skrypt.Execution
                         var typeName = foundMethod.Properties.Find((x) => x.Name == "TypeName").Value.ToString();
 
                         foundMethod = find.Value;
-                        Object = GetType(typeName, scopeContext).Clone();
+                        caller = GetType(typeName, scopeContext).Clone();
 
                         isConstructor = true;
                     } else {
@@ -615,14 +618,16 @@ namespace Skrypt.Execution
                     }
                 }
 
-                if (Object != null) {
-                    for (int i = 0; i < Object.Properties.Count; i++) {
-                        var p = Object.Properties[i];
-                        methodContext.AddVariable(p.Name, p.Value, p.Modifiers);
-                    }
+                if (caller != null) {
+                    methodContext.AddVariable("self", caller);
+                    //for (int i = 0; i < caller.Properties.Count; i++) {
+                    //    var p = caller.Properties[i];
+                    //    methodContext.AddVariable(p.Name, p.Value, p.Modifiers);
+                    //}
                 }
 
                 SkryptObject MethodResult = null;
+                ScopeContext methodScopeResult = null;
 
                 if (foundMethod.GetType() == typeof(UserMethod)) {
                     UserMethod method = (UserMethod)foundMethod;
@@ -642,31 +647,17 @@ namespace Skrypt.Execution
                         };
                     }
 
-                    MethodResult = method.Execute(_engine, Object, arguments.ToArray(), methodContext);
+                    methodScopeResult = method.Execute(_engine, caller, arguments.ToArray(), methodContext);
                 } else if (foundMethod.GetType() == typeof(SharpMethod)) {
-                    MethodResult = ((SharpMethod)foundMethod).Execute(_engine, Object, arguments.ToArray(), methodContext);
+                    methodScopeResult = ((SharpMethod)foundMethod).Execute(_engine, caller, arguments.ToArray(), methodContext);
                 } else {
                     _engine.ThrowError("Cannot call value, as it is not a function!", node.SubNodes[0].SubNodes[0].Token);
                 }
 
-                if (Object != null) {
-                    foreach (var v in methodContext.Variables) {
-                        var prop = Object.Properties.Find(x => x.Name == v.Key);
-
-                        if (prop != null) {
-                            prop.Value = v.Value.Value;
-                        }
-                    }
-                }
-
-                //foreach (var p in Object.Properties) {
-                //    Console.WriteLine(p.Name + " " + p.Value);
-                //}
-
                 if (isConstructor) {
-                    return Object;
+                    return caller;
                 } else {
-                    return MethodResult;
+                    return methodScopeResult.SubContext.ReturnObject;
                 }
             }
 
@@ -777,6 +768,7 @@ namespace Skrypt.Execution
                 input.Add(parameters[i]);
             }
 
+            ScopeContext methodScopeResult = null;
             SkryptObject MethodResult = null;
 
             if (foundMethod.GetType() == typeof(UserMethod)) {
@@ -795,16 +787,16 @@ namespace Skrypt.Execution
                     };
                 }
 
-                MethodResult = method.Execute(_engine, null, input.ToArray(), methodContext);
+                methodScopeResult = method.Execute(_engine, null, input.ToArray(), methodContext);
             }
             else if (foundMethod.GetType() == typeof(SharpMethod)) {
-                MethodResult = ((SharpMethod)foundMethod).Execute(_engine, null, input.ToArray(), methodContext);
+                methodScopeResult = ((SharpMethod)foundMethod).Execute(_engine, null, input.ToArray(), methodContext);
             }
             else {
                 _engine.ThrowError("Cannot call value, as it is not a function!");
             }
 
-            return MethodResult;
+            return methodScopeResult.SubContext.ReturnObject;
         }        
     }
 }
