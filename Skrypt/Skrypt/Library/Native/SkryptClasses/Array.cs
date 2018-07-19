@@ -109,6 +109,23 @@ namespace Skrypt.Library.Native
                 return new Null();
             }
 
+            [Constant]
+            public SkryptObject Sort(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                ((Array)self).Value.Sort((x, y) => {
+                    if (x.GetOperation("greater",x.GetType(),y.GetType(),x.Operations).OperationDelegate(new[] { x, y }).ToBoolean()) {
+                        return 0;
+                    }
+                    else if (x.GetOperation("lesser", x.GetType(), y.GetType(), x.Operations).OperationDelegate(new[] { x, y }).ToBoolean()) {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                });
+
+                return self;
+            }
+
             public override string ToString()
             {
                 return "[" + string.Join(",", Value) + "]";

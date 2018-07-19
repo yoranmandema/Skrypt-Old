@@ -48,11 +48,13 @@
   <ItemGroup>
     <Compile Include="Analysis\Analizer.cs" />
     <Compile Include="Engine\Engine.cs" />
+    <Compile Include="Engine\CallStack.cs" />
     <Compile Include="Execution\Executor.cs" />
     <Compile Include="Execution\ScopeContext.cs" />
     <Compile Include="Execution\TypeConverter.cs" />
     <Compile Include="Execution\Variable.cs" />
-    <Compile Include="Library\Native\Attributes.cs" />
+    <Compile Include="Library\Native\Statistics.cs" />
+    <Compile Include="Library\Reflection\Attributes\Attributes.cs" />
     <Compile Include="Library\Native\Math.cs" />
     <Compile Include="Library\Native\Memory.cs" />
     <Compile Include="Library\Native\System.cs" />

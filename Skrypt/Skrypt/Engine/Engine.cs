@@ -24,7 +24,6 @@ namespace Skrypt.Engine
     {
         public Analizer Analizer;
         public ClassParser ClassParser;
-        private string _code = "";
         public Executor Executor;
         public ExpressionParser ExpressionParser;
         public GeneralParser GeneralParser;
@@ -36,11 +35,12 @@ namespace Skrypt.Engine
         public StatementParser StatementParser;
         public Tokenizer Tokenizer;
         public TokenProcessor TokenProcessor;
-        internal Stopwatch stopwatch;
+
+        internal Stopwatch Stopwatch { get; set; }
+        internal CallStack CurrentStack { get; set; } = new CallStack("Program",null,null);
 
         private List<Token> _tokens;
-
-        //List<SkryptClass> Classes = new List<SkryptClass>();
+        private string _code = "";
 
         public SkryptEngine()
         {
@@ -106,11 +106,6 @@ namespace Skrypt.Engine
                 TokenTypes.EndOfExpression
             );
 
-            //Tokenizer.AddRule(
-            //    new Regex(@"\n"),
-            //    TokenTypes.NewLine
-            //);
-
             Tokenizer.AddRule(
                 new Regex(
                     @"(using)|(return)|(continue)|(break)|(&&)|(\|\|\|)|(\|\|)|(==)|(!=)|(>=)|(<=)|(<<)|(>>>)|(>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}\?\:]"),
@@ -148,6 +143,53 @@ namespace Skrypt.Engine
             newObject.ScopeContext = GlobalScope;
             newObject.Engine = this;
             return (T)((Object)newObject.SetPropertiesTo(baseType));
+        }
+
+        public SkryptObject Eval (Operator operation, SkryptObject leftObject, SkryptObject rightObject, Node node = null) {
+            dynamic left = Convert.ChangeType(rightObject, rightObject.GetType());
+            dynamic right = Convert.ChangeType(rightObject, rightObject.GetType());
+
+            Operation opLeft = left.GetOperation(operation.OperationName, leftObject.GetType(), rightObject.GetType(),
+                left.Operations);
+            Operation opRight = right.GetOperation(operation.OperationName, leftObject.GetType(),
+                rightObject.GetType(), right.Operations);
+
+            OperationDelegate operationDel = null;
+
+            if (opLeft != null)
+                operationDel = opLeft.OperationDelegate;
+            else if (opRight != null)
+                operationDel = opRight.OperationDelegate;
+            else
+                ThrowError("No such operation as " + left.Name + " " + operation.Operation + " " + right.Name,
+                    node?.SubNodes[0].Token);
+
+            if (operationDel == null) {
+                ThrowError("No such operation as " + left.Name + " " + operation.Operation + " " + right.Name,
+                    node?.SubNodes[0].Token);
+            }
+
+            var result = (SkryptType)operationDel(new[] { leftObject, rightObject });
+
+            return result;
+        }
+
+        public SkryptObject Eval(Operator operation, SkryptObject leftObject, Node node = null) {
+            dynamic left = Convert.ChangeType(leftObject, leftObject.GetType());
+
+            Operation opLeft = left.GetOperation(operation.OperationName, leftObject.GetType(), null, left.Operations);
+
+            OperationDelegate operationDel = null;
+
+            if (opLeft != null)
+                operationDel = opLeft.OperationDelegate;
+            else
+                ThrowError("No such operation as " + left.Name + " " + operation.Operation,
+                    node?.SubNodes[0].Token);
+
+            var result = (SkryptType)operationDel(new[] { leftObject });
+
+            return result;
         }
 
         /// <summary>
@@ -233,7 +275,7 @@ namespace Skrypt.Engine
         {
             _code = code;
 
-            stopwatch = Stopwatch.StartNew();
+            Stopwatch = Stopwatch.StartNew();
 
             // Tokenize code
             _tokens = Tokenizer.Tokenize(code);
@@ -242,16 +284,16 @@ namespace Skrypt.Engine
             // Pre-process tokens so their values are correct
             TokenProcessor.ProcessTokens(_tokens);
 
-            stopwatch.Stop();
-            double token = stopwatch.ElapsedMilliseconds;
+            Stopwatch.Stop();
+            double token = Stopwatch.ElapsedMilliseconds;
 
             //foreach (var t in _tokens) Console.WriteLine(t);
 
             // Generate the program node
-            stopwatch = Stopwatch.StartNew();
+            Stopwatch = Stopwatch.StartNew();
             var programNode = GeneralParser.Parse(_tokens);
-            stopwatch.Stop();
-            double parse = stopwatch.ElapsedMilliseconds;
+            Stopwatch.Stop();
+            double parse = Stopwatch.ElapsedMilliseconds;
 
             // Debug program node
             Console.WriteLine("Program:\n" + programNode);
@@ -259,20 +301,20 @@ namespace Skrypt.Engine
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
 
-            stopwatch = Stopwatch.StartNew();
+            Stopwatch = Stopwatch.StartNew();
             GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
-            stopwatch.Stop();
-            double execute = stopwatch.ElapsedMilliseconds;
+            Stopwatch.Stop();
+            double execute = Stopwatch.ElapsedMilliseconds;
 
             Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
             int instances = 0;
-            stopwatch = Stopwatch.StartNew();
+            Stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < instances; i++) {
                 GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
             }
-            stopwatch.Stop();
-            Console.WriteLine($"Average ({instances} instances): {stopwatch.Elapsed.TotalMilliseconds / instances}ms");
+            Stopwatch.Stop();
+            Console.WriteLine($"Average ({instances} instances): {Stopwatch.Elapsed.TotalMilliseconds / instances}ms");
 
             return programNode;
         }

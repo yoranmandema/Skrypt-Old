@@ -1,9 +1,4 @@
 using System;
+using Statistics;
 
-class Test {
-	Test (x,y,z) {
-	
-	}
-}
-
-a = Test(1,1,,);
+print(!2);

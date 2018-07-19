@@ -8,7 +8,7 @@ namespace Skrypt.Library.Native
     public partial class System : SkryptObject
     {
         [Constant]
-        public static SkryptObject Print(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+        public static SkryptObject print(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
         {
             var a = TypeConverter.ToAny(values, 0);
 
@@ -18,11 +18,11 @@ namespace Skrypt.Library.Native
         }
 
         [Constant]
-        public static SkryptObject Input(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+        public static SkryptObject input(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
 
-            engine.stopwatch.Stop();
+            engine.Stopwatch.Stop();
             var input = Console.ReadLine();
-            engine.stopwatch.Start();
+            engine.Stopwatch.Start();
 
             return engine.Create<String>(input);
         }

@@ -452,57 +452,30 @@ namespace Skrypt.Execution
                     var leftResult = ExecuteExpression(node.SubNodes[0], scopeContext);
                     var rightResult = ExecuteExpression(node.SubNodes[1], scopeContext);
 
-                    dynamic left = Convert.ChangeType(leftResult, leftResult.GetType());
-                    dynamic right = Convert.ChangeType(rightResult, rightResult.GetType());
-
-                    Operation opLeft = left.GetOperation(op.OperationName, leftResult.GetType(), rightResult.GetType(),
-                        left.Operations);
-                    Operation opRight = right.GetOperation(op.OperationName, leftResult.GetType(),
-                        rightResult.GetType(), right.Operations);
-
-                    OperationDelegate operation = null;
-
-                    if (opLeft != null)
-                        operation = opLeft.OperationDelegate;
-                    else if (opRight != null)
-                        operation = opRight.OperationDelegate;
-                    else
-                        _engine.ThrowError("No such operation as " + left.Name + " " + op.Operation + " " + right.Name,
-                            node.SubNodes[0].Token);
-
-                    if (operation == null) {
-                        _engine.ThrowError("No such operation as " + left.Name + " " + op.Operation + " " + right.Name,
-                            node.SubNodes[0].Token);
-                    }
-
-                    var result = (SkryptType) operation(new[] {leftResult, rightResult});
-
-                    result.SetPropertiesTo(GetType(result.TypeName, scopeContext));
-                  
-                    return result;
+                    return _engine.Eval(op, leftResult, rightResult, node);
                 }
 
                 if (op.Members == 1)
                 {
                     var leftResult = ExecuteExpression(node.SubNodes[0], scopeContext);
 
-                    dynamic left = Convert.ChangeType(leftResult, leftResult.GetType());
+                    //dynamic left = Convert.ChangeType(leftResult, leftResult.GetType());
 
-                    Operation opLeft = left.GetOperation(op.OperationName, leftResult.GetType(), null, left.Operations);
+                    //Operation opLeft = left.GetOperation(op.OperationName, leftResult.GetType(), null, left.Operations);
 
-                    OperationDelegate operation = null;
+                    //OperationDelegate operation = null;
 
-                    if (opLeft != null)
-                        operation = opLeft.OperationDelegate;
-                    else
-                        _engine.ThrowError("No such operation as " + left.Name + " " + op.Operation,
-                            node.SubNodes[0].Token);
+                    //if (opLeft != null)
+                    //    operation = opLeft.OperationDelegate;
+                    //else
+                    //    _engine.ThrowError("No such operation as " + left.Name + " " + op.Operation,
+                    //        node.SubNodes[0].Token);
 
-                    var result = (SkryptType) operation(new[] {leftResult});
+                    //var result = (SkryptType) operation(new[] {leftResult});
 
-                    result.SetPropertiesTo(GetType(result.TypeName, scopeContext));
+                    //result.SetPropertiesTo(GetType(result.TypeName, scopeContext));
 
-                    return result;
+                    return _engine.Eval(op, leftResult, node); ;
                 }
             }
             else if (node.TokenType == "ArrayLiteral")
@@ -623,6 +596,8 @@ namespace Skrypt.Execution
                 }
 
                 ScopeContext methodScopeResult = null;
+
+                //_engine.CurrentStack = new CallStack(foundMethod.Name, node.Token, _engine.CurrentStack);
 
                 if (foundMethod.GetType() == typeof(UserMethod)) {
                     UserMethod method = (UserMethod)foundMethod;
