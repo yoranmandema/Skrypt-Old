@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿// https://github.com/Burtsev-Alexey/net-object-deep-copy
+
+using System.Collections.Generic;
 using System.Reflection;
 using System.ArrayExtensions;
 

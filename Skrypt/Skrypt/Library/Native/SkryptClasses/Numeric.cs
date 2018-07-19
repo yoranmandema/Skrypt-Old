@@ -1,6 +1,8 @@
 ﻿using Sys = System;
 using System.Collections.Generic;
 using Skrypt.Execution;
+using Skrypt.Engine;
+using Skrypt.Parsing;
 
 namespace Skrypt.Library.Native
 {
@@ -208,7 +210,7 @@ namespace Skrypt.Library.Native
             {
             }
 
-            public Numeric(double v = 0)
+            public Numeric(double v)
             {
                 Value = v;
             }
@@ -221,6 +223,17 @@ namespace Skrypt.Library.Native
             public static implicit operator double(Numeric d)
             {
                 return d.Value;
+            }
+
+            [Constant]
+            public static SkryptObject Parse(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                var s = TypeConverter.ToString(input,0);
+
+                var p = double.TryParse(s, out double r);
+
+                if (!p) throw new SkryptException("Invalid input format!");
+
+                return engine.Create<Numeric>(r);
             }
 
             public override string ToString()

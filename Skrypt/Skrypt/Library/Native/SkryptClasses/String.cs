@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Skrypt.Engine;
 using Skrypt.Execution;
 
 namespace Skrypt.Library.Native
@@ -73,14 +74,29 @@ namespace Skrypt.Library.Native
             }
 
             [Constant]
-            public static SkryptObject Char(SkryptObject self, SkryptObject[] values)
+            public static SkryptObject Char(SkryptEngine engine, SkryptObject self, SkryptObject[] input)
             {
-                return (String) ("" + Convert.ToChar((int)TypeConverter.ToNumeric(values, 0)));
+                return engine.Create<String>("" + Convert.ToChar((int)TypeConverter.ToNumeric(input, 0)));
             }
 
             [Constant]
-            public static SkryptObject Byte(SkryptObject self, SkryptObject[] values) {
-                return (Numeric) (Convert.ToByte(TypeConverter.ToString(values, 0).Value[0]));
+            public static SkryptObject Byte(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<Numeric>(Convert.ToByte(TypeConverter.ToString(input, 0).Value[0]));
+            }
+
+            [Constant]
+            public SkryptObject Explode(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                var delimiter = TypeConverter.ToString(input, 0);
+                var selfString = ((String)self).Value;
+
+                var exploded = delimiter != "" ? selfString.Split(new string[] { delimiter }, StringSplitOptions.None) : new string[] { selfString };
+                var array = engine.Create<Array>();
+
+                for (int i = 0; i < exploded.Length; i++) {
+                    array.Value.Add(engine.Create<String>(exploded[i]));
+                }
+
+                return array;
             }
 
             public override string ToString()

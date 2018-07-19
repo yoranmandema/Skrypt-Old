@@ -44,10 +44,10 @@ namespace Skrypt.Execution
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
         public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
 
-        public override string ToString()
-        {
-            return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
-        }
+        //public override string ToString()
+        //{
+        //    return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
+        //}
 
         public void AddVariable(string name, SkryptObject value, Modifier modifiers = Modifier.None)
         {

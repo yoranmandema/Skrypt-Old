@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Skrypt.Engine;
 using Skrypt.Execution;
 
 namespace Skrypt.Library.Native
@@ -76,9 +77,9 @@ namespace Skrypt.Library.Native
                     })
             };
 
-            public List<SkryptObject> Value { get; set; } = new List<SkryptObject>();
+            public List<SkryptObject> Value = new List<SkryptObject>();
 
-            public Numeric Length => this.Value.Count;
+            public Numeric Length => Value.Count;
 
             public override string Name => "array";
 
@@ -97,6 +98,15 @@ namespace Skrypt.Library.Native
                     index = Convert.ToInt32((Numeric) Object);
 
                 return index;
+            }
+
+            [Constant]
+            public SkryptObject Push(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var a = TypeConverter.ToAny(values,0);
+
+                ((Array)self).Value.Add(a);
+
+                return new Null();
             }
 
             public override string ToString()

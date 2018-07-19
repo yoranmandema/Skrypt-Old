@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using Skrypt.Engine;
+using Skrypt.Execution;
 
 namespace Skrypt.Library
 {
@@ -34,6 +36,8 @@ namespace Skrypt.Library
         [JsonIgnore]
         public List<Operation> Operations = new List<Operation>();
         public List<SkryptProperty> Properties = new List<SkryptProperty>();
+        public ScopeContext ScopeContext { get; set; }
+        public SkryptEngine Engine { get; set; }
         public virtual string Name { get; set; }
 
         public Operation GetOperation(string n, Type tl, Type tr, List<Operation> ops)

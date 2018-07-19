@@ -141,6 +141,14 @@ namespace Skrypt.Engine
             GlobalScope.AddVariable(generated.Name, generated, Modifier.Const);
         }
 
+        public T Create<T>(params object[] input) {
+            var newObject = (SkryptType)Activator.CreateInstance(typeof(T), input);
+            var baseType = Executor.GetType(newObject.TypeName, GlobalScope);
+            newObject.ScopeContext = GlobalScope;
+            newObject.Engine = this;
+            return (T)((Object)newObject.SetPropertiesTo(baseType));
+        }
+
         /// <summary>
         ///     Calculates the line and column of a given index
         /// </summary>

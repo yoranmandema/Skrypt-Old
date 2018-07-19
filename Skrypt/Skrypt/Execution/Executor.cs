@@ -32,11 +32,8 @@ namespace Skrypt.Execution
         public SkryptObject GetType(string name, ScopeContext scopeContext) {
             SkryptObject foundVar = null;
 
-            if (scopeContext.Types.ContainsKey(name)) {
-                foundVar = scopeContext.Types[name];
-            }
-            else if (scopeContext.ParentScope != null) {
-                foundVar = GetType(name, scopeContext.ParentScope);
+            if (_engine.GlobalScope.Types.ContainsKey(name)) {
+                foundVar = _engine.GlobalScope.Types[name];
             }
 
             return foundVar;
@@ -95,6 +92,8 @@ namespace Skrypt.Execution
 
             while (true) {
                 var conditionResult = CheckCondition(condNode, loopScope);
+
+
 
                 if (!conditionResult) break;
 
@@ -238,6 +237,7 @@ namespace Skrypt.Execution
             {
                 scope.SubContext.Merge(scopeContext.SubContext);
                 scope.ParentScope = scopeContext;
+                scope.Types = scopeContext.Types;
             }
 
             if (subContext != null) scope.SubContext.Merge(subContext);            
@@ -377,7 +377,7 @@ namespace Skrypt.Execution
                     if (scopeContext.SubContext.GettingCaller) scopeContext.SubContext.Caller = target;
 
                     if (result.IsGetter) {
-                        var getResult = ((SharpMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext {ParentScope = scopeContext});
+                        var getResult = ((GetMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext {ParentScope = scopeContext});
 
                         return getResult.SubContext.ReturnObject;
                     } else {
@@ -470,6 +470,11 @@ namespace Skrypt.Execution
                         _engine.ThrowError("No such operation as " + left.Name + " " + op.Operation + " " + right.Name,
                             node.SubNodes[0].Token);
 
+                    if (operation == null) {
+                        _engine.ThrowError("No such operation as " + left.Name + " " + op.Operation + " " + right.Name,
+                            node.SubNodes[0].Token);
+                    }
+
                     var result = (SkryptType) operation(new[] {leftResult, rightResult});
 
                     result.SetPropertiesTo(GetType(result.TypeName, scopeContext));
@@ -502,7 +507,7 @@ namespace Skrypt.Execution
             }
             else if (node.TokenType == "ArrayLiteral")
             {
-                var array = new Library.Native.System.Array();
+                var array = _engine.Create<Library.Native.System.Array>();
 
                 for (var i = 0; i < node.SubNodes.Count; i++)
                 {
@@ -515,31 +520,20 @@ namespace Skrypt.Execution
                     array.Value.Add(result);
                 }
 
-                array.SetPropertiesTo(GetType(array.TypeName, scopeContext));
-
-              return array;
+                return array;
             }
             else if (node.SubNodes.Count == 0)
             {
                 switch (node.TokenType)
                 {
                     case "NumericLiteral":
-                        var newNumeric = new Library.Native.System.Numeric(double.Parse(node.Body));
-                        newNumeric.SetPropertiesTo(GetType(newNumeric.TypeName, scopeContext));
-
-                        return newNumeric;
+                        return _engine.Create<Library.Native.System.Numeric>(double.Parse(node.Body));
                     case "StringLiteral":
-                        var newString = new Library.Native.System.String(node.Body);
-                        newString.SetPropertiesTo(GetType(newString.TypeName, scopeContext));
-
-                        return newString;
+                        return _engine.Create<Library.Native.System.String>(node.Body);
                     case "BooleanLiteral":
-                        var newBool = new Library.Native.System.Boolean(node.Body == "true" ? true : false);
-                        newBool.SetPropertiesTo(GetType(newBool.TypeName, scopeContext));
-
-                        return newBool;
+                        return _engine.Create<Library.Native.System.Boolean>(node.Body == "true" ? true : false);
                     case "NullLiteral":
-                        return new Library.Native.System.Null();
+                        return _engine.Create<Library.Native.System.Null>();
                 }
             }
             else if (node.TokenType == "FunctionLiteral")

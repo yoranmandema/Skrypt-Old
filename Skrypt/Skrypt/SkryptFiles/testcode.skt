@@ -1,40 +1,36 @@
 using System;
 
-class Vector {
-	public strong X = 0;
-	public strong Y = 0;
-	public strong Z = 0;
+class Colour {
+	public strong R = 0;
+	public strong G = 0;
+	public strong B = 0;
 
-	// Constructor
-	Vector (x,y,z) {
-		self.X = x;
-		self.Y = y;
-		self.Z = z;
+	Colour (r,g,b) {
+		self.R = r;
+		self.G = g;
+		self.B = b;
 	}
 
-	public func Add(other) {
-		return Vector(
-			self.X + other.X,
-			self.Y + other.Y,
-			self.Z + other.Z
-		);
-	}
-	
-	public func Mul(other) {
-		return Vector(
-			self.X * other.X,
-			self.Y * other.Y,
-			self.Z * other.Z
-		);
+	public func Print() {
+		Print("(" + self.R + "," + self.G + "," + self.B + ")");
 	}
 }
 
-func Bezier (p0,p1,p2,t) {
-	return Vector(
-		(1-t)^2 * p0.X + (2 * (t-1) * t * p1.X) + t^2 * p2.X,
-		(1-t)^2 * p0.Y + (2 * (t-1) * t * p1.Y) + t^2 * p2.Y,
-		(1-t)^2 * p0.Z + (2 * (t-1) * t * p1.Z) + t^2 * p2.Z
-	);
+in = Input();
+
+colourValues = in.Explode(">");
+colours = [];
+
+for (i = 0; i < colourValues.Length; i++) {
+	values = colourValues[i].Explode(",");
+
+	colour = Colour(
+			Numeric.Parse(values[0]),
+			Numeric.Parse(values[1]),
+			Numeric.Parse(values[2])
+		);
+
+	colours.Push(colour);
 }
 
-Bezier(Vector(0,0,0),Vector(10,0,0),Vector(10,10,0),0.66);
+Print(colours);

@@ -7,6 +7,7 @@ using Skrypt.Library;
 using Skrypt.Library.Native;
 using Classes = Skrypt.Library.Native.System;
 using Skrypt.Execution;
+using Skrypt.Engine;
 
 namespace Skrypt {
 
@@ -119,7 +120,7 @@ namespace Skrypt {
         }
 
         [Constant]
-        public static SkryptObject Constructor(SkryptObject self, SkryptObject[] input) {
+        public static SkryptObject Constructor(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
             var x = TypeConverter.ToNumeric(input, 0);
             var y = TypeConverter.ToNumeric(input, 1);
             var z = TypeConverter.ToNumeric(input, 2);
@@ -134,12 +135,12 @@ namespace Skrypt {
         }
 
         [Constant]
-        public SkryptObject Cross(SkryptObject self, SkryptObject[] values) {
+        public SkryptObject Cross(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
             return Cross((Vector)self, ToVector(values,0));
         }
 
         [Constant]
-        public SkryptObject Dot(SkryptObject self, SkryptObject[] values) {
+        public SkryptObject Dot(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
             return (Classes.Numeric)Dot((Vector)self, ToVector(values, 0));
         }
     }

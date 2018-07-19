@@ -27,11 +27,13 @@ namespace Skrypt.Library.Reflection
             {
                 if (m.ReturnType != typeof(SkryptObject)) return false;
 
-                if (m.GetParameters().Count() != 2) return false;
+                if (m.GetParameters().Count() != 3) return false;
 
-                if (m.GetParameters()[0].ParameterType != typeof(SkryptObject)) return false;
+                if (m.GetParameters()[0].ParameterType != typeof(SkryptEngine)) return false;
 
-                if (m.GetParameters()[1].ParameterType != typeof(SkryptObject[])) return false;
+                if (m.GetParameters()[1].ParameterType != typeof(SkryptObject)) return false;
+
+                if (m.GetParameters()[2].ParameterType != typeof(SkryptObject[])) return false;
 
                 return true;
             });
@@ -114,7 +116,7 @@ namespace Skrypt.Library.Reflection
 
                 if (!getter.IsPublic) continue;
 
-                DynamicMethod dm = new DynamicMethod("GetValue",typeof(SkryptObject), new Type[] { typeof(SkryptObject), typeof(SkryptObject[]) }, typeof(SkryptObject), true);
+                DynamicMethod dm = new DynamicMethod("GetValue",typeof(SkryptObject), new Type[] { typeof(SkryptObject), typeof(SkryptObject[]) }, typeof(SkryptObject), false);
                 ILGenerator lgen = dm.GetILGenerator();
 
                 lgen.Emit(OpCodes.Ldarg_0);
@@ -126,9 +128,9 @@ namespace Skrypt.Library.Reflection
 
                 lgen.Emit(OpCodes.Ret);
 
-                var del = dm.CreateDelegate(typeof(SkryptDelegate)) as SkryptDelegate;
+                var del = dm.CreateDelegate(typeof(SkryptGetDelegate)) as SkryptGetDelegate;
 
-                var method = new SharpMethod {
+                var method = new GetMethod {
                     Method = del,
                     Name = p.Name
                 };
