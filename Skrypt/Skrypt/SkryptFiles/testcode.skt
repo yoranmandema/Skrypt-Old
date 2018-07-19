@@ -1,36 +1,9 @@
 using System;
 
-class Colour {
-	public strong R = 0;
-	public strong G = 0;
-	public strong B = 0;
-
-	Colour (r,g,b) {
-		self.R = r;
-		self.G = g;
-		self.B = b;
-	}
-
-	public func Print() {
-		Print("(" + self.R + "," + self.G + "," + self.B + ")");
+class Test {
+	Test (x,y,z) {
+	
 	}
 }
 
-in = Input();
-
-colourValues = in.Explode(">");
-colours = [];
-
-for (i = 0; i < colourValues.Length; i++) {
-	values = colourValues[i].Explode(",");
-
-	colour = Colour(
-			Numeric.Parse(values[0]),
-			Numeric.Parse(values[1]),
-			Numeric.Parse(values[2])
-		);
-
-	colours.Push(colour);
-}
-
-Print(colours);
+a = Test(1,1,,);

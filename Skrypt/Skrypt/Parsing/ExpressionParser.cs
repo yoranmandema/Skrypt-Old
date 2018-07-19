@@ -339,6 +339,7 @@ namespace Skrypt.Parsing
                 {
                     buffer = tokens.GetRange(startArg, (i == tokens.Count - 1 ? i + 1 : i) - startArg);
                     startArg = i + 1;
+
                     arguments.Add(buffer);
                 }
             }

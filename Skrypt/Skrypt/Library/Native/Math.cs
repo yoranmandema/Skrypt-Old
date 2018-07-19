@@ -73,6 +73,15 @@ namespace Skrypt.Library.Native
 
                 return engine.Create<Numeric>(SysMath.Min(SysMath.Max(x, a), b));
             }
+
+            [Constant]
+            public static SkryptObject Lerp(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var a = TypeConverter.ToNumeric(values, 0);
+                var b = TypeConverter.ToNumeric(values, 1);
+                var t = TypeConverter.ToNumeric(values, 2);
+
+                return engine.Create<Numeric>(a * (1-t) + b * t);
+            }
         }
     }
 }

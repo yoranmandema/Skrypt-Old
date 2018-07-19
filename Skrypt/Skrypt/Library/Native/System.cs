@@ -19,7 +19,10 @@ namespace Skrypt.Library.Native
 
         [Constant]
         public static SkryptObject Input(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+
+            engine.stopwatch.Stop();
             var input = Console.ReadLine();
+            engine.stopwatch.Start();
 
             return engine.Create<String>(input);
         }

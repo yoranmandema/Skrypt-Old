@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Skrypt.Execution;
 using Skrypt.Engine;
 using Skrypt.Parsing;
+using System;
 
 namespace Skrypt.Library.Native
 {

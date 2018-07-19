@@ -89,7 +89,10 @@ namespace Skrypt.Library.Native
                 var delimiter = TypeConverter.ToString(input, 0);
                 var selfString = ((String)self).Value;
 
-                var exploded = delimiter != "" ? selfString.Split(new string[] { delimiter }, StringSplitOptions.None) : new string[] { selfString };
+                var exploded = !string.IsNullOrEmpty(delimiter) ? 
+                    selfString.Split(new string[] { delimiter }, StringSplitOptions.None) : 
+                    new string[] { selfString };
+
                 var array = engine.Create<Array>();
 
                 for (int i = 0; i < exploded.Length; i++) {

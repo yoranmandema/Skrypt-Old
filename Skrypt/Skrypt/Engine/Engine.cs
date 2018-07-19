@@ -36,6 +36,7 @@ namespace Skrypt.Engine
         public StatementParser StatementParser;
         public Tokenizer Tokenizer;
         public TokenProcessor TokenProcessor;
+        internal Stopwatch stopwatch;
 
         private List<Token> _tokens;
 
@@ -232,7 +233,7 @@ namespace Skrypt.Engine
         {
             _code = code;
 
-            var stopwatch = Stopwatch.StartNew();
+            stopwatch = Stopwatch.StartNew();
 
             // Tokenize code
             _tokens = Tokenizer.Tokenize(code);
@@ -253,7 +254,7 @@ namespace Skrypt.Engine
             double parse = stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            //Console.WriteLine("Program:\n" + programNode);
+            Console.WriteLine("Program:\n" + programNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
@@ -265,7 +266,7 @@ namespace Skrypt.Engine
 
             Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
-            int instances = 1000;
+            int instances = 0;
             stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < instances; i++) {
                 GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
