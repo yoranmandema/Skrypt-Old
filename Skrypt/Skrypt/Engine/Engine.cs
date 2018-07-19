@@ -171,6 +171,8 @@ namespace Skrypt.Engine
 
             var result = (SkryptType)operationDel(new[] { leftObject, rightObject });
 
+            result.SetPropertiesTo(Executor.GetType(result.TypeName, GlobalScope));
+
             return result;
         }
 
@@ -188,6 +190,8 @@ namespace Skrypt.Engine
                     node?.SubNodes[0].Token);
 
             var result = (SkryptType)operationDel(new[] { leftObject });
+
+            result.SetPropertiesTo(Executor.GetType(result.TypeName, GlobalScope));
 
             return result;
         }

@@ -111,14 +111,20 @@ namespace Skrypt.Library.Native
 
             [Constant]
             public SkryptObject Sort(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var m = TypeConverter.ToUserMethod(values,0);
+
+                if (m.Parameters.Count < 2) engine.ThrowError("Input function must have 2 parameters!"); 
+
                 ((Array)self).Value.Sort((x, y) => {
-                    if (x.GetOperation("greater",x.GetType(),y.GetType(),x.Operations).OperationDelegate(new[] { x, y }).ToBoolean()) {
-                        return 0;
-                    }
-                    else if (x.GetOperation("lesser", x.GetType(), y.GetType(), x.Operations).OperationDelegate(new[] { x, y }).ToBoolean()) {
+                    var scope = new ScopeContext();
+                    scope.AddVariable(m.Parameters[0], x);
+                    scope.AddVariable(m.Parameters[1], y);
+
+                    var r = m.Execute(engine,null,new[] {x,y}, scope);
+
+                    if (r.SubContext.ReturnObject.ToBoolean()) {
                         return 1;
-                    }
-                    else {
+                    } else {
                         return -1;
                     }
                 });

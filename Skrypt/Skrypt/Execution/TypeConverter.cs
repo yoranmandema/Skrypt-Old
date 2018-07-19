@@ -12,6 +12,18 @@ namespace Skrypt.Execution
             return (Sys.Numeric) args[index];
         }
 
+        public static SkryptMethod ToMethod(SkryptObject[] args, int index) {
+            if (index > args.Length - 1) return new SkryptMethod();
+
+            return (SkryptMethod)args[index];
+        }
+
+        public static UserMethod ToUserMethod(SkryptObject[] args, int index) {
+            if (index > args.Length - 1) return new UserMethod();
+
+            return (UserMethod)args[index];
+        }
+
         public static Sys.Boolean ToBoolean(SkryptObject[] args, int index)
         {
             if (index > args.Length - 1) return new Sys.Boolean(false);

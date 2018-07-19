@@ -1,4 +1,7 @@
 using System;
 using Statistics;
 
-print(!2);
+a = [16,4,8,23,15,42];
+a.Sort(func (x,y) {return x > y});
+
+print(a);
