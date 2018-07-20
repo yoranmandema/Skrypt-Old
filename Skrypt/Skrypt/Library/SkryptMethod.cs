@@ -12,7 +12,8 @@ namespace Skrypt.Library
 
     public class SkryptMethod : SkryptObject
     {
-        public string ReturnType;
+        public string ReturnType { get; set; }
+        public List<string> Parameters { get; set; } = new List<string>();
 
         public virtual ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
@@ -28,10 +29,9 @@ namespace Skrypt.Library
 
     public class UserMethod : SkryptMethod
     {
-        public Node BlockNode;
-        public string CallName;
-        public List<string> Parameters = new List<string>();
-        public string Signature;
+        public Node BlockNode { get; set; }
+        public string CallName { get; set; }
+        public string Signature { get; set; }
 
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
@@ -48,7 +48,7 @@ namespace Skrypt.Library
 
     public class SharpMethod : SkryptMethod
     {
-        public SkryptDelegate Method;
+        public SkryptDelegate Method { get; set; }
 
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
@@ -73,7 +73,7 @@ namespace Skrypt.Library
     }
 
     public class GetMethod : SkryptMethod {
-        public SkryptGetDelegate Method;
+        public SkryptGetDelegate Method { get; set; }
 
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope) {
@@ -98,7 +98,7 @@ namespace Skrypt.Library
     }
 
     public class SetMethod : SkryptMethod {
-        public SkryptSetDelegate Method;
+        public SkryptSetDelegate Method { get; set; }
 
         public void Execute(SkryptEngine engine, SkryptObject self, SkryptObject value,
             ScopeContext scope) {

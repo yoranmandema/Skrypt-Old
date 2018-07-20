@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -41,6 +42,7 @@ namespace Skrypt.Library.Reflection
             foreach (var m in methods)
             {
                 SkryptDelegate del;
+                var parameters = new List<string>();
 
                 if (m.IsStatic) {
                     del = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), m);
@@ -48,9 +50,14 @@ namespace Skrypt.Library.Reflection
                     del = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), Instance, m);
                 }
 
+                foreach (var p in m.GetParameters()) {
+                    parameters.Add(p.Name);
+                }
+
                 var method = new SharpMethod {
                     Method = del,
-                    Name = m.Name
+                    Name = m.Name,
+                    Parameters = parameters
                 };
 
                 var property = new SkryptProperty {

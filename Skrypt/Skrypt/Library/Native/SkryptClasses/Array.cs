@@ -111,7 +111,7 @@ namespace Skrypt.Library.Native
 
             [Constant]
             public SkryptObject Sort(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                var m = TypeConverter.ToUserMethod(values,0);
+                var m = TypeConverter.ToMethod(values,0);
 
                 if (m.Parameters.Count < 2) engine.ThrowError("Input function must have 2 parameters!"); 
 
