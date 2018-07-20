@@ -37,7 +37,7 @@ namespace Skrypt.Engine
         public TokenProcessor TokenProcessor;
 
         internal Stopwatch Stopwatch { get; set; }
-        internal CallStack CurrentStack { get; set; } = new CallStack("Program",null,null);
+        internal CallStack CurrentStack { get; set; }
 
         private List<Token> _tokens;
         private string _code = "";
@@ -172,7 +172,7 @@ namespace Skrypt.Engine
 
             if (operationDel == null) {
                 ThrowError("No such operation as " + left.Name + " " + operation.Operation + " " + right.Name,
-                    node?.SubNodes[0].Token);
+                    node.Token);
             }
 
             var result = (SkryptType)operationDel(new[] { leftObject, rightObject });
@@ -277,6 +277,11 @@ namespace Skrypt.Engine
         public void ThrowError(string message, Token token = null)
         {
             var lineRow = token != null ? " (" + GetLineAndRowStringFromIndex(token.Start) + ")" : "";
+
+            Console.WriteLine();
+            Console.WriteLine(message);
+            if (token != null) Console.WriteLine($"\n\t(line: {token.Line}, colom: {token.Colom})");
+            Console.WriteLine(CurrentStack);
 
             throw new SkryptException(message + lineRow);
         }

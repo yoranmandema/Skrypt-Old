@@ -552,6 +552,7 @@ namespace Skrypt.Parsing
 
                 node.Body = "Call";
                 node.TokenType = "Call";
+                node.Token = tokens[0];
             }
             else
             {

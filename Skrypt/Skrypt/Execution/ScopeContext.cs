@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using Skrypt.Library;
 using System;
 using Skrypt.Parsing;
+using Skrypt.Engine;
 
 namespace Skrypt.Execution
 {
@@ -39,15 +40,11 @@ namespace Skrypt.Execution
     public class ScopeContext
     {
         public ScopeContext ParentScope = null;
+        public CallStack CallStack { get; set; }
         public SubContext SubContext = new SubContext();
-        public string Type = "";
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
         public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
-
-        //public override string ToString()
-        //{
-        //    return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
-        //}
+        public string Type { get; set; } = "";
 
         public void AddVariable(string name, SkryptObject value, Modifier modifiers = Modifier.None)
         {

@@ -7,7 +7,7 @@ using Skrypt.Tokenization;
 using Skrypt.Library;
 
 namespace Skrypt.Engine {
-    class CallStack {
+    public class CallStack {
         public string Descriptor { get; set; }
         public Token Token { get; set; }
         public CallStack Parent { get; set; }
@@ -21,7 +21,7 @@ namespace Skrypt.Engine {
         public override string ToString() {
             var str = $"\tat {Descriptor}";
 
-            if (Token != null) str += $"({Token.Start},{Token.End})\n";
+            if (Token != null) str += $" (line: {Token.Line}, colom: {Token.Colom})\n";
 
             var par = Parent;
 

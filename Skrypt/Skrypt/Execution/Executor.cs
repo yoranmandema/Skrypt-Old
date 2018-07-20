@@ -93,8 +93,6 @@ namespace Skrypt.Execution
             while (true) {
                 var conditionResult = CheckCondition(condNode, loopScope);
 
-
-
                 if (!conditionResult) break;
 
                 var scope = ExecuteBlock(block, loopScope, new SubContext { InLoop = true });
@@ -205,7 +203,7 @@ namespace Skrypt.Execution
             }
 
             UserMethod result = new UserMethod {
-                Name = "method",
+                Name = node.Body,
                 Signature = node.Body,
                 BlockNode = node.SubNodes[0],
                 CallName = node.Body
@@ -238,6 +236,7 @@ namespace Skrypt.Execution
                 scope.SubContext.Merge(scopeContext.SubContext);
                 scope.ParentScope = scopeContext;
                 scope.Types = scopeContext.Types;
+                scope.CallStack = scopeContext.CallStack;
             }
 
             if (subContext != null) scope.SubContext.Merge(subContext);            
@@ -532,10 +531,6 @@ namespace Skrypt.Execution
             if (node.TokenType == "Call")
             {
                 var arguments = new List<SkryptObject>();
-                var methodContext = new ScopeContext
-                {
-                    ParentScope = scopeContext
-                };
 
                 foreach (var subNode in node.SubNodes[1].SubNodes)
                 {
@@ -574,6 +569,13 @@ namespace Skrypt.Execution
                         _engine.ThrowError("Object does not have a constructor and can thus not be instanced!");
                     }
                 }
+
+                var methodContext = new ScopeContext {
+                    ParentScope = scopeContext,
+                    CallStack = new CallStack(((SkryptMethod)foundMethod).Name, node.Token, scopeContext.CallStack)
+                };
+
+                _engine.CurrentStack = methodContext.CallStack;
 
                 if (caller != null) {
                     methodContext.AddVariable("self", caller);

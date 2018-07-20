@@ -13,6 +13,7 @@ namespace Skrypt.Library
     public class SkryptMethod : SkryptObject
     {
         public string ReturnType { get; set; }
+        public string CallName { get; set; }
         public List<string> Parameters { get; set; } = new List<string>();
 
         public virtual ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
@@ -30,7 +31,6 @@ namespace Skrypt.Library
     public class UserMethod : SkryptMethod
     {
         public Node BlockNode { get; set; }
-        public string CallName { get; set; }
         public string Signature { get; set; }
 
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
