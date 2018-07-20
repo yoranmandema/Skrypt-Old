@@ -30,6 +30,10 @@ namespace Skrypt.Library
             TypeRight = null;
             OperationDelegate = del;
         }
+
+        public override string ToString() {
+            return $"{TypeLeft.Name} {Name} {TypeRight.Name}";
+        }
     }
 
     public class SkryptObject {

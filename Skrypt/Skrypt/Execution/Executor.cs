@@ -459,22 +459,6 @@ namespace Skrypt.Execution
                 {
                     var leftResult = ExecuteExpression(node.SubNodes[0], scopeContext);
 
-                    //dynamic left = Convert.ChangeType(leftResult, leftResult.GetType());
-
-                    //Operation opLeft = left.GetOperation(op.OperationName, leftResult.GetType(), null, left.Operations);
-
-                    //OperationDelegate operation = null;
-
-                    //if (opLeft != null)
-                    //    operation = opLeft.OperationDelegate;
-                    //else
-                    //    _engine.ThrowError("No such operation as " + left.Name + " " + op.Operation,
-                    //        node.SubNodes[0].Token);
-
-                    //var result = (SkryptType) operation(new[] {leftResult});
-
-                    //result.SetPropertiesTo(GetType(result.TypeName, scopeContext));
-
                     return _engine.Eval(op, leftResult, node); ;
                 }
             }

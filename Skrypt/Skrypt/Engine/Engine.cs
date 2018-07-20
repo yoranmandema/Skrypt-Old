@@ -146,13 +146,22 @@ namespace Skrypt.Engine
         }
 
         public SkryptObject Eval (Operator operation, SkryptObject leftObject, SkryptObject rightObject, Node node = null) {
-            dynamic left = Convert.ChangeType(rightObject, rightObject.GetType());
+            dynamic left = Convert.ChangeType(leftObject, leftObject.GetType());
             dynamic right = Convert.ChangeType(rightObject, rightObject.GetType());
 
-            Operation opLeft = left.GetOperation(operation.OperationName, leftObject.GetType(), rightObject.GetType(),
-                left.Operations);
-            Operation opRight = right.GetOperation(operation.OperationName, leftObject.GetType(),
-                rightObject.GetType(), right.Operations);
+            Operation opLeft = left.GetOperation(
+                operation.OperationName, 
+                leftObject.GetType(),
+                rightObject.GetType(),
+                left.Operations
+                );
+
+            Operation opRight = right.GetOperation(
+                operation.OperationName,
+                leftObject.GetType(),
+                rightObject.GetType(), 
+                right.Operations
+                );
 
             OperationDelegate operationDel = null;
 
@@ -160,9 +169,6 @@ namespace Skrypt.Engine
                 operationDel = opLeft.OperationDelegate;
             else if (opRight != null)
                 operationDel = opRight.OperationDelegate;
-            else
-                ThrowError("No such operation as " + left.Name + " " + operation.Operation + " " + right.Name,
-                    node?.SubNodes[0].Token);
 
             if (operationDel == null) {
                 ThrowError("No such operation as " + left.Name + " " + operation.Operation + " " + right.Name,
@@ -319,6 +325,7 @@ namespace Skrypt.Engine
             }
             Stopwatch.Stop();
             Console.WriteLine($"Average ({instances} instances): {Stopwatch.Elapsed.TotalMilliseconds / instances}ms");
+            Console.WriteLine($"Per second: {1000 / (Stopwatch.Elapsed.TotalMilliseconds / instances)}");
 
             return programNode;
         }

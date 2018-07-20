@@ -1,5 +1,1 @@
-using System;
-using Statistics;
-
-a = [16,4,8,23,15,42];
-a.Sort(func (x,y) {return x > y});
+"" + 1;
