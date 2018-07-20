@@ -6,13 +6,17 @@ using System.Threading.Tasks;
 using Skrypt.Engine;
 using Skrypt.Execution;
 
-namespace Skrypt.Library.Native {
-    partial class System {
+namespace Skrypt.Library.Native
+{
+    partial class System
+    {
         [Constant, Static]
-        public class Statistics : SkryptObject {
+        public class Statistics : SkryptObject
+        {
             [Constant]
-            public static SkryptObject Mode (SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                var a = TypeConverter.ToArray(values,0);
+            public static SkryptObject Mode(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
+                var a = TypeConverter.ToArray(values, 0);
                 var v = a.Value;
 
                 var query = v.GroupBy(x => ((Numeric)x).Value)
@@ -25,19 +29,22 @@ namespace Skrypt.Library.Native {
             }
 
             [Constant]
-            public static SkryptObject Mean(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+            public static SkryptObject Mean(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
                 var a = TypeConverter.ToArray(values, 0);
                 var total = 0d;
 
-                for (int i = 0; i < a.Value.Count; i++) {
+                for (int i = 0; i < a.Value.Count; i++)
+                {
                     total += (Numeric)a.Value[i];
                 }
 
-                return engine.Create<Numeric>(total/a.Value.Count);
+                return engine.Create<Numeric>(total / a.Value.Count);
             }
 
             [Constant]
-            public static SkryptObject Range(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+            public static SkryptObject Range(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
                 var a = TypeConverter.ToArray(values, 0);
 
                 var sorted = a.Sort(engine, a, null);
@@ -49,20 +56,60 @@ namespace Skrypt.Library.Native {
             }
 
             [Constant]
-            public static SkryptObject Sort(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+            public static SkryptObject Sort(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
                 var a = TypeConverter.ToArray(values, 0);
 
-                return a.Sort(engine,a,null);
+                return a.Sort(engine, a, null);
             }
 
-            //[Constant]
-            //public static SkryptObject Count(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-            //    var a = TypeConverter.ToArray(values, 0);
+            //Rebuild all from here on down when available, no idea if this works or not because VS thinks I have the wrong .NET version even though they're the same -Octo
+            [Constant]
+            public static SkryptObject Count(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
+                var a = TypeConverter.ToArray(values, 0);
+                return a.Value.Count;
+            }
 
+            [Constant]
+            public static SkryptObject CountNotEmpty(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
+                var a = TypeConverter.ToArray(values, 0);
+                var notEmpty = 0;
+                for (int i = 0; i < a.Value.Count; i++)
+                {
+                    if (a.Value[i] == null || a.Value[i] == "")
+                    {
+                        notEmpty--;
+                    }
+                    else
+                    {
+                        notEmpty++;
+                    }
+                }
 
+                return engine.Create<Numeric>(notEmpty);
+            }
 
-            //    return Array.Length(engine, a, null);
-            //}
+            [Constant]
+            public static SkryptObject CountEmpty(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
+                var a = TypeConverter.ToArray(values, 0);
+                var empty = 0;
+                for (int i = 0; i < a.Value.Count; i++)
+                {
+                    if (a.Value[i] == null || a.Value[i] == "")
+                    {
+                        empty++;
+                    }
+                    else
+                    {
+                        empty--;
+                    }
+                }
+
+                return engine.Create<Numeric>(empty);
+            }
         }
     }
 }
