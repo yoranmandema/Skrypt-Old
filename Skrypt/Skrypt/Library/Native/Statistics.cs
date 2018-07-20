@@ -68,7 +68,7 @@ namespace Skrypt.Library.Native
             public static SkryptObject Count(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToArray(values, 0);
-                return a.Value.Count;
+                return engine.Create<Numeric>(a.Value.Count);
             }
 
             [Constant]
@@ -96,6 +96,7 @@ namespace Skrypt.Library.Native
             {
                 var a = TypeConverter.ToArray(values, 0);
                 var empty = 0;
+
                 for (int i = 0; i < a.Value.Count; i++)
                 {
                     if (a.Value[i] == null || a.Value[i] == "")
@@ -109,6 +110,16 @@ namespace Skrypt.Library.Native
                 }
 
                 return engine.Create<Numeric>(empty);
+            }
+
+            [Constant]
+            public static SkryptObject Large(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var a = TypeConverter.ToArray(values, 0);
+                var k = TypeConverter.ToNumeric(input, 1);
+
+                a = Sort(a);
+
+                return engine.Create<Numeric>(a.Value[k]);
             }
         }
     }
