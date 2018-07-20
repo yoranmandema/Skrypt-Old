@@ -132,6 +132,24 @@ namespace Skrypt.Library.Native
 
                 return engine.Create<Numeric>(a.Value[Count(a)-k-1]);
             }
+
+            [Constant]
+            public static SkryptObject Min(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
+                var a = TypeConverter.ToArray(values, 0);
+                var b = a.Min(engine, a, null);
+
+                return engine.Create<Numeric>(b);
+            }
+
+            [Constant]
+            public static SkryptObject Max(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
+                var a = TypeConverter.ToArray(values, 0);
+                var b = a.Max(engine, a, null);
+
+                return engine.Create<Numeric>(b);
+            }
         }
     }
 }
