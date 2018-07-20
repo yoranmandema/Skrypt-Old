@@ -121,6 +121,17 @@ namespace Skrypt.Library.Native
 
                 return engine.Create<Numeric>(a.Value[k]);
             }
+
+            [Constant]
+            public static SkryptObject Small(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
+            {
+                var a = TypeConverter.ToArray(values, 0);
+                var k = TypeConverter.ToNumeric(input, 1);
+
+                a = Sort(a);
+
+                return engine.Create<Numeric>(a.Value[Count(a)-k-1]);
+            }
         }
     }
 }
