@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Numerics;
+//using System.Numerics;
 using Skrypt.Engine;
 using Skrypt.Execution;
 
@@ -64,14 +64,6 @@ namespace Skrypt.Library.Native
                 return a.Sort(engine, a, null);
             }
 
-            //Rebuild all from here on down when available, no idea if this works or not because VS thinks I have the wrong .NET version even though they're the same -Octo
-            [Constant]
-            public static SkryptObject Count(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
-            {
-                var a = TypeConverter.ToArray(values, 0);
-                return engine.Create<Numeric>(a.Value.Count);
-            }
-
             [Constant]
             public static SkryptObject CountNotEmpty(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
@@ -79,7 +71,7 @@ namespace Skrypt.Library.Native
                 var notEmpty = 0;
                 for (int i = 0; i < a.Value.Count; i++)
                 {
-                    if (a.Value[i] == null || a.Value[i] == "")
+                    if (a.Value[i] == null || a.Value[i] == (String)"")
                     {
                         notEmpty--;
                     }
@@ -100,7 +92,7 @@ namespace Skrypt.Library.Native
 
                 for (int i = 0; i < a.Value.Count; i++)
                 {
-                    if (a.Value[i] == null || a.Value[i] == "")
+                    if (a.Value[i] == null || a.Value[i] == (String)"")
                     {
                         empty++;
                     }
@@ -115,34 +107,48 @@ namespace Skrypt.Library.Native
 
             [Constant]
             public static SkryptObject Large(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                var a = TypeConverter.ToArray(values, 0);
-                var k = TypeConverter.ToNumeric(input, 1);
+                var a = (Array)TypeConverter.ToArray(values, 0).Clone(); // Copy array so we don't affect the original one by sorting it
+                var k = TypeConverter.ToNumeric(values, 1);
 
-                a = Sort(a);
+                a.Value.Sort((x, y) => {
+                    if ((Numeric)x > (Numeric)y) {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                });
 
-                return engine.Create<Numeric>(a.Value[k]);
+                return engine.Create<Numeric>(a.Value[(int)k]);
             }
 
             [Constant]
             public static SkryptObject Small(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
-                var a = TypeConverter.ToArray(values, 0);
-                var k = TypeConverter.ToNumeric(input, 1);
+                var a = (Array)TypeConverter.ToArray(values, 0).Clone(); // Copy array so we don't affect the original one by sorting it
+                var k = TypeConverter.ToNumeric(values, 1);
 
-                a = Sort(a);
+                a.Value.Sort((x, y) => {
+                    if ((Numeric)x > (Numeric)y) {
+                        return 1;
+                    }
+                    else {
+                        return -1;
+                    }
+                });
 
-                return engine.Create<Numeric>(a.Value[Count(a)-k-1]);
+                return engine.Create<Numeric>(a.Value[a.Value.Count-(int)k-1]);
             }
 
             [Constant]
             public static SkryptObject Min(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToArray(values, 0);
-                var b = 9223372036854775807;
+                var b = double.MaxValue;
 
                 for (int i = 0; i < a.Value.Count; i++) {
-                    if (a.Value[i] < b) {
-                        b = a.Value[i];
+                    if ((Numeric)a.Value[i] < b) {
+                        b = (Numeric)a.Value[i];
                     }
                 }
 
@@ -153,10 +159,10 @@ namespace Skrypt.Library.Native
             public static SkryptObject Max(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToArray(values, 0);
-                var b = -9223372036854775807;
+                var b = -double.MaxValue;
                 for (int i = 0; i < a.Value.Count; i++) {
-                    if (a.Value[i] > b) {
-                        b = a.Value[i];
+                    if ((Numeric)a.Value[i] > b) {
+                        b = (Numeric)a.Value[i];
                     }
                 }
 
@@ -167,14 +173,14 @@ namespace Skrypt.Library.Native
             public static SkryptObject MinIndex(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToArray(values, 0);
-                var b = 9223372036854775807;
+                var b = double.MaxValue;
                 var c = 0;
 
                 for (int i = 0; i < a.Value.Count; i++)
                 {
-                    if (a.Value[i] < b)
+                    if ((Numeric)a.Value[i] < b)
                     {
-                        b = a.Value[i];
+                        b = (Numeric)a.Value[i];
                         c = i;
                     }
                 }
@@ -186,14 +192,14 @@ namespace Skrypt.Library.Native
             public static SkryptObject MaxIndex(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToArray(values, 0);
-                var b = -9223372036854775807;
+                var b = -double.MaxValue;
                 var c = 0;
 
                 for (int i = 0; i < a.Value.Count; i++)
                 {
-                    if (a.Value[i] > b)
+                    if ((Numeric)a.Value[i] > b)
                     {
-                        b = a.Value[i];
+                        b = (Numeric)a.Value[i];
                         c = i;
                     }
                 }
@@ -206,9 +212,9 @@ namespace Skrypt.Library.Native
             public SkryptObject Sum(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToArray(values, 0);
-                var b = 0;
+                var b = 0d;
                 for (int i = 0; i < a.Value.Count; i++) {
-                    b += a.Value[i];
+                    b += (Numeric)a.Value[i];
                 }
 
                 return engine.Create<Numeric>(b);
