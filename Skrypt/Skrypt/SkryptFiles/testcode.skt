@@ -1,5 +1,9 @@
-func Test () {
+func Test2 () {
 	a = "" * 1;
+}
+
+func Test () {
+	Test2();
 }
 
 Test();
