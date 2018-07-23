@@ -85,7 +85,7 @@ namespace Skrypt.Library.Native
 
             //Rebuild all from here on down when available, no idea if this works or not because VS thinks I have the wrong .NET version even though they're the same -Octo
             [Constant]
-            public static SkryptObject Mod(SkryptEngine engine, SkrypObject self, SkryptObject[] values)
+            public static SkryptObject Mod(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToNumeric(values, 0);
                 var b = TypeConverter.ToNumeric(values, 1);
