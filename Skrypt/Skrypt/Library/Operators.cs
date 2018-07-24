@@ -252,6 +252,15 @@ namespace Skrypt.Library
         }
     }
 
+    internal class OpLambda : Operator {
+        public OpLambda() {
+            OperationName = "lambda";
+            Operation = "=>";
+
+            AllOperators.Add(this);
+        }
+    }
+
     internal class OpNegate : Operator
     {
         public OpNegate()

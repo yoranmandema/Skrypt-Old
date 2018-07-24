@@ -26,6 +26,7 @@ namespace Skrypt.Parsing
             new OperatorGroup(new Operator[] {new OpBreak(),new OpContinue() }, false, 0),
             new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
             new OperatorGroup(new Operator[] {new OpAssign()}, false),
+            new OperatorGroup(new Operator[] {new OpLambda()}, true),
             new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, true, 0),
             new OperatorGroup(new[] {new OpOr()}),
             new OperatorGroup(new[] {new OpAnd()}),
@@ -109,6 +110,7 @@ namespace Skrypt.Parsing
             var isFunctionLiteral = false;
             var isChain = false;
             var isConditional = false;
+            var isLambda = false;
 
             var CallArgsStart = 0;
 
@@ -149,6 +151,11 @@ namespace Skrypt.Parsing
                                     isFunctionLiteral = true;
                                     return;
                                 }
+                            }
+
+                            if (token.Value == "=>" && token.Type == TokenTypes.Punctuator) {
+                                isLambda = true;
+                                return;
                             }
 
                             if (GeneralParser.NotPermittedInExpression.Contains(tokens[i].Value))
@@ -305,6 +312,11 @@ namespace Skrypt.Parsing
             if (isFunctionLiteral)
             {
                 var result = _engine.MethodParser.ParseFunctionLiteral(tokens.GetRange(1, tokens.Count - 1));
+                return result.Node;
+            }
+
+            if (isLambda) {
+                var result = _engine.MethodParser.ParseLambda(tokens);
                 return result.Node;
             }
 

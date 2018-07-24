@@ -80,6 +80,63 @@ namespace Skrypt.Parsing
             return new ParseResult {Node = returnNode, Delta = index};
         }
 
+        public Node ParseLambdaParameters (List<Token> tokens) {
+            var node = new Node();
+
+            if (tokens[0].Value == "(" && tokens[0].Type == TokenTypes.Punctuator) {
+                node = _engine.GeneralParser.ParseSurrounded("(", ")", 0, tokens, ParseParameters).Node;
+            } else {
+                node = ParseSingleParameter(tokens);
+            }
+
+            return node;
+        }
+
+        public Node ParseLambdaBlock (List<Token> tokens) {
+            var node = new Node();
+
+            if (tokens[0].Value == "{" && tokens[0].Type == TokenTypes.Punctuator) {
+                node = _engine.GeneralParser.ParseSurrounded("{", "}", 0, tokens, _engine.GeneralParser.Parse).Node;
+            }
+            else {
+                node = new Node { Body = "Block", TokenType = "Block" };
+                var returnNode = new Node { Body = "return", TokenType = "Punctuator" };
+                var expressionNode = _engine.ExpressionParser.Parse(tokens).Node;
+
+                returnNode.Add(expressionNode);
+                node.Add(returnNode);
+            }
+
+            return node;
+        }
+
+        public ParseResult ParseLambda(List<Token> tokens) {
+            var node = new Node();
+            var parameterBuffer = new List<Token>();
+            var blockBuffer = new List<Token>();
+
+            for (int i = 0; i < tokens.Count - 1; i++) {
+                if (tokens[i].Value == "=>" && tokens[i].Type == TokenTypes.Punctuator) {
+                    blockBuffer = tokens.GetRange(i + 1, tokens.Count - i -1);
+                    break;
+                }
+
+                parameterBuffer.Add(tokens[i]);
+            }
+
+            var parameterNode = ParseLambdaParameters(parameterBuffer);
+            var blockNode = ParseLambdaBlock(blockBuffer);
+
+            var returnNode = new Node {
+                Body = "Function",
+                TokenType = "FunctionLiteral"
+            };
+            returnNode.SubNodes.Add(blockNode);
+            returnNode.SubNodes.Add(parameterNode);
+
+            return new ParseResult { Node = returnNode, Delta = tokens.Count };
+        }
+
         /// <summary>
         ///     Parses a list of tokens into a method node
         /// </summary>
@@ -108,34 +165,6 @@ namespace Skrypt.Parsing
             result = _engine.GeneralParser.ParseSurrounded("{", "}", index, tokens, _engine.GeneralParser.Parse);
             var blockNode = result.Node;
             index += result.Delta + 1;
-
-
-            //Node node = new Node();
-            //node.Add(ParameterNode);
-            //node.Add(BlockNode);
-            //node.TokenType = Tokens[1].Value;
-
-            //string currentSignature = Tokens[2].Value;
-
-            //foreach (Node par in node.SubNodes[0].SubNodes) {
-            //    currentSignature += "_" + par.TokenType;
-            //}
-
-            //node.Body = currentSignature;
-
-            //// Check if method with the same signature already exists        
-            //foreach (Node method in engine.MethodNodes) {
-            //    if (method.Body == currentSignature) {
-            //        engine.throwError("Method with this signature already exists!", Tokens[0]);
-            //    }
-            //}
-
-            //engine.MethodNodes.Add(node);
-            //engine.Methods.Add(new UserMethod {
-            //    Name = currentSignature,
-            //    ReturnType = Tokens[1].Value,
-            //    BlockNode = BlockNode,
-            //});
 
             var returnNode = new Node
             {
