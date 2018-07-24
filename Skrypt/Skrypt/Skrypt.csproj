@@ -54,6 +54,7 @@
     <Compile Include="Execution\TypeConverter.cs" />
     <Compile Include="Execution\Variable.cs" />
     <Compile Include="Library\Native\Encryption.cs" />
+    <Compile Include="Library\Native\FileIO.cs" />
     <Compile Include="Library\Native\Statistics.cs" />
     <Compile Include="Library\Reflection\Attributes\Attributes.cs" />
     <Compile Include="Library\Native\Math.cs" />
