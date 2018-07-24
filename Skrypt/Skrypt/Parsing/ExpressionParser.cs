@@ -25,8 +25,7 @@ namespace Skrypt.Parsing
         {
             new OperatorGroup(new Operator[] {new OpBreak(),new OpContinue() }, false, 0),
             new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
-            new OperatorGroup(new[] {new OpAssign()}, false),
-            new OperatorGroup(new[] {new OpAccess()}, false, 2, false),
+            new OperatorGroup(new Operator[] {new OpAssign()}, false),
             new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, true, 0),
             new OperatorGroup(new[] {new OpOr()}),
             new OperatorGroup(new[] {new OpAnd()}),
@@ -41,7 +40,8 @@ namespace Skrypt.Parsing
             new OperatorGroup(new[] {new OpPower()}),
             new OperatorGroup(new[] {new OpBitNot()}, false, 1),
             new OperatorGroup(new Operator[] {new OpNegate(), new OpNot()}, false, 1),
-            new OperatorGroup(new Operator[] {new OpPostInc(), new OpPostDec()}, false, 1, true)
+            new OperatorGroup(new Operator[] {new OpPostInc(), new OpPostDec()}, false, 1, true),
+            new OperatorGroup(new Operator[] { new OpAccess()}, false),
         };
 
         private readonly SkryptEngine _engine;
@@ -110,159 +110,164 @@ namespace Skrypt.Parsing
             var isChain = false;
             var isConditional = false;
 
-            var accessEnd = 0;
+            var CallArgsStart = 0;
 
             // Do logic in delegate so we can easily exit out of it when we need to
             Action loop = () =>
             {
-                foreach (var op in OperatorPrecedence)
-                foreach (var Operator in op.Operators)
-                {
-                    var i = 0;
-                    var canLoop = tokens.Count > 0;
+                foreach (var op in OperatorPrecedence) {
+                    foreach (var Operator in op.Operators) {
+                        var i = 0;
+                        var canLoop = tokens.Count > 0;
 
-                    while (canLoop)
-                    {
-                        var s = SkipChain(tokens, i);
+                        while (canLoop) {
+                            var s = SkipChain(tokens, i);
 
-                        if (s.Delta > 0)
-                        {
-                            i = s.End - 1;
-                            if (s.Start == 0 && i == tokens.Count - 1 && s.Delta != 0)
-                            {
-                                isChain = true;
-                                return;
-                            }
-                        }
+                            //if (s.Delta > 0) {
+                            //    i = s.End - 1;
+                            //    if (s.Start == 0 && i == tokens.Count - 1 && s.Delta != 0) {
+                            //        isChain = true;
+                            //        return;
+                            //    }
+                            //}
 
-                        var token = tokens[i];
-                        var previousToken = i >= 1 ? tokens[i - 1] : null;
+                            var token = tokens[i];
+                            var previousToken = i >= 1 ? tokens[i - 1] : null;
 
-                        if (token.Value == "func")
-                        {
-                            var skip = _engine.ExpectValue("(", tokens, i);
-                            i += skip.Delta;
+                            if (token.Value == "func") {
+                                var skip = _engine.ExpectValue("(", tokens, i);
+                                i += skip.Delta;
 
-                            var start = i;
-                            skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
-                            i += skip.Delta;
+                                var start = i;
+                                skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
+                                i += skip.Delta;
 
-                            skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
-                            i += skip.Delta;
+                                skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
+                                i += skip.Delta;
 
-                            if (start == 1 && skip.End == tokens.Count - 1)
-                            {
-                                isFunctionLiteral = true;
-                                return;
-                            }
-                        }
-
-                        if (GeneralParser.NotPermittedInExpression.Contains(tokens[i].Value))
-                            _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i]);
-
-                        if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
-                        {
-                            var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
-                            i += skip.Delta;
-
-                            if (skip.Start == 0 && skip.End == tokens.Count - 1)
-                            {
-                                isInPars = true;
-                                return;
-                            }
-
-                            token = tokens[i];
-                        }
-                        else if (token.Value == "[" && token.Type == TokenTypes.Punctuator)
-                        {
-                            var skip = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i);
-                            i += skip.Delta;
-
-                            if (skip.Start == 0 && skip.End == tokens.Count - 1)
-                            {
-                                isArrayLiteral = true;
-                                return;
-                            }
-                        }
-                        else if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator)
-                        {
-                            if (token.Value == ":" && token.Type == TokenTypes.Punctuator) {
-                                _engine.ThrowError("Incomplete conditional statement.",token);
-                            } else if (token.Value == "?" && token.Type == TokenTypes.Punctuator) {
-                                if (IsConditional(tokens)) {
-                                    isConditional = true;
+                                if (start == 1 && skip.End == tokens.Count - 1) {
+                                    isFunctionLiteral = true;
                                     return;
-                                } else {
+                                }
+                            }
+
+                            if (GeneralParser.NotPermittedInExpression.Contains(tokens[i].Value))
+                                _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i]);
+
+                            if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
+                                var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
+                                i += skip.Delta;
+
+                                if (skip.Start == 0 && skip.End == tokens.Count - 1) {
+                                    isInPars = true;
+                                    return;
+                                } else if (skip.End == tokens.Count - 1 && skip.Start > 0) {
+                                    var before = tokens[skip.Start - 1];
+                                    isMethodCall = true;
+
+                                    foreach (var _op in OperatorPrecedence) {
+                                        foreach (var _Operator in _op.Operators) {
+                                            if (before.Value == _Operator.Operation && before.Type == TokenTypes.Punctuator) {
+                                                isMethodCall = false;
+                                            }
+                                        }
+                                    }
+
+                                    if (isMethodCall) {
+                                        CallArgsStart = skip.Start;
+                                        return;
+                                    }
+                                }
+
+                                token = tokens[i];
+                            }
+                            else if (token.Value == "[" && token.Type == TokenTypes.Punctuator) {
+                                var skip = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i);
+                                i += skip.Delta;
+
+                                if (skip.Start == 0 && skip.End == tokens.Count - 1) {
+                                    isArrayLiteral = true;
+                                    return;
+                                }
+                            }
+                            else if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator) {
+                                if (token.Value == ":" && token.Type == TokenTypes.Punctuator) {
                                     _engine.ThrowError("Incomplete conditional statement.", token);
                                 }
-                            }
-
-                            // Fill left and right buffers
-                            leftBuffer = tokens.GetRange(0, i);
-                            rightBuffer = tokens.GetRange(i + 1, tokens.Count - i - 1);
-
-                            var hasRequiredLeftTokens = leftBuffer.Count > 0;
-                            var hasRequiredRightTokens = rightBuffer.Count > 0;
-
-                            if (op.Members == 1)
-                            {
-                                if (op.IsPostfix)
-                                    hasRequiredRightTokens = true;
-                                else
-                                    hasRequiredLeftTokens = true;
-                            }
-
-                            if (hasRequiredLeftTokens && hasRequiredRightTokens)
-                            {
-                                // Create operation node with type and body
-                                var newNode = new Node
-                                {
-                                    Body = Operator.OperationName,
-                                    TokenType = "" + token.Type,
-                                    Token = token
-                                };
-
-                                if (op.Members == 1)
-                                {
-                                    // Parse unary and do postfix logic
-
-                                    var leftNode = !op.IsPostfix ? null : ParseExpression(newNode, leftBuffer);
-                                    newNode.Add(leftNode);
-
-                                    var rightNode = op.IsPostfix ? null : ParseExpression(newNode, rightBuffer);
-                                    newNode.Add(rightNode);
-                                }
-                                else
-                                {
-                                    // Parse operators that need 2 sides
-
-                                    var leftNode = ParseExpression(newNode, leftBuffer);
-                                    newNode.Add(leftNode);
-
-                                    var rightNode = ParseExpression(newNode, rightBuffer);
-                                    newNode.Add(rightNode);
-                                }
-
-                                branch.Add(newNode);
-                                return;
-                            }
-
-                            if (Operator.FailOnMissingMembers) {
-                                if (op.Members == 0) {
-                                    _engine.ThrowError("'" + Operator.Operation + "' operator cannot be part of expression.", token);
-                                } else {
-                                    if (hasRequiredLeftTokens) {
-                                        _engine.ThrowError("Missing right hand operand.", token);
-                                    } else if (hasRequiredLeftTokens) {
-                                        _engine.ThrowError("Missing left hand operand.", token);
+                                else if (token.Value == "?" && token.Type == TokenTypes.Punctuator) {
+                                    if (IsConditional(tokens)) {
+                                        isConditional = true;
+                                        return;
                                     }
-                                }                                
-                            }
-                        }
+                                    else {
+                                        _engine.ThrowError("Incomplete conditional statement.", token);
+                                    }
+                                }
 
-                        // Check if we're still in bounds
-                        canLoop = op.LeftAssociate ? i < tokens.Count - 1 : tokens.Count - 1 - i > 0;
-                        i++;
+                                // Fill left and right buffers
+                                leftBuffer = tokens.GetRange(0, i);
+                                rightBuffer = tokens.GetRange(i + 1, tokens.Count - i - 1);
+
+                                var hasRequiredLeftTokens = leftBuffer.Count > 0;
+                                var hasRequiredRightTokens = rightBuffer.Count > 0;
+
+                                if (op.Members == 1) {
+                                    if (op.IsPostfix)
+                                        hasRequiredRightTokens = true;
+                                    else
+                                        hasRequiredLeftTokens = true;
+                                }
+
+                                if (hasRequiredLeftTokens && hasRequiredRightTokens) {
+                                    // Create operation node with type and body
+                                    var newNode = new Node {
+                                        Body = Operator.OperationName,
+                                        TokenType = "" + token.Type,
+                                        Token = token
+                                    };
+
+                                    if (op.Members == 1) {
+                                        // Parse unary and do postfix logic
+
+                                        var leftNode = !op.IsPostfix ? null : ParseExpression(newNode, leftBuffer);
+                                        newNode.Add(leftNode);
+
+                                        var rightNode = op.IsPostfix ? null : ParseExpression(newNode, rightBuffer);
+                                        newNode.Add(rightNode);
+                                    }
+                                    else {
+                                        // Parse operators that need 2 sides
+
+                                        var leftNode = ParseExpression(newNode, leftBuffer);
+                                        newNode.Add(leftNode);
+
+                                        var rightNode = ParseExpression(newNode, rightBuffer);
+                                        newNode.Add(rightNode);
+                                    }
+
+                                    branch.Add(newNode);
+                                    return;
+                                }
+
+                                if (Operator.FailOnMissingMembers) {
+                                    if (op.Members == 0) {
+                                        _engine.ThrowError("'" + Operator.Operation + "' operator cannot be part of expression.", token);
+                                    }
+                                    else {
+                                        if (hasRequiredLeftTokens) {
+                                            _engine.ThrowError("Missing right hand operand.", token);
+                                        }
+                                        else if (hasRequiredLeftTokens) {
+                                            _engine.ThrowError("Missing left hand operand.", token);
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Check if we're still in bounds
+                            canLoop = op.LeftAssociate ? i < tokens.Count - 1 : tokens.Count - 1 - i > 0;
+                            i++;
+                        }
                     }
                 }
             };
@@ -278,7 +283,7 @@ namespace Skrypt.Parsing
             // Parse method call
             if (isMethodCall)
             {
-                var result = ParseCall(tokens, accessEnd);
+                var result = ParseCall(tokens,CallArgsStart);
                 return result.Node;
             }
 
@@ -569,7 +574,7 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses a method call with arguments
         /// </summary>
-        public ParseResult ParseCall(List<Token> tokens, int accessEnd)
+        public ParseResult ParseCall(List<Token> tokens, int argsStart)
         {
             var index = 0;
             var name = tokens[index].Value;
@@ -579,14 +584,15 @@ namespace Skrypt.Parsing
                 TokenType = "Call"
             };
 
-            var accessTokens = tokens.GetRange(0, accessEnd);
+            var accessTokens = tokens.GetRange(0, argsStart);
+
             var getterNode = new Node();
             getterNode.Add(ParseExpression(getterNode, accessTokens));
             getterNode.Body = "Getter";
             getterNode.TokenType = "Getter";
             node.Add(getterNode);
 
-            var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", accessEnd, tokens);
+            var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", argsStart, tokens);
             var argumentsNode = result.Node;
             argumentsNode.Body = "Arguments";
             argumentsNode.TokenType = "Arguments";

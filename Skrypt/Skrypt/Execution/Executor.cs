@@ -321,9 +321,20 @@ namespace Skrypt.Execution
 
         public SkryptProperty ExecuteAccess(SkryptObject Object, Node node, ScopeContext scopeContext, bool setter = false)
         {
+            var newScope = ObjectExtensions.Copy(scopeContext);
+
+            foreach (var p in Object.Properties) {
+                newScope.AddVariable(p.Name, p.Value, p.Modifiers);
+            }
+
             if (node.SubNodes.Count == 0) return GetProperty(Object, node.Body, setter);
 
-            var property = GetProperty(Object, node.SubNodes[0].Body, setter);
+            var solvedLeft = ExecuteExpression(node.SubNodes[0], newScope);
+
+            Console.WriteLine("Get: " + node.SubNodes[1].Body);
+            Console.WriteLine("From: " + solvedLeft);
+
+            var property = GetProperty(solvedLeft, node.SubNodes[1].Body, setter);
 
             if (node.SubNodes[1].Body == "access")
                 return ExecuteAccess(property.Value, node.SubNodes[1], scopeContext, setter);
@@ -370,8 +381,8 @@ namespace Skrypt.Execution
 
                 if (op.OperationName == "access")
                 {
-                    var target = ExecuteExpression(node.SubNodes[1], scopeContext);
-                    var result = ExecuteAccess(target, node.SubNodes[0], scopeContext);
+                    var target = ExecuteExpression(node.SubNodes[0], scopeContext);
+                    var result = ExecuteAccess(target, node.SubNodes[1], scopeContext);
 
                     if (scopeContext.SubContext.GettingCaller) scopeContext.SubContext.Caller = target;
 

@@ -14,7 +14,7 @@ namespace Skrypt.Library.Native
 
             Console.WriteLine(a);
 
-            return new Null();
+            return a;
         }
 
         [Constant]
