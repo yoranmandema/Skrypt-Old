@@ -237,6 +237,12 @@ namespace Skrypt.Library.Native
                 return engine.Create<Numeric>(r);
             }
 
+
+            [Constant]
+            public SkryptObject ToString(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<String>(((Numeric)self).Value.ToString(TypeConverter.ToString(input, 0)));
+            }
+
             public override string ToString()
             {
                 return "" + Value;

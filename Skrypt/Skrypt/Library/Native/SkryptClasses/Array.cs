@@ -116,17 +116,32 @@ namespace Skrypt.Library.Native
                 if (m.Parameters.Count < 2) engine.ThrowError("Input function must have 2 parameters!"); 
 
                 ((Array)self).Value.Sort((x, y) => {
-                    var scope = new ScopeContext();
-                    scope.AddVariable(m.Parameters[0], x);
-                    scope.AddVariable(m.Parameters[1], y);
+                    var scope = SkryptMethod.GetPopulatedScope(m, new[] { x, y });
+                    scope.ParentScope = ScopeContext;
 
-                    var r = m.Execute(engine,null,new[] {x,y}, scope);
+                    var r = m.Execute(engine, self, new[] {x,y}, scope);
 
                     if (r.SubContext.ReturnObject.ToBoolean()) {
                         return 1;
                     } else {
                         return -1;
                     }
+                });
+
+                return self;
+            }
+
+            [Constant]
+            public SkryptObject ForEach(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var m = TypeConverter.ToMethod(values, 0);
+
+                //if (m.Parameters.Count < 1) engine.ThrowError("Input function must have 1 parameter!");
+
+                ((Array)self).Value.ForEach(x => {
+                    var scope = SkryptMethod.GetPopulatedScope(m,new[] {x});
+                    scope.ParentScope = ScopeContext;
+
+                    var r = m.Execute(engine, self, new[] { x }, scope);
                 });
 
                 return self;

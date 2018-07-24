@@ -1,5 +1,10 @@
-
-func Test () {
-  a = "" * 1;
-}
 using System;
+
+string = "Hello world!";
+bytes = string.GetBytes();
+
+bytes.ForEach(func (x) {
+	x = 0;
+});
+
+print(bytes);

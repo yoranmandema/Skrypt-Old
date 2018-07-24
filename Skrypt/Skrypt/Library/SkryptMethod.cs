@@ -26,6 +26,22 @@ namespace Skrypt.Library
         {
             return base.ToString();
         }
+
+        public static ScopeContext GetPopulatedScope (SkryptMethod m, SkryptObject[] a) {
+            var s = new ScopeContext();
+
+            if (m.GetType() == typeof(UserMethod)) {
+                for (int i = 0; i < m.Parameters.Count; i++) {
+                    s.AddVariable(m.Parameters[i],a[i]);
+                }
+            } else {
+                for (int i = 0; i < a.Length; i++) {
+                    s.AddVariable(a[i].GetHashCode() + "", a[i]);
+                }
+            }
+
+            return s;
+        }
     }
 
     public class UserMethod : SkryptMethod

@@ -85,6 +85,18 @@ namespace Skrypt.Library.Native
             }
 
             [Constant]
+            public SkryptObject GetBytes(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                var byteArray = Encoding.ASCII.GetBytes(((String)self).Value);
+                var array = engine.Create<Array>();
+                 
+                for (int i = 0; i < byteArray.Length - 1; i++) {
+                    array.Value.Add((Numeric)byteArray[i]);
+                }
+
+                return array;
+            }
+
+            [Constant]
             public SkryptObject Explode(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 var delimiter = TypeConverter.ToString(input, 0);
                 var selfString = ((String)self).Value;
