@@ -1,1 +1,5 @@
+a = _ => {
+	System.print("hello worl!");
+};
 
+a();

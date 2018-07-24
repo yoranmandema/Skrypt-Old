@@ -153,11 +153,6 @@ namespace Skrypt.Parsing
                                 }
                             }
 
-                            if (token.Value == "=>" && token.Type == TokenTypes.Punctuator) {
-                                isLambda = true;
-                                return;
-                            }
-
                             if (GeneralParser.NotPermittedInExpression.Contains(tokens[i].Value))
                                 _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i]);
 
@@ -226,6 +221,11 @@ namespace Skrypt.Parsing
                                 }
 
                                 if (hasRequiredLeftTokens && hasRequiredRightTokens) {
+                                    if (token.Value == "=>") {
+                                        isLambda = true;
+                                        return;
+                                    }
+
                                     // Create operation node with type and body
                                     var newNode = new Node {
                                         Body = Operator.OperationName,
