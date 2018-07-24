@@ -42,6 +42,7 @@ namespace Skrypt.Parsing
             new OperatorGroup(new[] {new OpBitNot()}, false, 1),
             new OperatorGroup(new Operator[] {new OpNegate(), new OpNot()}, false, 1),
             new OperatorGroup(new Operator[] {new OpPostInc(), new OpPostDec()}, false, 1, true),
+            new OperatorGroup(new Operator[] { new OpCall()}, false),
             new OperatorGroup(new Operator[] { new OpAccess()}, false),
         };
 
@@ -163,7 +164,7 @@ namespace Skrypt.Parsing
                                 if (skip.Start == 0 && skip.End == tokens.Count - 1) {
                                     isInPars = true;
                                     return;
-                                } else if (skip.End == tokens.Count - 1 && skip.Start > 0) {
+                                } else if (skip.End == tokens.Count - 1 && skip.Start > 0 && Operator.Operation == "(") {
                                     var before = tokens[skip.Start - 1];
                                     isMethodCall = true;
 

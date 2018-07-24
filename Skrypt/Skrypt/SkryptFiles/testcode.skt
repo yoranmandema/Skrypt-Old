@@ -1,5 +1,5 @@
-a = _ => {
-	System.print("hello worl!");
-};
+using System;
 
-a();
+a = print("test");
+
+System.print(a).Length;

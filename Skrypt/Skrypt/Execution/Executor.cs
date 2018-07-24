@@ -327,12 +327,11 @@ namespace Skrypt.Execution
                 newScope.AddVariable(p.Name, p.Value, p.Modifiers);
             }
 
-            if (node.SubNodes.Count == 0) return GetProperty(Object, node.Body, setter);
+            if (node.SubNodes.Count == 0) {
+                return GetProperty(Object, node.Body, setter);
+            }
 
             var solvedLeft = ExecuteExpression(node.SubNodes[0], newScope);
-
-            Console.WriteLine("Get: " + node.SubNodes[1].Body);
-            Console.WriteLine("From: " + solvedLeft);
 
             var property = GetProperty(solvedLeft, node.SubNodes[1].Body, setter);
 
@@ -428,8 +427,8 @@ namespace Skrypt.Execution
                     }
                     else if (node.SubNodes[0].Body == "access")
                     {
-                        var target = ExecuteExpression(node.SubNodes[0].SubNodes[1], scopeContext);
-                        var accessResult = ExecuteAccess(target, node.SubNodes[0].SubNodes[0], scopeContext, true);
+                        var target = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
+                        var accessResult = ExecuteAccess(target, node.SubNodes[0].SubNodes[1], scopeContext, true);
 
                         if ((accessResult.Modifiers & Modifier.Const) != 0)
                             _engine.ThrowError("Property is marked as constant and can thus not be modified.");

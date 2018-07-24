@@ -14,7 +14,7 @@ namespace Skrypt.Library.Native
 
             Console.WriteLine(a);
 
-            return a;
+            return engine.Create<String>(a.ToString());
         }
 
         [Constant]

@@ -261,6 +261,15 @@ namespace Skrypt.Library
         }
     }
 
+    internal class OpCall : Operator {
+        public OpCall() {
+            OperationName = "call";
+            Operation = "(";
+
+            AllOperators.Add(this);
+        }
+    }
+
     internal class OpNegate : Operator
     {
         public OpNegate()
