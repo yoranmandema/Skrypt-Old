@@ -672,8 +672,6 @@ namespace Skrypt.Execution
             {
                 var result = ExecuteExpression(subNode, scopeContext);
 
-                if (result.Name == "void") _engine.ThrowError("Can't pass void into arguments!", node.SubNodes[0].Token);
-
                 arguments.Add(result);
             }
 

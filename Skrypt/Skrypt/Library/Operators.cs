@@ -270,6 +270,15 @@ namespace Skrypt.Library
         }
     }
 
+    internal class OpIndex : Operator {
+        public OpIndex() {
+            OperationName = "index";
+            Operation = "[";
+
+            AllOperators.Add(this);
+        }
+    }
+
     internal class OpNegate : Operator
     {
         public OpNegate()

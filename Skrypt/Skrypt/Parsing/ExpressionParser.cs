@@ -43,6 +43,7 @@ namespace Skrypt.Parsing
             new OperatorGroup(new Operator[] {new OpNegate(), new OpNot()}, false, 1),
             new OperatorGroup(new Operator[] {new OpPostInc(), new OpPostDec()}, false, 1, true),
             new OperatorGroup(new Operator[] { new OpCall()}, false),
+            new OperatorGroup(new Operator[] { new OpIndex()}, false),
             new OperatorGroup(new Operator[] { new OpAccess()}, false),
         };
 
@@ -192,6 +193,23 @@ namespace Skrypt.Parsing
                                     isArrayLiteral = true;
                                     return;
                                 }
+                                else if (skip.End == tokens.Count - 1 && skip.Start > 0 && Operator.Operation == "[") {
+                                    var before = tokens[skip.Start - 1];
+                                    isIndexing = true;
+
+                                    foreach (var _op in OperatorPrecedence) {
+                                        foreach (var _Operator in _op.Operators) {
+                                            if (before.Value == _Operator.Operation && before.Type == TokenTypes.Punctuator) {
+                                                isIndexing = false;
+                                            }
+                                        }
+                                    }
+
+                                    if (isIndexing) {
+                                        CallArgsStart = skip.Start;
+                                        return;
+                                    }
+                                }
                             }
                             else if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator) {
                                 if (token.Value == ":" && token.Type == TokenTypes.Punctuator) {
@@ -298,7 +316,7 @@ namespace Skrypt.Parsing
             // Parse indexing
             if (isIndexing)
             {
-                var result = ParseIndexing(tokens);
+                var result = ParseIndexing(tokens, CallArgsStart);
                 return result.Node;
             }
 
@@ -589,8 +607,7 @@ namespace Skrypt.Parsing
         /// </summary>
         public ParseResult ParseCall(List<Token> tokens, int argsStart)
         {
-            var index = 0;
-            var name = tokens[index].Value;
+            var name = tokens[0].Value;
             var node = new Node
             {
                 Body = "Call",
@@ -611,27 +628,35 @@ namespace Skrypt.Parsing
             argumentsNode.TokenType = "Arguments";
             node.Add(argumentsNode);
 
-            index = tokens.Count - 1;
-
-            return new ParseResult {Node = node, Delta = index};
+            return new ParseResult {Node = node, Delta = tokens.Count - 1 };
         }
 
         /// <summary>
         ///     Parses an index operation
         /// </summary>
-        public ParseResult ParseIndexing(List<Token> tokens)
+        public ParseResult ParseIndexing(List<Token> tokens, int argsStart)
         {
-            var node = new Node {Body = tokens[0].Value, TokenType = "Index"};
-            var index = 1;
+            var name = tokens[0].Value;
+            var node = new Node {
+                Body = "Index",
+                TokenType = "Index"
+            };
 
-            var result =
-                _engine.GeneralParser.ParseSurrounded("[", "]", index, tokens, _engine.ExpressionParser.ParseClean);
-            var argNode = result.Node;
-            index += result.Delta;
-            node.Add(argNode);
-            node.Token = tokens[0];
+            var accessTokens = tokens.GetRange(0, argsStart);
 
-            return new ParseResult {Node = node, Delta = index};
+            var getterNode = new Node();
+            getterNode.Add(ParseExpression(getterNode, accessTokens));
+            getterNode.Body = "Getter";
+            getterNode.TokenType = "Getter";
+            node.Add(getterNode);
+
+            var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", argsStart, tokens);
+            var argumentsNode = result.Node;
+            argumentsNode.Body = "Arguments";
+            argumentsNode.TokenType = "Arguments";
+            node.Add(argumentsNode);
+
+            return new ParseResult { Node = node, Delta = tokens.Count - 1 };
         }
 
         /// <summary>

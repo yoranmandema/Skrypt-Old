@@ -110,20 +110,13 @@ namespace Skrypt.Tokenization
                 }
 
                 if (unmodifiedI != i) {
-                    //i++;
-                    Console.WriteLine(ExpressionParser.TokenString(tokens.GetRange(unmodifiedI, i - unmodifiedI)));
-
-                    //continue;
+                    continue;
                 }
 
                 var needsValueAfter = false;
                 Action loop = () => {
                     foreach (var op in ExpressionParser.OperatorPrecedence) {
                         foreach (var Operator in op.Operators) {
-                            //if (Operator.Operation == "(") {
-                            //    continue;
-                            //}
-
                             if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator) {
                                 if (op.Members == 1) {
                                     if (!op.IsPostfix) {
