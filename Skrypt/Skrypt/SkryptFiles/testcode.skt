@@ -1,2 +1,8 @@
-a = [2]
-b = a[0]
+
+func a (in) {
+	using System;
+
+	print(in)
+}
+
+a("Hello")

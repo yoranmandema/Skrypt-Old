@@ -114,6 +114,8 @@ namespace Skrypt.Parsing
 
         private ParseResult TryParse(List<Token> tokens)
         {
+            Console.WriteLine(ExpressionParser.TokenString(tokens));
+
             var i = 0;
             var t = tokens[i];
             var usedModifiers = new List<string>();

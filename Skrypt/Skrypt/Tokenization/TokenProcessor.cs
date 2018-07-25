@@ -59,9 +59,7 @@ namespace Skrypt.Tokenization
             return group.Operators.Find(y => y.Operation == token.Value);
         }
         
-        private void InsertEnd (List<Token> tokens, int index, int start = 0) {
-            Console.WriteLine("expression: " + ExpressionParser.TokenString(tokens.GetRange(start, tokens.Count - start)));
-
+        private void InsertEnd (List<Token> tokens, int index) {
             tokens.Insert(index, new Token { Value = "EndOfExpression", Type = TokenTypes.EndOfExpression });
         }
 
@@ -136,14 +134,12 @@ namespace Skrypt.Tokenization
 
                 if (!needsValueAfter && previousToken != null) {
                     if (previousToken.IsValuable() && token.IsValuable()) {
-                        InsertEnd(tokens, i, expressionStart);
-                        expressionStart = i;
+                        InsertEnd(tokens, i);
                         i--;
                     }
 
                     if (previousToken.IsGroup() && token.IsValuable()) {
-                        InsertEnd(tokens, i, expressionStart);
-                        expressionStart = i;
+                        InsertEnd(tokens, i);
                         i--;
                     }
                 }

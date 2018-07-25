@@ -174,7 +174,7 @@ namespace Skrypt.Parsing
             returnNode.SubNodes.Add(blockNode);
             returnNode.SubNodes.Add(parameterNode);
 
-            return new ParseResult {Node = returnNode, Delta = index};
+            return new ParseResult {Node = returnNode, Delta = index + 1};
         }
     }
 }
