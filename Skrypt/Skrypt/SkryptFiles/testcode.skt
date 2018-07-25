@@ -1,5 +1,2 @@
-using System;
-
-a = print("test");
-
-System.print(a).Length;
+a = b[2]
+b = 2

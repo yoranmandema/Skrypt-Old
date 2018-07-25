@@ -58,6 +58,12 @@ namespace Skrypt.Tokenization
 
             return group.Operators.Find(y => y.Operation == token.Value);
         }
+        
+        private void InsertEnd (List<Token> tokens, int index, int start = 0) {
+            Console.WriteLine("expression: " + ExpressionParser.TokenString(tokens.GetRange(start, tokens.Count - start)));
+
+            tokens.Insert(index, new Token { Value = "EndOfExpression", Type = TokenTypes.EndOfExpression });
+        }
 
         /// <summary>
         ///     Process all tokens in a list
@@ -81,12 +87,73 @@ namespace Skrypt.Tokenization
                 }
             }
 
-
+            var expression = new List<Token>();
+            var expressionStart = 0;
+            Token previousToken = null;
 
             for (int i = 0; i < tokens.Count; i++) {
                 var token = tokens[i];
+                var unmodifiedI = i;
 
-                
+                if (i > 0) {
+                    previousToken = tokens[i-1];
+                }
+
+                if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
+                    i = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i).End;
+                }
+                else if (token.Value == "{" && token.Type == TokenTypes.Punctuator) {
+                    i = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i).End;
+                }
+                else if (token.Value == "[" && token.Type == TokenTypes.Punctuator) {
+                    i = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i).End; 
+                }
+
+                if (unmodifiedI != i) {
+                    //i++;
+                    Console.WriteLine(ExpressionParser.TokenString(tokens.GetRange(unmodifiedI, i - unmodifiedI)));
+
+                    //continue;
+                }
+
+                var needsValueAfter = false;
+                Action loop = () => {
+                    foreach (var op in ExpressionParser.OperatorPrecedence) {
+                        foreach (var Operator in op.Operators) {
+                            //if (Operator.Operation == "(") {
+                            //    continue;
+                            //}
+
+                            if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator) {
+                                if (op.Members == 1) {
+                                    if (!op.IsPostfix) {
+                                        needsValueAfter = true;
+                                    }
+                                }
+                                else if (op.Members == 2) {
+                                    needsValueAfter = true;
+                                }
+
+                                return;
+                            }
+                        }
+                    }
+                };
+                loop();
+
+                if (!needsValueAfter && previousToken != null) {
+                    if (previousToken.IsValuable() && token.IsValuable()) {
+                        InsertEnd(tokens, i, expressionStart);
+                        expressionStart = i;
+                        i--;
+                    }
+
+                    if (previousToken.IsGroup() && token.IsValuable()) {
+                        InsertEnd(tokens, i, expressionStart);
+                        expressionStart = i;
+                        i--;
+                    }
+                }
             }
         }
     }

@@ -124,7 +124,7 @@ namespace Skrypt.Parsing
                         var canLoop = tokens.Count > 0;
 
                         while (canLoop) {
-                            var s = SkipChain(tokens, i);
+                            //var s = SkipChain(tokens, i);
 
                             //if (s.Delta > 0) {
                             //    i = s.End - 1;

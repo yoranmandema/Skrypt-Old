@@ -62,6 +62,15 @@ namespace Skrypt.Tokenization
                    Type == TokenTypes.StringLiteral;
         }
 
+        public bool IsGroup () {
+            return (Type == TokenTypes.Punctuator) &&
+                    (
+                        Value == ")" ||
+                        Value == "}" ||
+                        Value == "]"
+                    );
+        }
+
         /// <summary>
         ///     Returns true if token has the same type and value. Type and value can be left as null to ignore
         /// </summary>
