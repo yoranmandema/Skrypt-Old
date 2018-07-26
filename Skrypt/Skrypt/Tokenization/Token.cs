@@ -71,6 +71,10 @@ namespace Skrypt.Tokenization
                     );
         }
 
+        public bool IsKeyword() {
+            return Type == TokenTypes.Keyword;
+        }
+
         /// <summary>
         ///     Returns true if token has the same type and value. Type and value can be left as null to ignore
         /// </summary>

@@ -181,7 +181,7 @@ namespace Skrypt.Parsing
             Node.Body = tokens[1].Value;
             i += result.Delta + 1;
              
-            return new ParseResult { Node = Node, Delta = i };
+            return new ParseResult { Node = Node, Delta = i + 1};
         }
     }
 }

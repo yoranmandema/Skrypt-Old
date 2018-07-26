@@ -86,7 +86,10 @@ namespace Skrypt.Tokenization
             }
 
             var expression = new List<Token>();
-            var expressionStart = 0;
+            //var parDepth = 0;
+            //var braDepth = 0;
+            //var sqrDepth = 0;
+
             Token previousToken = null;
 
             for (int i = 0; i < tokens.Count; i++) {
@@ -100,16 +103,20 @@ namespace Skrypt.Tokenization
                 if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
                     i = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i).End;
                 }
-                else if (token.Value == "{" && token.Type == TokenTypes.Punctuator) {
-                    i = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i).End;
-                }
+                //else if (token.Value == "{" && token.Type == TokenTypes.Punctuator) {
+                //    i = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i).End;
+                //}
                 else if (token.Value == "[" && token.Type == TokenTypes.Punctuator) {
-                    i = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i).End; 
+                    i = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i).End;
                 }
 
                 if (unmodifiedI != i) {
                     continue;
                 }
+
+                //parDepth += token.Value == "(" ? 1 : token.Value == ")" ? -1 : 0;
+                //braDepth += token.Value == "{" ? 1 : token.Value == "}" ? -1 : 0;
+                //sqrDepth += token.Value == "[" ? 1 : token.Value == "]" ? -1 : 0;
 
                 var needsValueAfter = false;
                 Action loop = () => {
@@ -133,12 +140,24 @@ namespace Skrypt.Tokenization
                 loop();
 
                 if (!needsValueAfter && previousToken != null) {
+                    Console.WriteLine($"Pref: {previousToken.Value} Now: {token.Value}");
+
                     if (previousToken.IsValuable() && token.IsValuable()) {
                         InsertEnd(tokens, i);
                         i--;
                     }
 
                     if (previousToken.IsGroup() && token.IsValuable()) {
+                        InsertEnd(tokens, i);
+                        i--;
+                    }
+
+                    if (previousToken.IsValuable() && token.IsKeyword()) {
+                        InsertEnd(tokens, i);
+                        i--;
+                    }
+
+                    if (previousToken.IsGroup() && token.IsKeyword()) {
                         InsertEnd(tokens, i);
                         i--;
                     }

@@ -1,8 +1,14 @@
 
-func a (in) {
-	using System;
+class Car {
+	public Wheels = 4
+	public Engine = "V8"
 
-	print(in)
+	Car (w,e) {
+		self.Wheels = w
+		self.Engine = e
+	}
 }
 
-a("Hello")
+a = Car(2,"V6")
+
+System.print(a)
