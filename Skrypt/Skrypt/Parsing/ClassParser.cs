@@ -66,14 +66,14 @@ namespace Skrypt.Parsing
 
             if (FurtherTokens[0].Value == Name) {
                 FurtherTokens[0].Value = "Constructor";
-                FurtherTokens.Insert(0, new Token {Value = "func"});
+                FurtherTokens.Insert(0, new Token {Value = "fn"});
                 FurtherResult = _engine.MethodParser.Parse(FurtherTokens);
                 FurtherResult.Delta--;
 
                 if (Properties.Contains("static") || Properties.Contains("constant")) {
                     _engine.ThrowError("Constructor method cannot be marked as static or constant!", FurtherTokens[1]);
                 }
-            } else if (FurtherTokens[0].Value == "func") {
+            } else if (FurtherTokens[0].Value == "fn") {
                 FurtherResult = _engine.MethodParser.Parse(FurtherTokens);
             }
             else if (FurtherTokens[0].Value == "class") {
@@ -136,7 +136,7 @@ namespace Skrypt.Parsing
                                 });
 
                                 clone.Insert(constructorStart, new Token {
-                                    Value = "func",
+                                    Value = "fn",
                                     Type = TokenTypes.Keyword,
                                     Start = clone[constructorStart].Start,
                                     End = clone[constructorStart].Start,

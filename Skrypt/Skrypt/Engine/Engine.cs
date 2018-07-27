@@ -87,7 +87,7 @@ namespace Skrypt.Engine
             );
 
             Tokenizer.AddRule(
-                new Regex(@"const|using|public|static|class|func|if|elseif|else|while"),
+                new Regex(@"const|using|public|static|class|fn|if|elseif|else|while"),
                 TokenTypes.Keyword
             );
 
@@ -311,7 +311,7 @@ namespace Skrypt.Engine
             double parse = Stopwatch.ElapsedMilliseconds;
 
             // Debug program node
-            Console.WriteLine("Program:\n" + programNode);
+            //Console.WriteLine("Program:\n" + programNode);
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);

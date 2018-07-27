@@ -138,7 +138,7 @@ namespace Skrypt.Parsing
                             var token = tokens[i];
                             var previousToken = i >= 1 ? tokens[i - 1] : null;
 
-                            if (token.Value == "func") {
+                            if (token.Value == "fn") {
                                 var skip = _engine.ExpectValue("(", tokens, i);
                                 i += skip.Delta;
 

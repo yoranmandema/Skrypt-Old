@@ -83,6 +83,8 @@ namespace Skrypt.Library.Native
                 return engine.Create<Numeric>(a * (1-t) + b * t);
             }
 
+            
+
             //Rebuild all from here on down when available, no idea if this works or not because VS thinks I have the wrong .NET version even though they're the same -Octo
             [Constant]
             public static SkryptObject Mod(SkryptEngine engine, SkryptObject self, SkryptObject[] values)

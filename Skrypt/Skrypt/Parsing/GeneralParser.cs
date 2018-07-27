@@ -20,7 +20,7 @@ namespace Skrypt.Parsing
             "if",
             "while",
             "for",
-            "func",
+            "fn",
             "class",
             "using",
             "break",
@@ -33,7 +33,7 @@ namespace Skrypt.Parsing
             "if",
             "while",
             "for",
-            "func",
+            "fn",
             "class",
             "using",
             "const"
@@ -44,7 +44,7 @@ namespace Skrypt.Parsing
             "if",
             "while",
             "for",
-            "func",
+            "fn",
             "class",
             "using",
             //"break",
@@ -114,8 +114,6 @@ namespace Skrypt.Parsing
 
         private ParseResult TryParse(List<Token> tokens)
         {
-            Console.WriteLine(ExpressionParser.TokenString(tokens));
-
             var i = 0;
             var t = tokens[i];
             var usedModifiers = new List<string>();
@@ -163,7 +161,7 @@ namespace Skrypt.Parsing
 
             if (parseTokens[0].Value == "if" || parseTokens[0].Value == "while" || parseTokens[0].Value == "for")
                 result = _engine.StatementParser.Parse(parseTokens);
-            else if (parseTokens[0].Value == "func")
+            else if (parseTokens[0].Value == "fn")
                 result = _engine.MethodParser.Parse(parseTokens);
             else if (parseTokens[0].Value == "class")
                 result = _engine.ClassParser.Parse(parseTokens);

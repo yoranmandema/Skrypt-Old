@@ -49,7 +49,7 @@ namespace Skrypt.Library.Native
 
             public string Value;
 
-            public Numeric Length => this.Value.Length;
+            public Numeric Length => Value.Length;
 
             public override bool CreateCopyOnAssignment => true;
             public override string Name => "string";

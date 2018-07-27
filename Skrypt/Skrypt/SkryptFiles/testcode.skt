@@ -1,4 +1,7 @@
+using System
 
-a = a => System.print(a)
+main = fn () {
+	print("Hello world")
+}
 
-a(a)
+main()
