@@ -691,7 +691,7 @@ namespace Skrypt.Parsing
             var dir = ParseChain(tokens.GetRange(1, skip.Delta));
             node.Add(dir);
 
-            return new ParseResult { Node = node, Delta = i};
+            return new ParseResult { Node = node, Delta = i + 1};
         }
 
         public ParseResult ParseConditional(List<Token> tokens) {
