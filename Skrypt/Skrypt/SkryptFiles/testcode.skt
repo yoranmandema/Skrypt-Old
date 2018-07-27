@@ -1,14 +1,5 @@
 
-class Car {
-	public Wheels = 4
-	public Engine = "V8"
-
-	Car (w,e) {
-		self.Wheels = w
-		self.Engine = e
-	}
+for (i=2; i<0xFFFF; i=i<<1) {
+	System.print(i)
+	a = 1
 }
-
-a = Car(2,"V6")
-
-System.print(a)

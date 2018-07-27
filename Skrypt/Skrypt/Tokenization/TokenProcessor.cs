@@ -63,33 +63,8 @@ namespace Skrypt.Tokenization
             tokens.Insert(index, new Token { Value = "EndOfExpression", Type = TokenTypes.EndOfExpression });
         }
 
-        /// <summary>
-        ///     Process all tokens in a list
-        /// </summary>
-        public void ProcessTokens(List<Token> tokens)
-        {
-            for(int i = 0; i < tokens.Count; i++) {
-                var token = tokens[i];
-                
-                switch (token.Type) {
-                    case TokenTypes.StringLiteral:
-                        ProcessStringToken(token);
-                        break;
-                    case TokenTypes.BinaryLiteral:
-                    case TokenTypes.HexadecimalLiteral:
-                    case TokenTypes.NumericLiteral:
-                        ProcessNumericToken(token);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
+        public void SetEndOfExpressions (List<Token> tokens) {
             var expression = new List<Token>();
-            //var parDepth = 0;
-            //var braDepth = 0;
-            //var sqrDepth = 0;
-
             Token previousToken = null;
 
             for (int i = 0; i < tokens.Count; i++) {
@@ -97,15 +72,26 @@ namespace Skrypt.Tokenization
                 var unmodifiedI = i;
 
                 if (i > 0) {
-                    previousToken = tokens[i-1];
+                    previousToken = tokens[i - 1];
                 }
 
                 if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
                     i = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i).End;
                 }
-                //else if (token.Value == "{" && token.Type == TokenTypes.Punctuator) {
-                //    i = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i).End;
-                //}
+                else if (token.Value == "{" && token.Type == TokenTypes.Punctuator) {
+                    var skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
+
+                    var beforeCount = skip.Delta;
+                    var blockTokens = tokens.GetRange(skip.Start + 1,skip.Delta - 1);
+
+                    tokens.RemoveRange(skip.Start + 1, skip.Delta - 1);
+
+                    SetEndOfExpressions(blockTokens);
+
+                    tokens.InsertRange(skip.Start + 1, blockTokens);
+
+                    i = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i).End;
+                }
                 else if (token.Value == "[" && token.Type == TokenTypes.Punctuator) {
                     i = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i).End;
                 }
@@ -113,10 +99,6 @@ namespace Skrypt.Tokenization
                 if (unmodifiedI != i) {
                     continue;
                 }
-
-                //parDepth += token.Value == "(" ? 1 : token.Value == ")" ? -1 : 0;
-                //braDepth += token.Value == "{" ? 1 : token.Value == "}" ? -1 : 0;
-                //sqrDepth += token.Value == "[" ? 1 : token.Value == "]" ? -1 : 0;
 
                 var needsValueAfter = false;
                 Action loop = () => {
@@ -140,8 +122,6 @@ namespace Skrypt.Tokenization
                 loop();
 
                 if (!needsValueAfter && previousToken != null) {
-                    Console.WriteLine($"Pref: {previousToken.Value} Now: {token.Value}");
-
                     if (previousToken.IsValuable() && token.IsValuable()) {
                         InsertEnd(tokens, i);
                         i--;
@@ -163,6 +143,31 @@ namespace Skrypt.Tokenization
                     }
                 }
             }
+        }
+
+        /// <summary>
+        ///     Process all tokens in a list
+        /// </summary>
+        public void ProcessTokens(List<Token> tokens)
+        {
+            for (int i = 0; i < tokens.Count; i++) {
+                var token = tokens[i];
+
+                switch (token.Type) {
+                    case TokenTypes.StringLiteral:
+                        ProcessStringToken(token);
+                        break;
+                    case TokenTypes.BinaryLiteral:
+                    case TokenTypes.HexadecimalLiteral:
+                    case TokenTypes.NumericLiteral:
+                        ProcessNumericToken(token);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            SetEndOfExpressions(tokens);
         }
     }
 }
