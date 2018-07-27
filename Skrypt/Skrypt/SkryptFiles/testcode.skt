@@ -1,7 +1,5 @@
 using System
 
-main = fn () {
-	print("Hello world")
-}
-
-main()
+(() => {
+	print("Hello World!")
+})()

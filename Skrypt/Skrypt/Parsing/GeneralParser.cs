@@ -159,16 +159,38 @@ namespace Skrypt.Parsing
             var parseTokens = tokens.GetRange(i, tokens.Count - i);
             ParseResult result = null;
 
-            if (parseTokens[0].Value == "if" || parseTokens[0].Value == "while" || parseTokens[0].Value == "for")
+            Console.WriteLine(ExpressionParser.TokenString(parseTokens));
+
+            if (parseTokens[0].Value == "if" || parseTokens[0].Value == "while" || parseTokens[0].Value == "for") {
                 result = _engine.StatementParser.Parse(parseTokens);
-            else if (parseTokens[0].Value == "fn")
-                result = _engine.MethodParser.Parse(parseTokens);
-            else if (parseTokens[0].Value == "class")
+            }
+            else if (parseTokens[0].Value == "fn") {
+                var isLiteral = false;
+
+                if (parseTokens.Count > 2) {
+                    if (parseTokens[1].Type != TokenTypes.Identifier) {
+                        isLiteral = true;
+                    }
+                }
+
+                if (isLiteral) {
+                    result = _engine.ExpressionParser.Parse(parseTokens);
+                    Console.WriteLine(result);
+
+                }
+                else {
+                    result = _engine.MethodParser.Parse(parseTokens);
+                }
+            }
+            else if (parseTokens[0].Value == "class") {
                 result = _engine.ClassParser.Parse(parseTokens);
-            else if (parseTokens[0].Value == "using")
+            }
+            else if (parseTokens[0].Value == "using") {
                 result = _engine.ExpressionParser.ParseUsing(parseTokens);
-            else
+            }
+            else {
                 result = _engine.ExpressionParser.Parse(parseTokens);
+            }
 
             result.Node.Modifiers = appliedModifiers;
 
