@@ -1,5 +1,4 @@
 
-for (i=2; i<0xFFFF; i=i<<1) {
-	System.print(i)
-	a = 1
-}
+a = a => System.print(a)
+
+a(a)

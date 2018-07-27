@@ -127,6 +127,15 @@ namespace Skrypt.Parsing
             var parameterNode = ParseLambdaParameters(parameterBuffer);
             var blockNode = ParseLambdaBlock(blockBuffer);
 
+            if (parameterNode.SubNodes.Count == 0) {
+                var parNode = new Node();
+                parNode.Body = "Parameters";
+                parNode.TokenType = "Parameters";
+
+                parNode.Add(parameterNode);
+                parameterNode = parNode;
+            }
+
             var returnNode = new Node {
                 Body = "Function",
                 TokenType = "FunctionLiteral"
