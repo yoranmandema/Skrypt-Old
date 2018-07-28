@@ -682,21 +682,28 @@ namespace Skrypt.Parsing
             };
 
             int i = 0;
-            bool isIdentifier = false;
-            var skip = _engine.ExpectType(TokenTypes.Identifier, tokens);
-            i += skip.Delta;
+            bool isIdentifier = true;
             var buffer = new List<Token>();
+            Token nextToken = null;
+            var skip = _engine.ExpectType(TokenTypes.Identifier, tokens);
+            i++;
 
             while (i < tokens.Count) {
 
                 var token = tokens[i];
 
+                if (i < tokens.Count-2) nextToken = tokens[i+1];
+
                 if (token.Type == TokenTypes.EndOfExpression) break;
 
                 if (isIdentifier) {
-                    var s = _engine.ExpectValue(".", tokens);
+                    if (nextToken?.Type != TokenTypes.EndOfExpression && i < tokens.Count - 1) {
+                        var s = _engine.ExpectValue(".", tokens, i);
+                        isIdentifier = false;
+                    }
                 } else {
-                    var s = _engine.ExpectType(TokenTypes.Identifier, tokens);
+                    var s = _engine.ExpectType(TokenTypes.Identifier, tokens, i);
+                    isIdentifier = true;
                 }
 
                 buffer.Add(token);

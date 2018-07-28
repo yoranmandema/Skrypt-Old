@@ -302,7 +302,7 @@ namespace Skrypt.Engine
             Stopwatch.Stop();
             double token = Stopwatch.ElapsedMilliseconds;
 
-            foreach (var t in _tokens) Console.WriteLine(t);
+            //reach (var t in _tokens) Console.WriteLine(t);
 
             // Generate the program node
             Stopwatch = Stopwatch.StartNew();
