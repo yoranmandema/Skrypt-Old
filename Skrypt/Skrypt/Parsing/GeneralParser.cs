@@ -159,8 +159,6 @@ namespace Skrypt.Parsing
             var parseTokens = tokens.GetRange(i, tokens.Count - i);
             ParseResult result = null;
 
-            Console.WriteLine(ExpressionParser.TokenString(parseTokens));
-
             if (parseTokens[0].Value == "if" || parseTokens[0].Value == "while" || parseTokens[0].Value == "for") {
                 result = _engine.StatementParser.Parse(parseTokens);
             }
@@ -175,8 +173,6 @@ namespace Skrypt.Parsing
 
                 if (isLiteral) {
                     result = _engine.ExpressionParser.Parse(parseTokens);
-                    Console.WriteLine(result);
-
                 }
                 else {
                     result = _engine.MethodParser.Parse(parseTokens);
