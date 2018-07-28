@@ -26,7 +26,9 @@ namespace Skrypt.Library.Native
                 var s = (File)self;
                 var str = TypeConverter.ToString(values, 0);
 
-                SysFile.WriteAllText(s.Path, str);
+                using (StreamWriter sw = new StreamWriter(s.Path)) {
+                    sw.Write(str);
+                }
 
                 return self;
             }
@@ -36,7 +38,9 @@ namespace Skrypt.Library.Native
                 var s = (File)self;
                 var str = TypeConverter.ToString(values, 0);
 
-                SysFile.AppendAllText(s.Path, str);
+                using (StreamWriter sw = SysFile.AppendText(s.Path)) {
+                    sw.Write(str);
+                }
 
                 return self;
             }
@@ -44,7 +48,12 @@ namespace Skrypt.Library.Native
             [Constant]
             public SkryptObject Read(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var s = (File)self;
-                var str = SysFile.ReadAllText(s.Path);
+                var str = "";
+
+                using (StreamReader streamReader = new StreamReader(s.Path)) {
+                    str = streamReader.ReadToEnd();
+                    streamReader.Close();
+                }
 
                 return engine.Create<String>(str);
             }

@@ -595,8 +595,8 @@ namespace Skrypt.Parsing
                 node.Body = "access";
                 node.TokenType = "" + TokenTypes.Punctuator;
 
-                node.Add(ParseExpression(node, new List<Token> {reverse[0]}));
                 node.Add(ParseChain(tokens.GetRange(0, tokens.Count - 2)));
+                node.Add(ParseExpression(node, new List<Token> {reverse[0]}));
             }
 
             return node;
