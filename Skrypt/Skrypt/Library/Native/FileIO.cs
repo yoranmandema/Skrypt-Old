@@ -62,15 +62,6 @@ namespace Skrypt.Library.Native
         [Constant, Static]
         public class IO : SkryptObject
         {
-            /* Template Function
-            [Constant]
-            public static SkryptObject Template(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
-            {
-                var a = TypeConverter.ToArray(values, 0);
-                
-            }
-            */
-
             [Constant]
             public static SkryptObject Open(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var path = TypeConverter.ToString(values,0);

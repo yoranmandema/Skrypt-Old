@@ -141,6 +141,11 @@ namespace Skrypt.Tokenization
                         InsertEnd(tokens, i);
                         i--;
                     }
+
+                    if (token.Value == "using" && token.Type == TokenTypes.Punctuator) {
+                        InsertEnd(tokens, i);
+                        i++;
+                    }
                 }
             }
         }
@@ -167,7 +172,7 @@ namespace Skrypt.Tokenization
                 }
             }
 
-            SetEndOfExpressions(tokens);
+            SetEndOfExpressions(tokens);      
         }
     }
 }

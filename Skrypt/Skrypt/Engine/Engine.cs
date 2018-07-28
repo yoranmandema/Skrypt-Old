@@ -302,7 +302,7 @@ namespace Skrypt.Engine
             Stopwatch.Stop();
             double token = Stopwatch.ElapsedMilliseconds;
 
-            //foreach (var t in _tokens) Console.WriteLine(t);
+            foreach (var t in _tokens) Console.WriteLine(t);
 
             // Generate the program node
             Stopwatch = Stopwatch.StartNew();
@@ -323,7 +323,7 @@ namespace Skrypt.Engine
 
             Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
-            int instances = 1000;
+            int instances = 0;
             Stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < instances; i++) {
                 GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
