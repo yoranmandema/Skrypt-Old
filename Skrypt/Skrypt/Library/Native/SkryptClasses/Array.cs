@@ -89,6 +89,10 @@ namespace Skrypt.Library.Native
 
             }
 
+            public Array(List<SkryptObject> v) {
+                Value = v;
+            }
+
             private static int IndexFromObject(SkryptObject Object)
             {
                 var index = 0;
@@ -151,6 +155,27 @@ namespace Skrypt.Library.Native
                 }).ToList();
 
                 return self;
+            }
+
+            [Constant]
+            public SkryptObject Map(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var m = TypeConverter.ToMethod(values, 0);
+
+                if (m.Parameters.Count != 1) engine.ThrowError("Input function must have 1 parameter!");
+
+                var newList = ((Array)self).Value.Select((x) => {
+                    var scope = SkryptMethod.GetPopulatedScope(m, new[] { x });
+                    scope.ParentScope = engine.CurrentScope;
+
+                    var name = scope.Variables.Keys.First();
+
+                    var r = m.Execute(engine, self, new[] { x }, scope);
+
+                    x = r.Variables[name].Value;
+                    return x;
+                }).ToList();
+
+                return engine.Create<Array>(newList);
             }
 
             public override string ToString()
