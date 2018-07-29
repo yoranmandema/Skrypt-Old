@@ -1,3 +1,8 @@
 using System
 
-print((Encryption.SHA1("Hee")).Length)
+a = Encryption.SHA256("Hee")
+a.ForEach(x =>
+	System.Encoding.ToBinary(x)
+)
+
+print(a)

@@ -38,6 +38,7 @@ namespace Skrypt.Engine
 
         internal Stopwatch Stopwatch { get; set; }
         internal CallStack CurrentStack { get; set; }
+        internal ScopeContext CurrentScope { get; set; }
 
         private List<Token> _tokens;
         private string _code = "";

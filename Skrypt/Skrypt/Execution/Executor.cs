@@ -247,11 +247,11 @@ namespace Skrypt.Execution
                 }
             }
 
-            foreach (var subNode in node.SubNodes)
-                if (subNode.TokenType == "Statement")
-                {
-                    switch (subNode.Body)
-                    {
+            _engine.CurrentScope = scope;
+
+            foreach (var subNode in node.SubNodes) {
+                if (subNode.TokenType == "Statement") {
+                    switch (subNode.Body) {
                         case "while":
                             ExecuteWhileStatement(subNode, scope);
                             break;
@@ -280,14 +280,16 @@ namespace Skrypt.Execution
                 else if (subNode.TokenType == "Using") {
                     var _scope = ExecuteUsing(subNode, scope);
                 }
-                else
-                {
+                else {
                     var result = _engine.Executor.ExecuteExpression(subNode, scope);
 
                     if (scope.SubContext.SkippedLoop == true) return scope;
                     if (scope.SubContext.BrokeLoop == true) return scope;
                     if (scope.SubContext.ReturnObject != null) return scope;
                 }
+
+                _engine.CurrentScope = scope;
+            }
 
             return scope;
         }

@@ -139,7 +139,7 @@ namespace Skrypt.Library.Native
 
                 ((Array)self).Value.ForEach(x => {
                     var scope = SkryptMethod.GetPopulatedScope(m,new[] {x});
-                    scope.ParentScope = ScopeContext;
+                    scope.ParentScope = engine.CurrentScope;
 
                     var r = m.Execute(engine, self, new[] { x }, scope);
                 });
