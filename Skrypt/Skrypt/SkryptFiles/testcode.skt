@@ -1,8 +1,10 @@
 using System
 
 a = Encryption.SHA256("Hee")
-a.ForEach(x =>
-	System.Encoding.ToBinary(x)
-)
+
+a.ForEach(fn (thing) {
+	thing = System.Encoding.ToBinary(thing);
+	print(thing);
+})
 
 print(a)

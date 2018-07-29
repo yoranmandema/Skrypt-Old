@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using Skrypt.Engine;
 using Skrypt.Execution;
@@ -135,14 +136,19 @@ namespace Skrypt.Library.Native
             public SkryptObject ForEach(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var m = TypeConverter.ToMethod(values, 0);
 
-                //if (m.Parameters.Count < 1) engine.ThrowError("Input function must have 1 parameter!");
+                if (m.Parameters.Count != 1) engine.ThrowError("Input function must have 1 parameter!");
 
-                ((Array)self).Value.ForEach(x => {
+                ((Array)self).Value = ((Array)self).Value.Select((x) => {
                     var scope = SkryptMethod.GetPopulatedScope(m,new[] {x});
                     scope.ParentScope = engine.CurrentScope;
 
+                    var name = scope.Variables.Keys.First();
+
                     var r = m.Execute(engine, self, new[] { x }, scope);
-                });
+
+                    x = r.Variables[name].Value;
+                    return x;
+                }).ToList();
 
                 return self;
             }
