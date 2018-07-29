@@ -15,7 +15,7 @@ namespace Skrypt.Library.Native {
             public static SkryptObject SHA256(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var s = TypeConverter.ToString(values, 0);
 
-                var byteArray = Encoding.ASCII.GetBytes(s.Value);
+                var byteArray = Sys.Text.Encoding.ASCII.GetBytes(s.Value);
                 var hashValue = new SHA256Managed().ComputeHash(byteArray);
                 var str = Sys.BitConverter.ToString(hashValue).Replace("-", "");
 
@@ -26,7 +26,7 @@ namespace Skrypt.Library.Native {
             public static SkryptObject SHA1(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var s = TypeConverter.ToString(values, 0);
 
-                var byteArray = Encoding.ASCII.GetBytes(s.Value);
+                var byteArray = Sys.Text.Encoding.ASCII.GetBytes(s.Value);
                 var hashValue = new SHA1Managed().ComputeHash(byteArray);
                 var str = Sys.BitConverter.ToString(hashValue).Replace("-", "");
 

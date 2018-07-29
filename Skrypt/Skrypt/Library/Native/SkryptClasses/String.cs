@@ -1,4 +1,4 @@
-﻿using System;
+﻿using Sys = System;
 using System.Collections.Generic;
 using System.Text;
 using Skrypt.Engine;
@@ -76,17 +76,17 @@ namespace Skrypt.Library.Native
             [Constant]
             public static SkryptObject Char(SkryptEngine engine, SkryptObject self, SkryptObject[] input)
             {
-                return engine.Create<String>("" + Convert.ToChar((int)TypeConverter.ToNumeric(input, 0)));
+                return engine.Create<String>("" + Sys.Convert.ToChar((int)TypeConverter.ToNumeric(input, 0)));
             }
 
             [Constant]
             public static SkryptObject Byte(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                return engine.Create<Numeric>(Convert.ToByte(TypeConverter.ToString(input, 0).Value[0]));
+                return engine.Create<Numeric>(Sys.Convert.ToByte(TypeConverter.ToString(input, 0).Value[0]));
             }
 
             [Constant]
             public SkryptObject GetBytes(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                var byteArray = Encoding.ASCII.GetBytes(((String)self).Value);
+                var byteArray = Sys.Text.Encoding.ASCII.GetBytes(((String)self).Value);
                 var array = engine.Create<Array>();
                  
                 for (int i = 0; i < byteArray.Length - 1; i++) {
@@ -102,7 +102,7 @@ namespace Skrypt.Library.Native
                 var selfString = ((String)self).Value;
 
                 var exploded = !string.IsNullOrEmpty(delimiter) ? 
-                    selfString.Split(new string[] { delimiter }, StringSplitOptions.None) : 
+                    selfString.Split(new string[] { delimiter }, Sys.StringSplitOptions.None) : 
                     new string[] { selfString };
 
                 var array = engine.Create<Array>();
