@@ -1,6 +1,7 @@
 ﻿using Sys = System;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Engine;
@@ -17,9 +18,13 @@ namespace Skrypt.Library.Native {
 
                 var byteArray = Sys.Text.Encoding.ASCII.GetBytes(s.Value);
                 var hashValue = new SHA256Managed().ComputeHash(byteArray);
-                var str = Sys.BitConverter.ToString(hashValue).Replace("-", "");
+                var array = engine.Create<Array>();
 
-                return engine.Create<String>(str);
+                for (int i = 0; i < hashValue.Length - 1; i++) {
+                    array.Value.Add((Numeric)hashValue[i]);
+                }
+
+                return array;
             }
 
             [Constant]
@@ -28,9 +33,13 @@ namespace Skrypt.Library.Native {
 
                 var byteArray = Sys.Text.Encoding.ASCII.GetBytes(s.Value);
                 var hashValue = new SHA1Managed().ComputeHash(byteArray);
-                var str = Sys.BitConverter.ToString(hashValue).Replace("-", "");
+                var array = engine.Create<Array>();
 
-                return engine.Create<String>(str);
+                for (int i = 0; i < hashValue.Length - 1; i++) {
+                    array.Value.Add((Numeric)hashValue[i]);
+                }
+
+                return array;
             }
         }
     }
