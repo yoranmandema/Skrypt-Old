@@ -76,6 +76,17 @@ namespace Skrypt.Tokenization
                 }
 
                 if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
+                    var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
+
+                    var beforeCount = skip.Delta;
+                    var blockTokens = tokens.GetRange(skip.Start + 1, skip.Delta - 1);
+
+                    tokens.RemoveRange(skip.Start + 1, skip.Delta - 1);
+
+                    SetEndOfExpressions(blockTokens);
+
+                    tokens.InsertRange(skip.Start + 1, blockTokens);
+
                     i = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i).End;
                 }
                 else if (token.Value == "{" && token.Type == TokenTypes.Punctuator) {
