@@ -335,11 +335,21 @@ namespace Skrypt.Execution
 
             var solvedLeft = ExecuteExpression(node.SubNodes[0], newScope);
 
-            var property = GetProperty(solvedLeft, node.SubNodes[1].Body, setter);
+            if (node.SubNodes[1].Body == "access") {
+                var solvedRight = ExecuteAccess(solvedLeft, node.SubNodes[1], newScope, setter);
 
-            if (node.SubNodes[1].Body == "access")
-                return ExecuteAccess(property.Value, node.SubNodes[1], scopeContext, setter);
-            return property;
+                return solvedRight;
+            } else {
+                var property = GetProperty(solvedLeft, node.SubNodes[1].Body, setter);
+
+                if (property.Value.GetType() == typeof(GetMethod)) {
+                    var a = ((GetMethod)property.Value).Execute(_engine, solvedLeft, null, newScope);
+
+                    property.Value = a.SubContext.ReturnObject;        
+                }
+
+                return property;
+            }         
         }
 
         public SkryptObject ExecuteExpression(Node node, ScopeContext scopeContext)
@@ -385,15 +395,17 @@ namespace Skrypt.Execution
                     var target = ExecuteExpression(node.SubNodes[0], scopeContext);
                     var result = ExecuteAccess(target, node.SubNodes[1], scopeContext);
 
-                    if (scopeContext.SubContext.GettingCaller) scopeContext.SubContext.Caller = target;
+                    return result.Value;
 
-                    if (result.IsGetter) {
-                        var getResult = ((GetMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext {ParentScope = scopeContext});
+                    //if (scopeContext.SubContext.GettingCaller) scopeContext.SubContext.Caller = target;
 
-                        return getResult.SubContext.ReturnObject;
-                    } else {
-                        return result.Value;
-                    }
+                    //if (result.IsGetter) {
+                    //    var getResult = ((GetMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext {ParentScope = scopeContext});
+
+                    //    return getResult.SubContext.ReturnObject;
+                    //} else {
+                    //    return result.Value;
+                    //}
                 }
 
                 if (op.OperationName == "assign")

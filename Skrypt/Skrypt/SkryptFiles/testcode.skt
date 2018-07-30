@@ -1,11 +1,3 @@
-using System
+thing = System.Encoding.ToBinary(2555)
 
-a = Encryption.SHA256("Hee")
-
-b = a.Map(fn (thing) {
-	thing = System.Encoding.ToBinary(thing)
-	print(thing)
-})
-
-print(a)
-print(b)
+System.print(thing)
