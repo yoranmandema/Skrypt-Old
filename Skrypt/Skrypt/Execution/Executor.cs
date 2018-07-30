@@ -395,17 +395,18 @@ namespace Skrypt.Execution
                     var target = ExecuteExpression(node.SubNodes[0], scopeContext);
                     var result = ExecuteAccess(target, node.SubNodes[1], scopeContext);
 
-                    return result.Value;
+                    //return result.Value;
 
-                    //if (scopeContext.SubContext.GettingCaller) scopeContext.SubContext.Caller = target;
+                    if (scopeContext.SubContext.GettingCaller) scopeContext.SubContext.Caller = target;
 
-                    //if (result.IsGetter) {
-                    //    var getResult = ((GetMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext {ParentScope = scopeContext});
+                    if (result.Value.GetType() == typeof(GetMethod)) {
+                        var getResult = ((GetMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext { ParentScope = scopeContext });
 
-                    //    return getResult.SubContext.ReturnObject;
-                    //} else {
-                    //    return result.Value;
-                    //}
+                        return getResult.SubContext.ReturnObject;
+                    }
+                    else {
+                        return result.Value;
+                    }
                 }
 
                 if (op.OperationName == "assign")
