@@ -297,20 +297,20 @@ namespace Skrypt.Execution
         public SkryptProperty GetProperty(SkryptObject Object, string toFind, bool setter = false)
         {
             var find = Object.Properties.Find((x) => {
-                    if (x.Name == toFind) {
-                        if (!setter) {
-                            if (x.IsSetter) return false;
+                if (x.Name == toFind) {
+                    if (!setter) {
+                        if (x.IsSetter) return false;
 
-                            return true;
-                        } else {
-                            if (x.IsGetter) return false;
+                        return true;
+                    } else {
+                        if (x.IsGetter) return false;
 
-                            return true;
-                        }
+                        return true;
                     }
+                }
 
-                    return false;
-                });
+                return false;
+            });
 
             if (find == null) _engine.ThrowError("Object does not contain property '" + toFind + "'!");
 
@@ -321,35 +321,36 @@ namespace Skrypt.Execution
             return find;
         }
 
-        public SkryptProperty ExecuteAccess(SkryptObject Object, Node node, ScopeContext scopeContext, bool setter = false)
+        public class AccessResult {
+            public SkryptObject Owner;
+            public SkryptProperty Property;
+        }
+
+        public AccessResult ExecuteAccess(SkryptObject Object, Node node, ScopeContext scopeContext, bool setter = false)
         {
-            var newScope = ObjectExtensions.Copy(scopeContext);
+            var localScope = ObjectExtensions.Copy(scopeContext);
+            localScope.ParentScope = scopeContext;
 
             foreach (var p in Object.Properties) {
-                newScope.AddVariable(p.Name, p.Value, p.Modifiers);
+                localScope.AddVariable(p.Name, p.Value, p.Modifiers);
             }
 
-            if (node.SubNodes.Count == 0) {
-                return GetProperty(Object, node.Body, setter);
+            scopeContext.SubContext.Caller = Object;
+
+            if (node.Body == "access") {
+                var target = ExecuteExpression(node.SubNodes[0], localScope);
+                localScope.SubContext.Caller = target;
+
+                var result = ExecuteAccess(target, node.SubNodes[1], localScope, setter);
+
+                return result;
             }
-
-            var solvedLeft = ExecuteExpression(node.SubNodes[0], newScope);
-
-            if (node.SubNodes[1].Body == "access") {
-                var solvedRight = ExecuteAccess(solvedLeft, node.SubNodes[1], newScope, setter);
-
-                return solvedRight;
-            } else {
-                var property = GetProperty(solvedLeft, node.SubNodes[1].Body, setter);
-
-                if (property.Value.GetType() == typeof(GetMethod)) {
-                    var a = ((GetMethod)property.Value).Execute(_engine, solvedLeft, null, newScope);
-
-                    property.Value = a.SubContext.ReturnObject;        
-                }
-
-                return property;
-            }         
+            else {
+                return new AccessResult {
+                    Property = GetProperty(Object, node.Body, setter),
+                    Owner = Object
+                };
+            }
         }
 
         public SkryptObject ExecuteExpression(Node node, ScopeContext scopeContext)
@@ -395,17 +396,20 @@ namespace Skrypt.Execution
                     var target = ExecuteExpression(node.SubNodes[0], scopeContext);
                     var result = ExecuteAccess(target, node.SubNodes[1], scopeContext);
 
-                    //return result.Value;
+                    //Console.WriteLine("----------------------------");
+                    //Console.WriteLine(result.Owner);
+                    //Console.WriteLine(result.Property.Value);
 
-                    if (scopeContext.SubContext.GettingCaller) scopeContext.SubContext.Caller = target;
+                    scopeContext.SubContext.Caller = result.Owner;
 
-                    if (result.Value.GetType() == typeof(GetMethod)) {
-                        var getResult = ((GetMethod)result.Value).Execute(_engine, target, new SkryptObject[0], new ScopeContext { ParentScope = scopeContext });
+                    if (result.Property.Value.GetType() == typeof(GetMethod)) {
+                        var ex = ((GetMethod)result.Property.Value).Execute(_engine, result.Owner, new SkryptObject[0], new ScopeContext { ParentScope = scopeContext});
 
-                        return getResult.SubContext.ReturnObject;
+                        return ex.SubContext.ReturnObject;
                     }
                     else {
-                        return result.Value;
+
+                        return result.Property.Value;
                     }
                 }
 
@@ -445,18 +449,18 @@ namespace Skrypt.Execution
                         var target = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
                         var accessResult = ExecuteAccess(target, node.SubNodes[0].SubNodes[1], scopeContext, true);
 
-                        if ((accessResult.Modifiers & Modifier.Const) != 0)
+                        if ((accessResult.Property.Modifiers & Modifier.Const) != 0)
                             _engine.ThrowError("Property is marked as constant and can thus not be modified.");
 
-                        if ((accessResult.Modifiers & Modifier.Strong) != 0)
-                            if (accessResult.Value.Name != result.Name)
-                                _engine.ThrowError($"Can't set strong property of type {accessResult.Value.Name} to {result.Name}");
+                        if ((accessResult.Property.Modifiers & Modifier.Strong) != 0)
+                            if (accessResult.Property.Value.Name != result.Name)
+                                _engine.ThrowError($"Can't set strong property of type {accessResult.Property.Value.Name} to {result.Name}");
 
-                        if (accessResult.IsSetter) {
-                            ((SetMethod)accessResult.Value).Execute(_engine, target, result, new ScopeContext { ParentScope = scopeContext });
+                        if (accessResult.Property.IsSetter) {
+                            ((SetMethod)accessResult.Property.Value).Execute(_engine, target, result, new ScopeContext { ParentScope = scopeContext });
                         }
                         else {
-                            accessResult.Value = result;
+                            accessResult.Property.Value = result;
                         }
                     }
                     else if (node.SubNodes[0].Body == "Index")
@@ -564,14 +568,11 @@ namespace Skrypt.Execution
                     arguments.Add(result);
                 }
 
-                var findCallerContext = new ScopeContext
-                {
-                    ParentScope = scopeContext
-                };
+                var findCallerContext = ObjectExtensions.Copy(scopeContext);
+                findCallerContext.ParentScope = scopeContext;
 
-                findCallerContext.SubContext.GettingCaller = true;
-                var foundMethod = ExecuteExpression(node.SubNodes[0].SubNodes[0], findCallerContext);
-                var caller = findCallerContext.SubContext.Caller;
+                var foundMethod = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
+                var caller = scopeContext.SubContext.Caller;
                 SkryptObject BaseType = null;
 
                 bool isConstructor = false;
@@ -616,6 +617,8 @@ namespace Skrypt.Execution
 
                 //_engine.CurrentStack = new CallStack(foundMethod.Name, node.Token, _engine.CurrentStack);
 
+                //Console.WriteLine("Caller: " + caller);
+
                 if (foundMethod.GetType() == typeof(UserMethod)) {
                     UserMethod method = (UserMethod)foundMethod;
 
@@ -640,6 +643,8 @@ namespace Skrypt.Execution
                 } else {
                     _engine.ThrowError("Cannot call value, as it is not a function!", node.SubNodes[0].SubNodes[0].Token);
                 }
+
+                scopeContext.SubContext.Caller = null;
 
                 if (isConstructor) {
                     caller.ScopeContext = _engine.CurrentScope;

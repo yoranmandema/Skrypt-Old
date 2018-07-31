@@ -9,7 +9,16 @@ namespace Skrypt.Execution
 {
     public class SubContext
     {
-        public SkryptObject Caller;
+        private SkryptObject _caller;
+        public SkryptObject Caller {
+            get {
+                return _caller;
+            }
+            set {
+                //Console.WriteLine("Caller set to: " + value);
+                _caller = value;
+            }
+        }
         public bool GettingCaller = false;
         public bool InLoop = false;
         public bool BrokeLoop = false;
@@ -39,7 +48,7 @@ namespace Skrypt.Execution
 
     public class ScopeContext
     {
-        public ScopeContext ParentScope = null;
+        [JsonIgnore]public ScopeContext ParentScope = null;
         public CallStack CallStack { get; set; }
         public SubContext SubContext = new SubContext();
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();

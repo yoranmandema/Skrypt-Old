@@ -1,4 +1,5 @@
-﻿using Sys = System;
+﻿using System;
+using Sys = System;
 using System.Collections.Generic;
 using System.Text;
 using Skrypt.Engine;
@@ -47,16 +48,14 @@ namespace Skrypt.Library.Native
                     })
             };
 
-            public string Value;
+            public string Value = "";
 
             public Numeric Length => Value.Length;
 
             public override bool CreateCopyOnAssignment => true;
             public override string Name => "string";
 
-            public String()
-            {
-            }
+            public String(){}
 
             public String(string v = "")
             {
@@ -82,6 +81,42 @@ namespace Skrypt.Library.Native
             [Constant]
             public static SkryptObject Byte(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 return engine.Create<Numeric>(Sys.Convert.ToByte(TypeConverter.ToString(input, 0).Value[0]));
+            }
+
+            [Constant]
+            public SkryptObject PadLeft(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                var a = TypeConverter.ToNumeric(input, 0);
+                var s = TypeConverter.ToString(input, 1);
+                var newString = engine.Create<String>(((String)self).Value);
+
+                while (newString.Value.Length < a) {
+                    newString.Value = s + newString.Value;
+                }
+
+                return newString;
+            }
+
+            [Constant]
+            public SkryptObject PadRight(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                var a = TypeConverter.ToNumeric(input, 0);
+                var s = TypeConverter.ToString(input, 1);
+                var newString = engine.Create<String>(((String)self).Value);
+
+                while (newString.Value.Length < a) {
+                    newString.Value += s;
+                }
+
+                return newString;
+            }
+
+            [Constant]
+            public SkryptObject ToUpper(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<String>(((String)self).Value.ToUpper());
+            }
+
+            [Constant]
+            public SkryptObject ToLower(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<String>(((String)self).Value.ToLower());
             }
 
             [Constant]

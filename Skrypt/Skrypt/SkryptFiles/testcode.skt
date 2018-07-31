@@ -1,8 +1,9 @@
 using System
 
-a = Vector(1,2,3)
-b = Vector(1,2,3)
+fn doStuff () {
+	return Encoding.ToHex(23).PadLeft(16,0).Length
+}
 
-a.X = 10
+a = Encoding.ToHex(23).PadLeft(16,0).Length
 
-print((a + b).X)
+print(a)

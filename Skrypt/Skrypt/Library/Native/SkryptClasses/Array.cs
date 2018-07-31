@@ -115,6 +115,17 @@ namespace Skrypt.Library.Native
             }
 
             [Constant]
+            public SkryptObject Concat(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var a = (Array)self;
+                var b = "";
+                for (int i = 0; i < a.Value.Count; i++) {
+                    b += a.Value[i];
+                }
+
+                return engine.Create<String>(b);
+            }
+
+            [Constant]
             public SkryptObject Sort(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var m = TypeConverter.ToMethod(values,0);
 

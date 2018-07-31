@@ -39,9 +39,9 @@ namespace Skrypt.Library
     public class SkryptObject {
         [JsonIgnore]
         public List<Operation> Operations = new List<Operation>();
-        public List<SkryptProperty> Properties = new List<SkryptProperty>();
-        public ScopeContext ScopeContext { get; set; }
-        public SkryptEngine Engine { get; set; }
+        [JsonIgnore] public List<SkryptProperty> Properties = new List<SkryptProperty>();
+        [JsonIgnore] public ScopeContext ScopeContext { get; set; }
+        [JsonIgnore] public SkryptEngine Engine { get; set; }
         public virtual string Name { get; set; }
 
         public Operation GetOperation(string n, Type tl, Type tr, List<Operation> ops)

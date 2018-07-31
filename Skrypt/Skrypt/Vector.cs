@@ -78,9 +78,7 @@ namespace Skrypt {
         public override bool CreateCopyOnAssignment => true;
         public override string Name => "vector";
 
-        public Vector() {
-
-        }
+        public Vector() {}
 
         public Vector(double x, double y, double z) {
             X = x;
