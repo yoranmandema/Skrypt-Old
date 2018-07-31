@@ -1,6 +1,13 @@
 using System
 
+fn toSHA256 (in) {
+	return System.Crypto.SHA256("" + in).Map(fn (x) {
+		x = Encoding.ToHex(x).PadLeft(2,0);
+	}).Concat().ToUpper();
+}
 
-x = Encoding.ToHex(9223372036854775808).PadLeft(8,0).ToUpper()
+a = toSHA256("Hello world!")
 
-print(x)
+print(a)
+
+
