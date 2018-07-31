@@ -69,7 +69,7 @@ namespace Skrypt.Library
         }
 
         public SkryptObject SetPropertiesTo (SkryptObject Object) {
-            Properties.AddRange(new List<SkryptProperty>(Object.Properties));
+            Properties = new List<SkryptProperty>(Object.Properties);
             return this;
         }
 

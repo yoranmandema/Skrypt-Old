@@ -587,7 +587,13 @@ namespace Skrypt.Execution
 
                         BaseType = GetType(typeName, scopeContext);
 
-                        caller = ObjectExtensions.Copy(BaseType);
+                        //caller = ObjectExtensions.Copy(BaseType);
+                        //caller.Properties = new List<SkryptProperty>(BaseType.Properties);
+                        //caller.Operations = new List<Operation>(BaseType.Operations);
+
+                        caller = (SkryptType)Activator.CreateInstance(BaseType.GetType());
+                        caller.ScopeContext = _engine.CurrentScope;
+                        caller.Engine = _engine;
 
                         isConstructor = true;
                     } else {
@@ -636,6 +642,9 @@ namespace Skrypt.Execution
                 }
 
                 if (isConstructor) {
+                    caller.ScopeContext = _engine.CurrentScope;
+                    caller.Engine = _engine;
+
                     return caller;
                 } else {
                     return methodScopeResult.SubContext.ReturnObject;

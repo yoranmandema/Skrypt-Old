@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Skrypt.Library;
 using Skrypt.Library.Native;
 using Classes = Skrypt.Library.Native.System;
@@ -131,7 +128,7 @@ namespace Skrypt {
             vec.Y = y;
             vec.Z = z;
 
-            return new SkryptObject();
+            return vec;
         }
 
         [Constant]

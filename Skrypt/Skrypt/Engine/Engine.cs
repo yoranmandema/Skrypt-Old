@@ -140,8 +140,8 @@ namespace Skrypt.Engine
 
         public T Create<T>(params object[] input) {
             var newObject = (SkryptType)Activator.CreateInstance(typeof(T), input);
-            var baseType = Executor.GetType(newObject.TypeName, GlobalScope);
-            newObject.ScopeContext = GlobalScope;
+            var baseType = Executor.GetType(newObject.TypeName, CurrentScope);
+            newObject.ScopeContext = CurrentScope;
             newObject.Engine = this;
             return (T)((Object)newObject.SetPropertiesTo(baseType));
         }
