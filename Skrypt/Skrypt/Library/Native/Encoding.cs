@@ -13,14 +13,14 @@ namespace Skrypt.Library.Native {
             [Constant]
             public static SkryptObject ToBinary(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 var n = TypeConverter.ToNumeric(input, 0);
-                var str = Sys.Convert.ToString((int)n, 2);
+                var str = Sys.Convert.ToString((long)n, 2);
                 return engine.Create<String>(str);
             }
 
             [Constant]
             public static SkryptObject ToHex(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 var n = TypeConverter.ToNumeric(input, 0);
-                var str = Sys.Convert.ToString((int)n, 16);
+                var str = Sys.Convert.ToString((long)n, 16);
                 return engine.Create<String>(str);
             }
 

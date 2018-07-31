@@ -1,9 +1,6 @@
 using System
 
-fn doStuff () {
-	return Encoding.ToHex(23).PadLeft(16,0).Length
-}
 
-a = Encoding.ToHex(23).PadLeft(16,0).Length
+x = Encoding.ToHex(9223372036854775808).PadLeft(8,0).ToUpper()
 
-print(a)
+print(x)

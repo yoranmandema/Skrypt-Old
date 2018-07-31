@@ -336,6 +336,7 @@ namespace Skrypt.Execution
             }
 
             scopeContext.SubContext.Caller = Object;
+            localScope.SubContext.Caller = Object;
 
             if (node.Body == "access") {
                 var target = ExecuteExpression(node.SubNodes[0], localScope);
@@ -549,6 +550,8 @@ namespace Skrypt.Execution
             {
                 var foundVariable = GetVariable(node.Body, scopeContext);
 
+                //scopeContext.SubContext.Caller = foundVariable.Value;
+
                 if (foundVariable != null)
                     return foundVariable.Value;
                 _engine.ThrowError("Variable '" + node.Body + "' does not exist in the current context!",
@@ -567,9 +570,6 @@ namespace Skrypt.Execution
 
                     arguments.Add(result);
                 }
-
-                var findCallerContext = ObjectExtensions.Copy(scopeContext);
-                findCallerContext.ParentScope = scopeContext;
 
                 var foundMethod = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
                 var caller = scopeContext.SubContext.Caller;
