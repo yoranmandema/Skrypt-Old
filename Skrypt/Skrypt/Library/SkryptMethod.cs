@@ -2,6 +2,7 @@
 using Skrypt.Engine;
 using Skrypt.Execution;
 using Skrypt.Parsing;
+using static Skrypt.Library.Native.System;
 using System;
 
 namespace Skrypt.Library
@@ -37,6 +38,18 @@ namespace Skrypt.Library
             } else {
                 for (int i = 0; i < a.Length; i++) {
                     s.AddVariable(a[i].GetHashCode() + "", a[i]);
+                }
+            }
+
+            return s;
+        }
+
+        public static ScopeContext GetPopulatedScope(SkryptMethod m) {
+            var s = new ScopeContext();
+
+            if (m.GetType() == typeof(UserMethod)) {
+                for (int i = 0; i < m.Parameters.Count; i++) {
+                    s.AddVariable(m.Parameters[i], new Null());
                 }
             }
 

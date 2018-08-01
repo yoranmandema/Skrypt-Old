@@ -1,9 +1,5 @@
 using System
 
-a = Crypto.SHA1("Hello world!")
+a = Crypto.SHA256("Hello world!")
 
-a.ForEach((x) => {
-	x = Encoding.ToBinary(x).PadLeft(8,0)
-})
-
-print(a)
+a.Sort((x,y) => x > y)

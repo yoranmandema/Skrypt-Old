@@ -147,17 +147,19 @@ namespace Skrypt.Library.Native
 
                 if (m.Parameters.Count != 1) engine.ThrowError("Input function must have 1 parameter!");
 
-                ((Array)self).Value = ((Array)self).Value.Select((x) => {
-                    var scope = SkryptMethod.GetPopulatedScope(m,new[] {x});
-                    scope.ParentScope = engine.CurrentScope;
+                var scope = SkryptMethod.GetPopulatedScope(m);
+                scope.ParentScope = engine.CurrentScope;          
+                var name = scope.Variables.Keys.First();
 
-                    var name = scope.Variables.Keys.First();
+                for (int i = 0; i < ((Array)self).Value.Count; i++) {
+                    var x = ((Array)self).Value[i];
+
+                    scope.Variables[name].Value = x;
 
                     var r = m.Execute(engine, self, new[] { x }, scope);
 
-                    x = r.Variables[name].Value;
-                    return x;
-                }).ToList();
+                    x = scope.Variables[name].Value;
+                }
 
                 return self;
             }
@@ -168,19 +170,23 @@ namespace Skrypt.Library.Native
 
                 if (m.Parameters.Count != 1) engine.ThrowError("Input function must have 1 parameter!");
 
-                var newList = ((Array)self).Value.Select((x) => {
-                    var scope = SkryptMethod.GetPopulatedScope(m, new[] { x });
-                    scope.ParentScope = engine.CurrentScope;
+                var newArray = engine.Create<Array>(((Array)self).Value);
 
-                    var name = scope.Variables.Keys.First();
+                var scope = SkryptMethod.GetPopulatedScope(m);
+                scope.ParentScope = engine.CurrentScope;
+                var name = scope.Variables.Keys.First();
+
+                for (int i = 0; i < newArray.Value.Count; i++) {
+                    var x = newArray.Value[i];
+
+                    scope.Variables[name].Value = x;
 
                     var r = m.Execute(engine, self, new[] { x }, scope);
 
-                    x = r.Variables[name].Value;
-                    return x;
-                }).ToList();
+                    x = scope.Variables[name].Value;
+                }
 
-                return engine.Create<Array>(newList);
+                return newArray;
             }
 
             public override string ToString()
