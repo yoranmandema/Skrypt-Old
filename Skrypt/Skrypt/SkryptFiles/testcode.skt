@@ -1,5 +1,8 @@
 using System
 
-print(1.Type != String)
+class Test {
+	Test () {
+	
+	}
+}
 
-print(1)

@@ -172,7 +172,20 @@ namespace Skrypt.Execution
 
             Object.Properties.Add(new SkryptProperty {
                 Name = "TypeName",
-                Value = new Library.Native.System.String(ClassName)
+                Value = new Library.Native.System.String(ClassName),
+                Modifiers = Parsing.Modifier.Const
+            });
+
+            TypeObject.Properties.Add(new SkryptProperty {
+                Name = "TypeName",
+                Value = new Library.Native.System.String(ClassName),
+                Modifiers = Parsing.Modifier.Const
+            });
+
+            TypeObject.Properties.Add(new SkryptProperty {
+                Name = "Type",
+                Value = Object,
+                Modifiers = Parsing.Modifier.Const
             });
 
             scopeContext.AddType(ClassName, TypeObject);
@@ -598,6 +611,7 @@ namespace Skrypt.Execution
                         caller = (SkryptType)Activator.CreateInstance(BaseType.GetType());
                         caller.ScopeContext = _engine.CurrentScope;
                         caller.Engine = _engine;
+                        caller.SetPropertiesTo(BaseType);
 
                         isConstructor = true;
                     } else {
