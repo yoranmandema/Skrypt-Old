@@ -225,8 +225,6 @@ namespace Skrypt.Parsing
                                     }
                                 }
 
-                                Console.WriteLine(Operator.Operation);
-
                                 // Fill left and right buffers
                                 leftBuffer = tokens.GetRange(0, i);
                                 rightBuffer = tokens.GetRange(i + 1, tokens.Count - i - 1);
@@ -244,7 +242,6 @@ namespace Skrypt.Parsing
                                 if (hasRequiredLeftTokens && hasRequiredRightTokens) {
                                     if (token.Value == "=>") {
                                         isLambda = true;
-                                        Console.WriteLine("Is parsing lambda");
                                         return;
                                     }
 

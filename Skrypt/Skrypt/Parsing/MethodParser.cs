@@ -115,8 +115,6 @@ namespace Skrypt.Parsing
             var parameterBuffer = new List<Token>();
             var blockBuffer = new List<Token>();
 
-            Console.WriteLine("Is parsing lambda");
-
             for (int i = 0; i < tokens.Count - 1; i++) {
                 if (tokens[i].Value == "=>" && tokens[i].Type == TokenTypes.Punctuator) {
                     blockBuffer = tokens.GetRange(i + 1, tokens.Count - i -1);
@@ -125,8 +123,6 @@ namespace Skrypt.Parsing
 
                 parameterBuffer.Add(tokens[i]);
             }
-
-            Console.WriteLine(ExpressionParser.TokenString(blockBuffer));
 
             var parameterNode = ParseLambdaParameters(parameterBuffer);
             var blockNode = ParseLambdaBlock(blockBuffer);
