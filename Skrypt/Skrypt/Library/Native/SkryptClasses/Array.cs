@@ -192,7 +192,19 @@ namespace Skrypt.Library.Native
 
                     var r = m.Execute(engine, self, new[] { x }, scope);
 
-                    x = scope.Variables[name].Value;
+                    ((Array)self).List[i] = scope.Variables[name].Value;
+                }
+
+                var iterator = new Dictionary<string, SkryptObject>(((Array)self).Table);
+
+                foreach (var p in iterator) {
+                    var x = p.Value;
+
+                    scope.Variables[name].Value = x;
+
+                    var r = m.Execute(engine, self, new[] { x }, scope);
+
+                    ((Array)self).Table[p.Key] = scope.Variables[name].Value;
                 }
 
                 return self;
@@ -217,7 +229,19 @@ namespace Skrypt.Library.Native
 
                     var r = m.Execute(engine, self, new[] { x }, scope);
 
-                    x = scope.Variables[name].Value;
+                    ((Array)self).List[i] = scope.Variables[name].Value;
+                }
+
+                var iterator = new Dictionary<string, SkryptObject>(((Array)self).Table);
+
+                foreach (var p in iterator) {
+                    var x = p.Value;
+
+                    scope.Variables[name].Value = x;
+
+                    var r = m.Execute(engine, self, new[] { x }, scope);
+
+                    newArray.Table[p.Key] = scope.Variables[name].Value;
                 }
 
                 return newArray;

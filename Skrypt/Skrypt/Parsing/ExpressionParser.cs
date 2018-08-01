@@ -42,9 +42,9 @@ namespace Skrypt.Parsing
             new OperatorGroup(new Operator[] {new OpBitNot()}, false, 1),
             new OperatorGroup(new Operator[] {new OpNegate(), new OpNot()}, false, 1),
             new OperatorGroup(new Operator[] {new OpPostInc(), new OpPostDec()}, false, 1, true),
-            new OperatorGroup(new Operator[] { new OpCall()}, false),
-            new OperatorGroup(new Operator[] { new OpIndex()}, false),
-            new OperatorGroup(new Operator[] { new OpAccess()}, false),
+            new OperatorGroup(new Operator[] {new OpCall()}, false),
+            new OperatorGroup(new Operator[] {new OpIndex()}, false),
+            new OperatorGroup(new Operator[] {new OpAccess()}, false),
         };
 
         private readonly SkryptEngine _engine;

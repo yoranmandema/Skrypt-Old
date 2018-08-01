@@ -1,10 +1,11 @@
 
 a = [1,2,3]
 
-a["test"] = 1
+a["test"] = 43
 
-System.print(a["test"])
+b = a.Map(x => {
+	x = System.Encoding.ToBinary(x)
+})
 
-a["test"] = 10
-
-System.print(a["test"])
+System.print(b["test"])
+System.print(b)
