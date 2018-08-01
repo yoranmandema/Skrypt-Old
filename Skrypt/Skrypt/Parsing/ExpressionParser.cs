@@ -23,10 +23,10 @@ namespace Skrypt.Parsing
         // Create list of operator groups with the right precedence order
         public static readonly List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup>
         {
-            new OperatorGroup(new Operator[] {new OpBreak(),new OpContinue() }, false, 0),
-            new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
             new OperatorGroup(new Operator[] {new OpAssign()}, false),
             new OperatorGroup(new Operator[] {new OpLambda()}, true),
+            new OperatorGroup(new Operator[] {new OpBreak(),new OpContinue() }, false, 0),
+            new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
             new OperatorGroup(new Operator[] {new OpConditional(),new OpConditionalElse() }, true, 0),
             new OperatorGroup(new[] {new OpOr()}),
             new OperatorGroup(new[] {new OpAnd()}),
@@ -225,6 +225,8 @@ namespace Skrypt.Parsing
                                     }
                                 }
 
+                                Console.WriteLine(Operator.Operation);
+
                                 // Fill left and right buffers
                                 leftBuffer = tokens.GetRange(0, i);
                                 rightBuffer = tokens.GetRange(i + 1, tokens.Count - i - 1);
@@ -242,6 +244,7 @@ namespace Skrypt.Parsing
                                 if (hasRequiredLeftTokens && hasRequiredRightTokens) {
                                     if (token.Value == "=>") {
                                         isLambda = true;
+                                        Console.WriteLine("Is parsing lambda");
                                         return;
                                     }
 
