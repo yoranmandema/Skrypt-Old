@@ -45,6 +45,14 @@ namespace Skrypt.Library.Native
                         var b = TypeConverter.ToString(input, 1);
 
                         return (Boolean) (a.Value == b.Value);
+                    }),
+                new Operation("notequal", typeof(String), typeof(String),
+                    input =>
+                    {
+                        var a = TypeConverter.ToString(input, 0);
+                        var b = TypeConverter.ToString(input, 1);
+
+                        return (Boolean) (a.Value != b.Value);
                     })
             };
 
@@ -125,7 +133,7 @@ namespace Skrypt.Library.Native
                 var array = engine.Create<Array>();
                  
                 for (int i = 0; i < byteArray.Length - 1; i++) {
-                    array.Value.Add((Numeric)byteArray[i]);
+                    array.List.Add((Numeric)byteArray[i]);
                 }
 
                 return array;
@@ -143,7 +151,7 @@ namespace Skrypt.Library.Native
                 var array = engine.Create<Array>();
 
                 for (int i = 0; i < exploded.Length; i++) {
-                    array.Value.Add(engine.Create<String>(exploded[i]));
+                    array.List.Add(engine.Create<String>(exploded[i]));
                 }
 
                 return array;

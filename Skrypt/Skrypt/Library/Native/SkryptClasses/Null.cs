@@ -14,7 +14,27 @@ namespace Skrypt.Library.Native
                     input =>
                     {
                         return new Boolean(true);
-                    })
+                    }),
+                new Operation("equal", typeof(Null), typeof(SkryptObject),
+                    input =>
+                    {
+                        return new Boolean(input[1].GetType() == typeof(Null));
+                    }),
+                new Operation("equal", typeof(SkryptObject), typeof(Null),
+                    input =>
+                    {
+                        return new Boolean(input[0].GetType() == typeof(Null));
+                    }),
+                new Operation("notequal", typeof(Null), typeof(SkryptObject),
+                    input =>
+                    {
+                        return new Boolean(input[1].GetType() != typeof(Null));
+                    }),
+                new Operation("notequal", typeof(SkryptObject), typeof(Null),
+                    input =>
+                    {
+                        return new Boolean(input[0].GetType() != typeof(Null));
+                    }),
             };
 
             public Null()

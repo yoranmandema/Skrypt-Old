@@ -13,7 +13,7 @@ namespace Skrypt.Library.Native
             public static SkryptObject Mode(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
             {
                 var a = TypeConverter.ToArray(values, 0);
-                var v = a.Value;
+                var v = a.List;
 
                 var query = v.GroupBy(x => ((Numeric)x).Value)
                     .Select(group => new { Value = group.Key, Count = group.Count() })
@@ -30,12 +30,12 @@ namespace Skrypt.Library.Native
                 var a = TypeConverter.ToArray(values, 0);
                 var total = 0d;
 
-                for (int i = 0; i < a.Value.Count; i++)
+                for (int i = 0; i < a.List.Count; i++)
                 {
-                    total += (Numeric)a.Value[i];
+                    total += (Numeric)a.List[i];
                 }
 
-                return engine.Create<Numeric>(total / a.Value.Count);
+                return engine.Create<Numeric>(total / a.List.Count);
             }
 
             [Constant]
@@ -45,8 +45,8 @@ namespace Skrypt.Library.Native
 
                 var sorted = a.Sort(engine, a, null);
 
-                double high = (Numeric)((Array)sorted).Value.Last();
-                double low = (Numeric)((Array)sorted).Value.First();
+                double high = (Numeric)((Array)sorted).List.Last();
+                double low = (Numeric)((Array)sorted).List.First();
 
                 return engine.Create<Numeric>(high - low);
             }
@@ -64,9 +64,9 @@ namespace Skrypt.Library.Native
             {
                 var a = TypeConverter.ToArray(values, 0);
                 var notEmpty = 0;
-                for (int i = 0; i < a.Value.Count; i++)
+                for (int i = 0; i < a.List.Count; i++)
                 {
-                    if (a.Value[i] == null || a.Value[i] == (String)"")
+                    if (a.List[i] == null || a.List[i] == (String)"")
                     {
                         notEmpty--;
                     }
@@ -85,9 +85,9 @@ namespace Skrypt.Library.Native
                 var a = TypeConverter.ToArray(values, 0);
                 var empty = 0;
 
-                for (int i = 0; i < a.Value.Count; i++)
+                for (int i = 0; i < a.List.Count; i++)
                 {
-                    if (a.Value[i] == null || a.Value[i] == (String)"")
+                    if (a.List[i] == null || a.List[i] == (String)"")
                     {
                         empty++;
                     }
@@ -105,7 +105,7 @@ namespace Skrypt.Library.Native
                 var a = (Array)TypeConverter.ToArray(values, 0).Clone(); // Copy array so we don't affect the original one by sorting it
                 var k = TypeConverter.ToNumeric(values, 1);
 
-                a.Value.Sort((x, y) => {
+                a.List.Sort((x, y) => {
                     if ((Numeric)x > (Numeric)y) {
                         return 1;
                     }
@@ -114,7 +114,7 @@ namespace Skrypt.Library.Native
                     }
                 });
 
-                return engine.Create<Numeric>(a.Value[(int)k]);
+                return engine.Create<Numeric>(a.List[(int)k]);
             }
 
             [Constant]
@@ -123,7 +123,7 @@ namespace Skrypt.Library.Native
                 var a = (Array)TypeConverter.ToArray(values, 0).Clone(); // Copy array so we don't affect the original one by sorting it
                 var k = TypeConverter.ToNumeric(values, 1);
 
-                a.Value.Sort((x, y) => {
+                a.List.Sort((x, y) => {
                     if ((Numeric)x > (Numeric)y) {
                         return 1;
                     }
@@ -132,7 +132,7 @@ namespace Skrypt.Library.Native
                     }
                 });
 
-                return engine.Create<Numeric>(a.Value[a.Value.Count-(int)k-1]);
+                return engine.Create<Numeric>(a.List[a.List.Count-(int)k-1]);
             }
 
             [Constant]
@@ -141,9 +141,9 @@ namespace Skrypt.Library.Native
                 var a = TypeConverter.ToArray(values, 0);
                 var b = double.MaxValue;
 
-                for (int i = 0; i < a.Value.Count; i++) {
-                    if ((Numeric)a.Value[i] < b) {
-                        b = (Numeric)a.Value[i];
+                for (int i = 0; i < a.List.Count; i++) {
+                    if ((Numeric)a.List[i] < b) {
+                        b = (Numeric)a.List[i];
                     }
                 }
 
@@ -155,9 +155,9 @@ namespace Skrypt.Library.Native
             {
                 var a = TypeConverter.ToArray(values, 0);
                 var b = -double.MaxValue;
-                for (int i = 0; i < a.Value.Count; i++) {
-                    if ((Numeric)a.Value[i] > b) {
-                        b = (Numeric)a.Value[i];
+                for (int i = 0; i < a.List.Count; i++) {
+                    if ((Numeric)a.List[i] > b) {
+                        b = (Numeric)a.List[i];
                     }
                 }
 
@@ -171,11 +171,11 @@ namespace Skrypt.Library.Native
                 var b = double.MaxValue;
                 var c = 0;
 
-                for (int i = 0; i < a.Value.Count; i++)
+                for (int i = 0; i < a.List.Count; i++)
                 {
-                    if ((Numeric)a.Value[i] < b)
+                    if ((Numeric)a.List[i] < b)
                     {
-                        b = (Numeric)a.Value[i];
+                        b = (Numeric)a.List[i];
                         c = i;
                     }
                 }
@@ -190,11 +190,11 @@ namespace Skrypt.Library.Native
                 var b = -double.MaxValue;
                 var c = 0;
 
-                for (int i = 0; i < a.Value.Count; i++)
+                for (int i = 0; i < a.List.Count; i++)
                 {
-                    if ((Numeric)a.Value[i] > b)
+                    if ((Numeric)a.List[i] > b)
                     {
-                        b = (Numeric)a.Value[i];
+                        b = (Numeric)a.List[i];
                         c = i;
                     }
                 }
@@ -208,8 +208,8 @@ namespace Skrypt.Library.Native
             {
                 var a = TypeConverter.ToArray(values, 0);
                 var b = 0d;
-                for (int i = 0; i < a.Value.Count; i++) {
-                    b += (Numeric)a.Value[i];
+                for (int i = 0; i < a.List.Count; i++) {
+                    b += (Numeric)a.List[i];
                 }
 
                 return engine.Create<Numeric>(b);

@@ -1,5 +1,10 @@
-using System
 
-a = Crypto.SHA256("Hello world!")
+a = [1,2,3]
 
-a.Sort((x,y) => x > y)
+a["test"] = 1
+
+System.print(a["test"])
+
+a["test"] = 10
+
+System.print(a["test"])

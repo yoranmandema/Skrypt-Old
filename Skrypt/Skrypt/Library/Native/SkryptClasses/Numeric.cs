@@ -102,6 +102,14 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(Equals(a.Value,b.Value));
                     }),
+                new Operation("notequal", typeof(Numeric), typeof(Numeric),
+                    input =>
+                    {
+                        var a = TypeConverter.ToNumeric(input, 0);
+                        var b = TypeConverter.ToNumeric(input, 1);
+
+                        return new Boolean(!Equals(a.Value,b.Value));
+                    }),
                 new Operation("and", typeof(Numeric), typeof(Numeric),
                     input =>
                     {

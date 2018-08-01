@@ -20,8 +20,8 @@ namespace Skrypt.Library.Native
                         var b = TypeConverter.ToAny(input, 1);
 
                         var newArray = (Array) ObjectExtensions.Copy(a);
-                        newArray.Value = new List<SkryptObject>(a.Value);
-                        newArray.Value.Add(b);
+                        newArray.List = new List<SkryptObject>(a.List);
+                        newArray.List.Add(b);
 
                         return newArray;
                     }),
@@ -32,8 +32,8 @@ namespace Skrypt.Library.Native
                         var b = TypeConverter.ToArray(input, 1);
 
                         var newArray = new Array();
-                        newArray.Value = new List<SkryptObject>(b.Value);
-                        newArray.Value.Insert(0, a);
+                        newArray.List = new List<SkryptObject>(b.List);
+                        newArray.List.Insert(0, a);
 
                         return newArray;
                     }),
@@ -46,41 +46,75 @@ namespace Skrypt.Library.Native
                         var mul = (int) b.Value - 1;
 
                         var newArray = new Array();
-                        newArray.Value = new List<SkryptObject>(a.Value);
+                        newArray.List = new List<SkryptObject>(a.List);
                         for (var i = 0; i < mul; i++)
-                            foreach (var obj in a.Value)
-                                newArray.Value.Add(ObjectExtensions.Copy(obj));
+                            foreach (var obj in a.List)
+                                newArray.List.Add(ObjectExtensions.Copy(obj));
 
                         return newArray;
                     }),
-                new Operation("index", typeof(Array), typeof(SkryptObject),
+                new Operation("index", typeof(Array), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
-                        var b = TypeConverter.ToAny(input, 1);
+                        var b = TypeConverter.ToNumeric(input, 1);
 
-                        var index = IndexFromObject(b);
-
-                        return a.Value[index];
+                        if (b < 0 || b > a.List.Count) {
+                            return a.Engine.Create<Null>();
+                        }
+                         
+                        return a.List[(int)b];
                     }),
-                new Operation("indexset", typeof(Array), typeof(SkryptObject),
+                new Operation("index", typeof(Array), typeof(String),
+                    input =>
+                    {
+                        var a = TypeConverter.ToArray(input, 0);
+                        var b = TypeConverter.ToString(input, 1);
+
+                        if (!a.Table.ContainsKey(b)) {
+                            return a.Engine.Create<Null>();
+                        }
+
+                        return a.Table[b];
+                    }),
+                new Operation("indexset", typeof(Array), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToAny(input, 1);
-                        var c = TypeConverter.ToAny(input, 2);
+                        var c = TypeConverter.ToNumeric(input, 2);
 
-                        var index = IndexFromObject(c);
+                        if (c > a.List.Count) {
+                            var collection = new SkryptObject[(int)c - a.List.Count + 1];
 
-                        var newValue = a.Value[index] = b;
+                            for (int i = 0; i < collection.Length; i++) {
+                                collection[i] = a.Engine.Create<Null>();
+                            }
+
+                            a.List.AddRange(collection);
+                        }
+
+                        var newValue = a.List[(int)c] = b;
+
+                        return newValue;
+                    }),
+                new Operation("indexset", typeof(Array), typeof(String),
+                    input =>
+                    {
+                        var a = TypeConverter.ToArray(input, 0);
+                        var b = TypeConverter.ToAny(input, 1);
+                        var c = TypeConverter.ToString(input, 2);
+
+                        var newValue = a.Table[c] = b;
 
                         return newValue;
                     })
             };
 
-            public List<SkryptObject> Value = new List<SkryptObject>();
+            public List<SkryptObject> List = new List<SkryptObject>();
+            public Dictionary<string,SkryptObject> Table = new Dictionary<string, SkryptObject>();
 
-            public Numeric Length => Value.Count;
+            public Numeric Length => List.Count;
 
             public override string Name => "array";
 
@@ -90,7 +124,7 @@ namespace Skrypt.Library.Native
             }
 
             public Array(List<SkryptObject> v) {
-                Value = v;
+                List = v;
             }
 
             private static int IndexFromObject(SkryptObject Object)
@@ -109,14 +143,14 @@ namespace Skrypt.Library.Native
             public SkryptObject Push(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var a = TypeConverter.ToAny(values,0);
 
-                ((Array)self).Value.Add(a);
+                ((Array)self).List.Add(a);
 
                 return new Null();
             }
 
             [Constant]
             public SkryptObject Concat(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                return engine.Create<String>(string.Join(string.Empty,((Array)self).Value));
+                return engine.Create<String>(string.Join(string.Empty,((Array)self).List));
             }
 
             [Constant]
@@ -125,7 +159,7 @@ namespace Skrypt.Library.Native
 
                 if (m.Parameters.Count < 2) engine.ThrowError("Input function must have 2 parameters!"); 
 
-                ((Array)self).Value.Sort((x, y) => {
+                ((Array)self).List.Sort((x, y) => {
                     var scope = SkryptMethod.GetPopulatedScope(m, new[] { x, y });
                     scope.ParentScope = ScopeContext;
 
@@ -151,8 +185,8 @@ namespace Skrypt.Library.Native
                 scope.ParentScope = engine.CurrentScope;          
                 var name = scope.Variables.Keys.First();
 
-                for (int i = 0; i < ((Array)self).Value.Count; i++) {
-                    var x = ((Array)self).Value[i];
+                for (int i = 0; i < ((Array)self).List.Count; i++) {
+                    var x = ((Array)self).List[i];
 
                     scope.Variables[name].Value = x;
 
@@ -170,14 +204,14 @@ namespace Skrypt.Library.Native
 
                 if (m.Parameters.Count != 1) engine.ThrowError("Input function must have 1 parameter!");
 
-                var newArray = engine.Create<Array>(((Array)self).Value);
+                var newArray = engine.Create<Array>(((Array)self).List);
 
                 var scope = SkryptMethod.GetPopulatedScope(m);
                 scope.ParentScope = engine.CurrentScope;
                 var name = scope.Variables.Keys.First();
 
-                for (int i = 0; i < newArray.Value.Count; i++) {
-                    var x = newArray.Value[i];
+                for (int i = 0; i < newArray.List.Count; i++) {
+                    var x = newArray.List[i];
 
                     scope.Variables[name].Value = x;
 
@@ -191,7 +225,7 @@ namespace Skrypt.Library.Native
 
             public override string ToString()
             {
-                return "[" + string.Join(",", Value) + "]";
+                return "[" + string.Join(",", List) + "]";
             }
         }
     }

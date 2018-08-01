@@ -503,7 +503,7 @@ namespace Skrypt.Execution
 
                     if (result.Name == "void") _engine.ThrowError("Can't add void to array!", node.SubNodes[0].Token);
 
-                    array.Value.Add(result);
+                    array.List.Add(result);
                 }
 
                 return array;

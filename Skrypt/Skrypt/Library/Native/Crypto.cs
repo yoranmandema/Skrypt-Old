@@ -21,7 +21,7 @@ namespace Skrypt.Library.Native {
                 var array = engine.Create<Array>();
 
                 for (int i = 0; i < hashValue.Length; i++) {
-                    array.Value.Add((Numeric)hashValue[i]);
+                    array.List.Add((Numeric)hashValue[i]);
                 }
 
                 return array;
@@ -36,7 +36,7 @@ namespace Skrypt.Library.Native {
                 var array = engine.Create<Array>();
 
                 for (int i = 0; i < hashValue.Length; i++) {
-                    array.Value.Add((Numeric)hashValue[i]);
+                    array.List.Add((Numeric)hashValue[i]);
                 }
 
                 return array;
