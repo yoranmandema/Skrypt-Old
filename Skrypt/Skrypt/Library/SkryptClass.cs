@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Skrypt.Engine;
 using Skrypt.Execution;
+using S = Skrypt.Library.Native.System;
 
 namespace Skrypt.Library
 {
@@ -38,7 +39,25 @@ namespace Skrypt.Library
 
     public class SkryptObject {
         [JsonIgnore]
-        public List<Operation> Operations = new List<Operation>();
+        public List<Operation> Operations = new List<Operation>
+           {
+                new Operation("not", typeof(SkryptObject),
+                    input =>
+                    {
+                        return new S.Boolean(input[0].GetType() != typeof(S.Null));
+                    }),
+                new Operation("equal", typeof(SkryptObject), typeof(SkryptObject),
+                    input =>
+                    {
+                        return new S.Boolean(ReferenceEquals(input[0],input[1]));
+                    }),
+                new Operation("notequal", typeof(SkryptObject), typeof(SkryptObject),
+                    input =>
+                    {
+                        return new S.Boolean(ReferenceEquals(input[0],input[1]));
+                    }),
+            };
+
         [JsonIgnore] public List<SkryptProperty> Properties = new List<SkryptProperty>();
         [JsonIgnore] public ScopeContext ScopeContext { get; set; }
         [JsonIgnore] public SkryptEngine Engine { get; set; }

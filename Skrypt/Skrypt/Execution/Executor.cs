@@ -32,8 +32,11 @@ namespace Skrypt.Execution
         public SkryptObject GetType(string name, ScopeContext scopeContext) {
             SkryptObject foundVar = null;
 
-            if (_engine.GlobalScope.Types.ContainsKey(name)) {
+            if (scopeContext.Types.ContainsKey(name)) {
                 foundVar = _engine.GlobalScope.Types[name];
+            }
+            else if (scopeContext.ParentScope != null) {
+                foundVar = GetType(name, scopeContext.ParentScope);
             }
 
             return foundVar;
@@ -172,7 +175,7 @@ namespace Skrypt.Execution
                 Value = new Library.Native.System.String(ClassName)
             });
 
-            _engine.GlobalScope.AddType(ClassName, TypeObject);
+            scopeContext.AddType(ClassName, TypeObject);
 
             foreach (var v in scope.Variables) {
                 if (v.Value.Modifiers != Modifier.None) {

@@ -1,5 +1,6 @@
 ﻿using Skrypt.Engine;
 using System;
+using Skrypt.Library.Native;
 
 namespace Skrypt.Library
 {

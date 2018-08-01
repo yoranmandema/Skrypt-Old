@@ -1,11 +1,5 @@
+using System
 
-a = [1,2,3]
+print(1.Type != String)
 
-a["test"] = 43
-
-b = a.Map(x => {
-	x = System.Encoding.ToBinary(x)
-})
-
-System.print(b["test"])
-System.print(b)
+print(1)

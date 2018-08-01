@@ -247,6 +247,12 @@ namespace Skrypt.Library.Reflection
                     Modifiers = Parsing.Modifier.Const
                 });
 
+                Instance.Properties.Add(new SkryptProperty {
+                    Name = "Type",
+                    Value = Object,
+                    Modifiers = Parsing.Modifier.Const
+                });
+
                 Object.Properties.Add(new SkryptProperty {
                     Name = "TypeName",
                     Value = new Native.System.String(className),
