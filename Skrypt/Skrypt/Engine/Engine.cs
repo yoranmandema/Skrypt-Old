@@ -304,7 +304,7 @@ namespace Skrypt.Engine
             double token = Stopwatch.ElapsedMilliseconds;
 
             //foreach (var t in _tokens) Console.WriteLine(t);
-
+            
             // Generate the program node
             Stopwatch = Stopwatch.StartNew();
             var programNode = GeneralParser.Parse(_tokens);

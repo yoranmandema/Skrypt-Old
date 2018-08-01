@@ -1,5 +1,9 @@
 using System
 
-a = x => x * x
+a = Crypto.SHA1("Hello world!")
 
-print(a(8))
+a.ForEach((x) => {
+	x = Encoding.ToBinary(x).PadLeft(8,0)
+})
+
+print(a)

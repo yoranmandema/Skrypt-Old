@@ -155,6 +155,13 @@ namespace Skrypt.Parsing
                                 }
                             }
 
+                            if (Operator.Operation == "=") {
+                                if (token.Value == "{" && token.Type == TokenTypes.Punctuator) {
+                                    var skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
+                                    i += skip.Delta;
+                                }
+                            }
+
                             if (GeneralParser.NotPermittedInExpression.Contains(tokens[i].Value))
                                 _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i]);
 
@@ -354,6 +361,7 @@ namespace Skrypt.Parsing
         {
             var depth = 0;
             var indexDepth = 0;
+            var bracketDepth = 0;
             var i = 0;
             var startArg = 0;
             var buffer = new List<Token>();
@@ -370,8 +378,12 @@ namespace Skrypt.Parsing
                     indexDepth++;
                 else if (token.Value == "]" && token.Type == TokenTypes.Punctuator) indexDepth--;
 
+                if (token.Value == "{" && token.Type == TokenTypes.Punctuator)
+                    bracketDepth++;
+                else if (token.Value == "}" && token.Type == TokenTypes.Punctuator) bracketDepth--;
+
                 if ((token.Value == "," && token.Type == TokenTypes.Punctuator || i == tokens.Count - 1) &&
-                    depth == 0 && indexDepth == 0)
+                    depth == 0 && indexDepth == 0 && bracketDepth == 0)
                 {
                     buffer = tokens.GetRange(startArg, (i == tokens.Count - 1 ? i + 1 : i) - startArg);
                     startArg = i + 1;
