@@ -25,7 +25,8 @@ namespace Skrypt.Parsing
             "using",
             "break",
             "continue",
-            "const"
+            "const",
+            "return"
         };
 
         public static List<string> NotPermittedInExpression = new List<string>

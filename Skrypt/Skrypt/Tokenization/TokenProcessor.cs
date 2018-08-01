@@ -125,6 +125,10 @@ namespace Skrypt.Tokenization
                                     needsValueAfter = true;
                                 }
 
+                                if (Operator.Operation == "break" || Operator.Operation == "return" || Operator.Operation == "continue") {
+                                    needsValueAfter = false;
+                                }
+
                                 return;
                             }
                         }
@@ -153,7 +157,12 @@ namespace Skrypt.Tokenization
                         i--;
                     }
 
-                    if (token.Value == "using" && token.Type == TokenTypes.Punctuator) {
+                    if ((token.Value == "using") && token.Type == TokenTypes.Punctuator) {
+                        InsertEnd(tokens, i);
+                        i++;
+                    }
+
+                    if ((previousToken.Value == "continue" || previousToken.Value == "break") && previousToken.Type == TokenTypes.Punctuator) {
                         InsertEnd(tokens, i);
                         i++;
                     }
