@@ -54,7 +54,7 @@ namespace Skrypt.Library
                 new Operation("notequal", typeof(SkryptObject), typeof(SkryptObject),
                     input =>
                     {
-                        return new S.Boolean(ReferenceEquals(input[0],input[1]));
+                        return new S.Boolean(!ReferenceEquals(input[0],input[1]));
                     }),
             };
 
