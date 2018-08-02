@@ -3,6 +3,8 @@ using Newtonsoft.Json;
 using Skrypt.Tokenization;
 using System;
 using System.Text.RegularExpressions;
+using C = Colorful.Console;
+using System.Drawing;
 
 namespace Skrypt.Parsing
 {
@@ -87,53 +89,41 @@ namespace Skrypt.Parsing
         public void Print(string indent = "") {
             var s = Body;
 
-            Console.Write(indent);
+            C.Write(indent, Color.FromArgb(100, 100, 100));
 
             switch (TokenType) {
                 case "FunctionLiteral":
-                    Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                    Console.Write(Body);
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    break;
+                case "NullLiteral":
                 case "BooleanLiteral":
+                    C.Write(Body, Color.FromArgb(208, 25, 208));
+                    break;
                 case "NumericLiteral":
-                    Console.ForegroundColor = ConsoleColor.DarkMagenta;
-                    Console.Write(Body);
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    C.Write(Body, Color.FromArgb(184, 215, 163));
                     break;
                 case "Call":
                 case "Punctuator":
-                    Console.ForegroundColor = ConsoleColor.Magenta;
-                    Console.Write(Body);
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    C.Write(Body, Color.FromArgb(66, 147, 208));
                     break;
                 case "Parameter":
                 case "Identifier":
-                    Console.ForegroundColor = ConsoleColor.White;
-                    Console.Write(Body);
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    C.Write(Body, Color.FromArgb(217, 220, 220));
                     break;
                 case "StringLiteral":
-                    Console.ForegroundColor = ConsoleColor.Yellow;
-                    Console.Write('"' + Body + '"');
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    C.Write('"' + Body + '"', Color.FromArgb(214, 157, 133));
                     break;
                 case "ClassDeclaration":
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.Write("Class " + Body);
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    C.Write("Class " + Body, Color.FromArgb(208, 25, 208));
                     break;
                 case "MethodDeclaration":
-                    Console.ForegroundColor = ConsoleColor.DarkRed;
-                    Console.Write("Function " + Body);
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    C.Write("Function " + Body, Color.FromArgb(208, 25, 208));
                     break;
                 default:
-                    Console.Write(Body);
+                    C.Write(Body);
                     break;
             }
 
-            Console.Write("\n");
+            C.ResetColor();
+            C.Write("\n");
 
             foreach (var subnode in SubNodes) {
                 subnode.Print(indent + "| ");
