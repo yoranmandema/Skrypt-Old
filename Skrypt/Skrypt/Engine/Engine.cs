@@ -313,6 +313,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
+            programNode.Print();
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
