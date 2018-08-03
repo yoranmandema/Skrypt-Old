@@ -157,7 +157,7 @@ namespace Skrypt.Parsing
             }
 
             var result = _engine.GeneralParser.Parse(clone);
-            result.TokenType = "ClassDeclaration";
+            //result.TokenType = "ClassDeclaration";
 
             return result;
         }
@@ -169,16 +169,57 @@ namespace Skrypt.Parsing
             var skip = _engine.ExpectType(TokenTypes.Identifier, tokens, i);
             i += skip.Delta;
 
-            skip = _engine.ExpectValue("{", tokens, i);
+            skip = _engine.ExpectValue(new string[] {":","{"}, tokens, i);
             i += skip.Delta;
+
+            var inheritNode = new Node {Body = "Inherit", TokenType = "Inherit" };
+
+            if (tokens[i].Value == ":") {
+                bool isIdentifier = true;
+                Token nextToken = null;
+                var s = _engine.ExpectType(TokenTypes.Identifier, tokens);
+                i++;
+
+                while (i < tokens.Count) {
+
+                    var token = tokens[i];
+
+                    if (i < tokens.Count - 2) nextToken = tokens[i + 1];
+
+                    if (token.Type == TokenTypes.EndOfExpression) break;
+
+                    if (isIdentifier) {
+                        inheritNode.Add(_engine.ExpressionParser.Parse(new List<Token> { tokens[i] }).Node);
+
+                        if (nextToken?.Value != "{" && i < tokens.Count - 1) {
+                            var sk = _engine.ExpectValue(",", tokens, i);
+                            isIdentifier = false;
+                        } else {
+                            break;
+                        }
+                    }
+                    else {
+                        var sk = _engine.ExpectType(TokenTypes.Identifier, tokens, i);
+                        isIdentifier = true;
+                    }
+
+                    i++;
+                }
+
+                i++;
+            }
 
             List<Token> SurroundedTokens = _engine.GeneralParser.GetSurroundedTokens("{", "}", i, tokens);
             Node node = ParseContents(SurroundedTokens, tokens[1].Value);
 
             var result = new ParseResult { Node = node, Delta = SurroundedTokens.Count + 1 };
 
-            var Node = result.Node;
-            Node.Body = tokens[1].Value;
+            var Node = new Node {
+                Body = tokens[1].Value,
+                TokenType = "ClassDeclaration"
+            };
+            Node.Add(inheritNode);
+            Node.Add(result.Node);
             i += result.Delta + 1;
              
             return new ParseResult { Node = Node, Delta = i + 1};

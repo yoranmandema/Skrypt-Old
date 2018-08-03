@@ -58,7 +58,7 @@ namespace Skrypt.Library
                     }),
             };
 
-        [JsonIgnore] public List<SkryptProperty> Properties = new List<SkryptProperty>();
+        public List<SkryptProperty> Properties = new List<SkryptProperty>();
         [JsonIgnore] public ScopeContext ScopeContext { get; set; }
         [JsonIgnore] public SkryptEngine Engine { get; set; }
         public virtual string Name { get; set; }
@@ -114,14 +114,16 @@ namespace Skrypt.Library
             string str = Name;
 
             if (Properties.Count > 0) {
-                str += " {\n";
+                str += "{\n";
 
                 foreach (var p in Properties) {
-                    str += $"\t{p.Name}: {p.Value}\n";
+                    str += $"{p.Name}: {p.Value}\n";
                 }
 
                 str += "}";
             }
+
+            str = JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
 
             return str;
         }

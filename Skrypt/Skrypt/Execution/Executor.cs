@@ -157,18 +157,16 @@ namespace Skrypt.Execution
                 }
         }
 
-        public SkryptObject ExecuteClassDeclaration (Node node, ScopeContext scopeContext) {
+        public SkryptObject ExecuteClassDeclaration(Node node, ScopeContext scopeContext) {
             string ClassName = node.Body;
             var ParentClass = scopeContext.SubContext.ParentClass;
 
             if (ParentClass != null) {
                 ClassName = ParentClass.Name + "." + ClassName;
-            } 
+            }
 
             SkryptObject Object = new SkryptObject { Name = ClassName };
             SkryptType TypeObject = new SkryptType { Name = ClassName };
-
-            var scope = ExecuteBlock(node,scopeContext, new SubContext { InClassDeclaration = true, ParentClass = Object });
 
             Object.Properties.Add(new SkryptProperty {
                 Name = "TypeName",
@@ -188,6 +186,8 @@ namespace Skrypt.Execution
                 Modifiers = Parsing.Modifier.Const
             });
 
+            var scope = ExecuteBlock(node.SubNodes[1], scopeContext, new SubContext { InClassDeclaration = true, ParentClass = Object });
+
             scopeContext.AddType(ClassName, TypeObject);
 
             foreach (var v in scope.Variables) {
@@ -199,9 +199,64 @@ namespace Skrypt.Execution
                     };
 
                     if ((v.Value.Modifiers & Modifier.Static) != 0) {
-                        Object.Properties.Add(property);
+                        var find = TypeObject.Properties.Find(x => x.Name == v.Key);
+
+                        if (find != null) {
+                            find = property;
+                        } else {
+                            Object.Properties.Add(property);
+                        }
                     } else {
-                        TypeObject.Properties.Add(property);
+                        var find = TypeObject.Properties.Find(x => x.Name == v.Key);
+
+                        if (find != null) {
+                            find = property;
+                        }
+                        else {
+                            TypeObject.Properties.Add(property);
+                        }
+                    }
+                }
+            }
+
+            foreach (var inheritNode in node.SubNodes[0].SubNodes) {
+                var value = ExecuteExpression(inheritNode, scopeContext);
+
+                var BaseType = GetType(((Library.Native.System.String)value.GetProperty("TypeName")).Value, scopeContext);
+                var instance = (SkryptType)Activator.CreateInstance(BaseType.GetType());
+                instance.ScopeContext = _engine.CurrentScope;
+                instance.Engine = _engine;
+                instance.SetPropertiesTo(BaseType);
+
+                if (value.GetType() != typeof(SkryptObject) || BaseType.GetType() != typeof(SkryptType)) {
+                    _engine.ThrowError("Can only inherit from skrypt-based objects");
+                }
+
+                foreach (var p in value.Properties) {
+                    var find = Object.Properties.Find(x => {
+                        if (x.IsGetter != p.IsGetter) return false;
+                        if (x.IsSetter != p.IsSetter) return false;
+                        if (x.Name != p.Name) return false;
+
+                        return true;
+                    });
+
+                    if (find == null) {
+                        Object.Properties.Add(p.Copy());
+                    }
+                }
+
+                foreach (var p in instance.Properties) {
+                    var find = TypeObject.Properties.Find(x => {
+                        if (x.IsGetter != p.IsGetter) return false;
+                        if (x.IsSetter != p.IsSetter) return false;
+                        if (x.Name != p.Name) return false;
+
+                        return true;
+                    });
+
+                    if (find == null) {
+                        TypeObject.Properties.Add(p.Copy());
                     }
                 }
             }

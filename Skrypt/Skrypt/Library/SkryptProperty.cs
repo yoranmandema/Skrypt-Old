@@ -1,5 +1,6 @@
 ﻿using Skrypt.Parsing;
 using System;
+using Newtonsoft.Json;
 
 namespace Skrypt.Library
 {
@@ -18,7 +19,7 @@ namespace Skrypt.Library
     public class SkryptProperty
     {
         public string Name { get; set; }
-        public SkryptObject Value { get; set; }
+        [JsonIgnore]public SkryptObject Value { get; set; }
         //public Access Accessibility { get; set; } = Access.Public;
         //public bool IsStatic { get; set; } = false;
         //public bool IsConstant { get; set; } = false;

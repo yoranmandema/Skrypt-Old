@@ -251,6 +251,23 @@ namespace Skrypt.Engine
             return new SkipInfo {Start = start, End = index, Delta = delta};
         }
 
+        public SkipInfo ExpectValue(string[] values, List<Token> tokens, int startingPoint = 0) {
+            var start = startingPoint;
+            var index = startingPoint;
+            var msg = "Tokens '" + string.Join(",",values) + "' expected after " + tokens[index].Value + " keyword";
+
+            if (index == tokens.Count - 1) ThrowError(msg, tokens[index]);
+
+            if (Array.Exists(values,e => e == tokens[index + 1].Value))
+                index++;
+            else
+                ThrowError(msg, tokens[index]);
+
+            var delta = index - startingPoint;
+
+            return new SkipInfo { Start = start, End = index, Delta = delta };
+        }
+
         /// <summary>
         ///     Skips token if next token has the given value. Throws exception when not found.
         /// </summary>
@@ -323,7 +340,7 @@ namespace Skrypt.Engine
             Stopwatch.Stop();
             double execute = Stopwatch.ElapsedMilliseconds;
 
-            Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
+            //Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
             int instances = 0;
             Stopwatch = Stopwatch.StartNew();
@@ -331,8 +348,11 @@ namespace Skrypt.Engine
                 GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
             }
             Stopwatch.Stop();
-            Console.WriteLine($"Average ({instances} instances): {Stopwatch.Elapsed.TotalMilliseconds / instances}ms");
-            Console.WriteLine($"Per second: {1000 / (Stopwatch.Elapsed.TotalMilliseconds / instances)}");
+
+            if (instances > 0) {
+                Console.WriteLine($"Average ({instances} instances): {Stopwatch.Elapsed.TotalMilliseconds / instances}ms");
+                Console.WriteLine($"Per second: {1000 / (Stopwatch.Elapsed.TotalMilliseconds / instances)}");
+            }
 
             return programNode;
         }

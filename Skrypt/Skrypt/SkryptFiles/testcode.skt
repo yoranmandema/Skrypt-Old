@@ -1,15 +1,27 @@
-b = x => x * 2
+using System
 
-System.print("Hello world!")
+class Inherit {
+	public b = 2
 
-a = true
-
-fn a (x) {
-	return x + 1
+	Inherit() {
+		print("haha lesbian")
+	}
 }
 
-class test {
-	test () {
+class Inherit2 {
+	public b = 3
+
+	Inherit2() {
+		print("haha gay")
+	}
+}
+
+class Test : Inherit2, Inherit {
+	public a = 1
+	public b = "gay"
+	public b = "gay"
+
+	Test() {
 	
 	}
 }
