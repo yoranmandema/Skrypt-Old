@@ -399,8 +399,15 @@ namespace Skrypt.Execution
 
         public AccessResult ExecuteAccess(SkryptObject Object, Node node, ScopeContext scopeContext, bool setter = false)
         {
-            var localScope = ObjectExtensions.Copy(scopeContext);
+            //var sw = System.Diagnostics.Stopwatch.StartNew();
+
+            var localScope = new ScopeContext();
+            localScope.SubContext.Merge(scopeContext.SubContext);
             localScope.ParentScope = scopeContext;
+            localScope.Types = scopeContext.Types;
+            localScope.CallStack = scopeContext.CallStack;
+
+            //Console.WriteLine(sw.Elapsed.TotalMilliseconds);
 
             foreach (var p in Object.Properties) {
                 localScope.AddVariable(p.Name, p.Value, p.Modifiers);
@@ -413,11 +420,11 @@ namespace Skrypt.Execution
                 var target = ExecuteExpression(node.SubNodes[0], localScope);
                 localScope.SubContext.Caller = target;
 
-                var result = ExecuteAccess(target, node.SubNodes[1], localScope, setter);
-
+                var result = ExecuteAccess(target, node.SubNodes[1], localScope, setter); 
                 return result;
             }
             else {
+                localScope = null;
                 return new AccessResult {
                     Property = GetProperty(Object, node.Body, setter),
                     Owner = Object
@@ -467,7 +474,7 @@ namespace Skrypt.Execution
                 {
                     var target = ExecuteExpression(node.SubNodes[0], scopeContext);
                     var result = ExecuteAccess(target, node.SubNodes[1], scopeContext);
-
+ 
                     //Console.WriteLine("----------------------------");
                     //Console.WriteLine(result.Owner);
                     //Console.WriteLine(result.Property.Value);
@@ -643,6 +650,7 @@ namespace Skrypt.Execution
                 }
 
                 var foundMethod = ExecuteExpression(node.SubNodes[0].SubNodes[0], scopeContext);
+
                 var caller = scopeContext.SubContext.Caller;
                 SkryptObject BaseType = null;
 

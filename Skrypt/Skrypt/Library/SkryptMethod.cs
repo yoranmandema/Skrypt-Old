@@ -28,7 +28,7 @@ namespace Skrypt.Library
             return base.ToString();
         }
 
-        public static ScopeContext GetPopulatedScope (SkryptMethod m, SkryptObject[] a) {
+        public static ScopeContext GetPopulatedScope (SkryptMethod m, SkryptObject[] a = null) {
             var s = new ScopeContext();
 
             if (m.GetType() == typeof(UserMethod)) {
@@ -51,6 +51,8 @@ namespace Skrypt.Library
                 for (int i = 0; i < m.Parameters.Count; i++) {
                     s.AddVariable(m.Parameters[i], new Null());
                 }
+            } else {
+
             }
 
             return s;

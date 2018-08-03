@@ -45,11 +45,14 @@ namespace Skrypt.Library.Native
 
                         var mul = (int) b.Value - 1;
 
-                        var newArray = new Array();
+                        var newArray = a.Engine.Create<Array>();
                         newArray.List = new List<SkryptObject>(a.List);
-                        for (var i = 0; i < mul; i++)
-                            foreach (var obj in a.List)
-                                newArray.List.Add(ObjectExtensions.Copy(obj));
+                        for (var i = 0; i < mul; i++) {
+                            foreach (var obj in a.List) {
+                                var copy = ObjectExtensions.Copy(obj);
+                                newArray.List.Add(copy);
+                            }
+                        }
 
                         return newArray;
                     }),
@@ -177,11 +180,11 @@ namespace Skrypt.Library.Native
 
             [Constant]
             public SkryptObject ForEach(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                var m = TypeConverter.ToMethod(values, 0);
+                 var m = TypeConverter.ToMethod(values, 0);
 
-                if (m.Parameters.Count != 1) engine.ThrowError("Input function must have 1 parameter!");
+                if (m.GetType() == typeof(SkryptMethod) && m.Parameters.Count != 1) engine.ThrowError("Input function must have 1 parameter!");
 
-                var scope = SkryptMethod.GetPopulatedScope(m);
+                var scope = SkryptMethod.GetPopulatedScope(m, new[] {new Null()});
                 scope.ParentScope = engine.CurrentScope;          
                 var name = scope.Variables.Keys.First();
 
@@ -214,11 +217,11 @@ namespace Skrypt.Library.Native
             public SkryptObject Map(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var m = TypeConverter.ToMethod(values, 0);
 
-                if (m.Parameters.Count != 1) engine.ThrowError("Input function must have 1 parameter!");
-
                 var newArray = engine.Create<Array>(((Array)self).List);
 
-                var scope = SkryptMethod.GetPopulatedScope(m);
+                if (m.GetType() == typeof(SkryptMethod) && m.Parameters.Count != 1) engine.ThrowError("Input function must have 1 parameter!");
+
+                var scope = SkryptMethod.GetPopulatedScope(m, new[] { new Null() });
                 scope.ParentScope = engine.CurrentScope;
                 var name = scope.Variables.Keys.First();
 
@@ -236,6 +239,8 @@ namespace Skrypt.Library.Native
 
                 foreach (var p in iterator) {
                     var x = p.Value;
+
+                    Console.WriteLine(p);
 
                     scope.Variables[name].Value = x;
 

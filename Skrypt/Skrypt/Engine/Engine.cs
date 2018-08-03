@@ -340,9 +340,9 @@ namespace Skrypt.Engine
             Stopwatch.Stop();
             double execute = Stopwatch.ElapsedMilliseconds;
 
-            //Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
+            Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
-            int instances = 0;
+            int instances = 1000;
             Stopwatch = Stopwatch.StartNew();
             for (int i = 0; i < instances; i++) {
                 GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
