@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27130.2027
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Skrypt", "Skrypt\Skrypt.csproj", "{68A54E73-41CC-47D5-9C61-396205BB4ED8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkryptEditor", "SkryptEditor\SkryptEditor.csproj", "{10EC2AAC-71D6-42CC-A3B1-0BBE7FC8024A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkryptEditor", "SkryptEditor\SkryptEditor.csproj", "{4ABBFCA8-38FA-4ABF-B27E-29B640E93181}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{68A54E73-41CC-47D5-9C61-396205BB4ED8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{68A54E73-41CC-47D5-9C61-396205BB4ED8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{68A54E73-41CC-47D5-9C61-396205BB4ED8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{10EC2AAC-71D6-42CC-A3B1-0BBE7FC8024A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{10EC2AAC-71D6-42CC-A3B1-0BBE7FC8024A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{10EC2AAC-71D6-42CC-A3B1-0BBE7FC8024A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{10EC2AAC-71D6-42CC-A3B1-0BBE7FC8024A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ABBFCA8-38FA-4ABF-B27E-29B640E93181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ABBFCA8-38FA-4ABF-B27E-29B640E93181}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ABBFCA8-38FA-4ABF-B27E-29B640E93181}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ABBFCA8-38FA-4ABF-B27E-29B640E93181}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

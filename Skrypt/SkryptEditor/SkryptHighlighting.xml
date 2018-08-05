@@ -1,0 +1,114 @@
+﻿<?xml version="1.0"?>
+
+<SyntaxDefinition name="Skrypt" extensions=".skt" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
+  <Color name="Comment" foreground="#645D66" />
+  <Color name="Delimiter" foreground="#BEBABF" />
+  
+  <Color name="String" foreground="#FFD866" />
+  <Color name="Operator" foreground="#FF6188" />
+  <Color name="Digit" foreground="#AB9DF2" />
+  <Color name="Null" foreground="#AB9DF2" />
+  <Color name="Boolean" foreground="#AB9DF2" />
+  <Color name="MethodCall" foreground="#78DCE8" />
+  <Color name="Modifiers" foreground="#78DCE8" />
+  <Color name="Keywords" foreground="#78DCE8" />
+  <Color name="Structures" foreground="#78DCE8" />
+  <Color name="ClassName" foreground="#A9DC76" />
+  <Color name="MethodName" foreground="#A9DC76" />
+  <Color name="Parameter" foreground="#FC9867" />
+  
+  <!-- This is the main ruleset. -->
+  <RuleSet>
+    <Span color="Comment" begin="//" />
+    <Span color="Comment" multiline="true"
+       begin="/\*" end="\*/" />
+
+    <Span color="String">
+      <Begin>"</Begin>
+      <End>"</End>
+      <RuleSet>
+        <!-- nested span for escape sequences -->
+        <Span begin="\\" end="." />
+      </RuleSet>
+    </Span>
+
+    <Keywords fontWeight="bold" color="Keywords">
+      <Word>if</Word>
+      <Word>else</Word>
+      <Word>while</Word>
+      <Word>for</Word>
+      <Word>return</Word>
+      <Word>break</Word>
+      <Word>continue</Word>
+      <Word>using</Word>
+    </Keywords>
+    
+    <Keywords fontWeight="bold" color="Structures">
+      <Word>fn</Word>
+      <Word>class</Word>
+    </Keywords>
+    
+    <Keywords color="Modifiers">
+      <Word>const</Word>
+      <Word>static</Word>
+      <Word>private</Word>
+      <Word>public</Word>
+    </Keywords>
+
+    <Rule color="Delimiter">
+      [;()\[\]{}]+
+    </Rule>
+
+    <Rule color="MethodCall">
+      \b
+      ([_a-zA-Z]+[_a-zA-Z0-9]*)
+      (?=\s*\()
+    </Rule>
+    
+    <Rule color="ClassName">
+      \b
+      (?&lt;=class)\s*
+      ([_a-zA-Z]+[_a-zA-Z0-9]*)+
+    </Rule>
+    
+    <Rule color="MethodName">
+      \b
+      (?&lt;=fn)\s*
+      ([_a-zA-Z]+[_a-zA-Z0-9]*)+
+      (?=\s*\() # followed by (
+    </Rule>
+
+    <Rule color="Parameter">
+      (?&lt;=fn)
+      (?&lt;=\s*([_a-zA-Z]+[_a-zA-Z0-9]*)*)
+      (?&lt;=\s*\()
+      (?&lt;=([_a-zA-Z]+[_a-zA-Z0-9]*,)*)
+      ([_a-zA-Z]+[_a-zA-Z0-9]*)
+    </Rule>
+    
+    <!-- Digits -->
+    <Rule color="Digit">
+      \b0x([A-Fa-f\d])+
+      |
+      \b0b([01])+
+      |    \b
+      (    \d+(\.[0-9]+)?
+      |    \.[0-9]+
+      )
+      ([eE][+-]?[0-9]+)? # optional exponent
+    </Rule>
+
+    <Rule color="Null">
+		null
+    </Rule>
+
+    <Rule color="Boolean">
+      true|false
+    </Rule>
+    
+    <Rule color="Operator">
+      [=?,.+\-/%*&lt;&gt;^+~!|&amp;]+
+    </Rule>
+
+  </RuleSet>
+</SyntaxDefinition>
