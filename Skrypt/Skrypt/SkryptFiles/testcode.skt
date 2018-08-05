@@ -3,3 +3,4 @@ using System
 a = Crypto.SHA256("Hello world!").ForEach(x => {x = Encoding.ToBinary(x).PadLeft(8,0)}).Concat()
 
 print(a)
+

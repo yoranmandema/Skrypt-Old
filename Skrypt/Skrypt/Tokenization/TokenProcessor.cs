@@ -63,6 +63,21 @@ namespace Skrypt.Tokenization
             tokens.Insert(index, new Token { Value = "EndOfExpression", Type = TokenTypes.EndOfExpression });
         }
 
+        private void ProcessSurrounded (string open, string close, List<Token> tokens, ref int index) {
+            var skip = _engine.ExpressionParser.SkipFromTo(open, close, tokens, index);
+
+            var beforeCount = skip.Delta;
+            var blockTokens = tokens.GetRange(skip.Start + 1, skip.Delta - 1);
+
+            tokens.RemoveRange(skip.Start + 1, skip.Delta - 1);
+
+            SetEndOfExpressions(blockTokens);
+
+            tokens.InsertRange(skip.Start + 1, blockTokens);
+
+            index = _engine.ExpressionParser.SkipFromTo(open, close, tokens, index).End;
+        }
+
         public void SetEndOfExpressions (List<Token> tokens) {
             var expression = new List<Token>();
             Token previousToken = null;
@@ -75,36 +90,18 @@ namespace Skrypt.Tokenization
                     previousToken = tokens[i - 1];
                 }
 
-                if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
-                    var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
-
-                    var beforeCount = skip.Delta;
-                    var blockTokens = tokens.GetRange(skip.Start + 1, skip.Delta - 1);
-
-                    tokens.RemoveRange(skip.Start + 1, skip.Delta - 1);
-
-                    SetEndOfExpressions(blockTokens);
-
-                    tokens.InsertRange(skip.Start + 1, blockTokens);
-
-                    i = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i).End;
-                }
-                else if (token.Value == "{" && token.Type == TokenTypes.Punctuator) {
-                    var skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
-
-                    var beforeCount = skip.Delta;
-                    var blockTokens = tokens.GetRange(skip.Start + 1,skip.Delta - 1);
-
-                    tokens.RemoveRange(skip.Start + 1, skip.Delta - 1);
-
-                    SetEndOfExpressions(blockTokens);
-
-                    tokens.InsertRange(skip.Start + 1, blockTokens);
-
-                    i = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i).End;
-                }
-                else if (token.Value == "[" && token.Type == TokenTypes.Punctuator) {
-                    i = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i).End;
+                if (token.Type == TokenTypes.Punctuator) {
+                    switch (token.Value) {
+                        case "{":
+                            ProcessSurrounded("{", "}", tokens, ref i);
+                            break;
+                        case "(":
+                            ProcessSurrounded("(", ")", tokens, ref i);
+                            break;
+                        case "[":
+                            ProcessSurrounded("[", "]", tokens, ref i);
+                            break;
+                    }
                 }
 
                 if (unmodifiedI != i) {
