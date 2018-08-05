@@ -102,6 +102,14 @@ namespace Skrypt.Tokenization
                             ProcessSurrounded("[", "]", tokens, ref i);
                             break;
                     }
+
+                    switch (token.Value) {
+                        case "}":
+                        case ")":
+                        case "]":
+                            _engine.ThrowError($"Opening token for '{token.Value}' not found.", token);
+                            break;
+                    }
                 }
 
                 if (unmodifiedI != i) {
