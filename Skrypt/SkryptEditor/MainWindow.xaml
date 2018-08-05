@@ -9,6 +9,7 @@
     <Window.Resources>
         <Style TargetType="{x:Type MenuItem}">
             <Setter Property="Foreground" Value="WhiteSmoke" />
+            <Setter Property="Background" Value="#2D2D30" />
         </Style>
         <!--<Style TargetType="{x:Type TextBlock}">
             <Setter Property="Foreground" Value="WhiteSmoke" />
@@ -27,7 +28,7 @@
                     <Separator />
                     <MenuItem Header="_Exit" Click="Exit" />
                 </MenuItem>
-                <MenuItem Header="_Run"/>
+                <MenuItem Header="_Run" Click="OnRun"/>
             </Menu>
             <Grid>
                 <Grid.ColumnDefinitions>

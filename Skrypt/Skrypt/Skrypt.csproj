@@ -82,7 +82,7 @@
     <Compile Include="Library\SkryptClass.cs" />
     <Compile Include="Library\Native\SkryptClasses\Numeric.cs" />
     <Compile Include="Library\SkryptMethod.cs" />
-    <Compile Include="Parsing\SkryptException.cs" />
+    <Compile Include="Engine\SkryptException.cs" />
     <Compile Include="Library\SkryptProperty.cs" />
     <Compile Include="Parsing\StatementParser.cs" />
     <Compile Include="Tokenization\Tokenizer.cs" />

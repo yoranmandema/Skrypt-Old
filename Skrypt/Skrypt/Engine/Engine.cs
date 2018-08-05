@@ -301,7 +301,7 @@ namespace Skrypt.Engine
             if (token != null) Console.WriteLine($"\n\t(line: {token.Line}, colom: {token.Colom})");
             Console.WriteLine(CurrentStack);
 
-            throw new SkryptException(message + lineRow);
+            throw new SkryptException(message + lineRow, token);
         }
 
         public Node Parse(string code)
@@ -330,7 +330,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            programNode.Print();
+            //programNode.Print();
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);

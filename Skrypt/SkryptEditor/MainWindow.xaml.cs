@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Xml;
+using Skrypt.Engine;
 
 namespace SkryptEditor {
     /// <summary>
@@ -27,7 +28,7 @@ namespace SkryptEditor {
 
             var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                 @"..\..\SkryptHighlighting.xml");
-            Console.WriteLine(path);
+
             using (XmlTextReader reader = new XmlTextReader(new StreamReader(path))) {
                 textEditor.SyntaxHighlighting = HighlightingLoader.Load(reader, HighlightingManager.Instance);
             }
@@ -39,6 +40,21 @@ namespace SkryptEditor {
 
         private void Exit(object sender, RoutedEventArgs e) {
             this.Close();
+        }
+
+        private void OnRun(object sender, RoutedEventArgs e) {
+            Console.Clear();
+
+            var engine = new SkryptEngine();
+            var code = textEditor.Text;
+
+            try {
+                engine.Parse(code);
+            } catch (Exception exception) {
+                var ex = (SkryptException)exception;
+
+                textEditor.CaretOffset = ex.Token.Start;
+            }
         }
     }
 }
