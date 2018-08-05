@@ -21,14 +21,6 @@ namespace Skrypt
             engine.AddClass(typeof(Vector));
             engine.Parse(code);
 
-            //int frames = 1000;
-            //var stopwatch = Stopwatch.StartNew();
-            //for (int i = 0; i < frames; i++) {
-            //    engine.Executor.Invoke("Update", 1);
-            //}
-            //stopwatch.Stop();
-            //Console.WriteLine($"Invoke ({frames} frames): {stopwatch.Elapsed.TotalMilliseconds / frames}ms");
-
             Console.ReadKey();
         }
     }
