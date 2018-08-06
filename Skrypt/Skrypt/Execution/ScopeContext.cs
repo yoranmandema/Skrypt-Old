@@ -49,6 +49,9 @@ namespace Skrypt.Execution
     public class ScopeContext
     {
         [JsonIgnore]public ScopeContext ParentScope = null;
+        [JsonIgnore]public List<ScopeContext> SubScopes = new List<ScopeContext>();
+        public int Start;
+        public int End;
         public CallStack CallStack { get; set; }
         public SubContext SubContext = new SubContext();
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();

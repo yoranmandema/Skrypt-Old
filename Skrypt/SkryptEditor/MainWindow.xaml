@@ -3,30 +3,30 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:avalonEdit="clr-namespace:ICSharpCode.AvalonEdit.CodeCompletion;assembly=ICSharpCode.AvalonEdit"
         xmlns:local="clr-namespace:SkryptEditor"
         mc:Ignorable="d"
+        Closing="Window_Exit" 
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
         <Style TargetType="{x:Type MenuItem}">
             <Setter Property="Foreground" Value="WhiteSmoke" />
             <Setter Property="Background" Value="#2D2D30" />
         </Style>
-        <!--<Style TargetType="{x:Type TextBlock}">
+        <Style TargetType="{x:Type avalonEdit:CompletionListBox}">
             <Setter Property="Foreground" Value="WhiteSmoke" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontFamily" Value="Consolas" />
-            <Setter Property="FontStyle" Value="Normal" />
-        </Style>-->
+            <Setter Property="Background" Value="#2D2D30" />
+        </Style>
     </Window.Resources>
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top" Background="#2D2D30">
                 <MenuItem Header="_File">
-                    <MenuItem Header="_New" Click="NewFile"/>
-                    <MenuItem Header="_Open" />
-                    <MenuItem Header="_Save" />
+                    <MenuItem Header="_New" Click="OnNew"/>
+                    <MenuItem Header="_Open" Click="OnOpen"/>
+                    <MenuItem Header="_Save" Click="OnSave" />
                     <Separator />
-                    <MenuItem Header="_Exit" Click="Exit" />
+                    <MenuItem Header="_Exit" Click="OnExit" />
                 </MenuItem>
                 <MenuItem Header="_Run" Click="OnRun"/>
             </Menu>
@@ -39,7 +39,7 @@
                 <avalonEdit:TextEditor
                     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
                     Name="textEditor"
-                    FontFamily="Leelawadee UI"
+                    FontFamily="Consolas"
                     SyntaxHighlighting="Skrypt"
                     FontSize="11pt"
                     Grid.Column="1"
@@ -50,4 +50,12 @@
             </Grid>
         </DockPanel>
     </Grid>
+    <Window.InputBindings>
+        <KeyBinding Modifiers="Control"
+                    Key="S"
+                    Command="{Binding SaveFile}" />
+        <KeyBinding Modifiers="Control"
+                    Key="N"
+                    Command="{Binding OnNew}" />
+    </Window.InputBindings>
 </Window>

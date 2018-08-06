@@ -1,0 +1,6 @@
+using System
+
+for (i = 2; i < 0xffff; i = i << 1) {
+	print()
+	break
+}

@@ -1,6 +1,7 @@
 ﻿using Skrypt.Engine;
 using Skrypt.Execution;
 using Skrypt.Parsing;
+using System;
 
 namespace Skrypt.Analysis
 {
@@ -17,41 +18,14 @@ namespace Skrypt.Analysis
             _engine = e;
         }
 
-        public void AnalizeStatement(Node node, ScopeContext scopeContext)
+        public ScopeContext GetScopeFromIndex(ScopeContext scope, int index)
         {
-            // Check statement
-            var conditionNode = node.SubNodes[0];
-            var result = _engine.Executor.ExecuteExpression(conditionNode, scopeContext);
+            foreach (var s in scope.SubScopes) {
+                if (index >= s.Start && index <= s.End)
+                    return GetScopeFromIndex(s, index);
+            }
 
-            // Check block
-            var blockNode = node.SubNodes[1];
-            Analize(blockNode, scopeContext);
-
-            // Check else/elseif
-            if (node.SubNodes.Count > 2)
-                for (var i = 2; i < node.SubNodes.Count; i++)
-                {
-                    // elseif block
-                    var elseNode = node.SubNodes[i];
-
-                    if (elseNode.Body == "elseif")
-                        AnalizeStatement(elseNode, scopeContext);
-                    else
-                        Analize(elseNode, scopeContext);
-                }
-        }
-
-        public void Analize(Node node, ScopeContext scopeContext)
-        {
-            foreach (var subNode in node.SubNodes)
-                if (subNode.TokenType == "Statement")
-                {
-                    AnalizeStatement(subNode, scopeContext);
-                }
-                else
-                {
-                    var result = _engine.Executor.ExecuteExpression(subNode, scopeContext);
-                }
+            return scope;
         }
     }
 }

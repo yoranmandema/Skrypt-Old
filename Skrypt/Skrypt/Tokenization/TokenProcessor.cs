@@ -162,7 +162,7 @@ namespace Skrypt.Tokenization
                         i--;
                     }
 
-                    if ((token.Value == "using") && token.Type == TokenTypes.Punctuator) {
+                    if ((token.Value == "using" || token.Value == "return" || token.Value == "continue" || token.Value == "break") && token.Type == TokenTypes.Punctuator) {
                         InsertEnd(tokens, i);
                         i++;
                     }

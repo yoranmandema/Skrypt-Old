@@ -83,6 +83,7 @@ namespace Skrypt.Execution
 
             if (scopeContext != null) {
                 loopScope.ParentScope = scopeContext;
+                scopeContext.SubScopes.Add(loopScope);
             }
 
             var initResult = ExecuteExpression(initNode, loopScope);
@@ -300,7 +301,7 @@ namespace Skrypt.Execution
         }
 
         public ScopeContext ExecuteBlock (Node node, ScopeContext scopeContext, SubContext subContext = null) {
-            ScopeContext scope = new ScopeContext();
+            ScopeContext scope = new ScopeContext ();
 
             if (scopeContext != null)
             {
@@ -308,6 +309,8 @@ namespace Skrypt.Execution
                 scope.ParentScope = scopeContext;
                 scope.Types = scopeContext.Types;
                 scope.CallStack = scopeContext.CallStack;
+
+                scopeContext.SubScopes.Add(scope);
             }
 
             if (subContext != null) scope.SubContext.Merge(subContext);            

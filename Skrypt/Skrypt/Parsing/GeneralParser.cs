@@ -221,6 +221,11 @@ namespace Skrypt.Parsing
                 node.Add(test.Node);
             }
 
+            node.Token = new Token {
+                Start = tokens[0].Start,
+                End = tokens[tokens.Count - 1].End
+            };
+
             return node;
         }
     }

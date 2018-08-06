@@ -110,22 +110,24 @@ namespace Skrypt.Library
             return JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
         }
 
-        public override string ToString() {
-            string str = Name;
+        public string StringTree (string indent = "") {
+            string str = Name + " ";
 
             if (Properties.Count > 0) {
                 str += "{\n";
 
                 foreach (var p in Properties) {
-                    str += $"{p.Name}: {p.Value}\n";
+                    str += indent + "\t" + $"{p.Name}: {(p.Value.GetType() == typeof(SkryptObject) ? p.Value.StringTree(indent + "\t") : p.Value.ToString())}\n";
                 }
 
-                str += "}";
+                str += indent + "}";
             }
 
-            str = JsonConvert.SerializeObject(this, Formatting.Indented).Replace("\"", "");
-
             return str;
+        }
+
+        public override string ToString() {
+            return StringTree();
         }
     }
 }
