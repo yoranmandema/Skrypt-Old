@@ -240,8 +240,6 @@ namespace Skrypt.Library.Native
                 foreach (var p in iterator) {
                     var x = p.Value;
 
-                    Console.WriteLine(p);
-
                     scope.Variables[name].Value = x;
 
                     var r = m.Execute(engine, self, new[] { x }, scope);

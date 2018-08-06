@@ -13,14 +13,14 @@
             <Setter Property="Foreground" Value="WhiteSmoke" />
             <Setter Property="Background" Value="#2D2D30" />
         </Style>
-        <Style TargetType="{x:Type avalonEdit:CompletionListBox}">
+        <!--<Style TargetType="{x:Type avalonEdit:CompletionListBox}">
             <Setter Property="Foreground" Value="WhiteSmoke" />
             <Setter Property="Background" Value="#2D2D30" />
-        </Style>
+        </Style>-->
     </Window.Resources>
     <Grid>
         <DockPanel>
-            <Menu DockPanel.Dock="Top" Background="#2D2D30">
+            <Menu DockPanel.Dock="Top" Background="#2D2D30" >
                 <MenuItem Header="_File">
                     <MenuItem Header="_New" Click="OnNew"/>
                     <MenuItem Header="_Open" Click="OnOpen"/>

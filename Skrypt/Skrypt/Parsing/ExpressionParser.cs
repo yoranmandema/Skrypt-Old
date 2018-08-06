@@ -267,10 +267,6 @@ namespace Skrypt.Parsing
 
                                         var rightNode = op.IsPostfix ? null : ParseExpression(newNode, rightBuffer);
                                         newNode.Add(rightNode);
-
-                                        Console.WriteLine(Operator.Operation);
-                                        Console.WriteLine(TokenString(leftBuffer));
-                                        Console.WriteLine(rightNode);
                                     }
                                     else {
                                         // Parse operators that need 2 sides

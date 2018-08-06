@@ -107,6 +107,9 @@ namespace SkryptEditor {
         private void OnRun(object sender, RoutedEventArgs e) {
             Console.Clear();
 
+            if (_documentPath != string.Empty)
+                File.WriteAllText(_documentPath, textEditor.Text);
+
             var engine = new SkryptEngine();
             var code = textEditor.Text;
 

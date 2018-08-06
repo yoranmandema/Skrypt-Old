@@ -1,13 +1,28 @@
-a = 0
+BirdPopulation = []
 
-while (a < 10000) {
-	using System
-	
-	for (i = 2; i < 0xffff; i = i << 2) {
-		print(i)
-	}
-	
-	a++
+class Animal {
+	public Weight = 1
 }
 
-System.print("hello")
+class Winged {
+	public fn Fly () {
+	
+	}
+}
+
+=
+
+class Bird : Animal, Winged { 
+	public fn Chirp () {
+	
+	}
+	
+	Bird () {
+		BirdPopulation.Push(self)
+	}
+}
+
+Bird()
+Bird()
+
+System.print("All birds: " + BirdPopulation)

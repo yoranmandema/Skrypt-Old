@@ -677,6 +677,7 @@ namespace Skrypt.Execution
                         caller = (SkryptType)Activator.CreateInstance(BaseType.GetType());
                         caller.ScopeContext = _engine.CurrentScope;
                         caller.Engine = _engine;
+                        caller.Name = typeName;
                         caller.SetPropertiesTo(BaseType);
 
                         isConstructor = true;
