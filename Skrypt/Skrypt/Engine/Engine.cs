@@ -320,7 +320,7 @@ namespace Skrypt.Engine
             Stopwatch.Stop();
             double token = Stopwatch.ElapsedMilliseconds;
 
-            foreach (var t in _tokens) Console.WriteLine(t);
+            //foreach (var t in _tokens) Console.WriteLine(t);
             
             // Generate the program node
             Stopwatch = Stopwatch.StartNew();
@@ -330,7 +330,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            //programNode.Print();
+            programNode.Print();
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);

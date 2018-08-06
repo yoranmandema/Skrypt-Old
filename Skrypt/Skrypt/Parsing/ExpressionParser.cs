@@ -267,6 +267,10 @@ namespace Skrypt.Parsing
 
                                         var rightNode = op.IsPostfix ? null : ParseExpression(newNode, rightBuffer);
                                         newNode.Add(rightNode);
+
+                                        Console.WriteLine(Operator.Operation);
+                                        Console.WriteLine(TokenString(leftBuffer));
+                                        Console.WriteLine(rightNode);
                                     }
                                     else {
                                         // Parse operators that need 2 sides
@@ -790,8 +794,14 @@ namespace Skrypt.Parsing
             var bScope = 0;
             var cScope = 0;
             var addDelta = 0;
+            var deltaOffset = 0;
 
             Token previousToken = null;
+
+            if (tokens[0].Type == TokenTypes.EndOfExpression) {
+                delta++;
+                deltaOffset = 1;
+            }
 
             // Skip until we hit the end of an expression
             while (true)
@@ -833,7 +843,7 @@ namespace Skrypt.Parsing
                 if (delta == tokens.Count) break;
             }
 
-            var returnNode = ParseClean(tokens.GetRange(0, delta));
+            var returnNode = ParseClean(tokens.GetRange(deltaOffset, delta - deltaOffset));
 
             delta += addDelta;
 

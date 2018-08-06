@@ -167,10 +167,10 @@ namespace Skrypt.Tokenization
                         i++;
                     }
 
-                    if ((previousToken.Value == "continue" || previousToken.Value == "break") && previousToken.Type == TokenTypes.Punctuator) {
-                        InsertEnd(tokens, i);
-                        i++;
-                    }
+                    //if ((previousToken.Value == "continue" || previousToken.Value == "break") && previousToken.Type == TokenTypes.Punctuator) {
+                    //    InsertEnd(tokens, i);
+                    //    i++;
+                    //}
                 }
             }
         }
