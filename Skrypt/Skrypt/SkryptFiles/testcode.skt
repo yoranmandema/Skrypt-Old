@@ -1,2 +1,2 @@
 
-System.print([[],,])
+System.print(0b-1)
