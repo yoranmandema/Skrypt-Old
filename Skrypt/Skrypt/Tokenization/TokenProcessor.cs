@@ -23,13 +23,13 @@ namespace Skrypt.Tokenization
         /// <summary>
         ///     Unescape string and remove outer " characters
         /// </summary>
-        private static void ProcessStringToken(Token token)
+        private void ProcessStringToken(Token token)
         {
             token.Value = token.Value.Substring(1, token.Value.Length - 2);
             token.Value = Regex.Unescape(token.Value);
         }
 
-        private static void ProcessNumericToken(Token token) {
+        private void ProcessNumericToken(Token token) {
             string str = "";
 
             if (token.Type == TokenTypes.NumericLiteral) {
@@ -39,12 +39,20 @@ namespace Skrypt.Tokenization
                 token.Value = str;
             }
             else if (token.Type == TokenTypes.BinaryLiteral) {
+                if (str.Length < 3) {
+                    _engine.ThrowError("Syntax error, invalid binary literal found.", token);
+                }
+
                 str = token.Value.Substring(2);
                 str = "" + Convert.ToInt32(str, 2);
 
                 token.Value = str;
             }
             else if (token.Type == TokenTypes.HexadecimalLiteral) {
+                if (str.Length < 3) {
+                    _engine.ThrowError("Syntax error, invalid hexadecimal literal found.", token);
+                }
+
                 str = token.Value.Substring(2);
                 str = "" + int.Parse(str, NumberStyles.HexNumber);
             }
@@ -54,9 +62,14 @@ namespace Skrypt.Tokenization
         }
 
         private Operator FindOperator (Token token) {
-            var group = ExpressionParser.OperatorPrecedence.Find(x => x.Operators.Find(y => y.Operation == token.Value) != null);
+            var group = ExpressionParser.OperatorPrecedence.Find(x => {
+                var f = x.Operators.Find(y => y.Operation == token.Value);
+                Console.WriteLine(f);
 
-            return group.Operators.Find(y => y.Operation == token.Value);
+                return f != null;
+            });
+
+            return group?.Operators.Find(y => y.Operation == token.Value);
         }
         
         private void InsertEnd (List<Token> tokens, int index) {
@@ -81,6 +94,7 @@ namespace Skrypt.Tokenization
         public void SetEndOfExpressions (List<Token> tokens) {
             var expression = new List<Token>();
             Token previousToken = null;
+            Token nextToken = null;
 
             for (int i = 0; i < tokens.Count; i++) {
                 var token = tokens[i];
@@ -88,6 +102,10 @@ namespace Skrypt.Tokenization
 
                 if (i > 0) {
                     previousToken = tokens[i - 1];
+                }
+
+                if (i < tokens.Count - 1) {
+                    nextToken = tokens[i + 1];
                 }
 
                 if (token.Type == TokenTypes.Punctuator) {
@@ -118,6 +136,8 @@ namespace Skrypt.Tokenization
 
                 var needsValueAfter = false;
                 var isOperator = false;
+                var isPostfix = false;
+                var unaryOperator = false;
                 Action loop = () => {
                     foreach (var op in ExpressionParser.OperatorPrecedence) {
                         foreach (var Operator in op.Operators) {
@@ -126,6 +146,11 @@ namespace Skrypt.Tokenization
                                     if (!op.IsPostfix) {
                                         needsValueAfter = true;
                                     }
+                                    else {
+                                        isPostfix = true;
+                                    }
+
+                                    unaryOperator = true;
                                 }
                                 else if (op.Members == 2) {
                                     needsValueAfter = true;
@@ -144,12 +169,35 @@ namespace Skrypt.Tokenization
                 };
                 loop();
 
-                if (!needsValueAfter && previousToken != null) {
-                    if (token.Type == TokenTypes.Punctuator && isOperator) {
-                        InsertEnd(tokens, i+1);
-                        i++;
-                    }
+                if (unaryOperator) {
+                    if (isPostfix) {
+                        if (nextToken != null && nextToken.IsValuable()) {
+                            InsertEnd(tokens, isPostfix ? i + 1 : i);
+                            i++;
+                        }
 
+                        var nextOp = FindOperator(nextToken);
+
+                        if (nextOp != null && FindOperator(nextToken).Members == 1) {
+                            InsertEnd(tokens, isPostfix ? i + 1 : i);
+                            i++;
+                        }
+                    } else {
+                        if (previousToken.IsValuable()) {
+                            InsertEnd(tokens, isPostfix ? i + 1 : i);
+                            i++;
+                        }
+
+                        var prevOp = FindOperator(previousToken);
+
+                        if (prevOp != null && prevOp.Members == 1) {
+                            InsertEnd(tokens, isPostfix ? i + 1 : i);
+                            i++;
+                        }
+                    }
+                }
+
+                if (!needsValueAfter && previousToken != null) {
                     if (previousToken.IsValuable() && token.IsValuable()) {
                         InsertEnd(tokens, i);
                         i--;

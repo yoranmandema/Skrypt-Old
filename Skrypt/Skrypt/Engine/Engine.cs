@@ -73,12 +73,12 @@ namespace Skrypt.Engine
             );
 
             Tokenizer.AddRule(
-                new Regex(@"0x([A-Fa-f\d])+"),
+                new Regex(@"0x([A-Fa-f\d])*"),
                 TokenTypes.HexadecimalLiteral
             );
 
             Tokenizer.AddRule(
-                new Regex(@"0b([01])+"),
+                new Regex(@"0b([01])*"),
                 TokenTypes.BinaryLiteral
             );
 
@@ -322,7 +322,7 @@ namespace Skrypt.Engine
             Stopwatch.Stop();
             double token = Stopwatch.ElapsedMilliseconds;
 
-            //foreach (var t in _tokens) Console.WriteLine(t);
+            foreach (var t in _tokens) Console.WriteLine(t);
             
             // Generate the program node
             Stopwatch = Stopwatch.StartNew();

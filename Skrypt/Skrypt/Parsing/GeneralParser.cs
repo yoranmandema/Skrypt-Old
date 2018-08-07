@@ -34,7 +34,6 @@ namespace Skrypt.Parsing
             "if",
             "while",
             "for",
-            "fn",
             "class",
             "using",
             "const"
@@ -113,7 +112,7 @@ namespace Skrypt.Parsing
                         _engine.ThrowError("Syntax error, ',' expected.", argument[i]);
                 }
 
-                var argNode = _engine.ExpressionParser.ParseClean(argument);
+                var argNode = _engine.ExpressionParser.ParseExpression(node,argument);
                 node.Add(argNode);
             }
 

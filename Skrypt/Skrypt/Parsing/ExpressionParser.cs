@@ -93,6 +93,9 @@ namespace Skrypt.Parsing
         public Node ParseExpression(Node branch, List<Token> tokens)
         {
             if (tokens.Count == 1) {
+                if (GeneralParser.NotPermittedInExpression.Contains(tokens[0].Value))
+                    _engine.ThrowError("Unexpected keyword '" + tokens[0].Value + "' found.", tokens[0]);
+
                 return new Node {
                     Body = tokens[0].Value,
                     //Value = null,
@@ -136,6 +139,10 @@ namespace Skrypt.Parsing
                             //}
 
                             var token = tokens[i];
+
+                            if (GeneralParser.NotPermittedInExpression.Contains(token.Value))
+                                _engine.ThrowError("Unexpected keyword '" + token.Value + "' found.", token);
+
                             var previousToken = i >= 1 ? tokens[i - 1] : null;
 
                             switch (token.Value) {
@@ -167,9 +174,6 @@ namespace Skrypt.Parsing
                                     i += skip.Delta;
                                 }
                             }
-
-                            if (GeneralParser.NotPermittedInExpression.Contains(tokens[i].Value))
-                                _engine.ThrowError("Unexpected keyword '" + tokens[i].Value + "' found", tokens[i]);
 
                             if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
                                 var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
