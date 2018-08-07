@@ -21,12 +21,10 @@ namespace Skrypt.Engine {
         public override string ToString() {
             var str = $"\tat {Descriptor}";
 
-            if (Token != null) str += $" (line: {Token.Line}, colom: {Token.Colom})\n";
+            if (Token != null) str += $"\t(line: {Token.Line}, colom: {Token.Colom})";
 
-            var par = Parent;
-
-            while (par != null) {
-                str += par.ToString();
+            if (Parent != null) {
+                str += "\n" + Parent;
             }
 
             return str;

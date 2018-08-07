@@ -683,7 +683,7 @@ namespace Skrypt.Execution
 
                 var methodContext = new ScopeContext {
                     ParentScope = scopeContext,
-                    CallStack = new CallStack(((SkryptMethod)foundMethod).Name, node.Token, scopeContext.CallStack)
+                    CallStack = new CallStack(((SkryptMethod)foundMethod).Name, node.SubNodes[0].SubNodes[0].Token, scopeContext.CallStack)
                 };
 
                 _engine.CurrentStack = methodContext.CallStack;
