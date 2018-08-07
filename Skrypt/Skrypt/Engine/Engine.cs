@@ -143,7 +143,9 @@ namespace Skrypt.Engine
             var baseType = Executor.GetType(newObject.TypeName, CurrentScope);
             newObject.ScopeContext = CurrentScope;
             newObject.Engine = this;
-            return (T)((Object)newObject.SetPropertiesTo(baseType));
+            newObject.SetPropertiesTo(baseType);
+
+            return (T)((Object)newObject);
         }
 
         public SkryptObject Eval (Operator operation, SkryptObject leftObject, SkryptObject rightObject, Node node = null) {
@@ -330,7 +332,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            //programNode.Print();
+            programNode.Print();
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);

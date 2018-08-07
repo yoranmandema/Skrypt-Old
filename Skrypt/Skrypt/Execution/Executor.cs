@@ -423,6 +423,11 @@ namespace Skrypt.Execution
                 var target = ExecuteExpression(node.SubNodes[0], localScope);
                 localScope.SubContext.Caller = target;
 
+                if (target.GetType() == typeof(GetMethod)) {
+                    var ex = ((GetMethod)target).Execute(_engine, Object, new SkryptObject[0], new ScopeContext { ParentScope = scopeContext });
+                    target = ex.SubContext.ReturnObject;
+                }
+
                 var result = ExecuteAccess(target, node.SubNodes[1], localScope, setter); 
                 return result;
             }

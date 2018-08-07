@@ -2,10 +2,8 @@ using System
 
 a = ([
 fn () {
-	fn DoPrint4 () {
-		"" * 1
-	}
-	
-	DoPrint4()
+	return ""
 }
-])[0]()
+])[0]().Length.Type.Parse("420")
+
+print(a)

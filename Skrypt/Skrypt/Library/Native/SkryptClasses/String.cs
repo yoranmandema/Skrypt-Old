@@ -58,7 +58,7 @@ namespace Skrypt.Library.Native
 
             public string Value = "";
 
-            public Numeric Length => Value.Length;
+            public Numeric Length => Engine.Create<Numeric>(Value.Length);
 
             public override bool CreateCopyOnAssignment => true;
             public override string Name => "string";
