@@ -157,7 +157,7 @@ namespace Skrypt.Tokenization
                         i--;
                     }
 
-                    if (previousToken.IsGroup() && token.IsKeyword()) {
+                    if (previousToken.IsGroup() && token.IsKeyword() && (token.Value != "else" && token.Value != "elseif")) {
                         InsertEnd(tokens, i);
                         i--;
                     }

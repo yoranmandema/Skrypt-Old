@@ -1,3 +1,11 @@
 using System
 
-print(System.Math.Round(2.2323))
+const a = 1
+
+fn factorial (x) {
+	if (x) {
+		return x * factorial(x - 1)
+	}
+}
+
+print(factorial(140))

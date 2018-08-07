@@ -68,8 +68,6 @@ namespace SkryptEditor {
         }
 
         private void SaveFile () {
-            Console.WriteLine("Saving to " + _documentPath);
-
             if (_documentPath == string.Empty) {
                 SaveFileDialog saveFileDialog1 = new SaveFileDialog {
                     InitialDirectory = "c:\\",
@@ -83,6 +81,8 @@ namespace SkryptEditor {
             }
 
             if (_documentPath != string.Empty) {
+                Console.WriteLine("Saving to " + _documentPath);
+
                 File.WriteAllText(_documentPath, textEditor.Text);
             }
         }

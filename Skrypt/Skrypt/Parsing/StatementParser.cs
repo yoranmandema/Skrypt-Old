@@ -89,7 +89,7 @@ namespace Skrypt.Parsing
                 } else {
                     switch (node.SubNodes.Count) {
                         case 0:
-                            _engine.ThrowError("Missing initializer", conditionTokens[i-2]);
+                            _engine.ThrowError("Missing initializer", conditionTokens[i - 2]);
                             break;
                         case 1:
                             _engine.ThrowError("Missing condition", conditionTokens[i - 2]);
