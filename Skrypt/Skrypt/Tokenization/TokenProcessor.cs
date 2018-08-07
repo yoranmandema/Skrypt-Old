@@ -171,28 +171,32 @@ namespace Skrypt.Tokenization
 
                 if (unaryOperator) {
                     if (isPostfix) {
-                        if (nextToken != null && nextToken.IsValuable()) {
-                            InsertEnd(tokens, isPostfix ? i + 1 : i);
-                            i++;
-                        }
+                        if (nextToken != null) {
+                            if (nextToken.IsValuable()) {
+                                InsertEnd(tokens, isPostfix ? i + 1 : i);
+                                i++;
+                            }
 
-                        var nextOp = FindOperator(nextToken);
+                            var nextOp = FindOperator(nextToken);
 
-                        if (nextOp != null && FindOperator(nextToken).Members == 1) {
-                            InsertEnd(tokens, isPostfix ? i + 1 : i);
-                            i++;
+                            if (nextOp != null && FindOperator(nextToken).Members == 1) {
+                                InsertEnd(tokens, isPostfix ? i + 1 : i);
+                                i++;
+                            }
                         }
                     } else {
-                        if (previousToken.IsValuable()) {
-                            InsertEnd(tokens, isPostfix ? i + 1 : i);
-                            i++;
-                        }
+                        if (previousToken != null) {
+                            if (previousToken.IsValuable()) {
+                                InsertEnd(tokens, isPostfix ? i + 1 : i);
+                                i++;
+                            }
 
-                        var prevOp = FindOperator(previousToken);
+                            var prevOp = FindOperator(previousToken);
 
-                        if (prevOp != null && prevOp.Members == 1) {
-                            InsertEnd(tokens, isPostfix ? i + 1 : i);
-                            i++;
+                            if (prevOp != null && prevOp.Members == 1) {
+                                InsertEnd(tokens, isPostfix ? i + 1 : i);
+                                i++;
+                            }
                         }
                     }
                 }

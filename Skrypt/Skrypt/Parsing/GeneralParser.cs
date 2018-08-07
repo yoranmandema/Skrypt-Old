@@ -133,6 +133,7 @@ namespace Skrypt.Parsing
                     break;
             }
 
+            
             while (Modifiers.Contains(t.Value)) {
                 if (usedModifiers.Contains(t.Value)) {
                     _engine.ThrowError("Object can't be marked with multiple of the same modifiers", t);
@@ -213,6 +214,7 @@ namespace Skrypt.Parsing
 
         public Node Parse(List<Token> tokens)
         {
+   
             // Create main node
             var node = new Node {Body = "Block", TokenType = "Block"};
 
@@ -220,7 +222,7 @@ namespace Skrypt.Parsing
 
             var i = 0;
 
-            while (i < tokens.Count - 1)
+            while (i <= tokens.Count - 1)
             {
                 var test = TryParse(tokens.GetRange(i, tokens.Count - i));
                 i += test.Delta;

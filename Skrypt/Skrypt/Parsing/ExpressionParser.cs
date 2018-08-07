@@ -92,7 +92,7 @@ namespace Skrypt.Parsing
         /// </summary>
         public Node ParseExpression(Node branch, List<Token> tokens)
         {
-            if (tokens.Count == 1) {
+            if (tokens.Count == 1 && tokens[0].Type != TokenTypes.Punctuator) {
                 if (GeneralParser.NotPermittedInExpression.Contains(tokens[0].Value))
                     _engine.ThrowError("Unexpected keyword '" + tokens[0].Value + "' found.", tokens[0]);
 
@@ -277,6 +277,16 @@ namespace Skrypt.Parsing
 
                                         var rightNode = op.IsPostfix ? null : ParseExpression(newNode, rightBuffer);
                                         newNode.Add(rightNode);
+
+                                        if (op.IsPostfix) {
+                                            if (rightNode == null) {
+                                                _engine.ThrowError($"Syntax error, value expected after {token.Value} operator", token);
+                                            }
+                                        } else {
+                                            if (leftNode == null) {
+                                                _engine.ThrowError($"Syntax error, value expected before {token.Value} operator", token);
+                                            }
+                                        }
                                     }
                                     else {
                                         // Parse operators that need 2 sides
@@ -286,6 +296,13 @@ namespace Skrypt.Parsing
 
                                         var rightNode = ParseExpression(newNode, rightBuffer);
                                         newNode.Add(rightNode);
+
+                                        if (leftNode == null) {
+                                            _engine.ThrowError($"Syntax error, value expected before {token.Value} operator", token);
+                                        }
+                                        if (rightNode == null) {
+                                            _engine.ThrowError($"Syntax error, value expected after {token.Value} operator", token);
+                                        }
                                     }
 
                                     branch.Add(newNode);
@@ -298,10 +315,10 @@ namespace Skrypt.Parsing
                                     }
                                     else {
                                         if (hasRequiredLeftTokens) {
-                                            _engine.ThrowError("Missing right hand operand.", token);
+                                            _engine.ThrowError("Syntax error, missing right hand operand.", token);
                                         }
                                         else if (hasRequiredLeftTokens) {
-                                            _engine.ThrowError("Missing left hand operand.", token);
+                                            _engine.ThrowError("Syntax error, missing left hand operand.", token);
                                         }
                                     }
                                 }
