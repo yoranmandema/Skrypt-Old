@@ -60,7 +60,7 @@ namespace Skrypt.Tokenization
         }
         
         private void InsertEnd (List<Token> tokens, int index) {
-            tokens.Insert(index, new Token { Value = "EndOfExpression", Type = TokenTypes.EndOfExpression });
+            tokens.Insert(index, new Token { Value = "EndOfExpression", Type = TokenTypes.EndOfExpression});
         }
 
         private void ProcessSurrounded (string open, string close, List<Token> tokens, ref int index) {

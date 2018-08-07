@@ -106,17 +106,15 @@ namespace Skrypt.Parsing
 
             foreach (var argument in arguments)
             {
-                //Console.WriteLine("In: " + ExpressionParser.TokenString(argument));
+                for (int i = 0; i < argument.Count - 1; i++) {
+                    var next = argument[i + 1];
 
-                var EOEFind = argument.Find(x => x.Type == TokenTypes.EndOfExpression);
-
-                if (EOEFind != null) {
-                    _engine.ThrowError("Syntax error, ',' expected.", EOEFind);
+                    if (next.Type == TokenTypes.EndOfExpression)
+                        _engine.ThrowError("Syntax error, ',' expected.", argument[i]);
                 }
 
                 var argNode = _engine.ExpressionParser.ParseClean(argument);
                 node.Add(argNode);
-                //node.Print();
             }
 
             return new ParseResult {Node = node, Delta = surroundedTokens.Count + 1};

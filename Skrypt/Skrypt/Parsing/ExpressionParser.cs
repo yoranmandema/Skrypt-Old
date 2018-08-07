@@ -395,7 +395,7 @@ namespace Skrypt.Parsing
                          isFirst = false;
 
                         if (buffer.Count == 0) {
-                            _engine.ThrowError("Missing tokens for argument.", tokens[i]);
+                            _engine.ThrowError("Syntax error, missing tokens for argument.", tokens[i]);
                         }
 
                         buffer.RemoveAt(buffer.Count - 1);
@@ -406,7 +406,7 @@ namespace Skrypt.Parsing
 
                     if (i == tokens.Count - 1) {
                         if (buffer.Count == 0 && !isFirst) {
-                            _engine.ThrowError("Missing tokens for argument.", tokens[i]);
+                            _engine.ThrowError("Syntax error, missing tokens for argument.", tokens[i]);
                         }
 
                         arguments.Add(new List<Token>(buffer));
@@ -453,8 +453,8 @@ namespace Skrypt.Parsing
                 if (index == tokens.Count)
                 {
                     if (depth > 0)
-                        _engine.ThrowError("Closing token '" + downScope + "' not found", firstToken);
-                    else if (depth < 0) _engine.ThrowError("Opening token '" + upScope + "' not found", tokens[index]);
+                        _engine.ThrowError("Syntax error, closing token '" + downScope + "' not found", firstToken);
+                    else if (depth < 0) _engine.ThrowError("Syntax error, opening token '" + upScope + "' not found", tokens[index]);
                 }
             }
         }
@@ -688,7 +688,7 @@ namespace Skrypt.Parsing
             var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", argsStart, tokens);
 
             if (result.Node.SubNodes.Count == 0)
-                _engine.ThrowError("Index operator arguments can't be empty.", tokens[argsStart+1]);
+                _engine.ThrowError("Syntax error, index operator arguments can't be empty.", tokens[argsStart+1]);
 
             var argumentsNode = result.Node;
             argumentsNode.Body = "Arguments";
@@ -778,9 +778,9 @@ namespace Skrypt.Parsing
                     var successNode = ParseClean(tokens.GetRange(i + 1, skip.Delta - 1));
                     var failNode = ParseClean(tokens.GetRange(skip.End + 1, tokens.Count - (skip.End + 1)));
 
-                    if (node.Add(conditionNode) == null) throw new SkryptException("Condition statement can't be empty");
-                    if (node.Add(successNode) == null) throw new SkryptException("Consequent statement can't be empty");
-                    if (node.Add(failNode) == null) throw new SkryptException("Alternative statement can't be empty");
+                    if (node.Add(conditionNode) == null) throw new SkryptException("Syntax error, condition statement can't be empty");
+                    if (node.Add(successNode) == null) throw new SkryptException("Syntax error, consequent statement can't be empty");
+                    if (node.Add(failNode) == null) throw new SkryptException("Syntax error, alternative statement can't be empty");
 
                     node.Body = "Conditional";
                     node.TokenType = "Conditional";
