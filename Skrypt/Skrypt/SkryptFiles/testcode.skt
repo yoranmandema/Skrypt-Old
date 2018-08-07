@@ -1,2 +1,4 @@
-
-a = 2 b
+using System
+using IO
+IO()
+print("Hello")

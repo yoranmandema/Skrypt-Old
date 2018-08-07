@@ -680,13 +680,13 @@ namespace Skrypt.Execution
 
                         isConstructor = true;
                     } else {
-                        _engine.ThrowError("Object does not have a constructor and can thus not be instanced!");
+                        _engine.ThrowError("Object does not have a constructor and can thus not be instanced!", node.SubNodes[0].Token);
                     }
                 }
 
                 var methodContext = new ScopeContext {
                     ParentScope = scopeContext,
-                    CallStack = new CallStack(((SkryptMethod)foundMethod).Name, node.SubNodes[0].SubNodes[0].Token, scopeContext.CallStack)
+                    CallStack = new CallStack(((SkryptMethod)foundMethod).Name, node.SubNodes[0].Token, scopeContext.CallStack)
                 };
 
                 _engine.CurrentStack = methodContext.CallStack;

@@ -676,6 +676,7 @@ namespace Skrypt.Parsing
             getterNode.Add(ParseExpression(getterNode, accessTokens));
             getterNode.Body = "Getter";
             getterNode.TokenType = "Getter";
+            getterNode.Token = accessTokens[0];
             node.Add(getterNode);
 
             var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", argsStart, tokens);
@@ -704,6 +705,7 @@ namespace Skrypt.Parsing
             getterNode.Add(ParseExpression(getterNode, accessTokens));
             getterNode.Body = "Getter";
             getterNode.TokenType = "Getter";
+            getterNode.Token = accessTokens[0];
             node.Add(getterNode);
 
             var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", argsStart, tokens);
