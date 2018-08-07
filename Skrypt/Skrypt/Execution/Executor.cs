@@ -582,8 +582,6 @@ namespace Skrypt.Execution
 
                     var result = ExecuteExpression(subNode, scopeContext);
 
-                    if (result.Name == "void") _engine.ThrowError("Can't add void to array!", node.SubNodes[0].Token);
-
                     array.List.Add(result);
                 }
 

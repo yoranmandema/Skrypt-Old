@@ -32,6 +32,22 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToBoolean(input, 0);
 
                         return new Boolean(!a);
+                    }),
+                new Operation("equal", typeof(Boolean), typeof(Boolean),
+                    input =>
+                    {
+                        var a = TypeConverter.ToBoolean(input, 0);
+                        var b = TypeConverter.ToBoolean(input, 0);
+
+                        return new Boolean((bool)a == (bool)b);
+                    }),
+                new Operation("notequal", typeof(Boolean), typeof(Boolean),
+                    input =>
+                    {
+                        var a = TypeConverter.ToBoolean(input, 0);
+                        var b = TypeConverter.ToBoolean(input, 0);
+
+                        return new Boolean((bool)a != (bool)b);
                     })
             };
 

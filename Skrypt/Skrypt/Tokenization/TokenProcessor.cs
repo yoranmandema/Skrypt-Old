@@ -117,6 +117,7 @@ namespace Skrypt.Tokenization
                 }
 
                 var needsValueAfter = false;
+                var isOperator = false;
                 Action loop = () => {
                     foreach (var op in ExpressionParser.OperatorPrecedence) {
                         foreach (var Operator in op.Operators) {
@@ -134,6 +135,8 @@ namespace Skrypt.Tokenization
                                     needsValueAfter = false;
                                 }
 
+                                isOperator = true;
+
                                 return;
                             }
                         }
@@ -142,7 +145,7 @@ namespace Skrypt.Tokenization
                 loop();
 
                 if (!needsValueAfter && previousToken != null) {
-                    if (token.Type == TokenTypes.Punctuator) {
+                    if (token.Type == TokenTypes.Punctuator && isOperator) {
                         InsertEnd(tokens, i+1);
                         i++;
                     }

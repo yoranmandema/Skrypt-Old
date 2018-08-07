@@ -391,11 +391,15 @@ namespace Skrypt.Parsing
                 if ((token.Value == "," && token.Type == TokenTypes.Punctuator || i == tokens.Count - 1) &&
                     depth == 0 && indexDepth == 0 && bracketDepth == 0)
                 {
-                    buffer = tokens.GetRange(startArg, (i == tokens.Count - 1 ? i + 1 : i) - startArg);
+                    //buffer = tokens.GetRange(startArg, (i == tokens.Count - 1 ? i + 1 : i) - startArg);
                     startArg = i + 1;
+
+                    Console.WriteLine("Buffer " + TokenString(buffer));
 
                     arguments.Add(buffer);
                 }
+
+                buffer.Add(token);
             }
         }
 
