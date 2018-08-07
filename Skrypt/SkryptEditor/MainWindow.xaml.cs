@@ -119,8 +119,10 @@ namespace SkryptEditor {
             }
             catch (Exception exception) {
 
-                if (exception.GetType() == typeof(SkryptException))
-                    textEditor.CaretOffset = ((SkryptException)exception).Token.Start;
+                if (exception.GetType() == typeof(SkryptException)) {
+                    if (((SkryptException)exception).Token != null)
+                        textEditor.CaretOffset = ((SkryptException)exception).Token.Start;
+                }
             }
         }
 

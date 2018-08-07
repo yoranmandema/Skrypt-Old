@@ -120,6 +120,13 @@ namespace Skrypt.Parsing
             var usedModifiers = new List<string>();
             Modifier appliedModifiers = Modifier.None;
 
+            switch (tokens[0].Value) {
+                case "}":
+                case "{":
+                    _engine.ThrowError("Statement expected.", tokens[0]);
+                    break;
+            }
+
             while (Modifiers.Contains(t.Value)) {
                 if (usedModifiers.Contains(t.Value)) {
                     _engine.ThrowError("Object can't be marked with multiple of the same modifiers", t);
@@ -187,12 +194,6 @@ namespace Skrypt.Parsing
             }
             else {
                 result = _engine.ExpressionParser.Parse(parseTokens);
-            }
-
-            switch (parseTokens[0].Value) {
-                case "{":
-                    _engine.ThrowError("Statement expected.", parseTokens[0]);
-                    break;
             }
 
             result.Node.Modifiers = appliedModifiers;

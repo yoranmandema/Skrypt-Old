@@ -670,10 +670,8 @@ namespace Skrypt.Parsing
 
             var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", argsStart, tokens);
 
-            Console.WriteLine(result.Node);
-
-            if (result.Node == null || result.Node.Body == null)
-                _engine.ThrowError("Index operator arguments can't be empty.");
+            if (result.Node.SubNodes.Count == 0)
+                _engine.ThrowError("Index operator arguments can't be empty.", tokens[argsStart+1]);
 
             var argumentsNode = result.Node;
             argumentsNode.Body = "Arguments";

@@ -1,11 +1,11 @@
 using System
 
-fn DoPrint () {
-	fn DoPrint2 () {
+a = ([
+fn () {
+	fn DoPrint4 () {
 		"" * 1
 	}
 	
-	DoPrint2()
+	DoPrint4()
 }
-
-DoPrint()
+])[0]()
