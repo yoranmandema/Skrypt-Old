@@ -142,6 +142,11 @@ namespace Skrypt.Tokenization
                 loop();
 
                 if (!needsValueAfter && previousToken != null) {
+                    if (token.Type == TokenTypes.Punctuator) {
+                        InsertEnd(tokens, i+1);
+                        i++;
+                    }
+
                     if (previousToken.IsValuable() && token.IsValuable()) {
                         InsertEnd(tokens, i);
                         i--;
