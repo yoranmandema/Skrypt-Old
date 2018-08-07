@@ -189,6 +189,12 @@ namespace Skrypt.Parsing
                 result = _engine.ExpressionParser.Parse(parseTokens);
             }
 
+            switch (parseTokens[0].Value) {
+                case "{":
+                    _engine.ThrowError("Statement expected.", parseTokens[0]);
+                    break;
+            }
+
             result.Node.Modifiers = appliedModifiers;
 
             _engine.ModifierChecker.CheckModifiers(result.Node);

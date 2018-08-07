@@ -138,6 +138,12 @@ namespace Skrypt.Parsing
                             var token = tokens[i];
                             var previousToken = i >= 1 ? tokens[i - 1] : null;
 
+                            switch (token.Value) {
+                                case "{":
+                                    _engine.ThrowError("Statement expected.", token);
+                                    break;
+                            }
+
                             if (token.Value == "fn") {
                                 var skip = _engine.ExpectValue("(", tokens, i);
                                 i += skip.Delta;
@@ -663,6 +669,12 @@ namespace Skrypt.Parsing
             node.Add(getterNode);
 
             var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", argsStart, tokens);
+
+            Console.WriteLine(result.Node);
+
+            if (result.Node == null || result.Node.Body == null)
+                _engine.ThrowError("Index operator arguments can't be empty.");
+
             var argumentsNode = result.Node;
             argumentsNode.Body = "Arguments";
             argumentsNode.TokenType = "Arguments";

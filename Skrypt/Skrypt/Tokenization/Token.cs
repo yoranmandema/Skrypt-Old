@@ -67,7 +67,10 @@ namespace Skrypt.Tokenization
                     (
                         Value == ")" ||
                         Value == "}" ||
-                        Value == "]"
+                        Value == "]" ||
+                        Value == "{" ||
+                        Value == "(" ||
+                        Value == "["
                     );
         }
 

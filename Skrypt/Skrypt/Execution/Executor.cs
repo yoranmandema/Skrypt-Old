@@ -477,10 +477,6 @@ namespace Skrypt.Execution
                 {
                     var target = ExecuteExpression(node.SubNodes[0], scopeContext);
                     var result = ExecuteAccess(target, node.SubNodes[1], scopeContext);
- 
-                    //Console.WriteLine("----------------------------");
-                    //Console.WriteLine(result.Owner);
-                    //Console.WriteLine(result.Property.Value);
 
                     scopeContext.SubContext.Caller = result.Owner;
 
@@ -490,7 +486,6 @@ namespace Skrypt.Execution
                         return ex.SubContext.ReturnObject;
                     }
                     else {
-
                         return result.Property.Value;
                     }
                 }
