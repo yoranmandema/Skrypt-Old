@@ -121,12 +121,12 @@ namespace Skrypt.Engine
 
             // Multi line comment
             Tokenizer.AddRule(
-                new Regex(@"\/\*(.|\n)*\*\/"),
+                new Regex(@"\/\*.*?\*\/", RegexOptions.Singleline),
                 TokenTypes.None
             );
 
             Tokenizer.AddRule(
-                new Regex(@""".*?(?<!\\)"""),
+                new Regex(@""".*?(?<!\\)""", RegexOptions.Singleline),
                 TokenTypes.StringLiteral
             );
         }

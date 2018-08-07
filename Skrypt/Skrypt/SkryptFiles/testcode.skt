@@ -1,9 +1,13 @@
 using System
 
-a = ([
+a = Crypto.AESEncrypt("
+a = (([
 fn () {
-	return ""
+	return
 }
-])[0]().Length.Type.Parse("420")
+])[0]().Length).Type.Parse()
+
+print(a)",
+"Pword")
 
 print(a)
