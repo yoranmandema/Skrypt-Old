@@ -513,11 +513,11 @@ namespace Skrypt.Execution
 
                         if (variable != null && !scopeContext.SubContext.StrictlyLocal) {
                             if ((variable.Modifiers & Modifier.Const) != 0)
-                                _engine.ThrowError("Variable is marked as constant and can thus not be modified.");
+                                _engine.ThrowError("Variable is marked as constant and can thus not be modified.", node.SubNodes[0].Token);
 
                             if ((variable.Modifiers & Modifier.Strong) != 0) {
                                 if (variable.Value.Name != result.Name) 
-                                    _engine.ThrowError($"Can't set strong variable of type {variable.Value.Name} to {result.Name}");
+                                    _engine.ThrowError($"Can't set strong variable of type {variable.Value.Name} to {result.Name}", node.SubNodes[0].Token);
                             }
 
                             variable.Value = result;
