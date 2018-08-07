@@ -72,12 +72,11 @@ namespace Skrypt.Parsing
 
             foreach (var subnode in SubNodes) {
                 var sns = subnode.ToString();
+
                 var lines = sns.Split('\n');
 
                 foreach (var l in lines) {
-
-                    var lineToken = l.StartsWith("Body") ? "| " : "| ";
-                        s += $"\n{lineToken}" + l;
+                    s += "| " + l;
                 }
             }
 
@@ -109,7 +108,18 @@ namespace Skrypt.Parsing
                     C.Write(Body, Color.FromArgb(217, 220, 220));
                     break;
                 case "StringLiteral":
-                    C.Write('"' + Body + '"', Color.FromArgb(214, 157, 133));
+                    C.Write('"', Color.FromArgb(214, 157, 133));
+
+                    var lines = Body.Split('\n');
+
+                    for (int i = 0; i < lines.Length; i++) {
+                        C.Write(lines[i] + (i < lines.Length-1 ? "\n" : ""), Color.FromArgb(214, 157, 133));
+                        if(i < lines.Length - 1)
+                            C.Write(indent, Color.FromArgb(100, 100, 100));
+                    }
+
+                    C.Write('"', Color.FromArgb(214, 157, 133));
+
                     break;
                 case "ClassDeclaration":
                     C.Write("Class " + Body, Color.FromArgb(208, 25, 208));
