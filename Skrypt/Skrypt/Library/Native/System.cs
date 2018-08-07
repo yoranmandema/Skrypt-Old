@@ -21,6 +21,10 @@ namespace Skrypt.Library.Native
         public static SkryptObject input(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
 
             engine.Stopwatch.Stop();
+
+            var a = TypeConverter.ToAny(values, 0);
+            Console.WriteLine(a);
+
             var input = Console.ReadLine();
             engine.Stopwatch.Start();
 

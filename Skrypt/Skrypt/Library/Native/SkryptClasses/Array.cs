@@ -19,7 +19,7 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToAny(input, 1);
 
-                        var newArray = (Array) ObjectExtensions.Copy(a);
+                        var newArray = a.Engine.Create<Array>();
                         newArray.List = new List<SkryptObject>(a.List);
                         newArray.List.Add(b);
 
@@ -31,7 +31,7 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToAny(input, 0);
                         var b = TypeConverter.ToArray(input, 1);
 
-                        var newArray = new Array();
+                        var newArray = a.Engine.Create<Array>();
                         newArray.List = new List<SkryptObject>(b.List);
                         newArray.List.Insert(0, a);
 
@@ -148,7 +148,33 @@ namespace Skrypt.Library.Native
 
                 ((Array)self).List.Add(a);
 
-                return new Null();
+                return (Array)self;
+            }
+
+            [Constant]
+            public SkryptObject Insert(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var a = TypeConverter.ToAny(values, 0);
+                var i = TypeConverter.ToNumeric(values, 1);
+
+                ((Array)self).List.Insert((int)i,a);
+
+                return (Array)self;
+            }
+
+            [Constant]
+            public SkryptObject Remove(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var i = TypeConverter.ToAny(values, 0);
+
+                if (i.GetType() == typeof(Numeric)) {
+                    if ((int)(Numeric)i > 0 && (int)(Numeric)i < ((Array)self).List.Count - 1)
+                        ((Array)self).List.RemoveAt((int)(Numeric)i);
+                } else if (i.GetType() == typeof(String)) {
+                    ((Array)self).Table.Remove((String)i);
+                } else {
+                    engine.ThrowError("Array index can only be string or numeric.");
+                }
+
+                return (Array)self;
             }
 
             [Constant]

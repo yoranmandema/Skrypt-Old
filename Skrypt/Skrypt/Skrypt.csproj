@@ -63,7 +63,6 @@
     <Compile Include="Library\Native\Statistics.cs" />
     <Compile Include="Library\Reflection\Attributes\Attributes.cs" />
     <Compile Include="Library\Native\Math.cs" />
-    <Compile Include="Library\Native\Memory.cs" />
     <Compile Include="Library\Native\System.cs" />
     <Compile Include="Library\Operators.cs" />
     <Compile Include="Library\Reflection\ObjectExtensions.cs" />

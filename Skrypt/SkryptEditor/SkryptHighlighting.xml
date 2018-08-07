@@ -107,7 +107,7 @@
     </Rule>
     
     <Rule color="Operator">
-      [=?,.+\-/%*&lt;&gt;^+~!|&amp;]+
+      [=?:,.+\-/%*&lt;&gt;^+~!|&amp;]+
     </Rule>
 
   </RuleSet>

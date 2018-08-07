@@ -1,3 +1,7 @@
 using System
 
-print("Hello world!".Explode(" "))
+a = Crypto.AESEncrypt("Hello world!","password")
+b = Crypto.AESDecrypt(a,"password")
+
+print(a)
+print(b)
