@@ -23,12 +23,11 @@
     <Span color="Comment" multiline="true"
        begin="/\*" end="\*/" />
 
-    <Span color="String">
+    <Span color="String" multiline="true">
       <Begin>"</Begin>
       <End>"</End>
       <RuleSet>
-        <!-- nested span for escape sequences -->
-        <Span begin="\\" end="." />
+        <Span begin="\\" end="." foreground="#FD971F"/>
       </RuleSet>
     </Span>
 

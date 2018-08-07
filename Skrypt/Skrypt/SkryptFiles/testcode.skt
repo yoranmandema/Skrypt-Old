@@ -3,7 +3,7 @@ using System
 a = Crypto.AESEncrypt("
 a = (([
 fn () {
-	return
+	return\"\"
 }
 ])[0]().Length).Type.Parse()
 
