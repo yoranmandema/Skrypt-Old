@@ -30,11 +30,15 @@ namespace SkryptEditor {
     public partial class MainWindow : Window {
         SkryptEngine _engine;
         string _documentPath;
+        Output.TextBoxOutputter _outputter;
 
         public MainWindow() {
             InitializeComponent();
 
             _engine = new SkryptEngine();
+
+            //_outputter = new Output.TextBoxOutputter(Terminal);
+            //Console.SetOut(_outputter);
 
             var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
                 @"..\..\SkryptHighlighting.xml");
@@ -50,11 +54,21 @@ namespace SkryptEditor {
                 _documentPath = string.Empty;
             }
 
-            Console.WriteLine(_documentPath);
+            RoutedCommand newCmd = new RoutedCommand();
+            newCmd.InputGestures.Add(new KeyGesture(Key.S, ModifierKeys.Control));
+            CommandBindings.Add(new CommandBinding(newCmd, OnSave));
+
+            newCmd = new RoutedCommand();
+            newCmd.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control));
+            CommandBindings.Add(new CommandBinding(newCmd, OnNew));
+
+            newCmd = new RoutedCommand();
+            newCmd.InputGestures.Add(new KeyGesture(Key.R, ModifierKeys.Control));
+            CommandBindings.Add(new CommandBinding(newCmd, OnRun));
         }
 
         private void SaveFile () {
-            Console.WriteLine(_documentPath);
+            Console.WriteLine("Saving to " + _documentPath);
 
             if (_documentPath == string.Empty) {
                 SaveFileDialog saveFileDialog1 = new SaveFileDialog {
@@ -68,13 +82,12 @@ namespace SkryptEditor {
                 _documentPath = saveFileDialog1.FileName;
             }
 
-            if (_documentPath != string.Empty)
+            if (_documentPath != string.Empty) {
                 File.WriteAllText(_documentPath, textEditor.Text);
+            }
         }
 
         private void OpenFile() {
-            Console.WriteLine("Calling open file");
-
             OpenFileDialog openFileDialog1 = new OpenFileDialog {
                 InitialDirectory = _documentPath,
                 Filter = "skt files (*.skt)|*.skt|All files (*.*)|*.*",
@@ -83,8 +96,6 @@ namespace SkryptEditor {
             };
 
             openFileDialog1.ShowDialog();
-
-            Console.WriteLine(openFileDialog1.FileName);
 
             if (openFileDialog1.FileName != string.Empty) {
                 _documentPath = openFileDialog1.FileName;

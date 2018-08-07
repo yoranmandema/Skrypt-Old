@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:SkryptEditor"
         mc:Ignorable="d"
         Closing="Window_Exit" 
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="600" Width="800">
     <Window.Resources>
         <Style TargetType="{x:Type MenuItem}">
             <Setter Property="Foreground" Value="WhiteSmoke" />
@@ -22,19 +22,22 @@
         <DockPanel>
             <Menu DockPanel.Dock="Top" Background="#2D2D30" >
                 <MenuItem Header="_File">
-                    <MenuItem Header="_New" Click="OnNew"/>
+                    <MenuItem Header="_New" Click="OnNew" InputGestureText="ctrl+n"/>
                     <MenuItem Header="_Open" Click="OnOpen"/>
-                    <MenuItem Header="_Save" Click="OnSave" />
+                    <MenuItem Header="_Save" Click="OnSave" InputGestureText="ctrl+s"/>
                     <Separator />
                     <MenuItem Header="_Exit" Click="OnExit" />
                 </MenuItem>
-                <MenuItem Header="_Run" Click="OnRun"/>
+                <MenuItem Header="_Run" Click="OnRun"  InputGestureText="ctrl+r"/>
             </Menu>
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="0"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <!--<RowDefinition Height="200"/>-->
+                </Grid.RowDefinitions>
 
                 <avalonEdit:TextEditor
                     xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
@@ -42,20 +45,23 @@
                     FontFamily="Consolas"
                     SyntaxHighlighting="Skrypt"
                     FontSize="11pt"
-                    Grid.Column="1"
+                    Grid.Row="0"
                     ShowLineNumbers="True"
                     Background="#2C292D"
                     Foreground="#EEE"
                     />
+
+                <!--<avalonEdit:TextEditor
+                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                    Name="Terminal"
+                    FontFamily="Consolas"
+                    SyntaxHighlighting="Skrypt"
+                    FontSize="11pt"
+                    Grid.Row="1"
+                    Background="#201E21"
+                    Foreground="#EEE"
+                    />-->
             </Grid>
         </DockPanel>
     </Grid>
-    <Window.InputBindings>
-        <KeyBinding Modifiers="Control"
-                    Key="S"
-                    Command="{Binding SaveFile}" />
-        <KeyBinding Modifiers="Control"
-                    Key="N"
-                    Command="{Binding OnNew}" />
-    </Window.InputBindings>
 </Window>

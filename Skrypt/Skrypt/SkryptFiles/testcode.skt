@@ -1,13 +1,3 @@
 using System
 
-a = Crypto.AESEncrypt("
-a = (([
-fn () {
-	return\"\"
-}
-])[0]().Length).Type.Parse()
-
-print(a)",
-"Pword")
-
-print(a)
+print(System.Math.Round(2.2323))
