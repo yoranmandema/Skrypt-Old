@@ -49,6 +49,7 @@
     
     <Keywords color="Modifiers">
       <Word>const</Word>
+      <Word>strong</Word>
       <Word>static</Word>
       <Word>private</Word>
       <Word>public</Word>

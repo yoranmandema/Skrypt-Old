@@ -1,11 +1,5 @@
 using System
 
-const a = 1
+strong a = 1
 
-fn factorial (x) {
-	if (x) {
-		return x * factorial(x - 1)
-	}
-}
-
-print(factorial(140))
+a = ""
