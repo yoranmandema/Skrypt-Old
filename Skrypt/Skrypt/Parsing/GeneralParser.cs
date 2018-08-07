@@ -102,12 +102,14 @@ namespace Skrypt.Parsing
 
             var node = new Node();
             var arguments = new List<List<Token>>();
-            ExpressionParser.SetArguments(arguments, surroundedTokens);
+            _engine.ExpressionParser.SetArguments(arguments, surroundedTokens);
 
             foreach (var argument in arguments)
             {
+                //Console.WriteLine("In: " + ExpressionParser.TokenString(argument));
                 var argNode = _engine.ExpressionParser.ParseClean(argument);
                 node.Add(argNode);
+                //node.Print();
             }
 
             return new ParseResult {Node = node, Delta = surroundedTokens.Count + 1};

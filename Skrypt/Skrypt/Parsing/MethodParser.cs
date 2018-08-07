@@ -37,7 +37,7 @@ namespace Skrypt.Parsing
             var node = new Node();
 
             var parameterLists = new List<List<Token>>();
-            ExpressionParser.SetArguments(parameterLists, tokens);
+            _engine.ExpressionParser.SetArguments(parameterLists, tokens);
 
             foreach (var parameter in parameterLists)
             {

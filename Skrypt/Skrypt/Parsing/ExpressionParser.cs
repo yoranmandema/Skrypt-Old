@@ -363,18 +363,20 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Sets parses individual arguments as expressions
         /// </summary>
-        public static void SetArguments(List<List<Token>> arguments, List<Token> tokens)
+        public void SetArguments(List<List<Token>> arguments, List<Token> tokens)
         {
             var depth = 0;
             var indexDepth = 0;
             var bracketDepth = 0;
             var i = 0;
-            var startArg = 0;
             var buffer = new List<Token>();
+            var isFirst = true;
+      
 
             for (i = 0; i < tokens.Count; i++)
             {
                 var token = tokens[i];
+                buffer.Add(token);
 
                 if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
                     depth++;
@@ -388,18 +390,29 @@ namespace Skrypt.Parsing
                     bracketDepth++;
                 else if (token.Value == "}" && token.Type == TokenTypes.Punctuator) bracketDepth--;
 
-                if ((token.Value == "," && token.Type == TokenTypes.Punctuator || i == tokens.Count - 1) &&
-                    depth == 0 && indexDepth == 0 && bracketDepth == 0)
-                {
-                    //buffer = tokens.GetRange(startArg, (i == tokens.Count - 1 ? i + 1 : i) - startArg);
-                    startArg = i + 1;
+                if (depth == 0 && indexDepth == 0 && bracketDepth == 0) {
+                    if ((token.Value == "," && token.Type == TokenTypes.Punctuator)) {
+                         isFirst = false;
 
-                    Console.WriteLine("Buffer " + TokenString(buffer));
+                        if (buffer.Count == 0) {
+                            _engine.ThrowError("Missing tokens for argument.", tokens[i]);
+                        }
 
-                    arguments.Add(buffer);
+                        buffer.RemoveAt(buffer.Count - 1);
+
+                        arguments.Add(new List<Token>(buffer));
+                        buffer.Clear();
+                    }
+
+                    if (i == tokens.Count - 1) {
+                        if (buffer.Count == 0 && !isFirst) {
+                            _engine.ThrowError("Missing tokens for argument.", tokens[i]);
+                        }
+
+                        arguments.Add(new List<Token>(buffer));
+                        buffer.Clear();
+                    }
                 }
-
-                buffer.Add(token);
             }
         }
 
@@ -693,6 +706,7 @@ namespace Skrypt.Parsing
             var index = 0;
 
             var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", 0, tokens);
+            
             var node = result.Node;
             node.TokenType = "ArrayLiteral";
             node.Body = "Array";
