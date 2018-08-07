@@ -1,5 +1,4 @@
 using System
+sys = System
 
-const a = 1
-
-a = ""
+sys.print("Hello world!")

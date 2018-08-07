@@ -300,7 +300,7 @@ namespace Skrypt.Engine
 
             Console.WriteLine();
             Console.WriteLine(message);
-            if (token != null) Console.WriteLine($"\n\t(line: {token.Line}, colom: {token.Colom})\n");
+            if (token != null) Console.WriteLine($"\n\t(line: {token.Line}, column: {token.Colom})\n");
             Console.WriteLine(CurrentStack);
 
             throw new SkryptException(message + lineRow, token);

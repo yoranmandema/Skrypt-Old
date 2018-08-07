@@ -532,11 +532,11 @@ namespace Skrypt.Execution
                         var accessResult = ExecuteAccess(target, node.SubNodes[0].SubNodes[1], scopeContext, true);
 
                         if ((accessResult.Property.Modifiers & Modifier.Const) != 0)
-                            _engine.ThrowError("Property is marked as constant and can thus not be modified.");
+                            _engine.ThrowError("Property is marked as constant and can thus not be modified.", node.SubNodes[0].SubNodes[1].Token);
 
                         if ((accessResult.Property.Modifiers & Modifier.Strong) != 0)
                             if (accessResult.Property.Value.Name != result.Name)
-                                _engine.ThrowError($"Can't set strong property of type {accessResult.Property.Value.Name} to {result.Name}");
+                                _engine.ThrowError($"Can't set strong property of type {accessResult.Property.Value.Name} to {result.Name}", node.SubNodes[0].SubNodes[1].Token);
 
                         if (accessResult.Property.IsSetter) {
                             ((SetMethod)accessResult.Property.Value).Execute(_engine, target, result, new ScopeContext { ParentScope = scopeContext });
