@@ -1,28 +1,3 @@
-BirdPopulation = []
+using System
 
-class Animal {
-	public Weight = 1
-}
-
-class Winged {
-	public fn Fly () {
-	
-	}
-}
-
-=
-
-class Bird : Animal, Winged { 
-	public fn Chirp () {
-	
-	}
-	
-	Bird () {
-		BirdPopulation.Push(self)
-	}
-}
-
-Bird()
-Bird()
-
-System.print("All birds: " + BirdPopulation)
+print("Hello world!".Explode(" "))

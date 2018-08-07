@@ -118,6 +118,16 @@ namespace Skrypt.Library.Native
             }
 
             [Constant]
+            public SkryptObject EndsWith(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<Boolean>(((String)self).Value.EndsWith(TypeConverter.ToString(input,0)));
+            }
+
+            [Constant]
+            public SkryptObject StartsWith(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<Boolean>(((String)self).Value.StartsWith(TypeConverter.ToString(input, 0)));
+            }
+
+            [Constant]
             public SkryptObject ToUpper(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 return engine.Create<String>(((String)self).Value.ToUpper());
             }
@@ -125,6 +135,41 @@ namespace Skrypt.Library.Native
             [Constant]
             public SkryptObject ToLower(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 return engine.Create<String>(((String)self).Value.ToLower());
+            }
+
+            [Constant]
+            public SkryptObject Trim(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<String>(((String)self).Value.Trim());
+            }
+
+            [Constant]
+            public SkryptObject TrimEnd(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<String>(((String)self).Value.TrimEnd());
+            }
+
+            [Constant]
+            public SkryptObject TrimStart(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<String>(((String)self).Value.TrimStart());
+            }
+
+            [Constant]
+            public SkryptObject Find(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<Numeric>(
+                    ((String)self).Value.IndexOf(
+                        TypeConverter.ToString(input, 0),
+                        (int)TypeConverter.ToNumeric(input, 1)
+                        )
+                    );
+            }
+
+            [Constant]
+            public SkryptObject Replace(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                return engine.Create<String>(
+                        ((String)self).Value.Replace(
+                            TypeConverter.ToString(input, 0),
+                            TypeConverter.ToString(input, 1)
+                        )
+                    );
             }
 
             [Constant]

@@ -3,7 +3,7 @@ using Sys = Skrypt.Library.Native.System;
 
 namespace Skrypt.Execution
 {
-    internal static class TypeConverter
+    public static class TypeConverter
     {
         public static Sys.Numeric ToNumeric(SkryptObject[] args, int index)
         {

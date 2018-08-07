@@ -11,18 +11,14 @@ namespace Skrypt.Library.Reflection
     internal static class ObjectGenerator
     {
         public static SkryptObject MakeObjectFromClass(Type type, SkryptEngine engine, SkryptObject parent = null) {
-            var Object = new SkryptObject();
-            var isType = false;
-            Object.Name = type.Name;
+            var Object = new SkryptObject {
+                Name = type.Name
+            };
 
             if (parent != null) Object.Name = parent.Name + "." + Object.Name;
 
-            if (typeof(SkryptType).IsAssignableFrom(type)) isType = true;
-            SkryptObject Instance = null;
-
-            //if (isType) {
-                Instance = (SkryptObject)Activator.CreateInstance(type);
-            //}
+            SkryptObject Instance = (SkryptObject)Activator.CreateInstance(type);
+            Instance.Name = type.Name;
 
             var methods = type.GetMethods().Where(m =>
             {
@@ -237,30 +233,28 @@ namespace Skrypt.Library.Reflection
                     Object.Properties.Add(property);                  
                 }
             }
-          
-            if (isType) {
-                var className = type.ToString();
 
-                Instance.Properties.Add(new SkryptProperty {
-                    Name = "TypeName",
-                    Value = new Native.System.String(className),
-                    Modifiers = Parsing.Modifier.Const
-                });
+            var className = type.ToString();
 
-                Instance.Properties.Add(new SkryptProperty {
-                    Name = "Type",
-                    Value = Object,
-                    Modifiers = Parsing.Modifier.Const
-                });
+            Instance.Properties.Add(new SkryptProperty {
+                Name = "TypeName",
+                Value = new Native.System.String(className),
+                Modifiers = Parsing.Modifier.Const
+            });
 
-                Object.Properties.Add(new SkryptProperty {
-                    Name = "TypeName",
-                    Value = new Native.System.String(className),
-                    Modifiers = Parsing.Modifier.Const | Parsing.Modifier.Static        
-                });
+            Instance.Properties.Add(new SkryptProperty {
+                Name = "Type",
+                Value = Object,
+                Modifiers = Parsing.Modifier.Const
+            });
 
-                engine.GlobalScope.AddType(className, Instance);              
-            }
+            Object.Properties.Add(new SkryptProperty {
+                Name = "TypeName",
+                Value = new Native.System.String(className),
+                Modifiers = Parsing.Modifier.Const | Parsing.Modifier.Static        
+            });
+
+            engine.GlobalScope.AddType(className, Instance);              
              
             return Object;
         }
