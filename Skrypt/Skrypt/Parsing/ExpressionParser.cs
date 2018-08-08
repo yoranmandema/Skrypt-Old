@@ -143,7 +143,6 @@ namespace Skrypt.Parsing
                             if (token.Type == TokenTypes.Punctuator) {
                                 switch (token.Value) {
                                     case ",":
-                                    case ":":
                                         _engine.ThrowError("Syntax error, unexpected token '" + token.Value + "' found.", token);
                                         break;
                                 }
