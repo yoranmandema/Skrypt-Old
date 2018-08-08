@@ -1,4 +1,1 @@
-using System
-using IO
-IO()
-print("Hello")
+private = 1

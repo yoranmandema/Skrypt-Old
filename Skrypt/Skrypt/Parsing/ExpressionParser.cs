@@ -313,13 +313,13 @@ namespace Skrypt.Parsing
                                     if (op.Members == 0) {
                                         _engine.ThrowError("'" + Operator.Operation + "' operator cannot be part of expression.", token);
                                     }
-                                    else {
-                                        if (hasRequiredLeftTokens) {
-                                            _engine.ThrowError("Syntax error, missing right hand operand.", token);
-                                        }
-                                        else if (hasRequiredLeftTokens) {
-                                            _engine.ThrowError("Syntax error, missing left hand operand.", token);
-                                        }
+
+                                    if (!hasRequiredRightTokens) {
+                                        _engine.ThrowError("Syntax error, missing right hand operand.", token);
+                                    }
+
+                                    if (!hasRequiredLeftTokens) {
+                                        _engine.ThrowError("Syntax error, missing left hand operand.", token);
                                     }
                                 }
                             }
