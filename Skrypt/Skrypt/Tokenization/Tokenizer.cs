@@ -92,7 +92,7 @@ namespace Skrypt.Tokenization
 
                 // No match was found; this means we encountered an unexpected token.
                 if (foundMatch == null)
-                    _engine.ThrowError("Unexpected token '" + originalInput[index] + "' found",
+                    _engine.ThrowError("Syntax error, unexpected token '" + originalInput[index] + "' found",
                         new Token {Start = index});
 
                 var token = new Token {

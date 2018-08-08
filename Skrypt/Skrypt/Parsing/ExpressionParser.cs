@@ -94,7 +94,7 @@ namespace Skrypt.Parsing
         {
             if (tokens.Count == 1 && tokens[0].Type != TokenTypes.Punctuator) {
                 if (GeneralParser.NotPermittedInExpression.Contains(tokens[0].Value))
-                    _engine.ThrowError("Unexpected keyword '" + tokens[0].Value + "' found.", tokens[0]);
+                    _engine.ThrowError("Syntax error, unexpected keyword '" + tokens[0].Value + "' found.", tokens[0]);
 
                 return new Node {
                     Body = tokens[0].Value,
@@ -139,6 +139,15 @@ namespace Skrypt.Parsing
                             //}
 
                             var token = tokens[i];
+
+                            if (token.Type == TokenTypes.Punctuator) {
+                                switch (token.Value) {
+                                    case ",":
+                                    case ":":
+                                        _engine.ThrowError("Syntax error, unexpected token '" + token.Value + "' found.", token);
+                                        break;
+                                }
+                            }
 
                             if (GeneralParser.NotPermittedInExpression.Contains(token.Value))
                                 _engine.ThrowError("Unexpected keyword '" + token.Value + "' found.", token);

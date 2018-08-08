@@ -1,9 +1,1 @@
-
-
-fn loop (amount, todo) {
-	for (i = 0; i < amount; i++) {
-		todo();
-	}
-}
-
-loop(3,_ => {System.print("Hello")})
+strong const a

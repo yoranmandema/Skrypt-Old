@@ -109,13 +109,13 @@ namespace Skrypt.Engine
 
             Tokenizer.AddRule(
                 new Regex(
-                    @"(using)|(return)|(continue)|(break)|(&&)|(\|\|\|)|(\|\|)|(=>)|(==)|(!=)|(>=)|(<=)|(<<)|(>>>)|(>>)|(\+\+)|(--)|[~=:<>+\-*/%^&|!\[\]\(\)\.\,{}\?\:]"),
+                    @"(using)|(return)|(continue)|(break)|(&&)|(\|\|\|)|(\|\|)|(=>)|(==)|(!=)|(>=)|(<=)|(<<)|(>>>)|(>>)|(\+\+)|(--)|[~=<>+\-*/%^&|!\[\]\(\)\.\,{}\?\:]"),
                 TokenTypes.Punctuator
             );
 
             // Single line comment
             Tokenizer.AddRule(
-                new Regex(@"\/\/.*\n"),
+                new Regex(@"\/\/.*\n?"),
                 TokenTypes.None
             );
 
@@ -332,7 +332,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            programNode.Print();
+            //programNode.Print();
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);

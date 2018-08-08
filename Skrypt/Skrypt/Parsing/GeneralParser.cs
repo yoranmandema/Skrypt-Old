@@ -169,11 +169,23 @@ namespace Skrypt.Parsing
                 }
 
                 i++;
-                t = tokens[i];
+
+                if (i < tokens.Count - 1) {
+                    t = tokens[i];
+                } else {
+                    break;
+                }
             }
+
 
             var parseTokens = tokens.GetRange(i, tokens.Count - i);
             ParseResult result = null;
+
+            if (appliedModifiers != Modifier.None) {
+                if (parseTokens.Count == 0) {
+                    _engine.ThrowError("Syntax error, assignment expression expected.", tokens[0]);
+                }
+            }
 
             if (parseTokens[0].Value == "if" || parseTokens[0].Value == "while" || parseTokens[0].Value == "for") {
                 result = _engine.StatementParser.Parse(parseTokens);

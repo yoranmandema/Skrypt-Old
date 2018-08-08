@@ -230,7 +230,7 @@ namespace Skrypt.Execution
                 instance.SetPropertiesTo(BaseType);
 
                 if (value.GetType() != typeof(SkryptObject) || BaseType.GetType() != typeof(SkryptType)) {
-                    _engine.ThrowError("Can only inherit from skrypt-based objects");
+                    _engine.ThrowError("Can only inherit from Skrypt-based objects");
                 }
 
                 foreach (var p in value.Properties) {
