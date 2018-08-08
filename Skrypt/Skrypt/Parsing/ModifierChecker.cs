@@ -15,9 +15,9 @@ namespace Skrypt.Parsing {
         }
 
         public void CheckModifiers (Node node) {
-            if ((node.Modifiers & Modifier.Const) != 0) {
+            if ((node.Modifiers & (Modifier.Const | Modifier.Strong | Modifier.Private | Modifier.Public | Modifier.Static)) != 0) {
                 if (!(node.Body == "assign" || node.TokenType == "MethodDeclaration" || node.TokenType == "ClassDeclaration")) {
-                    _engine.ThrowError("Invalid use of const", node.Token);
+                    _engine.ThrowError("Syntax error, invalid use of modifier.", node.Token);
                 }
             }
         }

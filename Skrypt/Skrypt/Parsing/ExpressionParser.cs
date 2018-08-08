@@ -159,6 +159,9 @@ namespace Skrypt.Parsing
                                 skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
                                 i += skip.Delta;
 
+                                skip = _engine.ExpectValue("{", tokens, i);
+                                //i += skip.Delta;
+
                                 skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
                                 i += skip.Delta;
 
@@ -337,6 +340,10 @@ namespace Skrypt.Parsing
 
             // Parse expression within parenthesis if it's completely surrounded
             if (isInPars) {
+                if (tokens.Count == 2) {
+                    _engine.ThrowError("Syntax error, expression expected.", tokens[0]);
+                }
+
                 return ParseExpression(branch, tokens.GetRange(1, tokens.Count - 2));
             }
 

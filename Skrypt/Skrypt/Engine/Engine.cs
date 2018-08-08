@@ -239,7 +239,7 @@ namespace Skrypt.Engine
         {
             var start = startingPoint;
             var index = startingPoint;
-            var msg = "Token '" + value + "' expected after " + tokens[index].Value + " keyword";
+            var msg = "Syntax error, token '" + value + "' expected.";
 
             if (index == tokens.Count - 1) ThrowError(msg, tokens[index]);
 
@@ -256,7 +256,7 @@ namespace Skrypt.Engine
         public SkipInfo ExpectValue(string[] values, List<Token> tokens, int startingPoint = 0) {
             var start = startingPoint;
             var index = startingPoint;
-            var msg = "Tokens '" + string.Join(",",values) + "' expected after " + tokens[index].Value + " keyword";
+            var msg = "Syntax error, tokens '" + string.Join(",",values) + "' expected.";
 
             if (index == tokens.Count - 1) ThrowError(msg, tokens[index]);
 
@@ -277,7 +277,7 @@ namespace Skrypt.Engine
         {
             var start = startingPoint;
             var index = startingPoint;
-            var msg = "Token with type '" + type + "' expected after " + tokens[index].Value + " keyword";
+            var msg = "Syntax error, tokens with type '" + type + "' expected.";
 
             if (index == tokens.Count - 1) ThrowError(msg, tokens[index]);
 
