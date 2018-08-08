@@ -64,7 +64,6 @@ namespace Skrypt.Tokenization
         private Operator FindOperator (Token token) {
             var group = ExpressionParser.OperatorPrecedence.Find(x => {
                 var f = x.Operators.Find(y => y.Operation == token.Value);
-                Console.WriteLine(f);
 
                 return f != null;
             });

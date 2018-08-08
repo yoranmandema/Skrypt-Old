@@ -282,11 +282,11 @@ namespace Skrypt.Parsing
                                         newNode.Add(rightNode);
 
                                         if (op.IsPostfix) {
-                                            if (rightNode == null) {
+                                            if (leftBuffer.Count == 0) {
                                                 _engine.ThrowError($"Syntax error, value expected after {token.Value} operator", token);
                                             }
                                         } else {
-                                            if (leftNode == null) {
+                                            if (rightBuffer.Count == 0) {
                                                 _engine.ThrowError($"Syntax error, value expected before {token.Value} operator", token);
                                             }
                                         }
@@ -300,10 +300,10 @@ namespace Skrypt.Parsing
                                         var rightNode = ParseExpression(newNode, rightBuffer);
                                         newNode.Add(rightNode);
 
-                                        if (leftNode == null) {
+                                        if (leftBuffer.Count == 0) {
                                             _engine.ThrowError($"Syntax error, value expected before {token.Value} operator", token);
                                         }
-                                        if (rightNode == null) {
+                                        if (rightBuffer.Count == 0) {
                                             _engine.ThrowError($"Syntax error, value expected after {token.Value} operator", token);
                                         }
                                     }
@@ -553,8 +553,6 @@ namespace Skrypt.Parsing
 
             while (true)
             {
-                //Console.WriteLine(token);
-
                 if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
                 {
                     var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, index);
