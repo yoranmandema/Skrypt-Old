@@ -145,10 +145,8 @@ namespace Skrypt.Parsing
 
                             var previousToken = i >= 1 ? tokens[i - 1] : null;
 
-                            switch (token.Value) {
-                                case "{":
-                                    _engine.ThrowError("Statement expected.", token);
-                                    break;
+                            if (token.Value == "{" && !(previousToken.Value == "=>" && previousToken.Type == TokenTypes.Punctuator)) {
+                                _engine.ThrowError("Statement expected.", token);
                             }
 
                             if (token.Value == "fn") {

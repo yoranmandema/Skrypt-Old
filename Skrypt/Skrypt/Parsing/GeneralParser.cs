@@ -129,6 +129,7 @@ namespace Skrypt.Parsing
             switch (tokens[0].Value) {
                 case "}":
                 case "{":
+                    Console.WriteLine(tokens[0]);
                     _engine.ThrowError("Statement expected.", tokens[0]);
                     break;
             }
