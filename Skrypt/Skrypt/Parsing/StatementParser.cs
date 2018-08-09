@@ -28,7 +28,7 @@ namespace Skrypt.Parsing
             ParseResult result;
 
             // Create main statement node
-            var node = new Node {Body = tokens[index].Value, TokenType = "Statement"};
+            var node = new Node {Body = tokens[index].Value, TokenType = TokenTypes.Statement};
 
             skip = _engine.ExpectValue("(", tokens);
             index += skip.Delta;
@@ -40,7 +40,7 @@ namespace Skrypt.Parsing
             var conditionParentNode = new Node
             {
                 Body = "Condition",
-                TokenType = "Condition"
+                TokenType = TokenTypes.Condition
             };
 
             if (conditionNode == null) _engine.ThrowError("Condition can't be empty!", tokens[index - 1]);
@@ -65,7 +65,7 @@ namespace Skrypt.Parsing
             var index = 0;
             SkipInfo skip;
             ParseResult result;
-            Node node = new Node { Body = "for", TokenType = "Statement" };
+            Node node = new Node { Body = "for", TokenType = TokenTypes.Statement };
 
             skip = _engine.ExpectValue("(", tokens);
             index += skip.Delta;
@@ -83,11 +83,11 @@ namespace Skrypt.Parsing
                 node.Add(test.Node);
             }
 
-            if (node.SubNodes.Count != 3) {
-                if (node.SubNodes.Count > 3) {
+            if (node.Nodes.Count != 3) {
+                if (node.Nodes.Count > 3) {
                     _engine.ThrowError("For loop has too many statements", conditionTokens[i - 2]);
                 } else {
-                    switch (node.SubNodes.Count) {
+                    switch (node.Nodes.Count) {
                         case 0:
                             _engine.ThrowError("Missing initializer", conditionTokens[i - 2]);
                             break;

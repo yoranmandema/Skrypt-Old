@@ -24,9 +24,10 @@ namespace Skrypt.Parsing
     {
         public string Body { get; set; }
 
-        public string TokenType { get; set; }
+        //public string TokenType { get; set; }
+        public TokenTypes TokenType { get; set; }
         [JsonIgnore] public Token Token { get; set; }
-        [JsonIgnore] public List<Node> SubNodes { get; set; } = new List<Node>();
+        [JsonIgnore] public List<Node> Nodes { get; set; } = new List<Node>();
         [JsonIgnore] public Modifier Modifiers { get; set; } = Modifier.None;
 
         /// <summary>
@@ -38,7 +39,7 @@ namespace Skrypt.Parsing
                 return node;
             }
 
-            SubNodes.Add(node);
+            Nodes.Add(node);
             return node;
         }
 
@@ -49,7 +50,7 @@ namespace Skrypt.Parsing
         {
             if (node == null) return;
 
-            SubNodes.Insert(0, node);
+            Nodes.Insert(0, node);
         }
 
 
@@ -70,7 +71,7 @@ namespace Skrypt.Parsing
             s = new Regex(@":").Replace(s, ": ");
             s = new Regex(@"[\{\}]").Replace(s, "");
 
-            foreach (var subnode in SubNodes) {
+            foreach (var subnode in Nodes) {
                 var sns = subnode.ToString();
 
                 var lines = sns.Split('\n');
@@ -91,23 +92,23 @@ namespace Skrypt.Parsing
             C.Write(indent, Color.FromArgb(100, 100, 100));
 
             switch (TokenType) {
-                case "FunctionLiteral":
-                case "NullLiteral":
-                case "BooleanLiteral":
+                case TokenTypes.FunctionLiteral:
+                case TokenTypes.NullLiteral:
+                case TokenTypes.BooleanLiteral:
                     C.Write(Body, Color.FromArgb(208, 25, 208));
                     break;
-                case "NumericLiteral":
+                case TokenTypes.NumericLiteral:
                     C.Write(Body, Color.FromArgb(184, 215, 163));
                     break;
-                case "Call":
-                case "Punctuator":
+                case TokenTypes.Call:
+                case TokenTypes.Punctuator:
                     C.Write(Body, Color.FromArgb(66, 147, 208));
                     break;
-                case "Parameter":
-                case "Identifier":
+                case TokenTypes.Parameter:
+                case TokenTypes.Identifier:
                     C.Write(Body, Color.FromArgb(217, 220, 220));
                     break;
-                case "StringLiteral":
+                case TokenTypes.StringLiteral:
                     C.Write('"', Color.FromArgb(214, 157, 133));
 
                     var lines = Body.Split('\n');
@@ -121,10 +122,10 @@ namespace Skrypt.Parsing
                     C.Write('"', Color.FromArgb(214, 157, 133));
 
                     break;
-                case "ClassDeclaration":
+                case TokenTypes.ClassDeclaration:
                     C.Write("Class " + Body, Color.FromArgb(208, 25, 208));
                     break;
-                case "MethodDeclaration":
+                case TokenTypes.MethodDeclaration:
                     C.Write("Function " + Body, Color.FromArgb(208, 25, 208));
                     break;
                 default:
@@ -135,7 +136,7 @@ namespace Skrypt.Parsing
             C.ResetColor();
             C.Write("\n");
 
-            foreach (var subnode in SubNodes) {
+            foreach (var subnode in Nodes) {
                 subnode.Print(indent + "| ");
             }
         }

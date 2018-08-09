@@ -134,7 +134,6 @@ namespace Skrypt.Tokenization
                 }
 
                 var needsValueAfter = false;
-                var isOperator = false;
                 var isPostfix = false;
                 var unaryOperator = false;
                 Action loop = () => {
@@ -158,8 +157,6 @@ namespace Skrypt.Tokenization
                                 if (Operator.Operation == "break" || Operator.Operation == "return" || Operator.Operation == "continue") {
                                     needsValueAfter = false;
                                 }
-
-                                isOperator = true;
 
                                 return;
                             }

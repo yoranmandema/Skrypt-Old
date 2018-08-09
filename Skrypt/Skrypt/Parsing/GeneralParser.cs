@@ -229,7 +229,7 @@ namespace Skrypt.Parsing
         {
    
             // Create main node
-            var node = new Node {Body = "Block", TokenType = "Block"};
+            var node = new Node {Body = "Block", TokenType = TokenTypes.Block};
 
             if (tokens.Count == 0) return node;
 
@@ -240,7 +240,7 @@ namespace Skrypt.Parsing
                 var test = TryParse(tokens.GetRange(i, tokens.Count - i));
                 i += test.Delta;
 
-                if (test.Node.TokenType == "MethodDeclaration")
+                if (test.Node.TokenType == TokenTypes.MethodDeclaration)
                 {
                     node.AddAsFirst(test.Node);
                     continue;

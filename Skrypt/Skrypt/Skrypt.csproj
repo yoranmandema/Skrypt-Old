@@ -90,6 +90,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tokenization\TokenProcessor.cs" />
     <Compile Include="Tokenization\TokenRule.cs" />
+    <Compile Include="Tokenization\TokenTypes.cs" />
     <Compile Include="Vector.cs" />
   </ItemGroup>
   <ItemGroup>

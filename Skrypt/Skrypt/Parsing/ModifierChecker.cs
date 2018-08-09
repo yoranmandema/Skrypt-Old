@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Engine;
+using Skrypt.Tokenization;
 
 namespace Skrypt.Parsing {
     public class ModifierChecker {
@@ -16,7 +17,7 @@ namespace Skrypt.Parsing {
 
         public void CheckModifiers (Node node) {
             if ((node.Modifiers & (Modifier.Const | Modifier.Strong | Modifier.Private | Modifier.Public | Modifier.Static)) != 0) {
-                if (!(node.Body == "assign" || node.TokenType == "MethodDeclaration" || node.TokenType == "ClassDeclaration")) {
+                if (!(node.Body == "assign" || node.TokenType == TokenTypes.MethodDeclaration || node.TokenType == TokenTypes.ClassDeclaration)) {
                     _engine.ThrowError("Syntax error, invalid use of modifier.", node.Token);
                 }
             }

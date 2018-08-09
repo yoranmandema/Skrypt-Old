@@ -20,91 +20,7 @@ namespace Skrypt.Parsing
 
         static List<string> PropertyWords = new List<string> () { "static", "private", "public", "constant" };
 
-        ParseResult TryParse(List<Token> Tokens, string Name) {
-            var Properties = new List<string>();
-            Node propertyNode = new Node {
-                Body = "PropertyDeclaration",
-                TokenType = "PropertyDeclaration",
-            };
-
-            Node markNode = propertyNode.Add(new Node {
-                Body = "Properties",
-                TokenType = "Properties",
-            });
-
-            List<Token> FurtherTokens = null;
-
-            for (int i = 0; i < Tokens.Count; i++) {
-                var t = Tokens[i];
-
-                string Prop = t.Value;
-
-                if (PropertyWords.Contains(Prop)) {
-                    if (Prop == "public" && Properties.Contains("private")) {
-                        _engine.ThrowError("Property can't be marked as both private and public!");
-                    } else if (Prop == "private" && Properties.Contains("public")) {
-                        _engine.ThrowError("Property can't be marked as both private and public!");
-                    }
-
-                    if (Properties.Contains(Prop)) {
-                        _engine.ThrowError("Property is already marked as " + Prop);
-                    } else {
-                        markNode.Add(new Node {
-                            Body = Prop,
-                            TokenType = "Property",
-                        });
-
-                        Properties.Add(Prop);
-                    }
-                } else {
-                    FurtherTokens = Tokens.GetRange(i,Tokens.Count - i);
-                    break;
-                }
-            }
-
-            ParseResult FurtherResult = null;
-
-            if (FurtherTokens[0].Value == Name) {
-                FurtherTokens[0].Value = "Constructor";
-                FurtherTokens.Insert(0, new Token {Value = "fn"});
-                FurtherResult = _engine.MethodParser.Parse(FurtherTokens);
-                FurtherResult.Delta--;
-
-                if (Properties.Contains("static") || Properties.Contains("constant")) {
-                    _engine.ThrowError("Constructor method cannot be marked as static or constant!", FurtherTokens[1]);
-                }
-            } else if (FurtherTokens[0].Value == "fn") {
-                FurtherResult = _engine.MethodParser.Parse(FurtherTokens);
-            }
-            else if (FurtherTokens[0].Value == "class") {
-                FurtherResult = _engine.ClassParser.Parse(FurtherTokens);
-            }
-            else {
-                FurtherResult = _engine.ExpressionParser.Parse(FurtherTokens);
-            }
-
-            propertyNode.Add(FurtherResult.Node);
-
-            return new ParseResult { Node = propertyNode, Delta = FurtherResult.Delta + Properties.Count};
-        }
-
         Node ParseContents (List<Token> tokens, string name) {
-            //Node node = new Node { Body = "Block", TokenType = "ClassDeclaration" };
-            //int i = 0;
-
-            //while (i < Tokens.Count - 1) {
-            //    var test = TryParse(Tokens.GetRange(i, Tokens.Count - i), Name);
-            //    i += test.Delta;
-
-            //    if (test.Node.TokenType == "MethodDeclaration")
-            //    {
-            //        node.AddAsFirst(test.Node);
-            //        continue;
-            //    }
-
-            //    node.Add(test.Node);
-            //}
-
             var constructorStart = -1;
             var clone = new List<Token>(tokens);
 
@@ -172,7 +88,7 @@ namespace Skrypt.Parsing
             skip = _engine.ExpectValue(new string[] {":","{"}, tokens, i);
             i += skip.Delta;
 
-            var inheritNode = new Node {Body = "Inherit", TokenType = "Inherit" };
+            var inheritNode = new Node {Body = "Inherit", TokenType = TokenTypes.Inherit };
 
             if (tokens[i].Value == ":") {
                 bool isIdentifier = true;
@@ -216,7 +132,7 @@ namespace Skrypt.Parsing
 
             var Node = new Node {
                 Body = tokens[1].Value,
-                TokenType = "ClassDeclaration"
+                TokenType = TokenTypes.ClassDeclaration
             };
             Node.Add(inheritNode);
             Node.Add(result.Node);

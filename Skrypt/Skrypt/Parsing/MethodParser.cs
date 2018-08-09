@@ -26,7 +26,7 @@ namespace Skrypt.Parsing
             var node = new Node
             {
                 Body = name,
-                TokenType = "Parameter"
+                TokenType = TokenTypes.Parameter
             };
 
             return node;
@@ -46,7 +46,7 @@ namespace Skrypt.Parsing
             }
 
             node.Body = "Parameters";
-            node.TokenType = "Parameters";
+            node.TokenType = TokenTypes.Parameters;
 
             return node;
         }
@@ -72,10 +72,10 @@ namespace Skrypt.Parsing
             var returnNode = new Node
             {
                 Body = "Function",
-                TokenType = "FunctionLiteral"
+                TokenType = TokenTypes.FunctionLiteral
             };
-            returnNode.SubNodes.Add(blockNode);
-            returnNode.SubNodes.Add(parameterNode);
+            returnNode.Nodes.Add(blockNode);
+            returnNode.Nodes.Add(parameterNode);
 
             return new ParseResult {Node = returnNode, Delta = index};
         }
@@ -99,8 +99,8 @@ namespace Skrypt.Parsing
                 node = _engine.GeneralParser.ParseSurrounded("{", "}", 0, tokens, _engine.GeneralParser.Parse).Node;
             }
             else {
-                node = new Node { Body = "Block", TokenType = "Block" };
-                var returnNode = new Node { Body = "return", TokenType = "Punctuator" };
+                node = new Node { Body = "Block", TokenType = TokenTypes.Block };
+                var returnNode = new Node { Body = "return", TokenType = TokenTypes.Punctuator };
                 var expressionNode = _engine.ExpressionParser.Parse(tokens).Node;
 
                 returnNode.Add(expressionNode);
@@ -127,10 +127,10 @@ namespace Skrypt.Parsing
             var parameterNode = ParseLambdaParameters(parameterBuffer);
             var blockNode = ParseLambdaBlock(blockBuffer);
 
-            if (parameterNode.SubNodes.Count == 0) {
+            if (parameterNode.Nodes.Count == 0) {
                 var parNode = new Node {
                     Body = "Parameters",
-                    TokenType = "Parameters"
+                    TokenType = TokenTypes.Parameters
                 };
 
                 parNode.Add(parameterNode);
@@ -139,10 +139,10 @@ namespace Skrypt.Parsing
 
             var returnNode = new Node {
                 Body = "Function",
-                TokenType = "FunctionLiteral"
+                TokenType = TokenTypes.FunctionLiteral
             };
-            returnNode.SubNodes.Add(blockNode);
-            returnNode.SubNodes.Add(parameterNode);
+            returnNode.Nodes.Add(blockNode);
+            returnNode.Nodes.Add(parameterNode);
 
             return new ParseResult { Node = returnNode, Delta = tokens.Count };
         }
@@ -179,10 +179,10 @@ namespace Skrypt.Parsing
             var returnNode = new Node
             {
                 Body = tokens[1].Value,
-                TokenType = "MethodDeclaration"
+                TokenType = TokenTypes.MethodDeclaration
             };
-            returnNode.SubNodes.Add(blockNode);
-            returnNode.SubNodes.Add(parameterNode);
+            returnNode.Nodes.Add(blockNode);
+            returnNode.Nodes.Add(parameterNode);
 
             return new ParseResult {Node = returnNode, Delta = index + 1};
         }

@@ -7,24 +7,6 @@ using System.Linq;
 
 namespace Skrypt.Tokenization
 {
-    public enum TokenTypes : byte
-    {
-        None,
-        NumericLiteral,
-        BinaryLiteral,
-        HexadecimalLiteral,
-        Identifier,
-        Keyword,
-        BooleanLiteral,
-        NullLiteral,
-        EndOfExpression,
-        NewLine,
-        Punctuator,
-        StringLiteral,
-        HasValue = NumericLiteral | Identifier | BooleanLiteral | NullLiteral | StringLiteral,
-        IsLiteral = NumericLiteral | BooleanLiteral | NullLiteral | StringLiteral,
-    }
-
     /// <summary>
     ///     The main Tokenization class.
     ///     Contains all methods for tokenization.

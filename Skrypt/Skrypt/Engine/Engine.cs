@@ -43,8 +43,10 @@ namespace Skrypt.Engine
         private List<Token> _tokens;
         private string _code = "";
 
-        public SkryptEngine()
+        public SkryptEngine(string code = "")
         {
+            _code = code;
+
             Tokenizer = new Tokenizer(this);
             TokenProcessor = new TokenProcessor(this);
             StatementParser = new StatementParser(this);
@@ -196,7 +198,7 @@ namespace Skrypt.Engine
                 operationDel = opLeft.OperationDelegate;
             else
                 ThrowError("No such operation as " + left.Name + " " + operation.Operation,
-                    node?.SubNodes[0].Token);
+                    node?.Nodes[0].Token);
 
             var result = (SkryptType)operationDel(new[] { leftObject });
 
@@ -306,14 +308,15 @@ namespace Skrypt.Engine
             throw new SkryptException(message + lineRow, token);
         }
 
-        public Node Parse(string code)
+        public Node Parse(string code = "")
         {
-            _code = code;
+            if (code != string.Empty)
+                _code = code;
 
             Stopwatch = Stopwatch.StartNew();
 
             // Tokenize code
-            _tokens = Tokenizer.Tokenize(code);
+            _tokens = Tokenizer.Tokenize(_code);
             if (_tokens == null) return null;
 
             // Pre-process tokens so their values are correct
@@ -332,7 +335,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            //programNode.Print();
+            programNode.Print();
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);
