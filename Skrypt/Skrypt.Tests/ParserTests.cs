@@ -56,9 +56,11 @@ namespace Skrypt.Tests {
         [Theory]
         [InlineData("Hello", @"""Hello""")]
         [InlineData("\n\r\t\v\b\f\\\'\"\0", @"""\n\r\t\v\b\f\\\'\""\0""")]
+
         // Todo: Add support for escaped unicode characters
         //[InlineData("\u0061", @"'\u0061'")]
         //[InlineData("\x61", @"'\x61'")]
+
         [InlineData("Hello\nworld", @"""Hello\nworld""")]
         [InlineData("Hello\\\nworld", @"""Hello\\\nworld""")]
         public void ShouldParseStringLiterals(string expected, string source) {
@@ -67,6 +69,81 @@ namespace Skrypt.Tests {
             Assert.NotNull(program.Nodes.First());
             Assert.Single(program.Nodes);
             Assert.Equal(expected, program.Nodes.First().Body);
+        }
+
+        [Theory]
+        [InlineData("true ? 1 : 0")]
+        [InlineData("true ? true ? 1 : 0 : 0")]
+        [InlineData("true ? 1 : true ? 1 : 0")]
+        [InlineData("true ? true ? 1 : 0 : true ? 1 : 0")]
+        public void ShouldParseConditional(string source) {
+            var program = new Engine.SkryptEngine(source).Parse();
+
+            Assert.NotNull(program.Nodes.First());
+            Assert.Single(program.Nodes);
+            Assert.Equal(Tokenization.TokenTypes.Conditional, program.Nodes.First().Type);
+        }
+
+        [Theory]
+        [InlineData("const a = 1")]
+        [InlineData("const strong a = 1")]
+        [InlineData("public static const strong a = 1")]
+        public void ShouldParseModifiedAssignment(string source) {
+            var program = new Engine.SkryptEngine(source).Parse();
+
+            Assert.NotNull(program.Nodes.First());
+            Assert.Single(program.Nodes);
+            Assert.Equal(Tokenization.TokenTypes.Punctuator, program.Nodes.First().Type);
+        }
+
+        [Theory]
+        [InlineData("const")]
+        [InlineData("const strong")]
+        [InlineData("public static const strong")]
+        public void ShouldFailOnMissingAssignment(string source) {
+            Assert.Throws<Engine.SkryptException>(() => new Engine.SkryptEngine(source).Parse());
+        }
+
+        [Theory]
+        [InlineData("const const")]
+        [InlineData("const strong const")]
+        [InlineData("public static const public")]
+        public void ShouldFailOnDuplicateModifiers(string source) {
+            Assert.Throws<Engine.SkryptException>(() => new Engine.SkryptEngine(source).Parse());
+        }
+
+        [Theory]
+        [InlineData("public private")]
+        [InlineData("private public")]
+        [InlineData("private public private")]
+        [InlineData("private const strong public")]
+        public void ShouldFailOnMultipleAccessLevelModifiers(string source) {
+            Assert.Throws<Engine.SkryptException>(() => new Engine.SkryptEngine(source).Parse());
+        }
+
+        [Theory]
+        [InlineData("a + ")]
+        [InlineData("+ a")]
+        [InlineData("!")]
+        [InlineData("1 && !")]
+        [InlineData("- + 1")]
+        [InlineData("!&&")]
+        public void ShouldFailOnMissingOperands(string source) {
+            Assert.Throws<Engine.SkryptException>(() => new Engine.SkryptEngine(source).Parse());
+        }
+
+        [Theory]
+        [InlineData("a = 1 !true")]
+        [InlineData("a = 1++ !true")]
+        public void ShouldPlaceEOE(string source) {
+            var program = new Engine.SkryptEngine(source).Parse();
+
+            Assert.NotNull(program.Nodes[0]);
+            Assert.NotNull(program.Nodes[1]);
+            Assert.Equal(2,program.Nodes.Count);
+            
+            Assert.Equal("assign", program.Nodes[0].Body);
+            Assert.Equal("not", program.Nodes[1].Body);
         }
     }
 }

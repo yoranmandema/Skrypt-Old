@@ -177,8 +177,8 @@ namespace Skrypt.Parsing
                 }
             }
 
-
             var parseTokens = tokens.GetRange(i, tokens.Count - i);
+
             ParseResult result = null;
 
             if (appliedModifiers != Modifier.None) {
