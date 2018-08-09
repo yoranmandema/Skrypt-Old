@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Skrypt.Engine;
 using Skrypt.Parsing;
 using Skrypt.Library;
+using System.Numerics;
 
 namespace Skrypt.Tokenization
 {
@@ -39,7 +40,7 @@ namespace Skrypt.Tokenization
                 token.Value = str;
             }
             else if (token.Type == TokenTypes.BinaryLiteral) {
-                if (str.Length < 3) {
+                if (token.Value == "0b") {
                     _engine.ThrowError("Syntax error, invalid binary literal found.", token);
                 }
 
@@ -49,12 +50,12 @@ namespace Skrypt.Tokenization
                 token.Value = str;
             }
             else if (token.Type == TokenTypes.HexadecimalLiteral) {
-                if (str.Length < 3) {
+                if (token.Value == "0x") {
                     _engine.ThrowError("Syntax error, invalid hexadecimal literal found.", token);
                 }
 
                 str = token.Value.Substring(2);
-                str = "" + int.Parse(str, NumberStyles.HexNumber);
+                str = "" + BigInteger.Parse("0" + str, NumberStyles.HexNumber);
             }
 
             token.Value = str;
