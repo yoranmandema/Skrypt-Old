@@ -325,7 +325,7 @@ namespace Skrypt.Execution
             _engine.CurrentScope = scope;
 
             foreach (var subNode in node.Nodes) {
-                if (subNode.TokenType == TokenTypes.Statement) {
+                if (subNode.Type == TokenTypes.Statement) {
                     switch (subNode.Body) {
                         case "while":
                             ExecuteWhileStatement(subNode, scope);
@@ -342,17 +342,17 @@ namespace Skrypt.Execution
                     if (scope.SubContext.BrokeLoop == true) return scope;
                     if (scope.SubContext.ReturnObject != null) return scope;
                 }
-                else if (subNode.TokenType == TokenTypes.MethodDeclaration) {
+                else if (subNode.Type == TokenTypes.MethodDeclaration) {
                     var result = ExecuteMethodDeclaration(subNode, scope);
 
                     scope.AddVariable(result.CallName, result, subNode.Modifiers);
                 }
-                else if (subNode.TokenType == TokenTypes.ClassDeclaration) {
+                else if (subNode.Type == TokenTypes.ClassDeclaration) {
                     var createdClass = ExecuteClassDeclaration(subNode, scope);
 
                     scope.AddVariable(createdClass.Name, createdClass, subNode.Modifiers);
                 }
-                else if (subNode.TokenType == TokenTypes.Using) {
+                else if (subNode.Type == TokenTypes.Using) {
                     var _scope = ExecuteUsing(subNode, scope);
                 }
                 else {
@@ -504,7 +504,7 @@ namespace Skrypt.Execution
                         if (((SkryptType) result).CreateCopyOnAssignment)
                             result = result.Clone();
 
-                    if (node.Nodes[0].Nodes.Count == 0 && node.Nodes[0].TokenType == TokenTypes.Identifier)
+                    if (node.Nodes[0].Nodes.Count == 0 && node.Nodes[0].Type == TokenTypes.Identifier)
                     {
                         if (GeneralParser.Keywords.Contains(node.Nodes[0].Body)) {
                             _engine.ThrowError("Setting variable names to keywords is disallowed");
@@ -573,7 +573,7 @@ namespace Skrypt.Execution
                     return _engine.Eval(op, leftResult, node); ;
                 }
             }
-            else if (node.TokenType == TokenTypes.ArrayLiteral)
+            else if (node.Type == TokenTypes.ArrayLiteral)
             {
                 var array = _engine.Create<Library.Native.System.Array>();
 
@@ -590,7 +590,7 @@ namespace Skrypt.Execution
             }
             else if (node.Nodes.Count == 0)
             {
-                switch (node.TokenType)
+                switch (node.Type)
                 {
                     case TokenTypes.NumericLiteral:
                         return _engine.Create<Library.Native.System.Numeric>(double.Parse(node.Body));
@@ -602,7 +602,7 @@ namespace Skrypt.Execution
                         return _engine.Create<Library.Native.System.Null>();
                 }
             }
-            else if (node.TokenType == TokenTypes.FunctionLiteral)
+            else if (node.Type == TokenTypes.FunctionLiteral)
             {
                 var result = new UserMethod
                 {
@@ -616,7 +616,7 @@ namespace Skrypt.Execution
 
                 return result;
             }
-            else if (node.TokenType == TokenTypes.Conditional) {
+            else if (node.Type == TokenTypes.Conditional) {
                 var conditionBool = ExecuteExpression(node.Nodes[0], scopeContext);
                 
                 if (conditionBool.ToBoolean()) {
@@ -626,7 +626,7 @@ namespace Skrypt.Execution
                 }
             }
 
-            if (node.TokenType == TokenTypes.Identifier)
+            if (node.Type == TokenTypes.Identifier)
             {
                 var foundVariable = GetVariable(node.Body, scopeContext);
 
@@ -638,9 +638,9 @@ namespace Skrypt.Execution
                     node.Token);
             }
 
-            if (node.TokenType == TokenTypes.Index) return ExecuteIndex(node, scopeContext);
+            if (node.Type == TokenTypes.Index) return ExecuteIndex(node, scopeContext);
 
-            if (node.TokenType == TokenTypes.Call)
+            if (node.Type == TokenTypes.Call)
             {
                 var arguments = new List<SkryptObject>();
 

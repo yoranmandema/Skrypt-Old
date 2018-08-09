@@ -26,7 +26,7 @@ namespace Skrypt.Parsing
             var node = new Node
             {
                 Body = name,
-                TokenType = TokenTypes.Parameter
+                Type = TokenTypes.Parameter
             };
 
             return node;
@@ -46,7 +46,7 @@ namespace Skrypt.Parsing
             }
 
             node.Body = "Parameters";
-            node.TokenType = TokenTypes.Parameters;
+            node.Type = TokenTypes.Parameters;
 
             return node;
         }
@@ -72,7 +72,7 @@ namespace Skrypt.Parsing
             var returnNode = new Node
             {
                 Body = "Function",
-                TokenType = TokenTypes.FunctionLiteral
+                Type = TokenTypes.FunctionLiteral
             };
             returnNode.Nodes.Add(blockNode);
             returnNode.Nodes.Add(parameterNode);
@@ -99,8 +99,8 @@ namespace Skrypt.Parsing
                 node = _engine.GeneralParser.ParseSurrounded("{", "}", 0, tokens, _engine.GeneralParser.Parse).Node;
             }
             else {
-                node = new Node { Body = "Block", TokenType = TokenTypes.Block };
-                var returnNode = new Node { Body = "return", TokenType = TokenTypes.Punctuator };
+                node = new Node { Body = "Block", Type = TokenTypes.Block };
+                var returnNode = new Node { Body = "return", Type = TokenTypes.Punctuator };
                 var expressionNode = _engine.ExpressionParser.Parse(tokens).Node;
 
                 returnNode.Add(expressionNode);
@@ -130,7 +130,7 @@ namespace Skrypt.Parsing
             if (parameterNode.Nodes.Count == 0) {
                 var parNode = new Node {
                     Body = "Parameters",
-                    TokenType = TokenTypes.Parameters
+                    Type = TokenTypes.Parameters
                 };
 
                 parNode.Add(parameterNode);
@@ -139,7 +139,7 @@ namespace Skrypt.Parsing
 
             var returnNode = new Node {
                 Body = "Function",
-                TokenType = TokenTypes.FunctionLiteral
+                Type = TokenTypes.FunctionLiteral
             };
             returnNode.Nodes.Add(blockNode);
             returnNode.Nodes.Add(parameterNode);
@@ -179,7 +179,7 @@ namespace Skrypt.Parsing
             var returnNode = new Node
             {
                 Body = tokens[1].Value,
-                TokenType = TokenTypes.MethodDeclaration
+                Type = TokenTypes.MethodDeclaration
             };
             returnNode.Nodes.Add(blockNode);
             returnNode.Nodes.Add(parameterNode);

@@ -12,11 +12,10 @@ namespace Skrypt.Tests {
         public void ShouldParseNumeric () {
             var program = new Engine.SkryptEngine(@"42").Parse();
 
-            program.Print();
-
             Assert.NotNull(program.Nodes.First());
             Assert.Single(program.Nodes);
-
+            Assert.Equal(Tokenization.TokenTypes.NumericLiteral, program.Nodes.First().Type);
+            Assert.Equal("42",program.Nodes.First().Body);
         }
     }
 }

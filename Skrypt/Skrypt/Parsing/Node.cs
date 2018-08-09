@@ -25,7 +25,7 @@ namespace Skrypt.Parsing
         public string Body { get; set; }
 
         //public string TokenType { get; set; }
-        public TokenTypes TokenType { get; set; }
+        public TokenTypes Type { get; set; }
         [JsonIgnore] public Token Token { get; set; }
         [JsonIgnore] public List<Node> Nodes { get; set; } = new List<Node>();
         [JsonIgnore] public Modifier Modifiers { get; set; } = Modifier.None;
@@ -91,7 +91,7 @@ namespace Skrypt.Parsing
 
             C.Write(indent, Color.FromArgb(100, 100, 100));
 
-            switch (TokenType) {
+            switch (Type) {
                 case TokenTypes.FunctionLiteral:
                 case TokenTypes.NullLiteral:
                 case TokenTypes.BooleanLiteral:

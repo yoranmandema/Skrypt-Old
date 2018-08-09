@@ -88,7 +88,7 @@ namespace Skrypt.Parsing
             skip = _engine.ExpectValue(new string[] {":","{"}, tokens, i);
             i += skip.Delta;
 
-            var inheritNode = new Node {Body = "Inherit", TokenType = TokenTypes.Inherit };
+            var inheritNode = new Node {Body = "Inherit", Type = TokenTypes.Inherit };
 
             if (tokens[i].Value == ":") {
                 bool isIdentifier = true;
@@ -132,7 +132,7 @@ namespace Skrypt.Parsing
 
             var Node = new Node {
                 Body = tokens[1].Value,
-                TokenType = TokenTypes.ClassDeclaration
+                Type = TokenTypes.ClassDeclaration
             };
             Node.Add(inheritNode);
             Node.Add(result.Node);

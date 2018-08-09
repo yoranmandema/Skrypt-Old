@@ -99,7 +99,7 @@ namespace Skrypt.Parsing
                 return new Node {
                     Body = tokens[0].Value,
                     //Value = null,
-                    TokenType = tokens[0].Type,
+                    Type = tokens[0].Type,
                     Token = tokens[0]
                 };
             }
@@ -273,7 +273,7 @@ namespace Skrypt.Parsing
                                     // Create operation node with type and body
                                     var newNode = new Node {
                                         Body = Operator.OperationName,
-                                        TokenType = token.Type,
+                                        Type = token.Type,
                                         Token = token
                                     };
 
@@ -613,7 +613,7 @@ namespace Skrypt.Parsing
                 var getterNode = new Node();
                 getterNode.Add(ParseChain(tokens.GetRange(0, tokens.Count - (skip.End + 1))));
                 getterNode.Body = "Getter";
-                getterNode.TokenType = TokenTypes.Getter;
+                getterNode.Type = TokenTypes.Getter;
                 node.Add(getterNode);
 
                 var argumentTokens = reverse.GetRange(0, skip.End + 1);
@@ -622,11 +622,11 @@ namespace Skrypt.Parsing
                 var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", 0, argumentTokens);
                 var argumentsNode = result.Node;
                 argumentsNode.Body = "Arguments";
-                argumentsNode.TokenType = TokenTypes.Arguments;
+                argumentsNode.Type = TokenTypes.Arguments;
                 node.Add(argumentsNode);
 
                 node.Body = "Index";
-                node.TokenType = TokenTypes.Index;
+                node.Type = TokenTypes.Index;
             }
             else if (reverse[0].Value == ")")
             {
@@ -640,7 +640,7 @@ namespace Skrypt.Parsing
                 var getterNode = new Node();
                 getterNode.Add(ParseChain(tokens.GetRange(0, tokens.Count - (skip.End + 1))));
                 getterNode.Body = "Getter";
-                getterNode.TokenType = TokenTypes.Getter;
+                getterNode.Type = TokenTypes.Getter;
                 node.Add(getterNode);
 
                 var argumentTokens = reverse.GetRange(0, skip.End + 1);
@@ -649,17 +649,17 @@ namespace Skrypt.Parsing
                 var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", 0, argumentTokens);
                 var argumentsNode = result.Node;
                 argumentsNode.Body = "Arguments";
-                argumentsNode.TokenType = TokenTypes.Arguments;
+                argumentsNode.Type = TokenTypes.Arguments;
                 node.Add(argumentsNode);
 
                 node.Body = "Call";
-                node.TokenType = TokenTypes.Call;
+                node.Type = TokenTypes.Call;
                 node.Token = tokens[0];
             }
             else
             {
                 node.Body = "access";
-                node.TokenType = TokenTypes.Punctuator;
+                node.Type = TokenTypes.Punctuator;
 
                 node.Add(ParseChain(tokens.GetRange(0, tokens.Count - 2)));
                 node.Add(ParseExpression(node, new List<Token> {reverse[0]}));
@@ -677,7 +677,7 @@ namespace Skrypt.Parsing
             var node = new Node
             {
                 Body = "Call",
-                TokenType = TokenTypes.Call
+                Type = TokenTypes.Call
             };
 
             var accessTokens = tokens.GetRange(0, argsStart);
@@ -685,14 +685,14 @@ namespace Skrypt.Parsing
             var getterNode = new Node();
             getterNode.Add(ParseExpression(getterNode, accessTokens));
             getterNode.Body = "Getter";
-            getterNode.TokenType = TokenTypes.Getter;
+            getterNode.Type = TokenTypes.Getter;
             getterNode.Token = accessTokens[0];
             node.Add(getterNode);
 
             var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", argsStart, tokens);
             var argumentsNode = result.Node;
             argumentsNode.Body = "Arguments";
-            argumentsNode.TokenType = TokenTypes.Arguments;
+            argumentsNode.Type = TokenTypes.Arguments;
             node.Add(argumentsNode);
 
             return new ParseResult {Node = node, Delta = tokens.Count - 1 };
@@ -706,7 +706,7 @@ namespace Skrypt.Parsing
             var name = tokens[0].Value;
             var node = new Node {
                 Body = "Index",
-                TokenType = TokenTypes.Index
+                Type = TokenTypes.Index
             };
 
             var accessTokens = tokens.GetRange(0, argsStart);
@@ -714,7 +714,7 @@ namespace Skrypt.Parsing
             var getterNode = new Node();
             getterNode.Add(ParseExpression(getterNode, accessTokens));
             getterNode.Body = "Getter";
-            getterNode.TokenType = TokenTypes.Getter;
+            getterNode.Type = TokenTypes.Getter;
             getterNode.Token = accessTokens[0];
             node.Add(getterNode);
 
@@ -725,7 +725,7 @@ namespace Skrypt.Parsing
 
             var argumentsNode = result.Node;
             argumentsNode.Body = "Arguments";
-            argumentsNode.TokenType = TokenTypes.Arguments;
+            argumentsNode.Type = TokenTypes.Arguments;
             node.Add(argumentsNode);
 
             return new ParseResult { Node = node, Delta = tokens.Count - 1 };
@@ -741,7 +741,7 @@ namespace Skrypt.Parsing
             var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", 0, tokens);
             
             var node = result.Node;
-            node.TokenType = TokenTypes.ArrayLiteral;
+            node.Type = TokenTypes.ArrayLiteral;
             node.Body = "Array";
             index += result.Delta;
 
@@ -751,7 +751,7 @@ namespace Skrypt.Parsing
         public ParseResult ParseUsing(List<Token> tokens) {
             var node = new Node {
                 Body = "Using",
-                TokenType = TokenTypes.Using
+                Type = TokenTypes.Using
             };
 
             int i = 0;
@@ -816,7 +816,7 @@ namespace Skrypt.Parsing
                     if (node.Add(failNode) == null) throw new SkryptException("Syntax error, alternative statement can't be empty");
 
                     node.Body = "Conditional";
-                    node.TokenType = TokenTypes.Conditional;
+                    node.Type = TokenTypes.Conditional;
 
                     return new ParseResult { Node = node, Delta = tokens.Count };
                 }

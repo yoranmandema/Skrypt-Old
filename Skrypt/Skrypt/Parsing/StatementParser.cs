@@ -28,7 +28,7 @@ namespace Skrypt.Parsing
             ParseResult result;
 
             // Create main statement node
-            var node = new Node {Body = tokens[index].Value, TokenType = TokenTypes.Statement};
+            var node = new Node {Body = tokens[index].Value, Type = TokenTypes.Statement};
 
             skip = _engine.ExpectValue("(", tokens);
             index += skip.Delta;
@@ -40,7 +40,7 @@ namespace Skrypt.Parsing
             var conditionParentNode = new Node
             {
                 Body = "Condition",
-                TokenType = TokenTypes.Condition
+                Type = TokenTypes.Condition
             };
 
             if (conditionNode == null) _engine.ThrowError("Condition can't be empty!", tokens[index - 1]);
@@ -65,7 +65,7 @@ namespace Skrypt.Parsing
             var index = 0;
             SkipInfo skip;
             ParseResult result;
-            Node node = new Node { Body = "for", TokenType = TokenTypes.Statement };
+            Node node = new Node { Body = "for", Type = TokenTypes.Statement };
 
             skip = _engine.ExpectValue("(", tokens);
             index += skip.Delta;
