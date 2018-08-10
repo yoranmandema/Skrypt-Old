@@ -57,8 +57,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ParserTests.cs" />
+    <Compile Include="Parser\ParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Runtime\EngineTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Skrypt\Skrypt.csproj">
