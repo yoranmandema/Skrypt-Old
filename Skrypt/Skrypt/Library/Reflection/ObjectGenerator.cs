@@ -46,8 +46,7 @@ namespace Skrypt.Library.Reflection
                     del = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), Instance, m);
                 }
 
-                var method = new SharpMethod {
-                    Method = del,
+                var method = new SharpMethod (del) {
                     Name = m.Name,
                     Parameters = parameters
                 };

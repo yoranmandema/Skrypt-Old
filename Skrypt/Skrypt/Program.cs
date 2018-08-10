@@ -19,6 +19,7 @@ namespace Skrypt
             var engine = new SkryptEngine();
 
             engine.AddClass(typeof(Vector));
+            engine.SetValue("WriteLine", new Action<object>(Console.WriteLine));
             engine.Parse(code);
 
             Console.ReadKey();

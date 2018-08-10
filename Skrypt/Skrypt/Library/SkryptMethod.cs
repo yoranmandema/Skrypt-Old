@@ -4,6 +4,8 @@ using Skrypt.Execution;
 using Skrypt.Parsing;
 using static Skrypt.Library.Native.System;
 using System;
+using System.Reflection;
+using System.Linq;
 
 namespace Skrypt.Library
 {
@@ -23,6 +25,20 @@ namespace Skrypt.Library
             return null;
         }
 
+        public static bool IsSkryptMethod (MethodInfo m) {
+            if (m.ReturnType != typeof(SkryptObject)) return false;
+
+            if (m.GetParameters().Count() != 3) return false;
+
+            if (m.GetParameters()[0].ParameterType != typeof(SkryptEngine)) return false;
+
+            if (m.GetParameters()[1].ParameterType != typeof(SkryptObject)) return false;
+
+            if (m.GetParameters()[2].ParameterType != typeof(SkryptObject[])) return false;
+
+            return true;
+        }
+
         public override string ToString()
         {
             return base.ToString();
@@ -33,11 +49,11 @@ namespace Skrypt.Library
 
             if (m.GetType() == typeof(UserMethod)) {
                 for (int i = 0; i < m.Parameters.Count; i++) {
-                    s.AddVariable(m.Parameters[i],a[i]);
+                    s.SetVariable(m.Parameters[i],a[i]);
                 }
             } else {
                 for (int i = 0; i < a.Length; i++) {
-                    s.AddVariable(a[i].GetHashCode() + "", a[i]);
+                    s.SetVariable(a[i].GetHashCode() + "", a[i]);
                 }
             }
 
@@ -49,7 +65,7 @@ namespace Skrypt.Library
 
             if (m.GetType() == typeof(UserMethod)) {
                 for (int i = 0; i < m.Parameters.Count; i++) {
-                    s.AddVariable(m.Parameters[i], new Null());
+                    s.SetVariable(m.Parameters[i], new Null());
                 }
             } else {
 
@@ -79,12 +95,39 @@ namespace Skrypt.Library
 
     public class SharpMethod : SkryptMethod
     {
-        public SkryptDelegate Method { get; set; }
+        public Delegate Method { get; set; }
+        public new bool IsSkryptMethod { get; set; }
+
+        public SharpMethod (Delegate d) {
+            Method = d;
+
+            IsSkryptMethod = IsSkryptMethod(Method.GetMethodInfo());
+        }
 
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
         {
-            var returnValue = Method(engine, self, parameters);
+            SkryptObject returnValue = null;
+
+            if (IsSkryptMethod) {
+                returnValue = (SkryptObject)Method.DynamicInvoke(engine, self, parameters);
+            } else {
+                var parCount = Method.Method.GetParameters().Count();
+
+                var input = new object[parCount];
+
+                for (int i = 0; i < input.Length; i++) {
+                    if (i < parameters.Length) {
+                        input[i] = parameters[i];
+                    } else {
+                        input[i] = null;
+                    }
+                }
+
+                returnValue = (SkryptObject)Method.DynamicInvoke(input);
+
+                if (returnValue == null) returnValue = engine.Create<Null>();
+            }
 
             if (typeof(SkryptType).IsAssignableFrom(returnValue.GetType())) {
                 returnValue.SetPropertiesTo(engine.Executor.GetType(((SkryptType)returnValue).TypeName, scope));

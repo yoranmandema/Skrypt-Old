@@ -60,7 +60,7 @@ namespace Skrypt.Engine
 
             var systemObject = ObjectGenerator.MakeObjectFromClass(typeof(Library.Native.System), this);
 
-            GlobalScope.AddVariable(systemObject.Name, systemObject, Modifier.Const);
+            GlobalScope.SetVariable(systemObject.Name, systemObject, Modifier.Const);
 
             // Tokens that are found using a token rule with type defined as 'null' won't get added to the token list.
             // This means you can ignore certain characters, like whitespace in this case, that way.
@@ -137,7 +137,7 @@ namespace Skrypt.Engine
 
         public void AddClass(Type type) {
             var generated = ObjectGenerator.MakeObjectFromClass(type, this);
-            GlobalScope.AddVariable(generated.Name, generated, Modifier.Const);
+            GlobalScope.SetVariable(generated.Name, generated, Modifier.Const);
         }
 
         public T Create<T>(params object[] input) {
@@ -308,6 +308,15 @@ namespace Skrypt.Engine
             throw new SkryptException(message + lineRow, token);
         }
 
+        public SkryptEngine SetValue (string name, Delegate value) {
+            return SetValue(name, new SharpMethod(value));
+        }
+
+        public SkryptEngine SetValue (string name, SkryptObject value) {
+            GlobalScope.SetVariable(name, value);
+            return this;
+        }
+
         public Node Parse(string code = "")
         {
             if (code != string.Empty)
@@ -335,7 +344,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            programNode.Print();
+            //programNode.Print();
 
             //ScopeContext AnalizeScope = new ScopeContext();
             //analizer.Analize(ProgramNode, AnalizeScope);

@@ -1,1 +1,2 @@
-public static const strong a = 1
+
+WriteLine("Hello world!")

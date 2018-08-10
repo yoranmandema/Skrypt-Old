@@ -58,7 +58,7 @@ namespace Skrypt.Execution
         public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
         public string Type { get; set; } = "";
 
-        public void AddVariable(string name, SkryptObject value, Modifier modifiers = Modifier.None)
+        public void SetVariable(string name, SkryptObject value, Modifier modifiers = Modifier.None)
         {
             Variables[name] = new Variable
             {

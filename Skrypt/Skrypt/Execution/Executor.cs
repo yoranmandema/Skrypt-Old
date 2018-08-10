@@ -294,7 +294,7 @@ namespace Skrypt.Execution
 
             foreach (var property in Object.Properties) {
                 if ((property.Modifiers & Modifier.Public) != 0) {
-                    scopeContext.AddVariable(property.Name, property.Value, Modifier.Const);
+                    scopeContext.SetVariable(property.Name, property.Value, Modifier.Const);
                 }
             }
 
@@ -345,12 +345,12 @@ namespace Skrypt.Execution
                 else if (subNode.Type == TokenTypes.MethodDeclaration) {
                     var result = ExecuteMethodDeclaration(subNode, scope);
 
-                    scope.AddVariable(result.CallName, result, subNode.Modifiers);
+                    scope.SetVariable(result.CallName, result, subNode.Modifiers);
                 }
                 else if (subNode.Type == TokenTypes.ClassDeclaration) {
                     var createdClass = ExecuteClassDeclaration(subNode, scope);
 
-                    scope.AddVariable(createdClass.Name, createdClass, subNode.Modifiers);
+                    scope.SetVariable(createdClass.Name, createdClass, subNode.Modifiers);
                 }
                 else if (subNode.Type == TokenTypes.Using) {
                     var _scope = ExecuteUsing(subNode, scope);
@@ -414,7 +414,7 @@ namespace Skrypt.Execution
             //Console.WriteLine(sw.Elapsed.TotalMilliseconds);
 
             foreach (var p in Object.Properties) {
-                localScope.AddVariable(p.Name, p.Value, p.Modifiers);
+                localScope.SetVariable(p.Name, p.Value, p.Modifiers);
             }
 
             scopeContext.SubContext.Caller = Object;
@@ -524,7 +524,7 @@ namespace Skrypt.Execution
                             variable.Value = result;
                         }
                         else {
-                            scopeContext.AddVariable(node.Nodes[0].Body, result, node.Modifiers);
+                            scopeContext.SetVariable(node.Nodes[0].Body, result, node.Modifiers);
                         }
                     }
                     else if (node.Nodes[0].Body == "access")
@@ -693,7 +693,7 @@ namespace Skrypt.Execution
                 _engine.CurrentStack = methodContext.CallStack;
 
                 if (caller != null) {
-                    methodContext.AddVariable("self", caller);
+                    methodContext.SetVariable("self", caller);
                 }
 
                 ScopeContext methodScopeResult = null;
