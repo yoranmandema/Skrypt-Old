@@ -100,6 +100,14 @@ namespace Skrypt.Parsing
             C.Write(indent, Color.FromArgb(100, 100, 100));
 
             switch (Type) {
+                case TokenTypes.ArrayLiteral:
+                    C.WriteLine(Body, Color.FromArgb(217, 220, 220));
+
+                    foreach (var n in ((ArrayNode)this).Values) {
+                        n.Print(indent + "| ");
+                    }
+
+                    break;
                 case TokenTypes.FunctionLiteral:
                 case TokenTypes.NullLiteral:
                 case TokenTypes.BooleanLiteral:
