@@ -755,15 +755,15 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses an array literal
         /// </summary>
-        public ParseResult ParseArrayLiteral(List<Token> tokens)
-        {
+        public ParseResult ParseArrayLiteral(List<Token> tokens) {
             var index = 0;
 
             var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", 0, tokens);
-            
-            var node = result.Node;
-            node.Type = TokenTypes.ArrayLiteral;
-            node.Body = "Array";
+
+            var node = new ArrayNode {
+                Values = new List<Node>(result.Node.Nodes)
+            };
+
             index += result.Delta;
 
             return new ParseResult {Node = node, Delta = index};

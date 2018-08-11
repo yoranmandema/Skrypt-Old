@@ -577,11 +577,12 @@ namespace Skrypt.Execution
             }
             else if (node.Type == TokenTypes.ArrayLiteral)
             {
+                var arrayNode = (ArrayNode)node;
                 var array = _engine.Create<Library.Native.System.Array>();
 
-                for (var i = 0; i < node.Nodes.Count; i++)
+                for (var i = 0; i < arrayNode.Values.Count; i++)
                 {
-                    var subNode = node.Nodes[i];
+                    var subNode = arrayNode.Values[i];
 
                     var result = ExecuteExpression(subNode, scopeContext);
 

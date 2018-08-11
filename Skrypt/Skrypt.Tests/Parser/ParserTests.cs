@@ -69,7 +69,7 @@ namespace Skrypt.Tests {
 
             Assert.NotNull(program.Nodes.First());
             Assert.Single(program.Nodes);
-            Assert.Equal(expected, program.Nodes.First().Body);
+            Assert.Equal(expected, (program.Nodes.First() as StringNode).Value);
         }
 
         [Theory]

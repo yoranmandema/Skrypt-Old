@@ -8,5 +8,6 @@ using Skrypt.Tokenization;
 namespace Skrypt.Parsing {
     public class NullNode : Node {
         public override TokenTypes Type => TokenTypes.NullLiteral;
+        public override string Body => "null";
     }
 }

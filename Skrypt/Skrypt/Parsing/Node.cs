@@ -22,7 +22,7 @@ namespace Skrypt.Parsing
     /// </summary>
     public class Node
     {
-        public string Body { get; set; }
+        public virtual string Body { get; set; }
 
         //public string TokenType { get; set; }
         public virtual TokenTypes Type { get; set; }
@@ -53,6 +53,14 @@ namespace Skrypt.Parsing
             Nodes.Insert(0, node);
         }
 
+        /// <summary>
+        ///     Clones the subnodes of another node and adds them
+        /// </summary>
+        public Node CloneNodes (Node node) {
+            this.Nodes.AddRange(new List<Node>(node.Nodes));
+
+            return this;
+        }
 
         public override string ToString()
         {
