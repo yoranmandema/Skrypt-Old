@@ -20,8 +20,7 @@ namespace Skrypt.Engine
         public Node Node;
     }
 
-    public class SkryptEngine
-    {
+    public class SkryptEngine {
         public Analizer Analizer;
         public ClassParser ClassParser;
         public Executor Executor;
@@ -43,8 +42,7 @@ namespace Skrypt.Engine
         private List<Token> _tokens;
         private string _code = "";
 
-        public SkryptEngine(string code = "")
-        {
+        public SkryptEngine(string code = "") {
             _code = code;
 
             Tokenizer = new Tokenizer(this);
@@ -150,12 +148,12 @@ namespace Skrypt.Engine
             return (T)((Object)newObject);
         }
 
-        public SkryptObject Eval (Operator operation, SkryptObject leftObject, SkryptObject rightObject, Node node = null) {
+        public SkryptObject Eval(Operator operation, SkryptObject leftObject, SkryptObject rightObject, Node node = null) {
             dynamic left = Convert.ChangeType(leftObject, leftObject.GetType());
             dynamic right = Convert.ChangeType(rightObject, rightObject.GetType());
 
             Operation opLeft = left.GetOperation(
-                operation.OperationName, 
+                operation.OperationName,
                 leftObject.GetType(),
                 rightObject.GetType(),
                 left.Operations
@@ -164,7 +162,7 @@ namespace Skrypt.Engine
             Operation opRight = right.GetOperation(
                 operation.OperationName,
                 leftObject.GetType(),
-                rightObject.GetType(), 
+                rightObject.GetType(),
                 right.Operations
                 );
 
@@ -210,21 +208,17 @@ namespace Skrypt.Engine
         /// <summary>
         ///     Calculates the line and column of a given index
         /// </summary>
-        public string GetLineAndRowStringFromIndex(int index)
-        {
+        public string GetLineAndRowStringFromIndex(int index) {
             var lines = 1;
             var row = 1;
             var i = 0;
 
-            while (i < index)
-            {
-                if (_code[i] == '\n')
-                {
+            while (i < index) {
+                if (_code[i] == '\n') {
                     lines++;
                     row = 1;
                 }
-                else
-                {
+                else {
                     row++;
                 }
 
@@ -237,8 +231,7 @@ namespace Skrypt.Engine
         /// <summary>
         ///     Skips token if next token has the given value. Throws exception when not found.
         /// </summary>
-        public SkipInfo ExpectValue(string value, List<Token> tokens, int startingPoint = 0)
-        {
+        public SkipInfo ExpectValue(string value, List<Token> tokens, int startingPoint = 0) {
             var start = startingPoint;
             var index = startingPoint;
             var msg = "Syntax error, token '" + value + "' expected.";
@@ -252,17 +245,17 @@ namespace Skrypt.Engine
 
             var delta = index - startingPoint;
 
-            return new SkipInfo {Start = start, End = index, Delta = delta};
+            return new SkipInfo { Start = start, End = index, Delta = delta };
         }
 
         public SkipInfo ExpectValue(string[] values, List<Token> tokens, int startingPoint = 0) {
             var start = startingPoint;
             var index = startingPoint;
-            var msg = "Syntax error, tokens '" + string.Join(",",values) + "' expected.";
+            var msg = "Syntax error, tokens '" + string.Join(",", values) + "' expected.";
 
             if (index == tokens.Count - 1) ThrowError(msg, tokens[index]);
 
-            if (Array.Exists(values,e => e == tokens[index + 1].Value))
+            if (Array.Exists(values, e => e == tokens[index + 1].Value))
                 index++;
             else
                 ThrowError(msg, tokens[index]);
@@ -275,8 +268,7 @@ namespace Skrypt.Engine
         /// <summary>
         ///     Skips token if next token has the given value. Throws exception when not found.
         /// </summary>
-        public SkipInfo ExpectType(TokenTypes type, List<Token> tokens, int startingPoint = 0)
-        {
+        public SkipInfo ExpectType(TokenTypes type, List<Token> tokens, int startingPoint = 0) {
             var start = startingPoint;
             var index = startingPoint;
             var msg = "Syntax error, tokens with type '" + type + "' expected.";
@@ -290,14 +282,13 @@ namespace Skrypt.Engine
 
             var delta = index - startingPoint;
 
-            return new SkipInfo {Start = start, End = index, Delta = delta};
+            return new SkipInfo { Start = start, End = index, Delta = delta };
         }
 
         /// <summary>
         ///     Throws an error with line and colom indicator
         /// </summary>
-        public void ThrowError(string message, Token token = null)
-        {
+        public void ThrowError(string message, Token token = null) {
             var lineRow = token != null ? " (" + GetLineAndRowStringFromIndex(token.Start) + ")" : "";
 
             Console.WriteLine();
@@ -308,17 +299,16 @@ namespace Skrypt.Engine
             throw new SkryptException(message + lineRow, token);
         }
 
-        public SkryptEngine SetValue (string name, Delegate value) {
+        public SkryptEngine SetValue(string name, Delegate value) {
             return SetValue(name, new SharpMethod(value));
         }
 
-        public SkryptEngine SetValue (string name, SkryptObject value) {
+        public SkryptEngine SetValue(string name, SkryptObject value) {
             GlobalScope.SetVariable(name, value);
             return this;
         }
 
-        public Node Parse(string code = "")
-        {
+        public Node Parse(string code = "") {
             if (code != string.Empty)
                 _code = code;
 
@@ -335,7 +325,7 @@ namespace Skrypt.Engine
             double token = Stopwatch.ElapsedMilliseconds;
 
             //foreach (var t in _tokens) Console.WriteLine(t);
-            
+
             // Generate the program node
             Stopwatch = Stopwatch.StartNew();
             var programNode = GeneralParser.Parse(_tokens);
@@ -346,29 +336,17 @@ namespace Skrypt.Engine
             //Console.WriteLine("Program:\n" + programNode);
             //programNode.Print();
 
-            //ScopeContext AnalizeScope = new ScopeContext();
-            //analizer.Analize(ProgramNode, AnalizeScope);
-
             Stopwatch = Stopwatch.StartNew();
             GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
             Stopwatch.Stop();
-            double execute = Stopwatch.ElapsedMilliseconds;
+            double execute = Stopwatch.Elapsed.TotalMilliseconds;
+            ExecutionTime = execute;
 
-            Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
-
-            int instances = 0;
-            if (instances > 0) {
-                Stopwatch = Stopwatch.StartNew();
-                for (int i = 0; i < instances; i++) {
-                    GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
-                }
-                Stopwatch.Stop();
-
-                Console.WriteLine($"Average ({instances} instances): {Stopwatch.Elapsed.TotalMilliseconds / instances}ms");
-                Console.WriteLine($"Per second: {1000 / (Stopwatch.Elapsed.TotalMilliseconds / instances)}");
-            }
+            //Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
             return programNode;
         }
+
+        public double ExecutionTime { get; private set; }
     }
 }
