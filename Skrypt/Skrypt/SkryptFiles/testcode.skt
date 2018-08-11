@@ -1,1 +1,1 @@
-true ? 1 : 0
+false ? System.print("Hello world!") : System.print("Bye world!")

@@ -591,20 +591,6 @@ namespace Skrypt.Execution
 
                 return array;
             }
-            else if (node.Nodes.Count == 0)
-            {
-                switch (node.Type)
-                {
-                    case TokenTypes.NumericLiteral:
-                        return _engine.Create<Library.Native.System.Numeric>(((NumericNode)node).Value);
-                    case TokenTypes.StringLiteral:
-                        return _engine.Create<Library.Native.System.String>(((StringNode)node).Value);
-                    case TokenTypes.BooleanLiteral:
-                        return _engine.Create<Library.Native.System.Boolean>(((BooleanNode)node).Value);
-                    case TokenTypes.NullLiteral:
-                        return _engine.Create<Library.Native.System.Null>();
-                }
-            }
             else if (node.Type == TokenTypes.FunctionLiteral)
             {
                 var result = new UserMethod
@@ -622,11 +608,23 @@ namespace Skrypt.Execution
             else if (node.Type == TokenTypes.Conditional) {
                 var conditionNode = (ConditionalNode)node;
                 var conditionBool = ExecuteExpression(conditionNode.Condition, scopeContext);
-                
+
                 if (conditionBool.ToBoolean()) {
                     return ExecuteExpression(conditionNode.Pass, scopeContext);
                 } else {
                     return ExecuteExpression(conditionNode.Fail, scopeContext);
+                }
+            }
+            else {
+                switch (node.Type) {
+                    case TokenTypes.NumericLiteral:
+                        return _engine.Create<Library.Native.System.Numeric>(((NumericNode)node).Value);
+                    case TokenTypes.StringLiteral:
+                        return _engine.Create<Library.Native.System.String>(((StringNode)node).Value);
+                    case TokenTypes.BooleanLiteral:
+                        return _engine.Create<Library.Native.System.Boolean>(((BooleanNode)node).Value);
+                    case TokenTypes.NullLiteral:
+                        return _engine.Create<Library.Native.System.Null>();
                 }
             }
 
