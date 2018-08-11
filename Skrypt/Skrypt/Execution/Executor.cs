@@ -552,7 +552,7 @@ namespace Skrypt.Execution
                     }
                     else if (node.Nodes[0].Body == "Index")
                     {
-                        ExecuteIndexSet(result, node.Nodes[0], scopeContext);
+                        ExecuteIndexSet(result, (IndexNode)node.Nodes[0], scopeContext);
                     }
                     else
                     {
@@ -642,7 +642,7 @@ namespace Skrypt.Execution
                     node.Token);
             }
 
-            if (node.Type == TokenTypes.Index) return ExecuteIndex(node, scopeContext);
+            if (node.Type == TokenTypes.Index) return ExecuteIndex((IndexNode)node, scopeContext);
 
             if (node.Type == TokenTypes.Call)
             {
@@ -747,20 +747,18 @@ namespace Skrypt.Execution
             return null;
         }
 
-        public SkryptObject ExecuteIndexSet(SkryptObject value, Node node, ScopeContext scopeContext)
+        public SkryptObject ExecuteIndexSet(SkryptObject value, IndexNode node, ScopeContext scopeContext)
         {
             var arguments = new List<SkryptObject>();
 
-            foreach (var subNode in node.Nodes[1].Nodes)
+            foreach (var subNode in node.Arguments)
             {
                 var result = ExecuteExpression(subNode, scopeContext);
-
-                if (result.Name == "void") _engine.ThrowError("Can't pass void into arguments!", node.Nodes[0].Token);
 
                 arguments.Add(result);
             }
 
-            var Object = ExecuteExpression(node.Nodes[0].Nodes[0], scopeContext);
+            var Object = ExecuteExpression(node.Getter, scopeContext);
 
             dynamic left = Convert.ChangeType(Object, Object.GetType());
 
@@ -771,7 +769,7 @@ namespace Skrypt.Execution
             if (opLeft != null)
                 operation = opLeft.OperationDelegate;
             else
-                _engine.ThrowError("No such operation as index set " + left.Name + "!", node.Nodes[0].Token);
+                _engine.ThrowError("No such operation as index set " + left.Name + "!", node.Getter.Token);
 
             var inputArray = new List<SkryptObject>(arguments);
 
@@ -781,18 +779,18 @@ namespace Skrypt.Execution
             return operation(inputArray.ToArray());
         }
 
-        public SkryptObject ExecuteIndex(Node node, ScopeContext scopeContext)
+        public SkryptObject ExecuteIndex(IndexNode node, ScopeContext scopeContext)
         {
             var arguments = new List<SkryptObject>();
 
-            foreach (var subNode in node.Nodes[1].Nodes)
+            foreach (var subNode in node.Arguments)
             {
                 var result = ExecuteExpression(subNode, scopeContext);
 
                 arguments.Add(result);
             }
 
-            var Object = ExecuteExpression(node.Nodes[0].Nodes[0], scopeContext);
+            var Object = ExecuteExpression(node.Getter, scopeContext);
 
             dynamic left = Convert.ChangeType(Object, Object.GetType());
 
@@ -803,7 +801,7 @@ namespace Skrypt.Execution
             if (opLeft != null)
                 operation = opLeft.OperationDelegate;
             else
-                _engine.ThrowError("No such operation as index " + left.Name + "!", node.Nodes[0].Token);
+                _engine.ThrowError("No such operation as index " + left.Name + "!", node.Getter.Token);
 
             var inputArray = new List<SkryptObject>(arguments);
 

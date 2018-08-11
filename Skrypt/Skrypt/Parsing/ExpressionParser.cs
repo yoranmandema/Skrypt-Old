@@ -699,19 +699,6 @@ namespace Skrypt.Parsing
 
             var accessTokens = tokens.GetRange(0, argsStart);
 
-            //var getterNode = new Node();
-            //getterNode.Add(ParseExpression(getterNode, accessTokens));
-            //getterNode.Body = "Getter";
-            //getterNode.Type = TokenTypes.Getter;
-            //getterNode.Token = accessTokens[0];
-            //node.Add(getterNode);
-
-            //var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", argsStart, tokens);
-            //var argumentsNode = result.Node;
-            //argumentsNode.Body = "Arguments";
-            //argumentsNode.Type = TokenTypes.Arguments;
-            //node.Add(argumentsNode);
-
             node.Getter = ParseClean(accessTokens);
 
             var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", argsStart, tokens);
@@ -726,29 +713,17 @@ namespace Skrypt.Parsing
         public ParseResult ParseIndexing(List<Token> tokens, int argsStart)
         {
             var name = tokens[0].Value;
-            var node = new Node {
-                Body = "Index",
-                Type = TokenTypes.Index
-            };
+            var node = new IndexNode();
 
             var accessTokens = tokens.GetRange(0, argsStart);
 
-            var getterNode = new Node();
-            getterNode.Add(ParseExpression(getterNode, accessTokens));
-            getterNode.Body = "Getter";
-            getterNode.Type = TokenTypes.Getter;
-            getterNode.Token = accessTokens[0];
-            node.Add(getterNode);
-
+            node.Getter = ParseClean(accessTokens);
             var result = _engine.GeneralParser.ParseSurroundedExpressions("[", "]", argsStart, tokens);
 
             if (result.Node.Nodes.Count == 0)
-                _engine.ThrowError("Syntax error, index operator arguments can't be empty.", tokens[argsStart+1]);
+                _engine.ThrowError("Syntax error, index operator arguments can't be empty.", tokens[argsStart + 1]);
 
-            var argumentsNode = result.Node;
-            argumentsNode.Body = "Arguments";
-            argumentsNode.Type = TokenTypes.Arguments;
-            node.Add(argumentsNode);
+            node.Arguments = new List<Node>(result.Node.Nodes);
 
             return new ParseResult { Node = node, Delta = tokens.Count - 1 };
         }
