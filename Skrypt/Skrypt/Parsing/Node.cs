@@ -100,6 +100,20 @@ namespace Skrypt.Parsing
             C.Write(indent, Color.FromArgb(100, 100, 100));
 
             switch (Type) {
+                case TokenTypes.Conditional:
+                    C.WriteLine(Body, Color.FromArgb(217, 220, 220));
+
+                    C.Write("| " + indent, Color.FromArgb(100, 100, 100));
+                    C.WriteLine("Condition:", Color.FromArgb(217, 220, 220));
+                    ((ConditionalNode)this).Condition.Print(indent + "| | ");
+                    C.Write("| " + indent, Color.FromArgb(100, 100, 100));
+                    C.WriteLine("Pass:", Color.FromArgb(217, 220, 220));
+                    ((ConditionalNode)this).Pass.Print(indent + "| | ");
+                    C.Write("| " + indent, Color.FromArgb(100, 100, 100));
+                    C.WriteLine("Fail:", Color.FromArgb(217, 220, 220));
+                    ((ConditionalNode)this).Fail.Print(indent + "| | ");
+
+                    break;
                 case TokenTypes.ArrayLiteral:
                     C.WriteLine(Body, Color.FromArgb(217, 220, 220));
 
@@ -110,8 +124,10 @@ namespace Skrypt.Parsing
                     break;
                 case TokenTypes.FunctionLiteral:
                 case TokenTypes.NullLiteral:
-                case TokenTypes.BooleanLiteral:
                     C.Write(Body, Color.FromArgb(208, 25, 208));
+                    break;
+                case TokenTypes.BooleanLiteral:
+                    C.Write(((BooleanNode)this).Value, Color.FromArgb(208, 25, 208));
                     break;
                 case TokenTypes.NumericLiteral:
                     C.Write(((NumericNode)this).Value, Color.FromArgb(184, 215, 163));

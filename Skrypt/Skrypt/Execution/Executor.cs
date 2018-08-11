@@ -620,12 +620,13 @@ namespace Skrypt.Execution
                 return result;
             }
             else if (node.Type == TokenTypes.Conditional) {
-                var conditionBool = ExecuteExpression(node.Nodes[0], scopeContext);
+                var conditionNode = (ConditionalNode)node;
+                var conditionBool = ExecuteExpression(conditionNode.Condition, scopeContext);
                 
                 if (conditionBool.ToBoolean()) {
-                    return ExecuteExpression(node.Nodes[1], scopeContext);
+                    return ExecuteExpression(conditionNode.Pass, scopeContext);
                 } else {
-                    return ExecuteExpression(node.Nodes[2], scopeContext);
+                    return ExecuteExpression(conditionNode.Fail, scopeContext);
                 }
             }
 

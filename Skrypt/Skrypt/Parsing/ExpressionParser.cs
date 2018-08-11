@@ -811,7 +811,7 @@ namespace Skrypt.Parsing
         }
 
         public ParseResult ParseConditional(List<Token> tokens) {
-            var node = new Node();
+            var node = new ConditionalNode();
             int depth = 0;
 
             for (int i = 0; i < tokens.Count; i++) {
@@ -832,18 +832,16 @@ namespace Skrypt.Parsing
                     var successNode = ParseClean(tokens.GetRange(i + 1, skip.Delta - 1));
                     var failNode = ParseClean(tokens.GetRange(skip.End + 1, tokens.Count - (skip.End + 1)));
 
-                    if (node.Add(conditionNode) == null) throw new SkryptException("Syntax error, condition statement can't be empty");
-                    if (node.Add(successNode) == null) throw new SkryptException("Syntax error, consequent statement can't be empty");
-                    if (node.Add(failNode) == null) throw new SkryptException("Syntax error, alternative statement can't be empty");
-
-                    node.Body = "Conditional";
-                    node.Type = TokenTypes.Conditional;
+                    node.Condition = conditionNode ?? throw new SkryptException("Syntax error, condition statement can't be empty");
+                    node.Pass = successNode ?? throw new SkryptException("Syntax error, consequent statement can't be empty");
+                    node.Fail = failNode ?? throw new SkryptException("Syntax error, alternative statement can't be empty");
 
                     return new ParseResult { Node = node, Delta = tokens.Count };
                 }
             }
 
-            throw new SkryptException("Conditional statement incomplete");
+            _engine.ThrowError("Syntax error, conditional statement incomplete", tokens[0]);
+            return null;
         }
 
         /// <summary>
