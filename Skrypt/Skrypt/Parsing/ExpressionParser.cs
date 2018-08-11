@@ -695,26 +695,27 @@ namespace Skrypt.Parsing
         public ParseResult ParseCall(List<Token> tokens, int argsStart)
         {
             var name = tokens[0].Value;
-            var node = new Node
-            {
-                Body = "Call",
-                Type = TokenTypes.Call
-            };
+            var node = new CallNode();
 
             var accessTokens = tokens.GetRange(0, argsStart);
 
-            var getterNode = new Node();
-            getterNode.Add(ParseExpression(getterNode, accessTokens));
-            getterNode.Body = "Getter";
-            getterNode.Type = TokenTypes.Getter;
-            getterNode.Token = accessTokens[0];
-            node.Add(getterNode);
+            //var getterNode = new Node();
+            //getterNode.Add(ParseExpression(getterNode, accessTokens));
+            //getterNode.Body = "Getter";
+            //getterNode.Type = TokenTypes.Getter;
+            //getterNode.Token = accessTokens[0];
+            //node.Add(getterNode);
+
+            //var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", argsStart, tokens);
+            //var argumentsNode = result.Node;
+            //argumentsNode.Body = "Arguments";
+            //argumentsNode.Type = TokenTypes.Arguments;
+            //node.Add(argumentsNode);
+
+            node.Getter = ParseClean(accessTokens);
 
             var result = _engine.GeneralParser.ParseSurroundedExpressions("(", ")", argsStart, tokens);
-            var argumentsNode = result.Node;
-            argumentsNode.Body = "Arguments";
-            argumentsNode.Type = TokenTypes.Arguments;
-            node.Add(argumentsNode);
+            node.Arguments = new List<Node>(result.Node.Nodes);
 
             return new ParseResult {Node = node, Delta = tokens.Count - 1 };
         }

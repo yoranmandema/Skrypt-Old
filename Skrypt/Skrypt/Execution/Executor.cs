@@ -515,6 +515,8 @@ namespace Skrypt.Execution
                         var variable = GetVariable(node.Nodes[0].Body, scopeContext);
 
                         if (variable != null && !scopeContext.SubContext.StrictlyLocal) {
+                            Console.WriteLine(variable.Modifiers);
+
                             if ((variable.Modifiers & Modifier.Const) != 0)
                                 _engine.ThrowError("Variable is marked as constant and can thus not be modified.", node.Nodes[0].Token);
 
@@ -644,16 +646,17 @@ namespace Skrypt.Execution
 
             if (node.Type == TokenTypes.Call)
             {
+                var callNode = (CallNode)node;
                 var arguments = new List<SkryptObject>();
 
-                foreach (var subNode in node.Nodes[1].Nodes)
+                foreach (var subNode in callNode.Arguments)
                 {
                     var result = ExecuteExpression(subNode, scopeContext);
 
                     arguments.Add(result);
                 }
 
-                var foundMethod = ExecuteExpression(node.Nodes[0].Nodes[0], scopeContext);
+                var foundMethod = ExecuteExpression(callNode.Getter, scopeContext);
 
                 var caller = scopeContext.SubContext.Caller;
                 SkryptObject BaseType = null;
@@ -683,13 +686,13 @@ namespace Skrypt.Execution
 
                         isConstructor = true;
                     } else {
-                        _engine.ThrowError("Object does not have a constructor and can thus not be instanced!", node.Nodes[0].Token);
+                        _engine.ThrowError("Object does not have a constructor and can thus not be instanced!", callNode.Getter.Token);
                     }
                 }
 
                 var methodContext = new ScopeContext {
                     ParentScope = scopeContext,
-                    CallStack = new CallStack(((SkryptMethod)foundMethod).Name, node.Nodes[0].Token, scopeContext.CallStack)
+                    CallStack = new CallStack(((SkryptMethod)foundMethod).Name, callNode.Getter.Token, scopeContext.CallStack)
                 };
 
                 _engine.CurrentStack = methodContext.CallStack;
@@ -726,7 +729,7 @@ namespace Skrypt.Execution
                 } else if (foundMethod.GetType() == typeof(SharpMethod)) {
                     methodScopeResult = ((SharpMethod)foundMethod).Execute(_engine, caller, arguments.ToArray(), methodContext);
                 } else {
-                    _engine.ThrowError("Cannot call value, as it is not a function!", node.Nodes[0].Nodes[0].Token);
+                    _engine.ThrowError("Cannot call value, as it is not a function!", callNode.Getter.Token);
                 }
 
                 scopeContext.SubContext.Caller = null;

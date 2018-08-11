@@ -357,13 +357,13 @@ namespace Skrypt.Engine
             Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
             int instances = 0;
-            Stopwatch = Stopwatch.StartNew();
-            for (int i = 0; i < instances; i++) {
-                GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
-            }
-            Stopwatch.Stop();
-
             if (instances > 0) {
+                Stopwatch = Stopwatch.StartNew();
+                for (int i = 0; i < instances; i++) {
+                    GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
+                }
+                Stopwatch.Stop();
+
                 Console.WriteLine($"Average ({instances} instances): {Stopwatch.Elapsed.TotalMilliseconds / instances}ms");
                 Console.WriteLine($"Per second: {1000 / (Stopwatch.Elapsed.TotalMilliseconds / instances)}");
             }
