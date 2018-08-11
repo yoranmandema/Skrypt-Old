@@ -96,12 +96,33 @@ namespace Skrypt.Parsing
                 if (GeneralParser.NotPermittedInExpression.Contains(tokens[0].Value))
                     _engine.ThrowError("Syntax error, unexpected keyword '" + tokens[0].Value + "' found.", tokens[0]);
 
-                return new Node {
-                    Body = tokens[0].Value,
-                    //Value = null,
-                    Type = tokens[0].Type,
-                    Token = tokens[0]
-                };
+                switch (tokens[0].Type) {
+                    case TokenTypes.NullLiteral:
+                        return new NullNode {
+                            Token = tokens[0]
+                        };
+                    case TokenTypes.BooleanLiteral:
+                        return new BooleanNode {
+                            Value = tokens[0].Value == "true" ? true : false,
+                            Token = tokens[0]
+                        };
+                    case TokenTypes.StringLiteral:
+                        return new StringNode {
+                            Value = tokens[0].Value,
+                            Token = tokens[0]
+                        };
+                    case TokenTypes.NumericLiteral:
+                        return new NumericNode {
+                            Value = double.Parse(tokens[0].Value),
+                            Token = tokens[0]
+                        };
+                    default:
+                    return new Node {
+                        Body = tokens[0].Value,
+                        Type = tokens[0].Type,
+                        Token = tokens[0]
+                    };
+                }
             }
 
             // Create left and right token buffers

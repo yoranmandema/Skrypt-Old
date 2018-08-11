@@ -323,6 +323,7 @@ namespace Skrypt.Execution
             }
 
             _engine.CurrentScope = scope;
+            var oldStack = _engine.CurrentStack;
 
             foreach (var subNode in node.Nodes) {
                 if (subNode.Type == TokenTypes.Statement) {
@@ -364,6 +365,7 @@ namespace Skrypt.Execution
                 }
 
                 _engine.CurrentScope = scope;
+                _engine.CurrentStack = oldStack;
             }
 
             return scope;
@@ -593,11 +595,11 @@ namespace Skrypt.Execution
                 switch (node.Type)
                 {
                     case TokenTypes.NumericLiteral:
-                        return _engine.Create<Library.Native.System.Numeric>(double.Parse(node.Body));
+                        return _engine.Create<Library.Native.System.Numeric>(((NumericNode)node).Value);
                     case TokenTypes.StringLiteral:
-                        return _engine.Create<Library.Native.System.String>(node.Body);
+                        return _engine.Create<Library.Native.System.String>(((StringNode)node).Value);
                     case TokenTypes.BooleanLiteral:
-                        return _engine.Create<Library.Native.System.Boolean>(node.Body == "true" ? true : false);
+                        return _engine.Create<Library.Native.System.Boolean>(((BooleanNode)node).Value);
                     case TokenTypes.NullLiteral:
                         return _engine.Create<Library.Native.System.Null>();
                 }

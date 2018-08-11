@@ -25,7 +25,7 @@ namespace Skrypt.Parsing
         public string Body { get; set; }
 
         //public string TokenType { get; set; }
-        public TokenTypes Type { get; set; }
+        public virtual TokenTypes Type { get; set; }
         [JsonIgnore] public Token Token { get; set; }
         [JsonIgnore] public List<Node> Nodes { get; set; } = new List<Node>();
         [JsonIgnore] public Modifier Modifiers { get; set; } = Modifier.None;
@@ -98,7 +98,7 @@ namespace Skrypt.Parsing
                     C.Write(Body, Color.FromArgb(208, 25, 208));
                     break;
                 case TokenTypes.NumericLiteral:
-                    C.Write(Body, Color.FromArgb(184, 215, 163));
+                    C.Write(((NumericNode)this).Value, Color.FromArgb(184, 215, 163));
                     break;
                 case TokenTypes.Call:
                 case TokenTypes.Punctuator:
@@ -111,7 +111,7 @@ namespace Skrypt.Parsing
                 case TokenTypes.StringLiteral:
                     C.Write('"', Color.FromArgb(214, 157, 133));
 
-                    var lines = Body.Split('\n');
+                    var lines = ((StringNode)this).Value.Split('\n');
 
                     for (int i = 0; i < lines.Length; i++) {
                         C.Write(lines[i] + (i < lines.Length-1 ? "\n" : ""), Color.FromArgb(214, 157, 133));

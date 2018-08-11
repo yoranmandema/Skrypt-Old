@@ -84,6 +84,8 @@
     <Compile Include="Library\SkryptMethod.cs" />
     <Compile Include="Engine\SkryptException.cs" />
     <Compile Include="Library\SkryptProperty.cs" />
+    <Compile Include="Parsing\Nodes\NumericNode.cs" />
+    <Compile Include="Parsing\Nodes\StringNode.cs" />
     <Compile Include="Parsing\StatementParser.cs" />
     <Compile Include="Tokenization\Tokenizer.cs" />
     <Compile Include="Tokenization\Token.cs" />

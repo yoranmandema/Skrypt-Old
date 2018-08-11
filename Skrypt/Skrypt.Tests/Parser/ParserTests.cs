@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 using Skrypt;
+using Skrypt.Parsing;
 
 namespace Skrypt.Tests {
     public class ParserTests {
@@ -25,7 +26,7 @@ namespace Skrypt.Tests {
             Assert.NotNull(program.Nodes.First());
             Assert.Single(program.Nodes);
             Assert.Equal(Tokenization.TokenTypes.NumericLiteral, program.Nodes.First().Type);
-            Assert.Equal("42",program.Nodes.First().Body);
+            Assert.Equal(42, (program.Nodes.First() as NumericNode).Value);
         }
 
         [Theory]
@@ -50,7 +51,7 @@ namespace Skrypt.Tests {
 
             Assert.NotNull(program.Nodes.First());
             Assert.Single(program.Nodes);
-            Assert.Equal(Convert.ToDouble(expected), Convert.ToDouble(program.Nodes.First().Body));
+            Assert.Equal(Convert.ToDouble(expected), (program.Nodes.First() as NumericNode).Value);
         }
 
         [Theory]
