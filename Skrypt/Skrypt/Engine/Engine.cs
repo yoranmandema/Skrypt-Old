@@ -20,6 +20,10 @@ namespace Skrypt.Engine
         public Node Node;
     }
 
+    public enum EngineSettings : byte {
+        NoLogs = 1,
+    }
+
     public class SkryptEngine {
         public Analizer Analizer;
         public ClassParser ClassParser;
@@ -34,6 +38,8 @@ namespace Skrypt.Engine
         public StatementParser StatementParser;
         public Tokenizer Tokenizer;
         public TokenProcessor TokenProcessor;
+
+        public EngineSettings Settings;
 
         internal Stopwatch Stopwatch { get; set; }
         internal CallStack CurrentStack { get; set; }

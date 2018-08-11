@@ -12,7 +12,8 @@ namespace Skrypt.Library.Native
         {
             var a = TypeConverter.ToAny(values, 0);
 
-            Console.WriteLine(a);
+            if ((engine.Settings & EngineSettings.NoLogs) == 0) 
+                Console.WriteLine(a);
 
             return engine.Create<String>(a.ToString());
         }
@@ -23,7 +24,9 @@ namespace Skrypt.Library.Native
             engine.Stopwatch.Stop();
 
             var a = TypeConverter.ToAny(values, 0);
-            Console.WriteLine(a);
+
+            if ((engine.Settings & EngineSettings.NoLogs) == 0)
+                Console.WriteLine(a);
 
             var input = Console.ReadLine();
             engine.Stopwatch.Start();
