@@ -289,8 +289,8 @@ namespace Skrypt.Execution
             return result;
         }
 
-        public ScopeContext ExecuteUsing(Node node, ScopeContext scopeContext) {
-            var Object = ExecuteExpression(node.Nodes[0], scopeContext);
+        public ScopeContext ExecuteUsing(UsingNode node, ScopeContext scopeContext) {
+            var Object = ExecuteExpression(node.Getter, scopeContext);
 
             foreach (var property in Object.Properties) {
                 if ((property.Modifiers & Modifier.Public) != 0) {
@@ -354,7 +354,7 @@ namespace Skrypt.Execution
                     scope.SetVariable(createdClass.Name, createdClass, subNode.Modifiers);
                 }
                 else if (subNode.Type == TokenTypes.Using) {
-                    var _scope = ExecuteUsing(subNode, scope);
+                    var _scope = ExecuteUsing((UsingNode)subNode, scope);
                 }
                 else {
                     var result = _engine.Executor.ExecuteExpression(subNode, scope);

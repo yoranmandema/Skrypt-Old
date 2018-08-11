@@ -746,10 +746,7 @@ namespace Skrypt.Parsing
         }
 
         public ParseResult ParseUsing(List<Token> tokens) {
-            var node = new Node {
-                Body = "Using",
-                Type = TokenTypes.Using
-            };
+            var node = new UsingNode();
 
             int i = 0;
             bool isIdentifier = true;
@@ -781,7 +778,7 @@ namespace Skrypt.Parsing
                 i++;
             }
 
-            node.Add(Parse(buffer).Node);
+            node.Getter = Parse(buffer).Node;
 
             return new ParseResult { Node = node, Delta = i + 1};
         }
