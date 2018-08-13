@@ -62,10 +62,11 @@
     <Compile Include="Library\Native\Crypto.cs" />
     <Compile Include="Library\Native\FileIO.cs" />
     <Compile Include="Library\Native\Statistics.cs" />
+    <Compile Include="Library\Operators.cs" />
     <Compile Include="Library\Reflection\Attributes\Attributes.cs" />
     <Compile Include="Library\Native\Math.cs" />
     <Compile Include="Library\Native\System.cs" />
-    <Compile Include="Library\Operators.cs" />
+    <Compile Include="Library\OperatorClasses.cs" />
     <Compile Include="Library\Reflection\ObjectExtensions.cs" />
     <Compile Include="Library\Reflection\ObjectGenerator.cs" />
     <Compile Include="Library\Native\SkryptClasses\Array.cs" />
