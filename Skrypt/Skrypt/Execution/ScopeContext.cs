@@ -7,32 +7,6 @@ using Skrypt.Engine;
 
 namespace Skrypt.Execution
 {
-    public class SubContext
-    {
-        public SkryptObject Caller {get; set;}
-        public bool GettingCaller = false;
-        public bool InLoop = false;
-        public bool BrokeLoop = false;
-        public bool SkippedLoop = false;
-        public bool InMethod = false;
-        public bool StrictlyLocal = false;
-        public bool InClassDeclaration = true;
-        public UserMethod Method = null;
-        public SkryptObject ReturnObject = null;
-        public SkryptObject ParentClass = null;
-
-        public void Merge(SubContext other) {
-            GettingCaller = GettingCaller || other.GettingCaller;
-            InLoop = InLoop || other.InLoop;
-            BrokeLoop = BrokeLoop || other.BrokeLoop;
-            SkippedLoop = SkippedLoop || other.SkippedLoop;
-            InMethod = InMethod || other.InMethod;
-            StrictlyLocal = StrictlyLocal || other.StrictlyLocal;
-            InClassDeclaration = InClassDeclaration || other.InClassDeclaration;
-            ParentClass = other.ParentClass;
-        }
-    }
-
     public enum ScopeProperties {
         GettingCaller = 1,
         InLoop = 2,
@@ -40,7 +14,7 @@ namespace Skrypt.Execution
         SkippedLoop = 8,
         InMethod = 16,
         InClassDeclaration = 32,
-    }
+    } 
 
     public class ScopeContext
     {
