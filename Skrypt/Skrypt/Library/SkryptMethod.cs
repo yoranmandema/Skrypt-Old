@@ -84,7 +84,6 @@ namespace Skrypt.Library
             ScopeContext scope)
         {
             var inputScope = scope.Copy();
-            inputScope.Method = this;
 
             var resultingScope =
                 engine.Executor.ExecuteBlock(BlockNode, inputScope, ScopeProperties.InMethod);

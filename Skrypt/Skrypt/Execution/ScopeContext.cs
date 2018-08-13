@@ -22,14 +22,12 @@ namespace Skrypt.Execution
         [JsonIgnore]public List<ScopeContext> SubScopes = new List<ScopeContext>();
         public int Start;
         public int End;
-        public CallStack CallStack { get; set; }
+        public bool StrictlyLocal;
         public ScopeProperties Properties = 0;
+        public CallStack CallStack { get; set; }
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
         public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
-        public string Type { get; set; } = "";
-        public bool StrictlyLocal;
         public SkryptObject Caller { get; set; }
-        public UserMethod Method { get; set; }
         public SkryptObject ReturnObject { get; set; }
         public SkryptObject ParentClass { get; set; }
 

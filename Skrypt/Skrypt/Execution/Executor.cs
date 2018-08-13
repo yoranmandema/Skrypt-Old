@@ -314,7 +314,6 @@ namespace Skrypt.Execution
                 scope.Types = scopeContext.Types;
                 scope.CallStack = scopeContext.CallStack;
                 scope.ParentClass = scopeContext.ParentClass;
-                scope.Method = scopeContext.Method;
 
                 scopeContext.SubScopes.Add(scope);
             }
