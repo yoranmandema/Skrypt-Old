@@ -112,7 +112,7 @@ namespace Skrypt.Library
             SkryptObject returnValue = null;
 
             if (IsSkryptMethod) {
-                returnValue = (SkryptObject)Method.DynamicInvoke(engine, self, parameters);
+                returnValue = ((SkryptDelegate)Method)(engine, self, parameters);
             } else {
                 var parCount = Method.Method.GetParameters().Count();
 

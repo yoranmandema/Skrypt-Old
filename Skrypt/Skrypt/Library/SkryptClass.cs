@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using Skrypt.Engine;
 using Skrypt.Execution;
+using Skrypt.Library.Native;
 using S = Skrypt.Library.Native.System;
 
 namespace Skrypt.Library

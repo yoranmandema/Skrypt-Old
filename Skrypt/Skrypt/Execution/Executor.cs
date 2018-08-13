@@ -167,8 +167,13 @@ namespace Skrypt.Execution
                 ClassName = ParentClass.Name + "." + ClassName;
             }
 
-            SkryptObject Object = new SkryptObject { Name = ClassName };
-            SkryptType TypeObject = new SkryptType { Name = ClassName };
+            SkryptObject Object = new SkryptObject {
+                Name = ClassName,
+            };
+
+            SkryptType TypeObject = new SkryptType {
+                Name = ClassName,
+            };
 
             Object.Properties.Add(new SkryptProperty {
                 Name = "TypeName",
@@ -679,6 +684,7 @@ namespace Skrypt.Execution
                         //caller.Operations = new List<Operation>(BaseType.Operations);
 
                         caller = (SkryptType)Activator.CreateInstance(BaseType.GetType());
+                        //caller = BaseType.Copy();
                         caller.ScopeContext = _engine.CurrentScope;
                         caller.Engine = _engine;
                         caller.Name = typeName;
