@@ -1,3 +1,9 @@
+class o {
+    public static class p {
+        p () {}
+    }
+}
+
 using System
 
-print("Ø✓")
+print(o.p())

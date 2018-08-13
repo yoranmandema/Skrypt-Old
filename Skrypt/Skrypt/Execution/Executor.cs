@@ -60,14 +60,14 @@ namespace Skrypt.Execution
 
                 if (!conditionResult) break;
 
-                var scope = ExecuteBlock(node.Nodes[1], scopeContext, new SubContext { InLoop = true });
+                var scope = ExecuteBlock(node.Nodes[1], scopeContext, ScopeProperties.InLoop);
 
-                if (scope.SubContext.BrokeLoop) {
+                if ((scope.Properties & ScopeProperties.BrokeLoop) != 0) {
                     break;
                 }
 
-                if (scope.SubContext.ReturnObject != null) {
-                    scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                if (scope.ReturnObject != null) {
+                    scopeContext.ReturnObject = scope.ReturnObject;
                     break;
                 }
             }
@@ -80,7 +80,7 @@ namespace Skrypt.Execution
             var block = node.Nodes[3];
 
             ScopeContext loopScope = new ScopeContext();
-            loopScope.SubContext.StrictlyLocal = true;
+            loopScope.StrictlyLocal = true;
 
             if (scopeContext != null) {
                 loopScope.ParentScope = scopeContext;
@@ -90,21 +90,21 @@ namespace Skrypt.Execution
             var initResult = ExecuteExpression(initNode, loopScope);
 
             if (scopeContext != null) {
-                loopScope.SubContext.Merge(scopeContext.SubContext);
+                loopScope.Properties |= scopeContext.Properties;
             }
 
-            loopScope.SubContext.StrictlyLocal = false;
+            loopScope.StrictlyLocal = false;
 
             while (true) {
                 var conditionResult = CheckCondition(condNode, loopScope);
 
                 if (!conditionResult) break;
 
-                var scope = ExecuteBlock(block, loopScope, new SubContext { InLoop = true });
+                var scope = ExecuteBlock(block, loopScope, ScopeProperties.InLoop);
 
-                if (scope.SubContext.BrokeLoop) break;
-                if (scope.SubContext.ReturnObject != null) {
-                    scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                if ((scope.Properties & ScopeProperties.BrokeLoop) != 0) break;
+                if (scope.ReturnObject != null) {
+                    scopeContext.ReturnObject = scope.ReturnObject;
                     break;
                 }
 
@@ -120,8 +120,8 @@ namespace Skrypt.Execution
             {
                 var scope = ExecuteBlock(node.Nodes[1], scopeContext);
 
-                if (scope.SubContext.ReturnObject != null) {
-                    scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                if (scope.ReturnObject != null) {
+                    scopeContext.ReturnObject = scope.ReturnObject;
                 }
 
                 return;
@@ -141,8 +141,8 @@ namespace Skrypt.Execution
                         {
                             var scope = ExecuteBlock(elseNode.Nodes[1], scopeContext);
 
-                            if (scope.SubContext.ReturnObject != null) {
-                                scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                            if (scope.ReturnObject != null) {
+                                scopeContext.ReturnObject = scope.ReturnObject;
                             }
 
                             return;
@@ -152,8 +152,8 @@ namespace Skrypt.Execution
                     {
                         var scope = ExecuteBlock(elseNode, scopeContext);
 
-                        if (scope.SubContext.ReturnObject != null) {
-                            scopeContext.SubContext.ReturnObject = scope.SubContext.ReturnObject;
+                        if (scope.ReturnObject != null) {
+                            scopeContext.ReturnObject = scope.ReturnObject;
                         }
                     }
                 }
@@ -161,7 +161,7 @@ namespace Skrypt.Execution
 
         public SkryptObject ExecuteClassDeclaration(Node node, ScopeContext scopeContext) {
             string ClassName = node.Body;
-            var ParentClass = scopeContext.SubContext.ParentClass;
+            var ParentClass = scopeContext.ParentClass;
 
             if (ParentClass != null) {
                 ClassName = ParentClass.Name + "." + ClassName;
@@ -188,7 +188,10 @@ namespace Skrypt.Execution
                 Modifiers = Parsing.Modifier.Const
             });
 
-            var scope = ExecuteBlock(node.Nodes[1], scopeContext, new SubContext { InClassDeclaration = true, ParentClass = Object });
+            var inputScope = scopeContext.Copy();
+            inputScope.ParentClass = Object;
+
+            var scope = ExecuteBlock(node.Nodes[1], inputScope, ScopeProperties.InClassDeclaration);
 
             scopeContext.AddType(ClassName, TypeObject);
 
@@ -301,22 +304,25 @@ namespace Skrypt.Execution
             return scopeContext;
         }
 
-        public ScopeContext ExecuteBlock (Node node, ScopeContext scopeContext, SubContext subContext = null) {
+        public ScopeContext ExecuteBlock (Node node, ScopeContext scopeContext, ScopeProperties properties = 0) {
             ScopeContext scope = new ScopeContext ();
 
             if (scopeContext != null)
             {
-                scope.SubContext.Merge(scopeContext.SubContext);
+                scope.Properties = scopeContext.Properties;
                 scope.ParentScope = scopeContext;
                 scope.Types = scopeContext.Types;
                 scope.CallStack = scopeContext.CallStack;
+                scope.ParentClass = scopeContext.ParentClass;
+                scope.Method = scopeContext.Method;
 
                 scopeContext.SubScopes.Add(scope);
             }
 
-            if (subContext != null) scope.SubContext.Merge(subContext);            
+  
+            if (properties != 0) scope.Properties = scope.Properties | scopeContext.Properties;            
 
-            if (!scope.SubContext.InClassDeclaration) {
+            if ((scope.Properties & ScopeProperties.InClassDeclaration) == 0) {
                 if ((node.Modifiers & Modifier.Static) != 0 || (node.Modifiers & Modifier.Public) != 0 || (node.Modifiers & Modifier.Private) != 0) {
                     _engine.ThrowError("Property modifiers cannot be used outside class", node.Token);
                 }
@@ -339,9 +345,9 @@ namespace Skrypt.Execution
                             break;
                     }
 
-                    if (scope.SubContext.SkippedLoop == true) return scope;
-                    if (scope.SubContext.BrokeLoop == true) return scope;
-                    if (scope.SubContext.ReturnObject != null) return scope;
+                    if ((scope.Properties & ScopeProperties.SkippedLoop) != 0) return scope;
+                    if ((scope.Properties & ScopeProperties.BrokeLoop) != 0) return scope;
+                    if (scope.ReturnObject != null) return scope;
                 }
                 else if (subNode.Type == TokenTypes.MethodDeclaration) {
                     var result = ExecuteMethodDeclaration(subNode, scope);
@@ -359,9 +365,9 @@ namespace Skrypt.Execution
                 else {
                     var result = _engine.Executor.ExecuteExpression(subNode, scope);
 
-                    if (scope.SubContext.SkippedLoop == true) return scope;
-                    if (scope.SubContext.BrokeLoop == true) return scope;
-                    if (scope.SubContext.ReturnObject != null) return scope;
+                    if ((scope.Properties & ScopeProperties.SkippedLoop) != 0) return scope;
+                    if ((scope.Properties & ScopeProperties.BrokeLoop) != 0) return scope;
+                    if (scope.ReturnObject != null) return scope;
                 }
 
                 _engine.CurrentScope = scope;
@@ -405,30 +411,27 @@ namespace Skrypt.Execution
 
         public AccessResult ExecuteAccess(SkryptObject Object, Node node, ScopeContext scopeContext, bool setter = false)
         {
-            //var sw = System.Diagnostics.Stopwatch.StartNew();
-
-            var localScope = new ScopeContext();
-            localScope.SubContext.Merge(scopeContext.SubContext);
-            localScope.ParentScope = scopeContext;
-            localScope.Types = scopeContext.Types;
-            localScope.CallStack = scopeContext.CallStack;
-
-            //Console.WriteLine(sw.Elapsed.TotalMilliseconds);
+            var localScope = new ScopeContext {
+                Properties = scopeContext.Properties,
+                ParentScope = scopeContext,
+                Types = scopeContext.Types,
+                CallStack = scopeContext.CallStack
+            };
 
             foreach (var p in Object.Properties) {
                 localScope.SetVariable(p.Name, p.Value, p.Modifiers);
             }
 
-            scopeContext.SubContext.Caller = Object;
-            localScope.SubContext.Caller = Object;
+            scopeContext.Caller = Object;
+            localScope.Caller = Object;
 
             if (node.Body == "access") {
                 var target = ExecuteExpression(node.Nodes[0], localScope);
-                localScope.SubContext.Caller = target;
+                localScope.Caller = target;
 
                 if (target.GetType() == typeof(GetMethod)) {
                     var ex = ((GetMethod)target).Execute(_engine, Object, new SkryptObject[0], new ScopeContext { ParentScope = scopeContext });
-                    target = ex.SubContext.ReturnObject;
+                    target = ex.ReturnObject;
                 }
 
                 var result = ExecuteAccess(target, node.Nodes[1], localScope, setter); 
@@ -451,7 +454,7 @@ namespace Skrypt.Execution
             {
                 if (op.OperationName == "return")
                 {
-                    if (!scopeContext.SubContext.InMethod)
+                    if ((scopeContext.Properties & ScopeProperties.InMethod) == 0)
                         _engine.ThrowError("Can't use return operator outside method", node.Token);
 
                     SkryptObject result = null;
@@ -460,24 +463,24 @@ namespace Skrypt.Execution
                         ? ExecuteExpression(node.Nodes[0], scopeContext)
                         : new Library.Native.System.Null();
 
-                    scopeContext.SubContext.ReturnObject = result;
+                    scopeContext.ReturnObject = result;
 
                     return null;
                 }
 
                 if (op.OperationName == "break") {
-                    if (!scopeContext.SubContext.InLoop)
+                    if ((scopeContext.Properties & ScopeProperties.InLoop) == 0)
                         _engine.ThrowError("Can't use break operator outside loop", node.Token);
 
-                    scopeContext.SubContext.BrokeLoop = true;
+                    scopeContext.Properties |= ScopeProperties.BrokeLoop;
                     return null;
                 }                
 
                 if (op.OperationName == "continue") {
-                    if (!scopeContext.SubContext.InLoop)
+                    if ((scopeContext.Properties & ScopeProperties.InLoop) == 0)
                         _engine.ThrowError("Can't use continue operator outside loop", node.Token);
 
-                    scopeContext.SubContext.SkippedLoop = true;
+                    scopeContext.Properties |= ScopeProperties.SkippedLoop;
                     return null;
                 }
 
@@ -486,12 +489,12 @@ namespace Skrypt.Execution
                     var target = ExecuteExpression(node.Nodes[0], scopeContext);
                     var result = ExecuteAccess(target, node.Nodes[1], scopeContext);
 
-                    scopeContext.SubContext.Caller = result.Owner;
+                    scopeContext.Caller = result.Owner;
 
                     if (result.Property.Value.GetType() == typeof(GetMethod)) {
                         var ex = ((GetMethod)result.Property.Value).Execute(_engine, result.Owner, new SkryptObject[0], new ScopeContext { ParentScope = scopeContext});
 
-                        return ex.SubContext.ReturnObject;
+                        return ex.ReturnObject;
                     }
                     else {
                         return result.Property.Value;
@@ -514,9 +517,7 @@ namespace Skrypt.Execution
 
                         var variable = GetVariable(node.Nodes[0].Body, scopeContext);
 
-                        if (variable != null && !scopeContext.SubContext.StrictlyLocal) {
-                            Console.WriteLine(variable.Modifiers);
-
+                        if (variable != null && !scopeContext.StrictlyLocal) {
                             if ((variable.Modifiers & Modifier.Const) != 0)
                                 _engine.ThrowError("Variable is marked as constant and can thus not be modified.", node.Nodes[0].Token);
 
@@ -658,7 +659,7 @@ namespace Skrypt.Execution
 
                 var foundMethod = ExecuteExpression(callNode.Getter, scopeContext);
 
-                var caller = scopeContext.SubContext.Caller;
+                var caller = scopeContext.Caller;
                 SkryptObject BaseType = null;
 
                 bool isConstructor = false;
@@ -732,7 +733,7 @@ namespace Skrypt.Execution
                     _engine.ThrowError("Cannot call value, as it is not a function!", callNode.Getter.Token);
                 }
 
-                scopeContext.SubContext.Caller = null;
+                scopeContext.Caller = null;
 
                 if (isConstructor) {
                     caller.ScopeContext = _engine.CurrentScope;
@@ -740,7 +741,7 @@ namespace Skrypt.Execution
 
                     return caller;
                 } else {
-                    return methodScopeResult.SubContext.ReturnObject;
+                    return methodScopeResult.ReturnObject;
                 }
             }
 
@@ -874,7 +875,7 @@ namespace Skrypt.Execution
                 _engine.ThrowError("Cannot call value, as it is not a function!");
             }
 
-            return methodScopeResult.SubContext.ReturnObject;
+            return methodScopeResult.ReturnObject;
         }        
     }
 }

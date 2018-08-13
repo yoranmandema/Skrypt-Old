@@ -53,6 +53,7 @@ namespace Skrypt.Tests.Runtime {
                 class o {
                     o () {}
                 }
+                log(o)
                 assert(o().Type == o)
             ")]
         [InlineData(@"

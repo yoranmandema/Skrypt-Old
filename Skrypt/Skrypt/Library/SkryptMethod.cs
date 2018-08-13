@@ -83,10 +83,13 @@ namespace Skrypt.Library
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
         {
-            var resultingScope =
-                engine.Executor.ExecuteBlock(BlockNode, scope, new SubContext {InMethod = true, Method = this});
+            var inputScope = scope.Copy();
+            inputScope.Method = this;
 
-            resultingScope.SubContext.ReturnObject = resultingScope.SubContext.ReturnObject ?? new Native.System.Null();
+            var resultingScope =
+                engine.Executor.ExecuteBlock(BlockNode, inputScope, ScopeProperties.InMethod);
+
+            resultingScope.ReturnObject = resultingScope.ReturnObject ?? new Native.System.Null();
             resultingScope.Variables = new Dictionary<string, Variable>(scope.Variables);
 
             return resultingScope;
@@ -135,11 +138,11 @@ namespace Skrypt.Library
 
             var newScope = new ScopeContext {
                 ParentScope = scope,
-                SubContext = scope.SubContext
+                Properties = scope.Properties
             };
 
-            newScope.SubContext.ReturnObject = returnValue;
-            newScope.SubContext.ReturnObject.Engine = engine;
+            newScope.ReturnObject = returnValue;
+            newScope.ReturnObject.Engine = engine;
             newScope.Variables = new Dictionary<string, Variable>(scope.Variables);
 
             return newScope;
@@ -160,11 +163,11 @@ namespace Skrypt.Library
 
             var newScope = new ScopeContext {
                 ParentScope = scope,
-                SubContext = scope.SubContext
+                Properties = scope.Properties
             };
 
-            newScope.SubContext.ReturnObject = returnValue;
-            newScope.SubContext.ReturnObject.Engine = engine;
+            newScope.ReturnObject = returnValue;
+            newScope.ReturnObject.Engine = engine;
             newScope.Variables = new Dictionary<string, Variable>(scope.Variables);
 
             return newScope;

@@ -159,14 +159,14 @@ namespace Skrypt.Engine
             dynamic right = Convert.ChangeType(rightObject, rightObject.GetType());
 
             Operation opLeft = left.GetOperation(
-                operation.OperationName,
+                operation.Type,
                 leftObject.GetType(),
                 rightObject.GetType(),
                 left.Operations
                 );
 
             Operation opRight = right.GetOperation(
-                operation.OperationName,
+                operation.Type,
                 leftObject.GetType(),
                 rightObject.GetType(),
                 right.Operations
@@ -194,7 +194,7 @@ namespace Skrypt.Engine
         public SkryptObject Eval(Operator operation, SkryptObject leftObject, Node node = null) {
             dynamic left = Convert.ChangeType(leftObject, leftObject.GetType());
 
-            Operation opLeft = left.GetOperation(operation.OperationName, leftObject.GetType(), null, left.Operations);
+            Operation opLeft = left.GetOperation(operation.Type, leftObject.GetType(), null, left.Operations);
 
             OperationDelegate operationDel = null;
 

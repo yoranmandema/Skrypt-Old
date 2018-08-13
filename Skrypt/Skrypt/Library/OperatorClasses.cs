@@ -7,6 +7,7 @@ namespace Skrypt.Library
         public static List<Operator> AllOperators = new List<Operator>();
         public bool FailOnMissingMembers = true;
         public string Operation = "";
+        public Operators Type = 0;
         public int Members { get; set; } = 2;
         public string OperationName { get; set; } = "";
     }
@@ -39,7 +40,7 @@ namespace Skrypt.Library
         {
             OperationName = "or";
             Operation = "||";
-
+            Type = Operators.Or;
             AllOperators.Add(this);
         }
     }
@@ -50,7 +51,7 @@ namespace Skrypt.Library
         {
             OperationName = "and";
             Operation = "&&";
-
+            Type = Operators.And;
             AllOperators.Add(this);
         }
     }
@@ -61,7 +62,7 @@ namespace Skrypt.Library
         {
             OperationName = "notequal";
             Operation = "!=";
-
+            Type = Operators.NotEqual;
             AllOperators.Add(this);
         }
     }
@@ -72,7 +73,7 @@ namespace Skrypt.Library
         {
             OperationName = "equal";
             Operation = "==";
-
+            Type = Operators.Equal;
             AllOperators.Add(this);
         }
     }
@@ -83,7 +84,7 @@ namespace Skrypt.Library
         {
             OperationName = "greater";
             Operation = ">";
-
+            Type = Operators.Greater;
             AllOperators.Add(this);
         }
     }
@@ -94,7 +95,7 @@ namespace Skrypt.Library
         {
             OperationName = "lesser";
             Operation = "<";
-
+            Type = Operators.Lesser;
             AllOperators.Add(this);
         }
     }
@@ -105,7 +106,7 @@ namespace Skrypt.Library
         {
             OperationName = "equalgreater";
             Operation = ">=";
-
+            Type = Operators.EqualGreater;
             AllOperators.Add(this);
         }
     }
@@ -116,7 +117,7 @@ namespace Skrypt.Library
         {
             OperationName = "equallesser";
             Operation = "<=";
-
+            Type = Operators.EqualLesser;
             AllOperators.Add(this);
         }
     }
@@ -125,7 +126,7 @@ namespace Skrypt.Library
         public OpBitShiftL() {
             OperationName = "bitshiftl";
             Operation = "<<";
-
+            Type = Operators.BitShiftL;
             AllOperators.Add(this);
         }
     }
@@ -134,7 +135,7 @@ namespace Skrypt.Library
         public OpBitShiftR() {
             OperationName = "bitshiftr";
             Operation = ">>";
-
+            Type = Operators.BitShiftR;
             AllOperators.Add(this);
         }
     }
@@ -143,7 +144,7 @@ namespace Skrypt.Library
         public OpBitShiftRZ() {
             OperationName = "bitshiftrz";
             Operation = ">>>";
-
+            Type = Operators.BitShiftRZ;
             AllOperators.Add(this);
         }
     }
@@ -152,7 +153,7 @@ namespace Skrypt.Library
         public OpBitAnd() {
             OperationName = "bitand";
             Operation = "&";
-
+            Type = Operators.BitAnd;
             AllOperators.Add(this);
         }
     }
@@ -161,7 +162,7 @@ namespace Skrypt.Library
         public OpBitXor() {
             OperationName = "bitxor";
             Operation = "|||";
-
+            Type = Operators.BitXOr;
             AllOperators.Add(this);
         }
     }
@@ -170,7 +171,7 @@ namespace Skrypt.Library
         public OpBitOr() {
             OperationName = "bitor";
             Operation = "|";
-
+            Type = Operators.BitOr;
             AllOperators.Add(this);
         }
     }
@@ -180,7 +181,7 @@ namespace Skrypt.Library
             OperationName = "bitnot";
             Members = 1;
             Operation = "~";
-
+            Type = Operators.BitNot;
             AllOperators.Add(this);
         }
     }
@@ -191,7 +192,7 @@ namespace Skrypt.Library
         {
             OperationName = "add";
             Operation = "+";
-
+            Type = Operators.Add;
             AllOperators.Add(this);
         }
     }
@@ -203,7 +204,7 @@ namespace Skrypt.Library
             OperationName = "subtract";
             Operation = "-";
             FailOnMissingMembers = false;
-
+            Type = Operators.Subtract;
             AllOperators.Add(this);
         }
     }
@@ -214,7 +215,7 @@ namespace Skrypt.Library
         {
             OperationName = "multiply";
             Operation = "*";
-
+            Type = Operators.Multiply;
             AllOperators.Add(this);
         }
     }
@@ -225,7 +226,7 @@ namespace Skrypt.Library
         {
             OperationName = "divide";
             Operation = "/";
-
+            Type = Operators.Divide;
             AllOperators.Add(this);
         }
     }
@@ -236,7 +237,7 @@ namespace Skrypt.Library
         {
             OperationName = "modulo";
             Operation = "%";
-
+            Type = Operators.Modulo;
             AllOperators.Add(this);
         }
     }
@@ -247,7 +248,7 @@ namespace Skrypt.Library
         {
             OperationName = "power";
             Operation = "^";
-
+            Type = Operators.Power;
             AllOperators.Add(this);
         }
     }
@@ -274,7 +275,7 @@ namespace Skrypt.Library
         public OpIndex() {
             OperationName = "index";
             Operation = "[";
-
+            Type = Operators.Index;
             AllOperators.Add(this);
         }
     }
@@ -286,7 +287,7 @@ namespace Skrypt.Library
             OperationName = "negate";
             Members = 1;
             Operation = "-";
-
+            Type = Operators.Negate;
             AllOperators.Add(this);
         }
     }
@@ -298,7 +299,7 @@ namespace Skrypt.Library
             OperationName = "not";
             Members = 1;
             Operation = "!";
-
+            Type = Operators.Not;
             AllOperators.Add(this);
         }
     }
@@ -310,7 +311,7 @@ namespace Skrypt.Library
             OperationName = "postincrement";
             Members = 1;
             Operation = "++";
-
+            Type = Operators.PostIncrement;
             AllOperators.Add(this);
         }
     }
@@ -322,7 +323,7 @@ namespace Skrypt.Library
             OperationName = "postdecrement";
             Members = 1;
             Operation = "--";
-
+            Type = Operators.PostDecrement;
             AllOperators.Add(this);
         }
     }

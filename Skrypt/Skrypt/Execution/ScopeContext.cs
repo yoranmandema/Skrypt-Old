@@ -9,16 +9,7 @@ namespace Skrypt.Execution
 {
     public class SubContext
     {
-        private SkryptObject _caller;
-        public SkryptObject Caller {
-            get {
-                return _caller;
-            }
-            set {
-                //Console.WriteLine("Caller set to: " + value);
-                _caller = value;
-            }
-        }
+        public SkryptObject Caller {get; set;}
         public bool GettingCaller = false;
         public bool InLoop = false;
         public bool BrokeLoop = false;
@@ -29,11 +20,8 @@ namespace Skrypt.Execution
         public UserMethod Method = null;
         public SkryptObject ReturnObject = null;
         public SkryptObject ParentClass = null;
-        //public SkryptObject CreatedClass = null;
 
         public void Merge(SubContext other) {
-            //Console.WriteLine("bef: " + JsonConvert.SerializeObject(this, Formatting.None).Replace("\"", ""));
-
             GettingCaller = GettingCaller || other.GettingCaller;
             InLoop = InLoop || other.InLoop;
             BrokeLoop = BrokeLoop || other.BrokeLoop;
@@ -42,8 +30,16 @@ namespace Skrypt.Execution
             StrictlyLocal = StrictlyLocal || other.StrictlyLocal;
             InClassDeclaration = InClassDeclaration || other.InClassDeclaration;
             ParentClass = other.ParentClass;
-            //Console.WriteLine("aft: " + JsonConvert.SerializeObject(this, Formatting.None).Replace("\"", ""));
         }
+    }
+
+    public enum ScopeProperties {
+        GettingCaller = 1,
+        InLoop = 2,
+        BrokeLoop = 4,
+        SkippedLoop = 8,
+        InMethod = 16,
+        InClassDeclaration = 32,
     }
 
     public class ScopeContext
@@ -53,10 +49,15 @@ namespace Skrypt.Execution
         public int Start;
         public int End;
         public CallStack CallStack { get; set; }
-        public SubContext SubContext = new SubContext();
+        public ScopeProperties Properties = 0;
         public Dictionary<string, Variable> Variables { get; set; } = new Dictionary<string, Variable>();
         public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
         public string Type { get; set; } = "";
+        public bool StrictlyLocal;
+        public SkryptObject Caller { get; set; }
+        public UserMethod Method { get; set; }
+        public SkryptObject ReturnObject { get; set; }
+        public SkryptObject ParentClass { get; set; }
 
         public void SetVariable(string name, SkryptObject value, Modifier modifiers = Modifier.None)
         {

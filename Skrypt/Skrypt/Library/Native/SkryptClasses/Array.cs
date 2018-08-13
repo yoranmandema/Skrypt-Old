@@ -194,7 +194,7 @@ namespace Skrypt.Library.Native
 
                     var r = m.Execute(engine, self, new[] {x,y}, scope);
 
-                    if (r.SubContext.ReturnObject.ToBoolean()) {
+                    if (r.ReturnObject.ToBoolean()) {
                         return 1;
                     } else {
                         return -1;
