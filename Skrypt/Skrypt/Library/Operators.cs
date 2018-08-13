@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Skrypt.Library {
-    enum Operators {
+    public enum Operators {
         Add,
         Subtract,
         Multiply,
@@ -18,14 +18,16 @@ namespace Skrypt.Library {
         PreIncrement,
         PreDecrement,
         Index,
+        IndexSet,
         Or,
         And,
+        Not,
         Equal,
         NotEqual,
         Greater,
         Lesser,
         EqualGreater,
-        QualLesser,
+        EqualLesser,
         BitShiftL,
         BitShiftR,
         BitShiftRZ,

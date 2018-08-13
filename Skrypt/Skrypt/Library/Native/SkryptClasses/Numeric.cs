@@ -14,7 +14,7 @@ namespace Skrypt.Library.Native
         {
             public new List<Operation> Operations = new List<Operation>
             {
-                new Operation("add", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Add, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -22,7 +22,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric(a + b);
                     }),
-                new Operation("subtract", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Subtract, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -30,7 +30,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric(a - b);
                     }),
-                new Operation("divide", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Divide, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -38,7 +38,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric(a / b);
                     }),
-                new Operation("multiply", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Multiply, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -46,7 +46,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric(a * b);
                     }),
-                new Operation("modulo", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Modulo, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -54,7 +54,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric(a % b);
                     }),
-                new Operation("power", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Power, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -62,7 +62,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric(Sys.Math.Pow(a.Value,b.Value));
                     }),
-                new Operation("lesser", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Lesser, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -70,7 +70,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(a < b);
                     }),
-                new Operation("greater", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Greater, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -78,7 +78,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(a > b);
                     }),
-                new Operation("equallesser", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.EqualLesser, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -86,7 +86,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(a <= b);
                     }),
-                new Operation("equalgreater", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.EqualGreater, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -94,7 +94,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(a >= b);
                     }),
-                new Operation("equal", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Equal, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -102,7 +102,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(Equals(a.Value,b.Value));
                     }),
-                new Operation("notequal", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.NotEqual, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -110,7 +110,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(!Equals(a.Value,b.Value));
                     }),
-                new Operation("and", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.And, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -118,7 +118,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean((a.Value != 0d) && (b.Value != 0d));
                     }),
-                new Operation("or", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.Or, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -126,7 +126,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean((a.Value != 0d) || (b.Value != 0d));
                     }),
-                new Operation("bitshiftl", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.BitShiftL, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -134,7 +134,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric((int)(a.Value) << (int)(b.Value));
                     }),
-                new Operation("bitshiftr", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.BitShiftR, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -142,7 +142,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric((int)(a.Value) >> (int)(b.Value));
                     }),
-                new Operation("bitshiftrz", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.BitShiftRZ, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -150,7 +150,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric((double)((uint)Sys.Convert.ToInt32(Sys.Convert.ToDouble(a.Value)) >> Sys.Convert.ToInt32(Sys.Convert.ToDouble(b.Value))));
                     }),              
-                new Operation("bitand", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.BitAnd, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -158,7 +158,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric((int)(a.Value) & (int)(b.Value));
                     }),
-                new Operation("bitxor", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.BitXOr, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -166,7 +166,7 @@ namespace Skrypt.Library.Native
 
                         return new Numeric((int)(a.Value) ^ (int)(b.Value));
                     }),
-                new Operation("bitor", typeof(Numeric), typeof(Numeric),
+                new Operation(Operators.BitOr, typeof(Numeric), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -174,13 +174,13 @@ namespace Skrypt.Library.Native
 
                         return new Numeric((int)(a.Value) | (int)(b.Value));
                     }),
-                new Operation("bitnot", typeof(Numeric),
+                new Operation(Operators.BitNot, typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         return new Numeric(~(int)a.Value);
                     }),
-                new Operation("postincrement", typeof(Numeric),
+                new Operation(Operators.PostIncrement, typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -188,7 +188,7 @@ namespace Skrypt.Library.Native
                         a.Value++;
                         return new Numeric(v);
                     }),
-                new Operation("postdecrement", typeof(Numeric),
+                new Operation(Operators.PostDecrement, typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
@@ -196,13 +196,13 @@ namespace Skrypt.Library.Native
                         a.Value--;
                         return new Numeric(v);
                     }),
-                new Operation("negate", typeof(Numeric),
+                new Operation(Operators.Negate, typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         return new Numeric(-a.Value);
                     }),
-                new Operation("not", typeof(Numeric),
+                new Operation(Operators.Not, typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);

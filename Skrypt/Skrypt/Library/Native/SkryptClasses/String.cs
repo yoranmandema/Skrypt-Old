@@ -14,7 +14,7 @@ namespace Skrypt.Library.Native
         {
             public new List<Operation> Operations = new List<Operation>
             {
-                new Operation("add", typeof(String), typeof(SkryptObject),
+                new Operation(Operators.Add, typeof(String), typeof(SkryptObject),
                     input =>
                     {
                         var a = TypeConverter.ToString(input, 0);
@@ -22,7 +22,7 @@ namespace Skrypt.Library.Native
 
                         return new String(a + b);
                     }),
-                new Operation("add", typeof(SkryptObject), typeof(String),
+                new Operation(Operators.Add, typeof(SkryptObject), typeof(String),
                     input =>
                     {
                         var a = TypeConverter.ToString(input, 0);
@@ -30,7 +30,7 @@ namespace Skrypt.Library.Native
 
                         return new String(a + b);
                     }),
-                new Operation("index", typeof(String), typeof(Numeric),
+                new Operation(Operators.Index, typeof(String), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToString(input, 0);
@@ -38,7 +38,7 @@ namespace Skrypt.Library.Native
 
                         return (String) a.Value[(int) b].ToString();
                     }),
-                new Operation("equal", typeof(String), typeof(String),
+                new Operation(Operators.Equal, typeof(String), typeof(String),
                     input =>
                     {
                         var a = TypeConverter.ToString(input, 0);
@@ -46,7 +46,7 @@ namespace Skrypt.Library.Native
 
                         return (Boolean) (a.Value == b.Value);
                     }),
-                new Operation("notequal", typeof(String), typeof(String),
+                new Operation(Operators.NotEqual, typeof(String), typeof(String),
                     input =>
                     {
                         var a = TypeConverter.ToString(input, 0);

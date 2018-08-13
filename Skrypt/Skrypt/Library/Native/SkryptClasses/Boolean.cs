@@ -10,7 +10,7 @@ namespace Skrypt.Library.Native
         {
             public new List<Operation> Operations = new List<Operation>
             {
-                new Operation("and", typeof(Boolean), typeof(Boolean),
+                new Operation(Operators.And, typeof(Boolean), typeof(Boolean),
                     input =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);
@@ -18,7 +18,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(a && b);
                     }),
-                new Operation("or", typeof(Boolean), typeof(Boolean),
+                new Operation(Operators.Or, typeof(Boolean), typeof(Boolean),
                     input =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);
@@ -26,14 +26,14 @@ namespace Skrypt.Library.Native
 
                         return new Boolean(a || b);
                     }),
-                new Operation("not", typeof(Boolean),
+                new Operation(Operators.Not, typeof(Boolean),
                     input =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);
 
                         return new Boolean(!a);
                     }),
-                new Operation("equal", typeof(Boolean), typeof(Boolean),
+                new Operation(Operators.Equal, typeof(Boolean), typeof(Boolean),
                     input =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);
@@ -41,7 +41,7 @@ namespace Skrypt.Library.Native
 
                         return new Boolean((bool)a == (bool)b);
                     }),
-                new Operation("notequal", typeof(Boolean), typeof(Boolean),
+                new Operation(Operators.NotEqual, typeof(Boolean), typeof(Boolean),
                     input =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);

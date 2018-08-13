@@ -10,27 +10,27 @@ namespace Skrypt.Library.Native
         {
             public new List<Operation> Operations = new List<Operation>
             {
-                new Operation("not", typeof(Null),
+                new Operation(Operators.Not, typeof(Null),
                     input =>
                     {
                         return new Boolean(true);
                     }),
-                new Operation("equal", typeof(Null), typeof(SkryptObject),
+                new Operation(Operators.Equal, typeof(Null), typeof(SkryptObject),
                     input =>
                     {
                         return new Boolean(input[1].GetType() == typeof(Null));
                     }),
-                new Operation("equal", typeof(SkryptObject), typeof(Null),
+                new Operation(Operators.Equal, typeof(SkryptObject), typeof(Null),
                     input =>
                     {
                         return new Boolean(input[0].GetType() == typeof(Null));
                     }),
-                new Operation("notequal", typeof(Null), typeof(SkryptObject),
+                new Operation(Operators.NotEqual, typeof(Null), typeof(SkryptObject),
                     input =>
                     {
                         return new Boolean(input[1].GetType() != typeof(Null));
                     }),
-                new Operation("notequal", typeof(SkryptObject), typeof(Null),
+                new Operation(Operators.NotEqual, typeof(SkryptObject), typeof(Null),
                     input =>
                     {
                         return new Boolean(input[0].GetType() != typeof(Null));

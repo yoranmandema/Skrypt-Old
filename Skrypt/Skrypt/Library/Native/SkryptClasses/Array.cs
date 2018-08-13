@@ -13,7 +13,7 @@ namespace Skrypt.Library.Native
         {
             public new List<Operation> Operations = new List<Operation>
             {
-                new Operation("add", typeof(Array), typeof(SkryptObject),
+                new Operation(Operators.Add, typeof(Array), typeof(SkryptObject),
                     input =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
@@ -25,7 +25,7 @@ namespace Skrypt.Library.Native
 
                         return newArray;
                     }),
-                new Operation("add", typeof(SkryptObject), typeof(Array),
+                new Operation(Operators.Add, typeof(SkryptObject), typeof(Array),
                     input =>
                     {
                         var a = TypeConverter.ToAny(input, 0);
@@ -37,7 +37,7 @@ namespace Skrypt.Library.Native
 
                         return newArray;
                     }),
-                new Operation("multiply", typeof(Array), typeof(Numeric),
+                new Operation(Operators.Multiply, typeof(Array), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
@@ -56,7 +56,7 @@ namespace Skrypt.Library.Native
 
                         return newArray;
                     }),
-                new Operation("index", typeof(Array), typeof(Numeric),
+                new Operation(Operators.Index, typeof(Array), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
@@ -68,7 +68,7 @@ namespace Skrypt.Library.Native
                          
                         return a.List[(int)b];
                     }),
-                new Operation("index", typeof(Array), typeof(String),
+                new Operation(Operators.Index, typeof(Array), typeof(String),
                     input =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
@@ -80,7 +80,7 @@ namespace Skrypt.Library.Native
 
                         return a.Table[b];
                     }),
-                new Operation("indexset", typeof(Array), typeof(Numeric),
+                new Operation(Operators.IndexSet, typeof(Array), typeof(Numeric),
                     input =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
@@ -101,7 +101,7 @@ namespace Skrypt.Library.Native
 
                         return newValue;
                     }),
-                new Operation("indexset", typeof(Array), typeof(String),
+                new Operation(Operators.IndexSet, typeof(Array), typeof(String),
                     input =>
                     {
                         var a = TypeConverter.ToArray(input, 0);

@@ -18,7 +18,7 @@ namespace Skrypt {
 
         public new List<Operation> Operations = new List<Operation>
         {
-            new Operation("add", typeof(Vector), typeof(Vector),
+            new Operation(Operators.Add, typeof(Vector), typeof(Vector),
                 input =>
                 {
                     var a = ToVector(input, 0);
@@ -26,7 +26,7 @@ namespace Skrypt {
 
                     return new Vector(a.X + b.X,a.Y + b.Y,a.Z + b.Z);
                 }),
-            new Operation("add", typeof(Vector), typeof(Classes.Numeric),
+            new Operation(Operators.Add, typeof(Vector), typeof(Classes.Numeric),
                 input =>
                 {
                     var a = ToVector(input, 0);
@@ -34,7 +34,7 @@ namespace Skrypt {
 
                     return new Vector(a.X + b,a.Y + b,a.Z + b);
                 }),
-            new Operation("add", typeof(Classes.Numeric), typeof(Vector),
+            new Operation(Operators.Add, typeof(Classes.Numeric), typeof(Vector),
                 input =>
                 {
                     var a = TypeConverter.ToNumeric(input, 0);
@@ -42,7 +42,7 @@ namespace Skrypt {
 
                     return new Vector(a + b.X,a + b.Y,a + b.Z);
                 }),
-            new Operation("multiply", typeof(Vector), typeof(Vector),
+            new Operation(Operators.Multiply, typeof(Vector), typeof(Vector),
                 input =>
                 {
                     var a = ToVector(input, 0);
@@ -50,7 +50,7 @@ namespace Skrypt {
 
                     return new Vector(a.X * b.X,a.Y * b.Y,a.Z * b.Z);
                 }),
-            new Operation("multiply", typeof(Vector), typeof(Classes.Numeric),
+            new Operation(Operators.Multiply, typeof(Vector), typeof(Classes.Numeric),
                 input =>
                 {
                     var a = ToVector(input, 0);
@@ -58,7 +58,7 @@ namespace Skrypt {
 
                     return new Vector(a.X * b,a.Y * b,a.Z * b);
                 }),
-            new Operation("multiply", typeof(Classes.Numeric), typeof(Vector),
+            new Operation(Operators.Multiply, typeof(Classes.Numeric), typeof(Vector),
                 input =>
                 {
                     var a = TypeConverter.ToNumeric(input, 0);

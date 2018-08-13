@@ -11,29 +11,25 @@ namespace Skrypt.Library
 
     public class Operation
     {
-        public string Name;
+        public Operators Operator;
         public OperationDelegate OperationDelegate;
         public Type TypeLeft;
         public Type TypeRight;
 
-        public Operation(string n, Type tl, Type tr, OperationDelegate del)
+        public Operation(Operators o, Type tl, Type tr, OperationDelegate del)
         {
-            Name = n;
+            Operator = o;
             TypeLeft = tl;
             TypeRight = tr;
             OperationDelegate = del;
         }
 
-        public Operation(string n, Type tl, OperationDelegate del)
+        public Operation(Operators o, Type tl, OperationDelegate del)
         {
-            Name = n;
+            Operator = o;
             TypeLeft = tl;
             TypeRight = null;
             OperationDelegate = del;
-        }
-
-        public override string ToString() {
-            return $"{TypeLeft.Name} {Name} {TypeRight.Name}";
         }
     }
 
@@ -41,17 +37,17 @@ namespace Skrypt.Library
         [JsonIgnore]
         public List<Operation> Operations = new List<Operation>
            {
-                new Operation("not", typeof(SkryptObject),
+                new Operation(Operators.Not, typeof(SkryptObject),
                     input =>
                     {
                         return new S.Boolean(input[0].GetType() != typeof(S.Null));
                     }),
-                new Operation("equal", typeof(SkryptObject), typeof(SkryptObject),
+                new Operation(Operators.Equal, typeof(SkryptObject), typeof(SkryptObject),
                     input =>
                     {
                         return new S.Boolean(ReferenceEquals(input[0],input[1]));
                     }),
-                new Operation("notequal", typeof(SkryptObject), typeof(SkryptObject),
+                new Operation(Operators.NotEqual, typeof(SkryptObject), typeof(SkryptObject),
                     input =>
                     {
                         return new S.Boolean(!ReferenceEquals(input[0],input[1]));
@@ -63,13 +59,13 @@ namespace Skrypt.Library
         [JsonIgnore] public SkryptEngine Engine { get; set; }
         public virtual string Name { get; set; }
 
-        public Operation GetOperation(string n, Type tl, Type tr, List<Operation> ops)
+        public Operation GetOperation(Operators o, Type tl, Type tr, List<Operation> ops)
         {
             for (var i = 0; i < ops.Count; i++)
             {
                 var op = ops[i];
 
-                if (op.Name != n) continue;
+                if (op.Operator != o) continue;
 
                 if (!op.TypeLeft.IsAssignableFrom(tl)) continue;
 
