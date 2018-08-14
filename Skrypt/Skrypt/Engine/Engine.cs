@@ -193,7 +193,7 @@ namespace Skrypt.Engine
         public SkryptObject Eval(Operator operation, SkryptObject leftObject, Node node = null) {
             dynamic left = Convert.ChangeType(leftObject, leftObject.GetType());
 
-            Operation opLeft = left.GetOperation(operation.Type, leftObject.GetType(), null, left.Operations);
+            Operation opLeft = SkryptObject.GetOperation(operation.Type, leftObject.GetType(), null, left.Operations);
 
             OperationDelegate operationDel = null;
 
@@ -339,7 +339,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            //programNode.Print();
+            programNode.Print();
 
             Stopwatch = Stopwatch.StartNew();
             GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);

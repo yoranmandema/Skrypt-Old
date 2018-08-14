@@ -90,8 +90,10 @@ namespace Skrypt.Execution
             var initResult = ExecuteExpression(initNode, loopScope);
 
             if (scopeContext != null) {
-                loopScope.Properties |= scopeContext.Properties;
+                loopScope.Properties = scopeContext.Properties;
             }
+
+            loopScope.Properties |= ScopeProperties.InLoop;
 
             loopScope.StrictlyLocal = false;
 
@@ -100,7 +102,7 @@ namespace Skrypt.Execution
 
                 if (!conditionResult) break;
 
-                var scope = ExecuteBlock(block, loopScope, ScopeProperties.InLoop);
+                var scope = ExecuteBlock(block, loopScope);
 
                 if ((scope.Properties & ScopeProperties.BrokeLoop) != 0) break;
                 if (scope.ReturnObject != null) {

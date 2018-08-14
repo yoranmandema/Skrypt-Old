@@ -1,11 +1,9 @@
 using System
 
-fn DecimalToBinary (n) {
+/*fn DecimalToBinary (n) {
 	str = ""
 	rem = n
 
-	print(rem)
-		
 	while (rem >= 1) {
 		d = Math.Floor(rem % 2)
 		rem = rem / 2
@@ -13,6 +11,8 @@ fn DecimalToBinary (n) {
 	}
 	
 	return str.Reverse()
-}
+}*/
 
-print(DecimalToBinary(8))
+for (i = 0; i < 256; i++) {
+	print(i)
+}
