@@ -6,13 +6,13 @@ fn DecimalToBinary (n) {
 
 	print(rem)
 		
-	while (rem > 0) {
-		d = rem % 2
-		rem = Math.Floor(rem / 2)
+	while (rem >= 1) {
+		d = Math.Floor(rem % 2)
+		rem = rem / 2
 		str = str + d
 	}
 	
-	return str
+	return str.Reverse()
 }
 
-print(DecimalToBinary(256))
+print(DecimalToBinary(8))

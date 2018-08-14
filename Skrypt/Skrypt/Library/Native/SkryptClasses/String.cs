@@ -153,6 +153,16 @@ namespace Skrypt.Library.Native
             }
 
             [Constant]
+            public SkryptObject Reverse(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                var s = (String)self;
+
+                char[] charArray = s.Value.ToCharArray();
+                Sys.Array.Reverse(charArray);
+
+                return engine.Create<String>(new string(charArray));
+            }
+
+            [Constant]
             public SkryptObject Find(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 return engine.Create<Numeric>(
                     ((String)self).Value.IndexOf(
