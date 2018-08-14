@@ -83,10 +83,13 @@ namespace Skrypt.Library
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
             ScopeContext scope)
         {
-            var inputScope = scope.Copy();
+            var inputScope = new ScopeContext {
+                ParentScope = scope,
+                Properties = scope.Properties | ScopeProperties.InMethod
+            };
 
             var resultingScope =
-                engine.Executor.ExecuteBlock(BlockNode, inputScope, ScopeProperties.InMethod);
+                engine.Executor.ExecuteBlock(BlockNode, inputScope);
 
             resultingScope.ReturnObject = resultingScope.ReturnObject ?? new Native.System.Null();
             resultingScope.Variables = new Dictionary<string, Variable>(scope.Variables);
@@ -137,7 +140,7 @@ namespace Skrypt.Library
 
             var newScope = new ScopeContext {
                 ParentScope = scope,
-                Properties = scope.Properties
+                Properties = scope.Properties | ScopeProperties.InMethod
             };
 
             newScope.ReturnObject = returnValue;

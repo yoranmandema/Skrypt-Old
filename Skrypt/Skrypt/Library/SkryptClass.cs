@@ -60,7 +60,7 @@ namespace Skrypt.Library
         [JsonIgnore] public SkryptEngine Engine { get; set; }
         public virtual string Name { get; set; }
 
-        public Operation GetOperation(Operators o, Type tl, Type tr, List<Operation> ops)
+        public static Operation GetOperation(Operators o, Type tl, Type tr, List<Operation> ops)
         {
             for (var i = 0; i < ops.Count; i++)
             {

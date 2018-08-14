@@ -5,7 +5,6 @@ using System.Text.RegularExpressions;
 using Skrypt.Analysis;
 using Skrypt.Execution;
 using Skrypt.Library;
-using Skrypt.Library.Native;
 using Skrypt.Library.Reflection;
 using Skrypt.Parsing;
 using Skrypt.Tokenization;
@@ -158,14 +157,14 @@ namespace Skrypt.Engine
             dynamic left = Convert.ChangeType(leftObject, leftObject.GetType());
             dynamic right = Convert.ChangeType(rightObject, rightObject.GetType());
 
-            Operation opLeft = left.GetOperation(
+            Operation opLeft = SkryptObject.GetOperation(
                 operation.Type,
                 leftObject.GetType(),
                 rightObject.GetType(),
                 left.Operations
                 );
 
-            Operation opRight = right.GetOperation(
+            Operation opRight = SkryptObject.GetOperation(
                 operation.Type,
                 leftObject.GetType(),
                 rightObject.GetType(),
@@ -305,9 +304,9 @@ namespace Skrypt.Engine
             throw new SkryptException(message + lineRow, token);
         }
 
-        public SkryptEngine SetValue(string name, Delegate value) {
-            return SetValue(name, new SharpMethod(value));
-        }
+        //public SkryptEngine SetValue(string name, Delegate value) {
+        //    return SetValue(name, new SharpMethod(value));
+        //}
 
         public SkryptEngine SetValue(string name, SkryptObject value) {
             GlobalScope.SetVariable(name, value);
