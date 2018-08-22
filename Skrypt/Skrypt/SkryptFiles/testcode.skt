@@ -8,8 +8,15 @@ class MatrixLibrary {
 			self.content = [[0] * rows] * columns
 		}
 	}
+
+	static fn Multiply (m1,m2) {
+		//stuff
+	}
 }
 
 A = MatrixLibrary.Matrix(2,3)
 
-print(A)
+B = [0] * 100
+B[0] = 2
+
+print(B)

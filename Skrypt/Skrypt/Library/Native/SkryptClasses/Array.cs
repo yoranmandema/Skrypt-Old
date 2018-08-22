@@ -49,7 +49,7 @@ namespace Skrypt.Library.Native
                         newArray.List = new List<SkryptObject>(a.List);
                         for (var i = 0; i < mul; i++) {
                             foreach (var obj in a.List) {
-                                var copy = ObjectExtensions.Copy(obj);
+                                var copy = obj.Clone();
                                 newArray.List.Add(copy);
                             }
                         }

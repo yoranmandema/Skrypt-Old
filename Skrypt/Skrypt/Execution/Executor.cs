@@ -262,7 +262,13 @@ namespace Skrypt.Execution
                     });
 
                     if (find == null) {
-                        Object.Properties.Add(p.Copy());
+                        Object.Properties.Add(new SkryptProperty {
+                            Name = p.Name,
+                            Value = p.Value,
+                            Modifiers = p.Modifiers,
+                            IsGetter = p.IsGetter,
+                            IsSetter = p.IsSetter
+                        });
                     }
                 }
 
@@ -276,7 +282,13 @@ namespace Skrypt.Execution
                     });
 
                     if (find == null) {
-                        TypeObject.Properties.Add(p.Copy());
+                        TypeObject.Properties.Add(new SkryptProperty {
+                            Name = p.Name,
+                            Value = p.Value,
+                            Modifiers = p.Modifiers,
+                            IsGetter = p.IsGetter,
+                            IsSetter = p.IsSetter
+                        });
                     }
                 }
             }
@@ -688,12 +700,7 @@ namespace Skrypt.Execution
 
                         BaseType = GetType(typeName, scopeContext);
 
-                        //caller = ObjectExtensions.Copy(BaseType);
-                        //caller.Properties = new List<SkryptProperty>(BaseType.Properties);
-                        //caller.Operations = new List<Operation>(BaseType.Operations);
-
                         caller = (SkryptType)Activator.CreateInstance(BaseType.GetType());
-                        //caller = BaseType.Copy();
                         caller.ScopeContext = _engine.CurrentScope;
                         caller.Engine = _engine;
                         caller.Name = typeName;
@@ -718,10 +725,6 @@ namespace Skrypt.Execution
                 }
 
                 ScopeContext methodScopeResult = null;
-
-                //_engine.CurrentStack = new CallStack(foundMethod.Name, node.Token, _engine.CurrentStack);
-
-                //Console.WriteLine("Caller: " + caller);
 
                 if (foundMethod.GetType() == typeof(UserMethod)) {
                     UserMethod method = (UserMethod)foundMethod;
@@ -778,7 +781,7 @@ namespace Skrypt.Execution
 
             dynamic left = Convert.ChangeType(Object, Object.GetType());
 
-            Operation opLeft = left.GetOperation("indexset", Object.GetType(), arguments[0].GetType(), left.Operations);
+            Operation opLeft = SkryptObject.GetOperation(Operators.IndexSet, Object.GetType(), arguments[0].GetType(), left.Operations);
 
             OperationDelegate operation = null;
 
