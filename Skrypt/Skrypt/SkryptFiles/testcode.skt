@@ -1,24 +1,15 @@
 using System
 
-/*class MatrixLibrary {
+class MatrixLibrary {
 	static class Matrix {
+		public content = []
+
 		Matrix (rows, columns) {
 			self.content = [[0] * rows] * columns
 		}
-
-		private content = []
 	}
-}*/
-
-class Object {
-	static public StaticProperty = 1
-	public InstanceProperty = 2
-
-	Object () {}
 }
 
-A = Object.StaticProperty
-B = Object().InstanceProperty
+A = MatrixLibrary.Matrix(2,3)
 
 print(A)
-print(B)

@@ -46,12 +46,12 @@ namespace Skrypt.Execution
             Types[name] = value;
         }
 
-        public void PrintTypes () {
+        public void PrintTypes (string indent = "") {
             foreach (var t in Types) {
-                Console.WriteLine(t.Value.Name);
+                Console.WriteLine(indent + t.Value.Name);
             }
 
-            ParentScope?.PrintTypes();
+            ParentScope?.PrintTypes(indent + "  ");
         }
     }
 }

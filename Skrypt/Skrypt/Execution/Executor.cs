@@ -40,6 +40,10 @@ namespace Skrypt.Execution
                 foundVar = GetType(name, scopeContext.ParentScope);
             }
 
+            if (foundVar == null) {
+                _engine.ThrowError("Could not find type: " + name);
+            }
+
             return foundVar;
         }
 
@@ -177,6 +181,8 @@ namespace Skrypt.Execution
                 Name = ClassName,
             };
 
+            scopeContext.AddType(ClassName, TypeObject);
+
             Object.Properties.Add(new SkryptProperty {
                 Name = "TypeName",
                 Value = new Library.Native.System.String(ClassName),
@@ -195,13 +201,14 @@ namespace Skrypt.Execution
                 Modifiers = Parsing.Modifier.Const
             });
 
-            var inputScope = scopeContext.Copy();
-            inputScope.ParentClass = Object;
+            //var inputScope = new ScopeContext {
+            //    ParentScope = scopeContext,
+            //    ParentClass = Object
+            //};
 
-            var scope = ExecuteBlock(node.Nodes[1], inputScope, ScopeProperties.InClassDeclaration);
+            //inputScope.Properties |= scopeContext.Properties;
 
-            scopeContext.AddType(ClassName, TypeObject);
-            //scopeContext.Types = scope.Types;
+            var scope = ExecuteBlock(node.Nodes[1], scopeContext, ScopeProperties.InClassDeclaration);
 
             foreach (var v in scope.Variables) {
                 if (v.Value.Modifiers != Modifier.None) {
@@ -672,7 +679,6 @@ namespace Skrypt.Execution
                 bool isConstructor = false;
 
                 if (!typeof(SkryptMethod).IsAssignableFrom(foundMethod.GetType())) {
-                    var type = foundMethod.Name;
                     var find = foundMethod.Properties.Find((x) => x.Name == "Constructor");
 
                     if (find != null) {
