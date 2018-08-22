@@ -20,7 +20,7 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToString(input, 1);
 
-                        return new String(a + b);
+                        return a.Engine.Create<String>(a + b);
                     }),
                 new Operation(Operators.Add, typeof(SkryptObject), typeof(String),
                     input =>
@@ -28,7 +28,7 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToString(input, 1);
 
-                        return new String(a + b);
+                        return a.Engine.Create<String>(a + b);
                     }),
                 new Operation(Operators.Index, typeof(String), typeof(Numeric),
                     input =>
@@ -36,7 +36,7 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return (String) a.Value[(int) b].ToString();
+                        return b.Engine.Create<String>(a.Value[(int) b].ToString());
                     }),
                 new Operation(Operators.Equal, typeof(String), typeof(String),
                     input =>
@@ -44,7 +44,7 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToString(input, 1);
 
-                        return (Boolean) (a.Value == b.Value);
+                        return  new Boolean(a.Value == b.Value);
                     }),
                 new Operation(Operators.NotEqual, typeof(String), typeof(String),
                     input =>
@@ -52,7 +52,7 @@ namespace Skrypt.Library.Native
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToString(input, 1);
 
-                        return (Boolean) (a.Value != b.Value);
+                        return  new Boolean(a.Value != b.Value);
                     })
             };
 

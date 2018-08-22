@@ -1,18 +1,24 @@
 using System
 
-/*fn DecimalToBinary (n) {
-	str = ""
-	rem = n
+/*class MatrixLibrary {
+	static class Matrix {
+		Matrix (rows, columns) {
+			self.content = [[0] * rows] * columns
+		}
 
-	while (rem >= 1) {
-		d = Math.Floor(rem % 2)
-		rem = rem / 2
-		str = str + d
+		private content = []
 	}
-	
-	return str.Reverse()
 }*/
 
-for (i = 0; i < 256; i++) {
-	print(i)
+class Object {
+	static public StaticProperty = 1
+	public InstanceProperty = 2
+
+	Object () {}
 }
+
+A = Object.StaticProperty
+B = Object().InstanceProperty
+
+print(A)
+print(B)

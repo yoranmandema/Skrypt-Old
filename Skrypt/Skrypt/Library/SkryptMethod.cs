@@ -94,6 +94,8 @@ namespace Skrypt.Library
             resultingScope.ReturnObject = resultingScope.ReturnObject ?? new Native.System.Null();
             resultingScope.Variables = new Dictionary<string, Variable>(scope.Variables);
 
+            resultingScope.ReturnObject.Engine = Engine;     
+
             return resultingScope;
         }
     }

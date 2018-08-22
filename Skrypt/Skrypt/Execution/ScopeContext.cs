@@ -42,8 +42,16 @@ namespace Skrypt.Execution
             };
         }
 
-        public void AddType(string Name, SkryptObject Value, bool IsConstant = false) {
-            Types[Name] = Value;
+        public void AddType(string name, SkryptObject value, bool isConstant = false) {
+            Types[name] = value;
+        }
+
+        public void PrintTypes () {
+            foreach (var t in Types) {
+                Console.WriteLine(t.Value.Name);
+            }
+
+            ParentScope?.PrintTypes();
         }
     }
 }

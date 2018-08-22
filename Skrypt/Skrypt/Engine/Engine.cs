@@ -304,9 +304,9 @@ namespace Skrypt.Engine
             throw new SkryptException(message + lineRow, token);
         }
 
-        //public SkryptEngine SetValue(string name, Delegate value) {
-        //    return SetValue(name, new SharpMethod(value));
-        //}
+        public SkryptEngine SetValue(string name, Delegate value) {
+            return SetValue(name, new SharpMethod(value));
+        }
 
         public SkryptEngine SetValue(string name, SkryptObject value) {
             GlobalScope.SetVariable(name, value);
@@ -339,7 +339,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            programNode.Print();
+            //programNode.Print();
 
             Stopwatch = Stopwatch.StartNew();
             GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);

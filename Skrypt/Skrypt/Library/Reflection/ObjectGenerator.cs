@@ -6,10 +6,8 @@ using System.Reflection.Emit;
 using Skrypt.Engine;
 using Skrypt.Library.Native;
 
-namespace Skrypt.Library.Reflection
-{
-    internal static class ObjectGenerator
-    {
+namespace Skrypt.Library.Reflection {
+    internal static class ObjectGenerator {
         public static SkryptObject MakeObjectFromClass(Type type, SkryptEngine engine, SkryptObject parent = null) {
             var Object = new SkryptObject {
                 Name = type.Name
@@ -20,8 +18,7 @@ namespace Skrypt.Library.Reflection
             SkryptObject Instance = (SkryptObject)Activator.CreateInstance(type);
             Instance.Name = type.Name;
 
-            var methods = type.GetMethods().Where(m =>
-            {
+            var methods = type.GetMethods().Where(m => {
                 if (m.ReturnType != typeof(SkryptObject)) return false;
 
                 if (m.GetParameters().Count() != 3) return false;
@@ -35,18 +32,18 @@ namespace Skrypt.Library.Reflection
                 return true;
             });
 
-            foreach (var m in methods)
-            {
+            foreach (var m in methods) {
                 SkryptDelegate del;
                 var parameters = new List<string>();
 
                 if (m.IsStatic) {
                     del = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), m);
-                } else {
+                }
+                else {
                     del = (SkryptDelegate)Delegate.CreateDelegate(typeof(SkryptDelegate), Instance, m);
                 }
 
-                var method = new SharpMethod (del) {
+                var method = new SharpMethod(del) {
                     Name = m.Name,
                     Parameters = parameters
                 };
@@ -62,7 +59,8 @@ namespace Skrypt.Library.Reflection
 
                 if (m.IsPublic) {
                     property.Modifiers = property.Modifiers | Parsing.Modifier.Public;
-                } else {
+                }
+                else {
                     property.Modifiers = property.Modifiers | Parsing.Modifier.Private;
                 }
 
@@ -80,12 +78,10 @@ namespace Skrypt.Library.Reflection
 
             var fields = type.GetFields().Where(f => typeof(SkryptObject).IsAssignableFrom(f.FieldType));
 
-            foreach (var f in fields)
-            {
-                var property = new SkryptProperty
-                {
+            foreach (var f in fields) {
+                var property = new SkryptProperty {
                     Name = f.Name,
-                    Value = (SkryptObject) f.GetValue(Instance)
+                    Value = (SkryptObject)f.GetValue(Instance)
                 };
 
                 if (Attribute.GetCustomAttribute(f, typeof(ConstantAttribute)) != null) {
@@ -114,14 +110,14 @@ namespace Skrypt.Library.Reflection
 
                 if (!getter.IsPublic) continue;
 
-                DynamicMethod dm = new DynamicMethod("GetValue",typeof(SkryptObject), new Type[] { typeof(SkryptObject), typeof(SkryptObject[]) }, typeof(SkryptObject), false);
+                DynamicMethod dm = new DynamicMethod("GetValue", typeof(SkryptObject), new Type[] { typeof(SkryptObject), typeof(SkryptObject[]) }, typeof(SkryptObject), false);
                 ILGenerator lgen = dm.GetILGenerator();
 
                 lgen.Emit(OpCodes.Ldarg_0);
                 lgen.Emit(OpCodes.Call, getter);
 
                 if (getter.ReturnType.GetTypeInfo().IsValueType) {
-                    lgen.Emit(OpCodes.Box,getter.ReturnType);
+                    lgen.Emit(OpCodes.Box, getter.ReturnType);
                 }
 
                 lgen.Emit(OpCodes.Ret);
@@ -202,14 +198,12 @@ namespace Skrypt.Library.Reflection
 
             var classes = type.GetNestedTypes();
 
-            foreach (var c in classes)
-            {
+            foreach (var c in classes) {
                 SkryptObject v;
 
                 v = MakeObjectFromClass(c, engine, Object);
 
-                var property = new SkryptProperty
-                {
+                var property = new SkryptProperty {
                     Name = c.Name,
                     Value = v,
                 };
@@ -229,7 +223,7 @@ namespace Skrypt.Library.Reflection
                     Instance?.Properties.Add(property);
                 }
                 else {
-                    Object.Properties.Add(property);                  
+                    Object.Properties.Add(property);
                 }
             }
 
@@ -250,11 +244,11 @@ namespace Skrypt.Library.Reflection
             Object.Properties.Add(new SkryptProperty {
                 Name = "TypeName",
                 Value = new Native.System.String(className),
-                Modifiers = Parsing.Modifier.Const | Parsing.Modifier.Static        
+                Modifiers = Parsing.Modifier.Const | Parsing.Modifier.Static
             });
 
-            engine.GlobalScope.AddType(className, Instance);              
-             
+            engine.GlobalScope.AddType(className, Instance);
+
             return Object;
         }
     }

@@ -34,7 +34,7 @@ namespace Skrypt.Execution
             SkryptObject foundVar = null;
 
             if (scopeContext.Types.ContainsKey(name)) {
-                foundVar = _engine.GlobalScope.Types[name];
+                foundVar = scopeContext.Types[name];
             }
             else if (scopeContext.ParentScope != null) {
                 foundVar = GetType(name, scopeContext.ParentScope);
@@ -201,6 +201,7 @@ namespace Skrypt.Execution
             var scope = ExecuteBlock(node.Nodes[1], inputScope, ScopeProperties.InClassDeclaration);
 
             scopeContext.AddType(ClassName, TypeObject);
+            //scopeContext.Types = scope.Types;
 
             foreach (var v in scope.Variables) {
                 if (v.Value.Modifiers != Modifier.None) {
@@ -803,7 +804,7 @@ namespace Skrypt.Execution
 
             dynamic left = Convert.ChangeType(Object, Object.GetType());
 
-            Operation opLeft = left.GetOperation("index", Object.GetType(), arguments[0].GetType(), left.Operations);
+            Operation opLeft = SkryptObject.GetOperation(Operators.Index, Object.GetType(), arguments[0].GetType(), left.Operations);
 
             OperationDelegate operation = null;
 

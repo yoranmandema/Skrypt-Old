@@ -114,7 +114,8 @@ namespace Skrypt.Library
                 str += "{\n";
 
                 foreach (var p in Properties) {
-                    str += indent + "\t" + $"{p.Name}: {(p.Value.GetType() == typeof(SkryptObject) ? p.Value.StringTree(indent + "\t") : p.Value.ToString())}\n";
+                    if (p.Value != this)
+                        str += indent + "\t" + $"{p.Name}: {(p.Value.GetType() == typeof(SkryptObject) ? p.Value.StringTree(indent + "\t") : p.Value.ToString())}\n";
                 }
 
                 str += indent + "}";
