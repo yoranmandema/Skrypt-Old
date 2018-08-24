@@ -130,15 +130,15 @@ namespace Skrypt.Parsing
 
             var result = new ParseResult { Node = node, Delta = SurroundedTokens.Count + 1 };
 
-            var Node = new Node {
-                Body = tokens[1].Value,
-                Type = TokenTypes.ClassDeclaration
+            var classNode = new ClassNode {
+                InheritNode = inheritNode,
+                BodyNode = result.Node,
+                Name = tokens[1].Value
             };
-            Node.Add(inheritNode);
-            Node.Add(result.Node);
+
             i += result.Delta + 1;
              
-            return new ParseResult { Node = Node, Delta = i + 1};
+            return new ParseResult { Node = classNode, Delta = i + 1};
         }
     }
 }

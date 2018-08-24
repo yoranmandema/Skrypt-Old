@@ -165,8 +165,8 @@ namespace Skrypt.Execution
                 }
         }
 
-        public SkryptObject ExecuteClassDeclaration(Node node, ScopeContext scopeContext) {
-            string ClassName = node.Body;
+        public SkryptObject ExecuteClassDeclaration(ClassNode node, ScopeContext scopeContext) {
+            string ClassName = node.Name;
             var ParentClass = scopeContext.ParentClass;
 
             if (ParentClass != null) {
@@ -208,7 +208,7 @@ namespace Skrypt.Execution
 
             //inputScope.Properties |= scopeContext.Properties;
 
-            var scope = ExecuteBlock(node.Nodes[1], scopeContext, ScopeProperties.InClassDeclaration);
+            var scope = ExecuteBlock(node.BodyNode, scopeContext, ScopeProperties.InClassDeclaration);
 
             foreach (var v in scope.Variables) {
                 if (v.Value.Modifiers != Modifier.None) {
@@ -239,7 +239,7 @@ namespace Skrypt.Execution
                 }
             }
 
-            foreach (var inheritNode in node.Nodes[0].Nodes) {
+            foreach (var inheritNode in node.InheritNode.Nodes) {
                 var value = ExecuteExpression(inheritNode, scopeContext);
 
                 var BaseType = GetType(((Library.Native.System.String)value.GetProperty("TypeName")).Value, scopeContext);
@@ -293,7 +293,7 @@ namespace Skrypt.Execution
                 }
             }
 
-            Object.Name = node.Body;
+            Object.Name = node.Name;
 
             return Object;
         }
@@ -381,7 +381,7 @@ namespace Skrypt.Execution
                     scope.SetVariable(result.CallName, result, subNode.Modifiers);
                 }
                 else if (subNode.Type == TokenTypes.ClassDeclaration) {
-                    var createdClass = ExecuteClassDeclaration(subNode, scope);
+                    var createdClass = ExecuteClassDeclaration((ClassNode)subNode, scope);
 
                     scope.SetVariable(createdClass.Name, createdClass, subNode.Modifiers);
                 }

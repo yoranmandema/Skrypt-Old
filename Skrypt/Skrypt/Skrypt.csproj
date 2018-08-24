@@ -88,6 +88,7 @@
     <Compile Include="Parsing\Nodes\ArrayNode.cs" />
     <Compile Include="Parsing\Nodes\BooleanNode.cs" />
     <Compile Include="Parsing\Nodes\CallNode.cs" />
+    <Compile Include="Parsing\Nodes\ClassNode.cs" />
     <Compile Include="Parsing\Nodes\ConditionalNode.cs" />
     <Compile Include="Parsing\Nodes\IndexNode.cs" />
     <Compile Include="Parsing\Nodes\NullNode.cs" />
