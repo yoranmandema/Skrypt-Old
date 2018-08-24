@@ -16,7 +16,8 @@
   <Color name="ClassName" foreground="#A9DC76" />
   <Color name="MethodName" foreground="#A9DC76" />
   <Color name="Parameter" foreground="#FC9867" />
-  
+  <Color name="Reserved" foreground="#FC9867" />
+
   <!-- This is the main ruleset. -->
   <RuleSet>
     <Span color="Comment" begin="//" />
@@ -50,11 +51,15 @@
     <Keywords color="Modifiers">
       <Word>const</Word>
       <Word>strong</Word>
-      <Word>static</Word>
+      <Word>in</Word>
       <Word>private</Word>
       <Word>public</Word>
     </Keywords>
 
+    <Keywords color="Reserved">
+      <Word>self</Word>
+    </Keywords>
+    
     <Rule color="Delimiter">
       [;()\[\]{}]+
     </Rule>

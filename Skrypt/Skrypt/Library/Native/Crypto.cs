@@ -15,7 +15,7 @@ namespace Skrypt.Library.Native {
         public class Crypto : SkryptObject {
             [Constant]
             public static SkryptObject SHA256(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                var s = TypeConverter.ToString(values, 0);
+                var s = TypeConverter.ToString(values, 0, engine);
 
                 var byteArray = Sys.Text.Encoding.ASCII.GetBytes(s.Value);
                 var hashValue = new SHA256Managed().ComputeHash(byteArray);
@@ -30,7 +30,7 @@ namespace Skrypt.Library.Native {
 
             [Constant]
             public static SkryptObject SHA1(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                var s = TypeConverter.ToString(values, 0);
+                var s = TypeConverter.ToString(values, 0, engine);
 
                 var byteArray = Sys.Text.Encoding.ASCII.GetBytes(s.Value);
                 var hashValue = new SHA1Managed().ComputeHash(byteArray);
@@ -44,8 +44,8 @@ namespace Skrypt.Library.Native {
             }
 
             public static SkryptObject AESEncrypt(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                var toEncrypt = TypeConverter.ToString(values, 0);
-                var password = TypeConverter.ToString(values, 1);
+                var toEncrypt = TypeConverter.ToString(values, 0, engine);
+                var password = TypeConverter.ToString(values, 1, engine);
 
                 var bytesToBeEncrypted = Sys.Text.Encoding.UTF8.GetBytes(toEncrypt);
                 var passwordBytes = Sys.Text.Encoding.UTF8.GetBytes(password);
@@ -84,8 +84,8 @@ namespace Skrypt.Library.Native {
             }
 
             public static SkryptObject AESDecrypt(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                var toEncrypt = TypeConverter.ToString(values, 0);
-                var password = TypeConverter.ToString(values, 1);
+                var toEncrypt = TypeConverter.ToString(values, 0, engine);
+                var password = TypeConverter.ToString(values, 1, engine);
 
                 var bytesToBeDecrypted = Convert.FromBase64String(toEncrypt);
                 var passwordBytes = Sys.Text.Encoding.UTF8.GetBytes(password);

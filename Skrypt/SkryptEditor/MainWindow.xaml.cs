@@ -30,7 +30,6 @@ namespace SkryptEditor {
     public partial class MainWindow : Window {
         SkryptEngine _engine;
         string _documentPath;
-        Output.TextBoxOutputter _outputter;
 
         public MainWindow() {
             InitializeComponent();

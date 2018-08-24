@@ -72,7 +72,7 @@ namespace Skrypt.Library.Native
                     (input, engine) =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
-                        var b = TypeConverter.ToString(input, 1);
+                        var b = TypeConverter.ToString(input, 1, engine);
 
                         if (!a.Table.ContainsKey(b)) {
                             return engine.Create<Null>();
@@ -106,7 +106,7 @@ namespace Skrypt.Library.Native
                     {
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToAny(input, 1);
-                        var c = TypeConverter.ToString(input, 2);
+                        var c = TypeConverter.ToString(input, 2, engine);
 
                         var newValue = a.Table[c] = b;
 

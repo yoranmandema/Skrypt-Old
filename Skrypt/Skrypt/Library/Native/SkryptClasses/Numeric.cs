@@ -236,7 +236,7 @@ namespace Skrypt.Library.Native
 
             [Constant]
             public static SkryptObject Parse(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                var s = TypeConverter.ToString(input,0);
+                var s = TypeConverter.ToString(input,0, engine);
 
                 var p = double.TryParse(s, out double r);
 
@@ -248,7 +248,7 @@ namespace Skrypt.Library.Native
 
             [Constant]
             public SkryptObject ToString(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                return engine.Create<String>(((Numeric)self).Value.ToString(TypeConverter.ToString(input, 0)));
+                return engine.Create<String>(((Numeric)self).Value.ToString(TypeConverter.ToString(input, 0, engine)));
             }
 
             public override string ToString()

@@ -36,7 +36,7 @@ namespace Skrypt.Library.Native {
 
             [Constant]
             public static SkryptObject ToUTF8(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                var str = TypeConverter.ToString(input, 0);
+                var str = TypeConverter.ToString(input, 0, engine);
                 byte[] bytes = Sys.Text.Encoding.Default.GetBytes(str);
                 var encoded = Sys.Text.Encoding.UTF8.GetString(bytes);
 
@@ -45,7 +45,7 @@ namespace Skrypt.Library.Native {
 
             [Constant]
             public static SkryptObject ToUTF16(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                var str = TypeConverter.ToString(input, 0);
+                var str = TypeConverter.ToString(input, 0, engine);
                 byte[] bytes = Sys.Text.Encoding.Default.GetBytes(str);
                 var encoded = Sys.Text.UnicodeEncoding.Unicode.GetString(bytes);
 

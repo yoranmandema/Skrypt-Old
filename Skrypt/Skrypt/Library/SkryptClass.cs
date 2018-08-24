@@ -124,6 +124,17 @@ namespace Skrypt.Library
             return str;
         }
 
+        public static string GetString (SkryptObject o, SkryptEngine engine) {
+            var s = o.ToString();
+            var ts = o.GetProperty("ToString");
+
+            if (ts != null && typeof(SkryptMethod).IsAssignableFrom(ts.GetType())) {
+                s = ((SkryptMethod)ts).Execute(engine, o, null, engine.CurrentScope).ReturnObject.ToString();
+            }
+
+            return s;
+        }
+
         public override string ToString() {
             return StringTree();
         }

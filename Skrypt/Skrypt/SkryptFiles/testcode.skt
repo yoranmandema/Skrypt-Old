@@ -1,9 +1,19 @@
-class Object {
-	in public class Inner {
-		public A = 1
+class Vector {
+	in public X = 0
+	in public Y = 0
+	in public Z = 0
+	
+	Vector (x,y,z) {
+		self.X = x
+		self.Y = y
+		self.Z = z
+	}
+	
+	in fn ToString () {
+		return "(" + self.X + "," + self.Y + "," + self.Z + ")" 
 	}
 }
 
 using System
 
-print(Object().Inner)
+print("Out: " + Vector(1,2,3))

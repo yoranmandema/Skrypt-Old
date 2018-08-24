@@ -13,10 +13,6 @@
             <Setter Property="Foreground" Value="WhiteSmoke" />
             <Setter Property="Background" Value="#2D2D30" />
         </Style>
-        <!--<Style TargetType="{x:Type avalonEdit:CompletionListBox}">
-            <Setter Property="Foreground" Value="WhiteSmoke" />
-            <Setter Property="Background" Value="#2D2D30" />
-        </Style>-->
     </Window.Resources>
     <Grid>
         <DockPanel>
@@ -50,17 +46,6 @@
                     Background="#2C292D"
                     Foreground="#EEE"
                     />
-
-                <!--<avalonEdit:TextEditor
-                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-                    Name="Terminal"
-                    FontFamily="Consolas"
-                    SyntaxHighlighting="Skrypt"
-                    FontSize="11pt"
-                    Grid.Row="1"
-                    Background="#201E21"
-                    Foreground="#EEE"
-                    />-->
             </Grid>
         </DockPanel>
     </Grid>

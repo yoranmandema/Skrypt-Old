@@ -1,5 +1,6 @@
 ﻿using Skrypt.Library;
 using Sys = Skrypt.Library.Native.System;
+using Skrypt.Engine;
 
 namespace Skrypt.Execution
 {
@@ -31,11 +32,11 @@ namespace Skrypt.Execution
             return args[index].ToBoolean();
         }
 
-        public static Sys.String ToString(SkryptObject[] args, int index)
+        public static Sys.String ToString(SkryptObject[] args, int index, SkryptEngine engine)
         {
-            if (index > args.Length - 1) return new Sys.String("");
+            if (args == null || index > args.Length - 1) return new Sys.String("");
 
-            return args[index].ToString();
+            return SkryptObject.GetString(args[index], engine);
         }
 
         public static Sys.Array ToArray(SkryptObject[] args, int index)

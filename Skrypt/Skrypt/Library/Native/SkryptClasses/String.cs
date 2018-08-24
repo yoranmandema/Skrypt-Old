@@ -17,23 +17,23 @@ namespace Skrypt.Library.Native
                 new Operation(Operators.Add, typeof(String), typeof(SkryptObject),
                     (input, engine) =>
                     {
-                        var a = TypeConverter.ToString(input, 0);
-                        var b = TypeConverter.ToString(input, 1);
+                        var a = TypeConverter.ToString(input, 0, engine);
+                        var b = TypeConverter.ToString(input, 1, engine);
 
                         return engine.Create<String>(a + b);
                     }),
                 new Operation(Operators.Add, typeof(SkryptObject), typeof(String),
                     (input, engine) =>
                     {
-                        var a = TypeConverter.ToString(input, 0);
-                        var b = TypeConverter.ToString(input, 1);
+                        var a = TypeConverter.ToString(input, 0, engine);
+                        var b = TypeConverter.ToString(input, 1, engine);
 
                         return engine.Create<String>(a + b);
                     }),
                 new Operation(Operators.Index, typeof(String), typeof(Numeric),
                     (input, engine) =>
                     {
-                        var a = TypeConverter.ToString(input, 0);
+                        var a = TypeConverter.ToString(input, 0, engine);
                         var b = TypeConverter.ToNumeric(input, 1);
 
                         return engine.Create<String>(a.Value[(int) b].ToString());
@@ -41,16 +41,16 @@ namespace Skrypt.Library.Native
                 new Operation(Operators.Equal, typeof(String), typeof(String),
                     (input, engine) =>
                     {
-                        var a = TypeConverter.ToString(input, 0);
-                        var b = TypeConverter.ToString(input, 1);
+                        var a = TypeConverter.ToString(input, 0, engine);
+                        var b = TypeConverter.ToString(input, 1, engine);
 
                         return engine.Create<Boolean>(a.Value == b.Value);
                     }),
                 new Operation(Operators.NotEqual, typeof(String), typeof(String),
                     (input, engine) =>
                     {
-                        var a = TypeConverter.ToString(input, 0);
-                        var b = TypeConverter.ToString(input, 1);
+                        var a = TypeConverter.ToString(input, 0, engine);
+                        var b = TypeConverter.ToString(input, 1, engine);
 
                         return engine.Create<Boolean>(a.Value != b.Value);
                     })
@@ -88,13 +88,13 @@ namespace Skrypt.Library.Native
 
             [Constant]
             public static SkryptObject Byte(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                return engine.Create<Numeric>(Sys.Convert.ToByte(TypeConverter.ToString(input, 0).Value[0]));
+                return engine.Create<Numeric>(Sys.Convert.ToByte(TypeConverter.ToString(input, 0, engine).Value[0]));
             }
 
             [Constant]
             public SkryptObject PadLeft(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 var a = TypeConverter.ToNumeric(input, 0);
-                var s = TypeConverter.ToString(input, 1);
+                var s = TypeConverter.ToString(input, 1, engine);
                 var newString = engine.Create<String>(((String)self).Value);
 
                 while (newString.Value.Length < a) {
@@ -107,7 +107,7 @@ namespace Skrypt.Library.Native
             [Constant]
             public SkryptObject PadRight(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 var a = TypeConverter.ToNumeric(input, 0);
-                var s = TypeConverter.ToString(input, 1);
+                var s = TypeConverter.ToString(input, 1, engine);
                 var newString = engine.Create<String>(((String)self).Value);
 
                 while (newString.Value.Length < a) {
@@ -119,12 +119,12 @@ namespace Skrypt.Library.Native
 
             [Constant]
             public SkryptObject EndsWith(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                return engine.Create<Boolean>(((String)self).Value.EndsWith(TypeConverter.ToString(input,0)));
+                return engine.Create<Boolean>(((String)self).Value.EndsWith(TypeConverter.ToString(input,0, engine)));
             }
 
             [Constant]
             public SkryptObject StartsWith(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                return engine.Create<Boolean>(((String)self).Value.StartsWith(TypeConverter.ToString(input, 0)));
+                return engine.Create<Boolean>(((String)self).Value.StartsWith(TypeConverter.ToString(input, 0, engine)));
             }
 
             [Constant]
@@ -166,7 +166,7 @@ namespace Skrypt.Library.Native
             public SkryptObject Find(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 return engine.Create<Numeric>(
                     ((String)self).Value.IndexOf(
-                        TypeConverter.ToString(input, 0),
+                        TypeConverter.ToString(input, 0, engine),
                         (int)TypeConverter.ToNumeric(input, 1)
                         )
                     );
@@ -176,8 +176,8 @@ namespace Skrypt.Library.Native
             public SkryptObject Replace(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 return engine.Create<String>(
                         ((String)self).Value.Replace(
-                            TypeConverter.ToString(input, 0),
-                            TypeConverter.ToString(input, 1)
+                            TypeConverter.ToString(input, 0, engine),
+                            TypeConverter.ToString(input, 1, engine)
                         )
                     );
             }
@@ -196,7 +196,7 @@ namespace Skrypt.Library.Native
 
             [Constant]
             public SkryptObject Explode(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
-                var delimiter = TypeConverter.ToString(input, 0);
+                var delimiter = TypeConverter.ToString(input, 0, engine);
                 var selfString = ((String)self).Value;
 
                 var exploded = !string.IsNullOrEmpty(delimiter) ? 

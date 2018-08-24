@@ -24,7 +24,7 @@ namespace Skrypt.Library.Native
             [Constant]
             public SkryptObject Write(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var s = (File)self;
-                var str = TypeConverter.ToString(values, 0);
+                var str = TypeConverter.ToString(values, 0, engine);
 
                 using (StreamWriter sw = new StreamWriter(s.Path)) {
                     sw.Write(str);
@@ -36,7 +36,7 @@ namespace Skrypt.Library.Native
             [Constant]
             public SkryptObject Append(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
                 var s = (File)self;
-                var str = TypeConverter.ToString(values, 0);
+                var str = TypeConverter.ToString(values, 0, engine);
 
                 using (StreamWriter sw = SysFile.AppendText(s.Path)) {
                     sw.Write(str);
@@ -64,7 +64,7 @@ namespace Skrypt.Library.Native
         {
             [Constant]
             public static SkryptObject Open(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
-                var path = TypeConverter.ToString(values,0);
+                var path = TypeConverter.ToString(values,0, engine);
 
                 var file = engine.Create<File>(path);
 

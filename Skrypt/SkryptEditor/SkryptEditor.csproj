@@ -62,7 +62,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Canvas\Canvas.cs" />
-    <Compile Include="Output\TextBoxOutputter.cs" />
     <Compile Include="Serializing.cs" />
     <Compile Include="Canvas.xaml.cs">
       <DependentUpon>Canvas.xaml</DependentUpon>
