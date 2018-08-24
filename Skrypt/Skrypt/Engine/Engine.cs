@@ -183,7 +183,7 @@ namespace Skrypt.Engine
                     node.Token);
             }
 
-            var result = (SkryptType)operationDel(new[] { leftObject, rightObject });
+            var result = (SkryptType)operationDel(new[] { leftObject, rightObject }, this);
 
             result.SetPropertiesTo(Executor.GetType(result.TypeName, GlobalScope));
 
@@ -203,7 +203,7 @@ namespace Skrypt.Engine
                 ThrowError("No such operation as " + left.Name + " " + operation.Operation,
                     node?.Nodes[0].Token);
 
-            var result = (SkryptType)operationDel(new[] { leftObject });
+            var result = (SkryptType)operationDel(new[] { leftObject }, this);
 
             result.SetPropertiesTo(Executor.GetType(result.TypeName, GlobalScope));
 

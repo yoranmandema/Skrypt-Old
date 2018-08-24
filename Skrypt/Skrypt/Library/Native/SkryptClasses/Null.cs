@@ -11,29 +11,29 @@ namespace Skrypt.Library.Native
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation(Operators.Not, typeof(Null),
-                    input =>
+                    (input, engine) =>
                     {
-                        return new Boolean(true);
+                        return engine.Create<Boolean>(true);
                     }),
                 new Operation(Operators.Equal, typeof(Null), typeof(SkryptObject),
-                    input =>
+                    (input, engine) =>
                     {
-                        return new Boolean(input[1].GetType() == typeof(Null));
+                        return engine.Create<Boolean>(input[1].GetType() == typeof(Null));
                     }),
                 new Operation(Operators.Equal, typeof(SkryptObject), typeof(Null),
-                    input =>
+                    (input, engine) =>
                     {
-                        return new Boolean(input[0].GetType() == typeof(Null));
+                        return engine.Create<Boolean>(input[0].GetType() == typeof(Null));
                     }),
                 new Operation(Operators.NotEqual, typeof(Null), typeof(SkryptObject),
-                    input =>
+                    (input, engine) =>
                     {
-                        return new Boolean(input[1].GetType() != typeof(Null));
+                        return engine.Create<Boolean>(input[1].GetType() != typeof(Null));
                     }),
                 new Operation(Operators.NotEqual, typeof(SkryptObject), typeof(Null),
-                    input =>
+                    (input, engine) =>
                     {
-                        return new Boolean(input[0].GetType() != typeof(Null));
+                        return engine.Create<Boolean>(input[0].GetType() != typeof(Null));
                     }),
             };
 

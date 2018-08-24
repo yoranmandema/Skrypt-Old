@@ -19,52 +19,52 @@ namespace Skrypt {
         public new List<Operation> Operations = new List<Operation>
         {
             new Operation(Operators.Add, typeof(Vector), typeof(Vector),
-                input =>
+                (input, engine) =>
                 {
                     var a = ToVector(input, 0);
                     var b = ToVector(input, 1);
 
-                    return new Vector(a.X + b.X,a.Y + b.Y,a.Z + b.Z);
+                    return engine.Create<Vector>(a.X + b.X,a.Y + b.Y,a.Z + b.Z);
                 }),
             new Operation(Operators.Add, typeof(Vector), typeof(Classes.Numeric),
-                input =>
+                (input, engine) =>
                 {
                     var a = ToVector(input, 0);
                     var b = TypeConverter.ToNumeric(input, 1);
 
-                    return new Vector(a.X + b,a.Y + b,a.Z + b);
+                    return engine.Create<Vector>(a.X + b,a.Y + b,a.Z + b);
                 }),
             new Operation(Operators.Add, typeof(Classes.Numeric), typeof(Vector),
-                input =>
+                (input, engine) =>
                 {
                     var a = TypeConverter.ToNumeric(input, 0);
                     var b = ToVector(input, 1);
 
-                    return new Vector(a + b.X,a + b.Y,a + b.Z);
+                    return engine.Create<Vector>(a + b.X,a + b.Y,a + b.Z);
                 }),
             new Operation(Operators.Multiply, typeof(Vector), typeof(Vector),
-                input =>
+                (input, engine) =>
                 {
                     var a = ToVector(input, 0);
                     var b = ToVector(input, 1);
 
-                    return new Vector(a.X * b.X,a.Y * b.Y,a.Z * b.Z);
+                    return engine.Create<Vector>(a.X * b.X,a.Y * b.Y,a.Z * b.Z);
                 }),
             new Operation(Operators.Multiply, typeof(Vector), typeof(Classes.Numeric),
-                input =>
+                (input, engine) =>
                 {
                     var a = ToVector(input, 0);
                     var b = TypeConverter.ToNumeric(input, 1);
 
-                    return new Vector(a.X * b,a.Y * b,a.Z * b);
+                    return engine.Create<Vector>(a.X * b,a.Y * b,a.Z * b);
                 }),
             new Operation(Operators.Multiply, typeof(Classes.Numeric), typeof(Vector),
-                input =>
+                (input, engine) =>
                 {
                     var a = TypeConverter.ToNumeric(input, 0);
                     var b = ToVector(input, 1);
 
-                    return new Vector(a * b.X,a * b.Y,a * b.Z);
+                    return engine.Create<Vector>(a * b.X,a * b.Y,a * b.Z);
                 }),
         };
 

@@ -88,6 +88,10 @@ namespace Skrypt.Library
                 Properties = scope.Properties | ScopeProperties.InMethod
             };
 
+            if (self != null) {
+                inputScope.SetVariable("self", self, Modifier.Const);
+            }
+
             var resultingScope =
                 engine.Executor.ExecuteBlock(BlockNode, inputScope);
 
@@ -145,6 +149,10 @@ namespace Skrypt.Library
                 Properties = scope.Properties | ScopeProperties.InMethod
             };
 
+            if (self != null) {
+                newScope.SetVariable("self", self, Modifier.Const);
+            }
+
             newScope.ReturnObject = returnValue;
             newScope.ReturnObject.Engine = engine;
             newScope.Variables = new Dictionary<string, Variable>(scope.Variables);
@@ -157,7 +165,7 @@ namespace Skrypt.Library
         public SkryptGetDelegate Method { get; set; }
 
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
-            ScopeContext scope) {
+            ScopeContext scope) {        
 
             var returnValue = Method(self, parameters);
 

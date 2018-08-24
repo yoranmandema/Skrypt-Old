@@ -15,198 +15,198 @@ namespace Skrypt.Library.Native
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation(Operators.Add, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric(a + b);
+                        return engine.Create<Numeric>(a + b);
                     }),
                 new Operation(Operators.Subtract, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric(a - b);
+                        return engine.Create<Numeric>(a - b);
                     }),
                 new Operation(Operators.Divide, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric(a / b);
+                        return engine.Create<Numeric>(a / b);
                     }),
                 new Operation(Operators.Multiply, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric(a * b);
+                        return engine.Create<Numeric>(a * b);
                     }),
                 new Operation(Operators.Modulo, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric(a % b);
+                        return engine.Create<Numeric>(a % b);
                     }),
                 new Operation(Operators.Power, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric(Sys.Math.Pow(a.Value,b.Value));
+                        return engine.Create<Numeric>(Sys.Math.Pow(a.Value,b.Value));
                     }),
                 new Operation(Operators.Lesser, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Boolean(a < b);
+                        return engine.Create<Boolean>(a < b);
                     }),
                 new Operation(Operators.Greater, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Boolean(a > b);
+                        return engine.Create<Boolean>(a > b);
                     }),
                 new Operation(Operators.EqualLesser, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Boolean(a <= b);
+                        return engine.Create<Boolean>(a <= b);
                     }),
                 new Operation(Operators.EqualGreater, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Boolean(a >= b);
+                        return engine.Create<Boolean>(a >= b);
                     }),
                 new Operation(Operators.Equal, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Boolean(Equals(a.Value,b.Value));
+                        return engine.Create<Boolean>(Equals(a.Value,b.Value));
                     }),
                 new Operation(Operators.NotEqual, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Boolean(!Equals(a.Value,b.Value));
+                        return engine.Create<Boolean>(!Equals(a.Value,b.Value));
                     }),
                 new Operation(Operators.And, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Boolean((a.Value != 0d) && (b.Value != 0d));
+                        return engine.Create<Boolean>((a.Value != 0d) && (b.Value != 0d));
                     }),
                 new Operation(Operators.Or, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Boolean((a.Value != 0d) || (b.Value != 0d));
+                        return engine.Create<Boolean>((a.Value != 0d) || (b.Value != 0d));
                     }),
                 new Operation(Operators.BitShiftL, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric((int)(a.Value) << (int)(b.Value));
+                        return engine.Create<Numeric>((int)(a.Value) << (int)(b.Value));
                     }),
                 new Operation(Operators.BitShiftR, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric((int)(a.Value) >> (int)(b.Value));
+                        return engine.Create<Numeric>((int)(a.Value) >> (int)(b.Value));
                     }),
                 new Operation(Operators.BitShiftRZ, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric((double)((uint)Sys.Convert.ToInt32(Sys.Convert.ToDouble(a.Value)) >> Sys.Convert.ToInt32(Sys.Convert.ToDouble(b.Value))));
+                        return engine.Create<Numeric>((double)((uint)Sys.Convert.ToInt32(Sys.Convert.ToDouble(a.Value)) >> Sys.Convert.ToInt32(Sys.Convert.ToDouble(b.Value))));
                     }),              
                 new Operation(Operators.BitAnd, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric((int)(a.Value) & (int)(b.Value));
+                        return engine.Create<Numeric>((int)(a.Value) & (int)(b.Value));
                     }),
                 new Operation(Operators.BitXOr, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric((int)(a.Value) ^ (int)(b.Value));
+                        return engine.Create<Numeric>((int)(a.Value) ^ (int)(b.Value));
                     }),
                 new Operation(Operators.BitOr, typeof(Numeric), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return new Numeric((int)(a.Value) | (int)(b.Value));
+                        return engine.Create<Numeric>((int)(a.Value) | (int)(b.Value));
                     }),
                 new Operation(Operators.BitNot, typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
-                        return new Numeric(~(int)a.Value);
+                        return engine.Create<Numeric>(~(int)a.Value);
                     }),
                 new Operation(Operators.PostIncrement, typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var v = a.Value;
                         a.Value++;
-                        return new Numeric(v);
+                        return engine.Create<Numeric>(v);
                     }),
                 new Operation(Operators.PostDecrement, typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
                         var v = a.Value;
                         a.Value--;
-                        return new Numeric(v);
+                        return engine.Create<Numeric>(v);
                     }),
                 new Operation(Operators.Negate, typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
-                        return new Numeric(-a.Value);
+                        return engine.Create<Numeric>(-a.Value);
                     }),
                 new Operation(Operators.Not, typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToNumeric(input, 0);
-                        return new Boolean(a.Value == 0);
+                        return engine.Create<Boolean>(a.Value == 0);
                     })
             };
 

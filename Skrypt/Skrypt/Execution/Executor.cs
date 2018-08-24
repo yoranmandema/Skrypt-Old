@@ -403,7 +403,7 @@ namespace Skrypt.Execution
             return scope;
         }
 
-        public SkryptProperty GetProperty(SkryptObject Object, string toFind, bool setter = false)
+        public SkryptProperty GetProperty(SkryptObject Object, string toFind, ScopeContext context, bool setter = false)
         {
             var find = Object.Properties.Find((x) => {
                 if (x.Name == toFind) {
@@ -423,8 +423,16 @@ namespace Skrypt.Execution
 
             if (find == null) _engine.ThrowError("Object does not contain property '" + toFind + "'!");
 
-            if ((find.Modifiers & Modifier.Private) != 0) {
-                _engine.ThrowError("Property '" + toFind + "' is inaccessable due to its protection level.");
+            var canFailPrivate = true;
+
+            if (GetVariable("self", context) != null) {
+                canFailPrivate = !GetVariable("self", context).Value.Equals(Object);
+            }
+
+            if (canFailPrivate) {
+                if ((find.Modifiers & Modifier.Private) != 0) {
+                    _engine.ThrowError("Property '" + toFind + "' is inaccessable due to its protection level.");
+                }
             }
 
             return find;
@@ -466,7 +474,7 @@ namespace Skrypt.Execution
             else {
                 localScope = null;
                 return new AccessResult {
-                    Property = GetProperty(Object, node.Body, setter),
+                    Property = GetProperty(Object, node.Body, scopeContext, setter),
                     Owner = Object
                 };
             }
@@ -720,9 +728,9 @@ namespace Skrypt.Execution
 
                 _engine.CurrentStack = methodContext.CallStack;
 
-                if (caller != null) {
-                    methodContext.SetVariable("self", caller);
-                }
+                //if (caller != null) {
+                //    methodContext.SetVariable("self", caller, Modifier.Const);
+                //}
 
                 ScopeContext methodScopeResult = null;
 
@@ -795,7 +803,7 @@ namespace Skrypt.Execution
             inputArray.Insert(0, value);
             inputArray.Insert(0, Object);
 
-            return operation(inputArray.ToArray());
+            return operation(inputArray.ToArray(), _engine);
         }
 
         public SkryptObject ExecuteIndex(IndexNode node, ScopeContext scopeContext)
@@ -830,7 +838,7 @@ namespace Skrypt.Execution
             //    Value = Operation(inputArray.ToArray())
             //};
 
-            return operation(inputArray.ToArray());
+            return operation(inputArray.ToArray(), _engine);
         }
 
         public SkryptObject GetValue (string name) {

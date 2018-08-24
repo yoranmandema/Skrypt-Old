@@ -11,43 +11,43 @@ namespace Skrypt.Library.Native
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation(Operators.And, typeof(Boolean), typeof(Boolean),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);
                         var b = TypeConverter.ToBoolean(input, 1);
 
-                        return new Boolean(a && b);
+                        return engine.Create<Boolean>(a && b);
                     }),
                 new Operation(Operators.Or, typeof(Boolean), typeof(Boolean),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);
                         var b = TypeConverter.ToBoolean(input, 1);
 
-                        return new Boolean(a || b);
+                        return engine.Create<Boolean>(a || b);
                     }),
                 new Operation(Operators.Not, typeof(Boolean),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);
 
-                        return new Boolean(!a);
+                        return engine.Create<Boolean>(!a);
                     }),
                 new Operation(Operators.Equal, typeof(Boolean), typeof(Boolean),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);
                         var b = TypeConverter.ToBoolean(input, 0);
 
-                        return new Boolean((bool)a == (bool)b);
+                        return engine.Create<Boolean>((bool)a == (bool)b);
                     }),
                 new Operation(Operators.NotEqual, typeof(Boolean), typeof(Boolean),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToBoolean(input, 0);
                         var b = TypeConverter.ToBoolean(input, 0);
 
-                        return new Boolean((bool)a != (bool)b);
+                        return engine.Create<Boolean>((bool)a != (bool)b);
                     })
             };
 

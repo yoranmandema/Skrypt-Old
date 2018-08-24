@@ -11,11 +11,17 @@ namespace Skrypt.Library.Native
         public static SkryptObject print(SkryptEngine engine, SkryptObject self, SkryptObject[] values)
         {
             var a = TypeConverter.ToAny(values, 0);
+            var s = a.ToString();
+            var ts = a.GetProperty("ToString");
+
+            if (ts != null && typeof(SkryptMethod).IsAssignableFrom(ts.GetType())) {
+                s = ((SkryptMethod)ts).Execute(engine, a, null, engine.CurrentScope).ReturnObject.ToString();
+            }
 
             if ((engine.Settings & EngineSettings.NoLogs) == 0) 
-                Console.WriteLine(a);
+                Console.WriteLine(s);
 
-            return engine.Create<String>(a.ToString());
+            return engine.Create<String>(s);
         }
 
         [Constant]

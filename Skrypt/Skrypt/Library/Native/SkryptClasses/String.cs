@@ -15,44 +15,44 @@ namespace Skrypt.Library.Native
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation(Operators.Add, typeof(String), typeof(SkryptObject),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToString(input, 1);
 
-                        return a.Engine.Create<String>(a + b);
+                        return engine.Create<String>(a + b);
                     }),
                 new Operation(Operators.Add, typeof(SkryptObject), typeof(String),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToString(input, 1);
 
-                        return a.Engine.Create<String>(a + b);
+                        return engine.Create<String>(a + b);
                     }),
                 new Operation(Operators.Index, typeof(String), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
-                        return b.Engine.Create<String>(a.Value[(int) b].ToString());
+                        return engine.Create<String>(a.Value[(int) b].ToString());
                     }),
                 new Operation(Operators.Equal, typeof(String), typeof(String),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToString(input, 1);
 
-                        return  new Boolean(a.Value == b.Value);
+                        return engine.Create<Boolean>(a.Value == b.Value);
                     }),
                 new Operation(Operators.NotEqual, typeof(String), typeof(String),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToString(input, 0);
                         var b = TypeConverter.ToString(input, 1);
 
-                        return  new Boolean(a.Value != b.Value);
+                        return engine.Create<Boolean>(a.Value != b.Value);
                     })
             };
 

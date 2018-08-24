@@ -8,7 +8,7 @@ using S = Skrypt.Library.Native.System;
 
 namespace Skrypt.Library
 {
-    public delegate SkryptObject OperationDelegate(SkryptObject[] input);
+    public delegate SkryptObject OperationDelegate(SkryptObject[] input, SkryptEngine engine);
 
     public class Operation
     {
@@ -39,19 +39,19 @@ namespace Skrypt.Library
         public List<Operation> Operations = new List<Operation>
            {
                 new Operation(Operators.Not, typeof(SkryptObject),
-                    input =>
+                    (input, engine) =>
                     {
-                        return new S.Boolean(input[0].GetType() != typeof(S.Null));
+                        return engine.Create<S.Boolean>(input[0].GetType() != typeof(S.Null));
                     }),
                 new Operation(Operators.Equal, typeof(SkryptObject), typeof(SkryptObject),
-                    input =>
+                    (input, engine) =>
                     {
-                        return new S.Boolean(ReferenceEquals(input[0],input[1]));
+                        return engine.Create<S.Boolean>(ReferenceEquals(input[0],input[1]));
                     }),
                 new Operation(Operators.NotEqual, typeof(SkryptObject), typeof(SkryptObject),
-                    input =>
+                    (input, engine) =>
                     {
-                        return new S.Boolean(!ReferenceEquals(input[0],input[1]));
+                        return engine.Create<S.Boolean>(!ReferenceEquals(input[0],input[1]));
                     }),
             };
 

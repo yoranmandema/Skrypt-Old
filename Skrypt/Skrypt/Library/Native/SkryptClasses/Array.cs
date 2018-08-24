@@ -14,38 +14,38 @@ namespace Skrypt.Library.Native
             public new List<Operation> Operations = new List<Operation>
             {
                 new Operation(Operators.Add, typeof(Array), typeof(SkryptObject),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToAny(input, 1);
 
-                        var newArray = a.Engine.Create<Array>();
+                        var newArray = engine.Create<Array>();
                         newArray.List = new List<SkryptObject>(a.List);
                         newArray.List.Add(b);
 
                         return newArray;
                     }),
                 new Operation(Operators.Add, typeof(SkryptObject), typeof(Array),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToAny(input, 0);
                         var b = TypeConverter.ToArray(input, 1);
 
-                        var newArray = a.Engine.Create<Array>();
+                        var newArray = engine.Create<Array>();
                         newArray.List = new List<SkryptObject>(b.List);
                         newArray.List.Insert(0, a);
 
                         return newArray;
                     }),
                 new Operation(Operators.Multiply, typeof(Array), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
                         var mul = (int) b.Value - 1;
 
-                        var newArray = a.Engine.Create<Array>();
+                        var newArray = engine.Create<Array>();
                         newArray.List = new List<SkryptObject>(a.List);
                         for (var i = 0; i < mul; i++) {
                             foreach (var obj in a.List) {
@@ -57,31 +57,31 @@ namespace Skrypt.Library.Native
                         return newArray;
                     }),
                 new Operation(Operators.Index, typeof(Array), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToNumeric(input, 1);
 
                         if (b < 0 || b > a.List.Count) {
-                            return a.Engine.Create<Null>();
+                            return engine.Create<Null>();
                         }
                          
                         return a.List[(int)b];
                     }),
                 new Operation(Operators.Index, typeof(Array), typeof(String),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToString(input, 1);
 
                         if (!a.Table.ContainsKey(b)) {
-                            return a.Engine.Create<Null>();
+                            return engine.Create<Null>();
                         }
 
                         return a.Table[b];
                     }),
                 new Operation(Operators.IndexSet, typeof(Array), typeof(Numeric),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToAny(input, 1);
@@ -91,7 +91,7 @@ namespace Skrypt.Library.Native
                             var collection = new SkryptObject[(int)c - a.List.Count + 1];
 
                             for (int i = 0; i < collection.Length; i++) {
-                                collection[i] = a.Engine.Create<Null>();
+                                collection[i] = engine.Create<Null>();
                             }
 
                             a.List.AddRange(collection);
@@ -102,7 +102,7 @@ namespace Skrypt.Library.Native
                         return newValue;
                     }),
                 new Operation(Operators.IndexSet, typeof(Array), typeof(String),
-                    input =>
+                    (input, engine) =>
                     {
                         var a = TypeConverter.ToArray(input, 0);
                         var b = TypeConverter.ToAny(input, 1);

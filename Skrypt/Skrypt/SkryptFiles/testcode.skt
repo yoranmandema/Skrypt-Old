@@ -2,10 +2,14 @@ using System
 
 class MatrixLibrary {
 	static class Matrix {
-		public content = []
+		private content = []
 
 		Matrix (rows, columns) {
 			self.content = [[0] * rows] * columns
+		}
+
+		public fn ToString () {
+			return "" + self.content
 		}
 	}
 
@@ -16,7 +20,4 @@ class MatrixLibrary {
 
 A = MatrixLibrary.Matrix(2,3)
 
-B = [0] * 100
-B[0] = 2
-
-print(B)
+print(A)
