@@ -12,7 +12,7 @@ namespace Skrypt.Parsing
         None = 2,
         Public = 4,
         Private = 8,
-        Static = 16,
+        Instance = 16,
         Const = 32,
         Strong = 64,
     }

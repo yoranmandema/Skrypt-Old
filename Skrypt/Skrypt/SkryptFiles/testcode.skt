@@ -1,23 +1,9 @@
-using System
-
-class MatrixLibrary {
-	static class Matrix {
-		private content = []
-
-		Matrix (rows, columns) {
-			self.content = [[0] * rows] * columns
-		}
-
-		public fn ToString () {
-			return "" + self.content
-		}
-	}
-
-	static fn Multiply (m1,m2) {
-		//stuff
+class Object {
+	in public class Inner {
+		public A = 1
 	}
 }
 
-A = MatrixLibrary.Matrix(2,3)
+using System
 
-print(A)
+print(Object().Inner)

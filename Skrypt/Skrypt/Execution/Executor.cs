@@ -218,7 +218,7 @@ namespace Skrypt.Execution
                         Modifiers = v.Value.Modifiers
                     };
 
-                    if ((v.Value.Modifiers & Modifier.Static) != 0) {
+                    if ((v.Value.Modifiers & Modifier.Instance) == 0) {
                         var find = TypeObject.Properties.Find(x => x.Name == v.Key);
 
                         if (find != null) {
@@ -349,7 +349,7 @@ namespace Skrypt.Execution
             if (properties != 0) scope.Properties = scope.Properties | scopeContext.Properties;            
 
             if ((scope.Properties & ScopeProperties.InClassDeclaration) == 0) {
-                if ((node.Modifiers & Modifier.Static) != 0 || (node.Modifiers & Modifier.Public) != 0 || (node.Modifiers & Modifier.Private) != 0) {
+                if ((node.Modifiers & Modifier.Instance) != 0 || (node.Modifiers & Modifier.Public) != 0 || (node.Modifiers & Modifier.Private) != 0) {
                     _engine.ThrowError("Property modifiers cannot be used outside class", node.Token);
                 }
             }
@@ -697,27 +697,29 @@ namespace Skrypt.Execution
                 SkryptObject BaseType = null;
 
                 bool isConstructor = false;
+                bool validConstructor = true;
 
                 if (!typeof(SkryptMethod).IsAssignableFrom(foundMethod.GetType())) {
                     var find = foundMethod.Properties.Find((x) => x.Name == "Constructor");
+                    var typeName = foundMethod.Properties.Find((x) => x.Name == "TypeName").Value.ToString();
 
-                    if (find != null) {
-                        var typeName = foundMethod.Properties.Find((x) => x.Name == "TypeName").Value.ToString();
+                    validConstructor = foundMethod.GetType() == typeof(SkryptObject);
 
-                        foundMethod = find.Value;
+                    //if (find != null) {
+                    foundMethod = find?.Value ?? new SkryptMethod {Name = "Constructor"};
 
-                        BaseType = GetType(typeName, scopeContext);
+                    BaseType = GetType(typeName, scopeContext);
 
-                        caller = (SkryptType)Activator.CreateInstance(BaseType.GetType());
-                        caller.ScopeContext = _engine.CurrentScope;
-                        caller.Engine = _engine;
-                        caller.Name = typeName;
-                        caller.SetPropertiesTo(BaseType);
+                    caller = (SkryptType)Activator.CreateInstance(BaseType.GetType());
+                    caller.ScopeContext = _engine.CurrentScope;
+                    caller.Engine = _engine;
+                    caller.Name = typeName;
+                    caller.SetPropertiesTo(BaseType);
 
-                        isConstructor = true;
-                    } else {
-                        _engine.ThrowError("Object does not have a constructor and can thus not be instanced!", callNode.Getter.Token);
-                    }
+                    isConstructor = true;
+                    //} else {
+                    //    _engine.ThrowError("Object does not have a constructor and can thus not be instanced!", callNode.Getter.Token);
+                    //}
                 }
 
                 var methodContext = new ScopeContext {
@@ -755,7 +757,7 @@ namespace Skrypt.Execution
                     methodScopeResult = method.Execute(_engine, caller, arguments.ToArray(), methodContext);
                 } else if (foundMethod.GetType() == typeof(SharpMethod)) {
                     methodScopeResult = ((SharpMethod)foundMethod).Execute(_engine, caller, arguments.ToArray(), methodContext);
-                } else {
+                } else if (!validConstructor) {
                     _engine.ThrowError("Cannot call value, as it is not a function!", callNode.Getter.Token);
                 }
 

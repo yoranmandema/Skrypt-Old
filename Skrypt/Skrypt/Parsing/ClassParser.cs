@@ -59,7 +59,7 @@ namespace Skrypt.Parsing
                                 });
 
                                 clone.Insert(constructorStart, new Token {
-                                    Value = "static",
+                                    Value = "public",
                                     Type = TokenTypes.Keyword,
                                     Start = clone[constructorStart].Start,
                                     End = clone[constructorStart].Start,
@@ -133,7 +133,8 @@ namespace Skrypt.Parsing
             var classNode = new ClassNode {
                 InheritNode = inheritNode,
                 BodyNode = result.Node,
-                Name = tokens[1].Value
+                Name = tokens[1].Value,
+                Token = tokens[0]
             };
 
             i += result.Delta + 1;

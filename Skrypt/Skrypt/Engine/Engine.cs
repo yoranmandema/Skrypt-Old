@@ -93,7 +93,7 @@ namespace Skrypt.Engine
             );
 
             Tokenizer.AddRule(
-                new Regex(@"const|using|public|private|strong|static|class|fn|if|elseif|else|while"),
+                new Regex(@"const|using|public|private|strong|in|class|fn|if|elseif|else|while"),
                 TokenTypes.Keyword
             );
 

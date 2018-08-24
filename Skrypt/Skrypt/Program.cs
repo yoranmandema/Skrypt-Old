@@ -23,7 +23,7 @@ namespace Skrypt
             engine.Parse(code);
 
             double time = 0;
-            int instances = 1000;
+            int instances = 0;
             if (instances > 0) {
                 for (int i = 0; i < instances; i++) {
                     var e = new SkryptEngine(code) {

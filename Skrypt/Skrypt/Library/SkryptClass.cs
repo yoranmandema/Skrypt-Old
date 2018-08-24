@@ -90,7 +90,7 @@ namespace Skrypt.Library
         }
 
         public SkryptObject GetProperty(string name) {
-            return Properties.Find(x => x.Name == name).Value;
+            return Properties.Find(x => x.Name == name)?.Value;
         }
 
         public void SetProperty(string name, SkryptObject value) {

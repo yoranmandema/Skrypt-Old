@@ -56,7 +56,7 @@ namespace Skrypt.Parsing
             "public",
             "private",
             "const",
-            "static",
+            "in",
             "strong"
         };
 
@@ -157,8 +157,8 @@ namespace Skrypt.Parsing
                     case "private":
                         appliedModifiers = appliedModifiers | Modifier.Private;
                         break;
-                    case "static":
-                        appliedModifiers = appliedModifiers | Modifier.Static;
+                    case "in":
+                        appliedModifiers = appliedModifiers | Modifier.Instance;
                         break;
                     case "const":
                         appliedModifiers = appliedModifiers | Modifier.Const;
@@ -185,6 +185,10 @@ namespace Skrypt.Parsing
                 if (parseTokens.Count == 0) {
                     _engine.ThrowError("Syntax error, assignment expression expected.", tokens[0]);
                 }
+
+                if ((appliedModifiers & Modifier.Public) == 0) {
+                    appliedModifiers |= Modifier.Private;
+                }
             }
 
             if (parseTokens[0].Value == "if" || parseTokens[0].Value == "while" || parseTokens[0].Value == "for") {
@@ -208,6 +212,12 @@ namespace Skrypt.Parsing
             }
             else if (parseTokens[0].Value == "class") {
                 result = _engine.ClassParser.Parse(parseTokens);
+
+                if ((appliedModifiers & Modifier.Instance) != 0) {
+                    ((ClassNode)result.Node).BodyNode.Nodes.ForEach(x => {
+                        if ((x.Modifiers & Modifier.Instance) != 0) _engine.ThrowError("Syntax error, inner instance classes cannot have instance properties.", x.Token);
+                    });
+                }
             }
             else if (parseTokens[0].Value == "using") {
                 result = _engine.ExpressionParser.ParseUsing(parseTokens);

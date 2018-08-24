@@ -244,7 +244,7 @@ namespace Skrypt.Library.Reflection {
             Object.Properties.Add(new SkryptProperty {
                 Name = "TypeName",
                 Value = new Native.System.String(className),
-                Modifiers = Parsing.Modifier.Const | Parsing.Modifier.Static
+                Modifiers = Parsing.Modifier.Const | Parsing.Modifier.Instance
             });
 
             engine.GlobalScope.AddType(className, Instance);
