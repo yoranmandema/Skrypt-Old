@@ -1,7 +1,11 @@
 class Vector {
-	in public X = 0
-	in public Y = 0
-	in public Z = 0
+	in strong public X = 0
+	in strong public Y = 0
+	in strong public Z = 0
+	
+	in public fn Length () {
+		return System.Math.Sqrt(self.X ^ 2 + self.Y ^ 2 + self.Z ^ 2)
+	}	
 	
 	Vector (x,y,z) {
 		self.X = x
@@ -11,9 +15,24 @@ class Vector {
 	
 	in fn ToString () {
 		return "(" + self.X + "," + self.Y + "," + self.Z + ")" 
+	} 
+	
+	in public fn Mul(other) {
+		return Vector(self.X * other.X, self.Y * other.Y, self.Z * other.Z)
 	}
+	
+	
 }
 
 using System
 
-print("Out: " + Vector(1,2,3))
+A = Vector(1,2,3)
+B = Vector(2,3,4)
+C = Vector(2,3,4).Mul(Vector(1,2,3))
+D = C.Length()
+
+print(A)
+print(B)
+print(C)
+print(D)
+print(System.Math.Sqrt(2 ^ 2 + 6 ^ 2 + 12 ^ 2))

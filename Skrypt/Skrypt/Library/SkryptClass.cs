@@ -85,7 +85,7 @@ namespace Skrypt.Library
         }
 
         public SkryptObject SetPropertiesTo (SkryptObject Object) {
-            Properties = new List<SkryptProperty>(Object.Properties);
+            Properties = new List<SkryptProperty>(Object.Properties.Copy());
             return this;
         }
 
@@ -128,8 +128,8 @@ namespace Skrypt.Library
             var s = o.ToString();
             var ts = o.GetProperty("ToString");
 
-            if (ts != null && typeof(SkryptMethod).IsAssignableFrom(ts.GetType())) {
-                s = ((SkryptMethod)ts).Execute(engine, o, null, engine.CurrentScope).ReturnObject.ToString();
+            if (ts != null && typeof(UserMethod).IsAssignableFrom(ts.GetType())) {
+                s = ((UserMethod)ts).Execute(engine, o, null, engine.CurrentScope).ReturnObject.ToString();
             }
 
             return s;

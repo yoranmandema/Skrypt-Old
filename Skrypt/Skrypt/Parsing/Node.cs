@@ -73,21 +73,21 @@ namespace Skrypt.Parsing
             //    Console.WriteLine(Regex.Escape("" + c));
             //}
 
-            var s = JsonConvert.SerializeObject(this, Formatting.None);
-            s = new Regex(@",").Replace(s, "\n");
-            s = new Regex(@"""").Replace(s,"");
-            s = new Regex(@":").Replace(s, ": ");
-            s = new Regex(@"[\{\}]").Replace(s, "");
+            var s = JsonConvert.SerializeObject(this, Formatting.Indented);
+            //s = new Regex(@",").Replace(s, "\n");
+            //s = new Regex(@"""").Replace(s,"");
+            //s = new Regex(@":").Replace(s, ": ");
+            //s = new Regex(@"[\{\}]").Replace(s, "");
 
-            foreach (var subnode in Nodes) {
-                var sns = subnode.ToString();
+            //foreach (var subnode in Nodes) {
+            //    var sns = subnode.ToString();
 
-                var lines = sns.Split('\n');
+            //    var lines = sns.Split('\n');
 
-                foreach (var l in lines) {
-                    s += "| " + l;
-                }
-            }
+            //    foreach (var l in lines) {
+            //        s += "| " + l;
+            //    }
+            //}
 
             //s = new Regex(@"[""\[\]\{\}\,\r]").Replace(s,"");
 

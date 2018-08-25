@@ -462,6 +462,7 @@ namespace Skrypt.Execution
             if (node.Body == "access") {
                 var target = ExecuteExpression(node.Nodes[0], localScope);
                 localScope.Caller = target;
+                scopeContext.Caller = target;
 
                 if (target.GetType() == typeof(GetMethod)) {
                     var ex = ((GetMethod)target).Execute(_engine, Object, new SkryptObject[0], new ScopeContext { ParentScope = scopeContext });
@@ -473,6 +474,7 @@ namespace Skrypt.Execution
             }
             else {
                 localScope = null;
+
                 return new AccessResult {
                     Property = GetProperty(Object, node.Body, scopeContext, setter),
                     Owner = Object
@@ -694,6 +696,7 @@ namespace Skrypt.Execution
                 var foundMethod = ExecuteExpression(callNode.Getter, scopeContext);
 
                 var caller = scopeContext.Caller;
+
                 SkryptObject BaseType = null;
 
                 bool isConstructor = false;
@@ -705,7 +708,6 @@ namespace Skrypt.Execution
 
                     validConstructor = foundMethod.GetType() == typeof(SkryptObject);
 
-                    //if (find != null) {
                     foundMethod = find?.Value ?? new SkryptMethod {Name = "Constructor"};
 
                     BaseType = GetType(typeName, scopeContext);
@@ -717,9 +719,6 @@ namespace Skrypt.Execution
                     caller.SetPropertiesTo(BaseType);
 
                     isConstructor = true;
-                    //} else {
-                    //    _engine.ThrowError("Object does not have a constructor and can thus not be instanced!", callNode.Getter.Token);
-                    //}
                 }
 
                 var methodContext = new ScopeContext {
@@ -729,10 +728,6 @@ namespace Skrypt.Execution
                 };
 
                 _engine.CurrentStack = methodContext.CallStack;
-
-                //if (caller != null) {
-                //    methodContext.SetVariable("self", caller, Modifier.Const);
-                //}
 
                 ScopeContext methodScopeResult = null;
 
@@ -760,8 +755,6 @@ namespace Skrypt.Execution
                 } else if (!validConstructor) {
                     _engine.ThrowError("Cannot call value, as it is not a function!", callNode.Getter.Token);
                 }
-
-                scopeContext.Caller = null;
 
                 if (isConstructor) {
                     caller.ScopeContext = _engine.CurrentScope;
