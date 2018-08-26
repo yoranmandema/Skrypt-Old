@@ -276,10 +276,9 @@ namespace Skrypt.Library.Native
                 return newArray;
             }
 
-            //public override string ToString()
-            //{
-            //    return "[" + string.Join(",", List) + "]";
-            //}
+            public override string ToString() {
+                return "[" + string.Join(",", List) + "]";
+            }
         }
     }
 }

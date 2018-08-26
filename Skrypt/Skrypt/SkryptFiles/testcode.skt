@@ -1,9 +1,7 @@
 using System
 
-class o {
-    public class p {
-        p () {}
-    }
+class Something {
+	public in a = 2
 }
 
-print(o.p().Type == o.p)
+print(Something().Type == Array)

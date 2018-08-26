@@ -347,7 +347,8 @@ namespace Skrypt.Engine
             double execute = Stopwatch.Elapsed.TotalMilliseconds;
             ExecutionTime = execute;
 
-            //Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
+            if (!Settings.HasFlag(EngineSettings.NoLogs)) 
+                Console.WriteLine($"\nExecution: {execute}ms, Parsing: {parse}ms, Tokenization: {token}ms, Total: {execute + parse + token}ms");
 
             return programNode;
         }
