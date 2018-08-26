@@ -716,7 +716,8 @@ namespace Skrypt.Execution
                     caller.ScopeContext = _engine.CurrentScope;
                     caller.Engine = _engine;
                     caller.Name = typeName;
-                    caller.SetPropertiesTo(BaseType);
+                    caller.Properties = new List<SkryptProperty>(BaseType.Properties.Copy());
+                    caller.SetProperty("Type", BaseType.Properties.Find((x) => x.Name == "Type").Value);
 
                     isConstructor = true;
                 }

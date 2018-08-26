@@ -85,7 +85,7 @@ namespace Skrypt.Library
         }
 
         public SkryptObject SetPropertiesTo (SkryptObject Object) {
-            Properties = new List<SkryptProperty>(Object.Properties.Copy());
+            Properties = new List<SkryptProperty>(Object.Properties);
             return this;
         }
 

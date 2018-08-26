@@ -175,7 +175,7 @@ namespace Skrypt.Engine
 
             if (opLeft != null)
                 operationDel = opLeft.OperationDelegate;
-            else if (opRight != null)
+            if (opRight != null)
                 operationDel = opRight.OperationDelegate;
 
             if (operationDel == null) {

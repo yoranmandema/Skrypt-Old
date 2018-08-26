@@ -88,7 +88,7 @@ namespace Skrypt.Tests {
         [Theory]
         [InlineData("const a = 1")]
         [InlineData("const strong a = 1")]
-        [InlineData("public static const strong a = 1")]
+        [InlineData("public in const strong a = 1")]
         public void ShouldParseModifiedAssignment(string source) {
             var program = new Engine.SkryptEngine(source).Parse();
 
@@ -100,7 +100,7 @@ namespace Skrypt.Tests {
         [Theory]
         [InlineData("const")]
         [InlineData("const strong")]
-        [InlineData("public static const strong")]
+        [InlineData("public in const strong")]
         public void ShouldFailOnMissingAssignment(string source) {
             Assert.Throws<Engine.SkryptException>(() => new Engine.SkryptEngine(source).Parse());
         }
@@ -108,7 +108,7 @@ namespace Skrypt.Tests {
         [Theory]
         [InlineData("const const")]
         [InlineData("const strong const")]
-        [InlineData("public static const public")]
+        [InlineData("public in const public")]
         public void ShouldFailOnDuplicateModifiers(string source) {
             Assert.Throws<Engine.SkryptException>(() => new Engine.SkryptEngine(source).Parse());
         }

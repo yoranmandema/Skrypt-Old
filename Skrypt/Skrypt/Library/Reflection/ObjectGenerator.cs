@@ -66,10 +66,10 @@ namespace Skrypt.Library.Reflection {
 
                 if (property.IsGetter) {
                     property.Name = property.Name.TrimStart('_');
-                }
+                } 
 
                 if (!m.IsStatic) {
-                    Instance?.Properties.Add(property);
+                    Instance.Properties.Add(property);
                 }
                 else {
                     Object.Properties.Add(property);
