@@ -1,4 +1,4 @@
 using System
-using System.Net.HTTP
+using System.Encoding
 
-print(Request("https://api.github.com/users/mralexgray/repos"))
+Array.PrintTable(ToJSON("{\"name\":\"value\"}"))

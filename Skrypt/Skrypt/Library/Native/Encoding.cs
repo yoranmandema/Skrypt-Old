@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Engine;
 using Skrypt.Execution;
+using Newtonsoft.Json;
 
 namespace Skrypt.Library.Native {
     public partial class System : SkryptObject {
@@ -50,6 +51,19 @@ namespace Skrypt.Library.Native {
                 var encoded = Sys.Text.UnicodeEncoding.Unicode.GetString(bytes);
 
                 return engine.Create<String>(encoded);
+            }
+
+            [Constant]
+            public static SkryptObject ToJSON(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
+                var str = TypeConverter.ToString(input, 0, engine);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(str);
+                var array = engine.Create<Array>();
+
+                foreach (var kv in json) {
+                    array.Table[kv.Key] = engine.Create<String>(kv.Value);
+                }
+
+                return array;
             }
         }
     }

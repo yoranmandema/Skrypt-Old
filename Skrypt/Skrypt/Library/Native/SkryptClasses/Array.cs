@@ -276,6 +276,19 @@ namespace Skrypt.Library.Native
                 return newArray;
             }
 
+            [Constant]
+            public static SkryptObject PrintTable(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+                var array = TypeConverter.ToArray(values, 0);
+
+                Console.WriteLine("{");
+                foreach (var kv in array.Table) {
+                    Console.WriteLine($"\t{kv.Key}: {kv.Value}");
+                }
+                Console.WriteLine("}");
+
+                return array;
+            }
+
             public override string ToString() {
                 return "[" + string.Join(",", List) + "]";
             }
