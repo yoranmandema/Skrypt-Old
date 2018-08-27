@@ -47,8 +47,6 @@ namespace Skrypt.Parsing
             "fn",
             "class",
             "using",
-            //"break",
-            //"continue",
         };
 
         public static List<string> Modifiers = new List<string>
@@ -126,25 +124,26 @@ namespace Skrypt.Parsing
             var usedModifiers = new List<string>();
             Modifier appliedModifiers = Modifier.None;
 
-            switch (tokens[0].Value) {
-                case "}":
-                case "{":
-                    Console.WriteLine(tokens[0]);
-                    _engine.ThrowError("Statement expected.", tokens[0]);
-                    break;
+            if (tokens[0].Type == TokenTypes.Punctuator) {
+                switch (tokens[0].Value) {
+                    case "}":
+                    case "{":
+                        Console.WriteLine(tokens[0]);
+                        _engine.ThrowError("Statement expected.", tokens[0]);
+                        break;
+                }
             }
-
             
             while (Modifiers.Contains(t.Value)) {
                 if (usedModifiers.Contains(t.Value)) {
                     _engine.ThrowError("Object can't be marked with multiple of the same modifiers", t);
                 }
 
-                if (usedModifiers.Contains("public") && t.Value == "private") {
+                if (usedModifiers.Contains("public") && t.Equals("private", TokenTypes.Keyword)) {
                     _engine.ThrowError("Object can't be marked as both private and public", t);
                 }
 
-                if (usedModifiers.Contains("private") && t.Value == "public") {
+                if (usedModifiers.Contains("private") && t.Equals("public", TokenTypes.Keyword)) {
                     _engine.ThrowError("Object can't be marked as both private and public", t);
                 }
 
@@ -191,10 +190,10 @@ namespace Skrypt.Parsing
                 }
             }
 
-            if (parseTokens[0].Value == "if" || parseTokens[0].Value == "while" || parseTokens[0].Value == "for") {
+            if (parseTokens[0].Equals("if", TokenTypes.Keyword) || parseTokens[0].Equals("while", TokenTypes.Keyword) || parseTokens[0].Equals("for", TokenTypes.Keyword)) {
                 result = _engine.StatementParser.Parse(parseTokens);
             }
-            else if (parseTokens[0].Value == "fn") {
+            else if (parseTokens[0].Equals("fn", TokenTypes.Keyword)) {
                 var isLiteral = false;
 
                 if (parseTokens.Count > 2) {
@@ -210,16 +209,16 @@ namespace Skrypt.Parsing
                     result = _engine.MethodParser.Parse(parseTokens);
                 }
             }
-            else if (parseTokens[0].Value == "class") {
+            else if (parseTokens[0].Equals("class", TokenTypes.Keyword)) {
                 result = _engine.ClassParser.Parse(parseTokens);
 
                 if ((appliedModifiers & Modifier.Instance) != 0) {
                     ((ClassNode)result.Node).BodyNode.Nodes.ForEach(x => {
-                        if ((x.Modifiers & Modifier.Instance) != 0) _engine.ThrowError("Syntax error, inner instance classes cannot have instance properties.", x.Token);
+                        if ((x.Modifiers & Modifier.Instance) != 0) _engine.ThrowError("Syntax error, unexpected 'in' modifier.", x.Token);
                     });
                 }
             }
-            else if (parseTokens[0].Value == "using") {
+            else if (parseTokens[0].Equals("using", TokenTypes.Punctuator)) {
                 result = _engine.ExpressionParser.ParseUsing(parseTokens);
             }
             else {

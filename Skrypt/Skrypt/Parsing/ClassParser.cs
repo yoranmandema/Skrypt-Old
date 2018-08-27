@@ -18,8 +18,6 @@ namespace Skrypt.Parsing
             _engine = e;
         }
 
-        static List<string> PropertyWords = new List<string> () { "static", "private", "public", "constant" };
-
         Node ParseContents (List<Token> tokens, string name) {
             var constructorStart = -1;
             var clone = new List<Token>(tokens);
@@ -73,7 +71,6 @@ namespace Skrypt.Parsing
             }
 
             var result = _engine.GeneralParser.Parse(clone);
-            //result.TokenType = "ClassDeclaration";
 
             return result;
         }
@@ -90,7 +87,7 @@ namespace Skrypt.Parsing
 
             var inheritNode = new Node {Body = "Inherit", Type = TokenTypes.Inherit };
 
-            if (tokens[i].Value == ":") {
+            if (tokens[i].Equals(":", TokenTypes.Punctuator)) {
                 bool isIdentifier = true;
                 Token nextToken = null;
                 var s = _engine.ExpectType(TokenTypes.Identifier, tokens);
@@ -107,7 +104,7 @@ namespace Skrypt.Parsing
                     if (isIdentifier) {
                         inheritNode.Add(_engine.ExpressionParser.Parse(new List<Token> { tokens[i] }).Node);
 
-                        if (nextToken?.Value != "{" && i < tokens.Count - 1) {
+                        if (!(nextToken?.Equals("{", TokenTypes.Punctuator) ?? false) && i < tokens.Count - 1) {
                             var sk = _engine.ExpectValue(",", tokens, i);
                             isIdentifier = false;
                         } else {

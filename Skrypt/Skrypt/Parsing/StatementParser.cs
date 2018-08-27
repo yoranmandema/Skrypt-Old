@@ -146,7 +146,7 @@ namespace Skrypt.Parsing
 
             // Only parse statements elseif/else if there's any tokens after if statement
             if (index < tokens.Count - 1)
-                while (tokens[index].Value == "elseif")
+                while (tokens[index].Equals("elseif", TokenTypes.Keyword))
                 {
                     var elseIfResult = ParseStatement(tokens.GetRange(index, tokens.Count - index));
                     result.Node.Add(elseIfResult.Node);
@@ -156,7 +156,7 @@ namespace Skrypt.Parsing
                 }
 
             if (index < tokens.Count - 1)
-                if (tokens[index].Value == "else")
+                if (tokens[index].Equals("else", TokenTypes.Keyword))
                 {
                     var elseResult = ParseElseStatement(tokens.GetRange(index, tokens.Count - index));
                     result.Node.Add(elseResult.Node);

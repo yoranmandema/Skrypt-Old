@@ -83,7 +83,7 @@ namespace Skrypt.Parsing
         public Node ParseLambdaParameters (List<Token> tokens) {
             var node = new Node();
 
-            if (tokens[0].Value == "(" && tokens[0].Type == TokenTypes.Punctuator) {
+            if (tokens[0].Equals("(",TokenTypes.Punctuator)) {
                 node = _engine.GeneralParser.ParseSurrounded("(", ")", 0, tokens, ParseParameters).Node;
             } else {
                 node = ParseSingleParameter(tokens);
@@ -95,7 +95,7 @@ namespace Skrypt.Parsing
         public Node ParseLambdaBlock (List<Token> tokens) {
             var node = new Node();
 
-            if (tokens[0].Value == "{" && tokens[0].Type == TokenTypes.Punctuator) {
+            if (tokens[0].Equals("{", TokenTypes.Punctuator)) {
                 node = _engine.GeneralParser.ParseSurrounded("{", "}", 0, tokens, _engine.GeneralParser.Parse).Node;
             }
             else {
@@ -116,7 +116,7 @@ namespace Skrypt.Parsing
             var blockBuffer = new List<Token>();
 
             for (int i = 0; i < tokens.Count - 1; i++) {
-                if (tokens[i].Value == "=>" && tokens[i].Type == TokenTypes.Punctuator) {
+                if (tokens[i].Equals("=>", TokenTypes.Punctuator)) {
                     blockBuffer = tokens.GetRange(i + 1, tokens.Count - i -1);
                     break;
                 }

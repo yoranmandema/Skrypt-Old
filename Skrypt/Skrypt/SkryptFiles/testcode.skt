@@ -1,18 +1,27 @@
 using System
 
-class SomeClass {
-	public in Value = 2
-	//public b = "lmao"
+class StrictFunction {
+	in private strong ParamTypes = []
+	in private strong Function = _ => {}
+
+	StrictFunction(types, function) {
+		self.ParamTypes = types
+		self.Function = function
+	}
+	
+	in private fn CheckTypes(input) {
+	
+	}
+	
+	in fn Call(input) {
+		self.CheckTypes(input)
+		
+		self.Function(input[0],input[1],input[2],input[3],input[4])
+	}
 }
 
-a = SomeClass()
-
-print(a)
-
-a.Value = 10
-
-print(a)
-
-b = SomeClass()
-
-print(b)
+print(
+	StrictFunction([],() => {
+		
+	})
+)

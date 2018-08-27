@@ -78,6 +78,10 @@ namespace Skrypt.Tokenization
             return Type == TokenTypes.Keyword;
         }
 
+        public bool Equals (string value, TokenTypes type) {
+            return Value == value && Type == type;
+        }
+
         /// <summary>
         ///     Returns true if token has the same type and value. Type and value can be left as null to ignore
         /// </summary>

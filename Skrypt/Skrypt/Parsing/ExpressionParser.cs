@@ -72,13 +72,13 @@ namespace Skrypt.Parsing
             for (int i = 0; i < tokens.Count; i++) {
                 var token = tokens[i];
 
-                if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
+                if (token.Equals("(", TokenTypes.Punctuator)) {
                     depth++;
-                } else if (token.Value == ")" && token.Type == TokenTypes.Punctuator) {
+                } else if (token.Equals(")", TokenTypes.Punctuator)) {
                     depth--;
                 }
 
-                if (token.Value == "?" && token.Type == TokenTypes.Punctuator && depth == 0) {
+                if (token.Equals("?", TokenTypes.Punctuator) && depth == 0) {
                     isConditional = true;
                     SkipInfo skip = SkipFromTo("?", ":", tokens, i);
                 }
@@ -174,11 +174,11 @@ namespace Skrypt.Parsing
 
                             var previousToken = i >= 1 ? tokens[i - 1] : null;
 
-                            if (token.Value == "{" && !(previousToken.Value == "=>" && previousToken.Type == TokenTypes.Punctuator)) {
+                            if (token.Equals("{", TokenTypes.Punctuator) && !previousToken.Equals("=>", TokenTypes.Punctuator)) {
                                 _engine.ThrowError("Statement expected.", token);
                             }
 
-                            if (token.Value == "fn") {
+                            if (token.Equals("fn", TokenTypes.Keyword)) {
                                 var skip = _engine.ExpectValue("(", tokens, i);
                                 i += skip.Delta;
 
@@ -198,13 +198,13 @@ namespace Skrypt.Parsing
                             }
 
                             if (Operator.Operation == "=") {
-                                if (token.Value == "{" && token.Type == TokenTypes.Punctuator) {
+                                if (token.Equals("{", TokenTypes.Punctuator)) {
                                     var skip = _engine.ExpressionParser.SkipFromTo("{", "}", tokens, i);
                                     i += skip.Delta;
                                 }
                             }
 
-                            if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
+                            if (token.Equals("(", TokenTypes.Punctuator)) {
                                 var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, i);
                                 i += skip.Delta;
 
@@ -231,7 +231,7 @@ namespace Skrypt.Parsing
 
                                 token = tokens[i];
                             }
-                            else if (token.Value == "[" && token.Type == TokenTypes.Punctuator) {
+                            else if (token.Equals("[", TokenTypes.Punctuator)) {
                                 var skip = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, i);
                                 i += skip.Delta;
 
@@ -258,10 +258,10 @@ namespace Skrypt.Parsing
                                 }
                             }
                             else if (token.Value == Operator.Operation && token.Type == TokenTypes.Punctuator) {
-                                if (token.Value == ":" && token.Type == TokenTypes.Punctuator) {
+                                if (token.Equals(":", TokenTypes.Punctuator)) {
                                     _engine.ThrowError("Incomplete conditional statement.", token);
                                 }
-                                else if (token.Value == "?" && token.Type == TokenTypes.Punctuator) {
+                                else if (token.Equals("?", TokenTypes.Punctuator)) {
                                     if (IsConditional(tokens)) {
                                         isConditional = true;
                                         return;
@@ -286,7 +286,7 @@ namespace Skrypt.Parsing
                                 }
 
                                 if (hasRequiredLeftTokens && hasRequiredRightTokens) {
-                                    if (token.Value == "=>") {
+                                    if (token.Equals("=>", TokenTypes.Punctuator)) {
                                         isLambda = true;
                                         return;
                                     }
@@ -432,20 +432,20 @@ namespace Skrypt.Parsing
                 var token = tokens[i];
                 buffer.Add(token);
 
-                if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
+                if (token.Equals("(", TokenTypes.Punctuator))
                     depth++;
-                else if (token.Value == ")" && token.Type == TokenTypes.Punctuator) depth--;
+                else if (token.Equals(")", TokenTypes.Punctuator)) depth--;
 
-                if (token.Value == "[" && token.Type == TokenTypes.Punctuator)
+                if (token.Equals("[", TokenTypes.Punctuator))
                     indexDepth++;
-                else if (token.Value == "]" && token.Type == TokenTypes.Punctuator) indexDepth--;
+                else if (token.Equals("]", TokenTypes.Punctuator)) indexDepth--;
 
-                if (token.Value == "{" && token.Type == TokenTypes.Punctuator)
+                if (token.Equals("{", TokenTypes.Punctuator))
                     bracketDepth++;
-                else if (token.Value == "}" && token.Type == TokenTypes.Punctuator) bracketDepth--;
+                else if (token.Equals("}", TokenTypes.Punctuator)) bracketDepth--;
 
                 if (depth == 0 && indexDepth == 0 && bracketDepth == 0) {
-                    if ((token.Value == "," && token.Type == TokenTypes.Punctuator)) {
+                    if (token.Equals(",", TokenTypes.Punctuator)) {
                          isFirst = false;
 
                         if (buffer.Count == 0) {
@@ -538,13 +538,13 @@ namespace Skrypt.Parsing
 
             if (token.IsValuable()) state = 0;
 
-            if (token.Value == ".") state = 1;
+            if (token.Equals(".", TokenTypes.Punctuator)) state = 1;
 
             while (true)
             {
                 if (token.IsValuable() && state == 0)
                     state = 1;
-                else if (token.Value == "." && state == 1)
+                else if (token.Equals(".", TokenTypes.Punctuator) && state == 1)
                     state = 0;
                 else
                     break;
@@ -558,7 +558,7 @@ namespace Skrypt.Parsing
             }
 
             if (index > 0)
-                if (tokens[index - 1].Value == "." && tokens[index - 1].Type == TokenTypes.Punctuator)
+                if (tokens[index - 1].Equals(".", TokenTypes.Punctuator))
                     _engine.ThrowError("Identifier expected!", tokens[index - 1]);
 
             end = index;
@@ -579,17 +579,17 @@ namespace Skrypt.Parsing
 
             while (true)
             {
-                if (token.Value == "(" && token.Type == TokenTypes.Punctuator)
+                if (token.Equals("(", TokenTypes.Punctuator))
                 {
                     var skip = _engine.ExpressionParser.SkipFromTo("(", ")", tokens, index);
                     index = skip.End + 1;
                 }
-                else if (token.Value == "[" && token.Type == TokenTypes.Punctuator)
+                else if (token.Equals("[", TokenTypes.Punctuator))
                 {
                     var skip = _engine.ExpressionParser.SkipFromTo("[", "]", tokens, index);
                     index = skip.End + 1;
                 }
-                else if (token.Value == "." && token.Type == TokenTypes.Punctuator || token.IsValuable())
+                else if (token.Equals(".", TokenTypes.Punctuator) || token.IsValuable())
                 {
                     var skip = _engine.ExpressionParser.SkipAccess(tokens, index);
                     index = skip.End;
@@ -622,7 +622,7 @@ namespace Skrypt.Parsing
             var reverse = tokens.GetRange(0, tokens.Count);
             reverse.Reverse();
 
-            if (reverse[0].Value == "]" && reverse[0].Type == TokenTypes.Punctuator)
+            if (reverse[0].Equals("]", TokenTypes.Punctuator))
             {
                 var skip = SkipFromTo("]", "[", reverse, 0);
 
@@ -790,14 +790,14 @@ namespace Skrypt.Parsing
             for (int i = 0; i < tokens.Count; i++) {
                 var token = tokens[i];
 
-                if (token.Value == "(" && token.Type == TokenTypes.Punctuator) {
+                if (token.Equals("(", TokenTypes.Punctuator)) {
                     depth++;
                 }
-                else if (token.Value == ")" && token.Type == TokenTypes.Punctuator) {
+                else if (token.Equals(")", TokenTypes.Punctuator)) {
                     depth--;
                 }
 
-                if (token.Value == "?" && token.Type == TokenTypes.Punctuator && depth == 0) {
+                if (token.Equals("?", TokenTypes.Punctuator) && depth == 0) {
                     var conditionNode = ParseClean(tokens.GetRange(0, i));
 
                     SkipInfo skip = SkipFromTo("?", ":", tokens, i);
