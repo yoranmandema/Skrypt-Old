@@ -84,8 +84,24 @@ namespace Skrypt.Library
             return (SkryptObject)MemberwiseClone();
         }
 
-        public SkryptObject SetPropertiesTo (SkryptObject Object) {
-            Properties = new List<SkryptProperty>(Object.Properties);
+        public SkryptObject GetPropertiesFrom (SkryptObject Object) {
+            //Properties = new List<SkryptProperty>(Object.Properties);
+
+            foreach (var p in Object.Properties) {
+                var property = new SkryptProperty {
+                    Name = p.Name,
+                    Modifiers = p.Modifiers
+                };
+
+                if (typeof(SkryptType).IsAssignableFrom(p.Value.GetType())) {
+                    property.Value = ((SkryptType)p.Value).CreateCopyOnAssignment ? p.Value.Copy() : p.Value;
+                } else {
+                    property.Value = p.Value;
+                }
+
+                Properties.Add(property);
+            }
+
             return this;
         }
 

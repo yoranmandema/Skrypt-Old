@@ -56,7 +56,7 @@ namespace Skrypt.Library.Native {
             [Constant]
             public static SkryptObject ToJSON(SkryptEngine engine, SkryptObject self, SkryptObject[] input) {
                 var str = TypeConverter.ToString(input, 0, engine);
-                var json = JsonConvert.DeserializeObject<Dictionary<string, object>>(str);
+                var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(str);
                 var array = engine.Create<Array>();
 
                 foreach (var kv in json) {

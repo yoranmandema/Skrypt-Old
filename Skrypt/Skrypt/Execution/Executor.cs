@@ -246,7 +246,7 @@ namespace Skrypt.Execution
                 var instance = (SkryptType)Activator.CreateInstance(BaseType.GetType());
                 instance.ScopeContext = _engine.CurrentScope;
                 instance.Engine = _engine;
-                instance.SetPropertiesTo(BaseType);
+                instance.GetPropertiesFrom(BaseType);
 
                 if (value.GetType() != typeof(SkryptObject) || BaseType.GetType() != typeof(SkryptType)) {
                     _engine.ThrowError("Can only inherit from Skrypt-based objects");
@@ -703,12 +703,12 @@ namespace Skrypt.Execution
                 bool validConstructor = true;
 
                 if (!typeof(SkryptMethod).IsAssignableFrom(foundMethod.GetType())) {
-                    var find = foundMethod.Properties.Find((x) => x.Name == "Constructor");
-                    var typeName = foundMethod.Properties.Find((x) => x.Name == "TypeName").Value.ToString();
+                    var find = foundMethod.GetProperty("Constructor");
+                    var typeName = foundMethod.GetProperty("TypeName").ToString();
 
                     validConstructor = foundMethod.GetType() == typeof(SkryptObject);
 
-                    foundMethod = find?.Value ?? new SkryptMethod {Name = "Constructor"};
+                    foundMethod = find ?? new SkryptMethod {Name = "Constructor"};
 
                     BaseType = GetType(typeName, scopeContext);
 
@@ -716,8 +716,9 @@ namespace Skrypt.Execution
                     caller.ScopeContext = _engine.CurrentScope;
                     caller.Engine = _engine;
                     caller.Name = typeName;
-                    caller.Properties = new List<SkryptProperty>(BaseType.Properties.Copy());
-                    caller.SetProperty("Type", BaseType.Properties.Find((x) => x.Name == "Type").Value);
+                    //caller.Properties = new List<SkryptProperty>(BaseType.Properties.Copy());
+                    //caller.SetProperty("Type", BaseType.Properties.Find((x) => x.Name == "Type").Value);
+                    caller.GetPropertiesFrom(BaseType);
 
                     isConstructor = true;
                 }
@@ -865,7 +866,7 @@ namespace Skrypt.Execution
                     parameters[i] = new Library.Native.System.Null();
                 }
 
-                parameters[i].SetPropertiesTo(GetType(((SkryptType)parameters[i]).TypeName, _engine.GlobalScope));
+                parameters[i].GetPropertiesFrom(GetType(((SkryptType)parameters[i]).TypeName, _engine.GlobalScope));
 
                 input.Add(parameters[i]);
             }

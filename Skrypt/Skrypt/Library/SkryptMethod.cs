@@ -141,7 +141,7 @@ namespace Skrypt.Library
             }
 
             if (typeof(SkryptType).IsAssignableFrom(returnValue.GetType())) {
-                returnValue.SetPropertiesTo(engine.Executor.GetType(((SkryptType)returnValue).TypeName, scope));
+                returnValue.GetPropertiesFrom(engine.Executor.GetType(((SkryptType)returnValue).TypeName, scope));
             }
 
             var newScope = new ScopeContext {
@@ -170,7 +170,7 @@ namespace Skrypt.Library
             var returnValue = Method(self, parameters);
 
             if (typeof(SkryptType).IsAssignableFrom(returnValue.GetType())) {
-                returnValue.SetPropertiesTo(engine.Executor.GetType(((SkryptType)returnValue).TypeName, scope));
+                returnValue.GetPropertiesFrom(engine.Executor.GetType(((SkryptType)returnValue).TypeName, scope));
             }
 
             var newScope = new ScopeContext {

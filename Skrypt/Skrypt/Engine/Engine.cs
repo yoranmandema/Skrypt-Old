@@ -148,7 +148,7 @@ namespace Skrypt.Engine
             var baseType = Executor.GetType(newObject.TypeName, CurrentScope);
             newObject.ScopeContext = CurrentScope;
             newObject.Engine = this;
-            newObject.SetPropertiesTo(baseType);
+            newObject.GetPropertiesFrom(baseType);
 
             return (T)((Object)newObject);
         }
@@ -185,7 +185,7 @@ namespace Skrypt.Engine
 
             var result = (SkryptType)operationDel(new[] { leftObject, rightObject }, this);
 
-            result.SetPropertiesTo(Executor.GetType(result.TypeName, GlobalScope));
+            result.GetPropertiesFrom(Executor.GetType(result.TypeName, GlobalScope));
 
             return result;
         }
@@ -205,7 +205,7 @@ namespace Skrypt.Engine
 
             var result = (SkryptType)operationDel(new[] { leftObject }, this);
 
-            result.SetPropertiesTo(Executor.GetType(result.TypeName, GlobalScope));
+            result.GetPropertiesFrom(Executor.GetType(result.TypeName, GlobalScope));
 
             return result;
         }
