@@ -20,6 +20,15 @@ namespace Skrypt.Library.Native
         }
 
         [Constant]
+        public static SkryptObject error(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
+            var s = TypeConverter.ToString(values, 0,engine);
+
+            engine.ThrowError(s,engine.CurrentNode?.Token);
+
+            return engine.Create<Null>(s);
+        }
+
+        [Constant]
         public static SkryptObject input(SkryptEngine engine, SkryptObject self, SkryptObject[] values) {
 
             engine.Stopwatch.Stop();

@@ -484,6 +484,8 @@ namespace Skrypt.Execution
 
         public SkryptObject ExecuteExpression(Node node, ScopeContext scopeContext)
         {
+            _engine.CurrentNode = node;
+
             var op = Operator.AllOperators.Find(o => o.OperationName == node.Body);
 
             if (op != null)
@@ -716,8 +718,6 @@ namespace Skrypt.Execution
                     caller.ScopeContext = _engine.CurrentScope;
                     caller.Engine = _engine;
                     caller.Name = typeName;
-                    //caller.Properties = new List<SkryptProperty>(BaseType.Properties.Copy());
-                    //caller.SetProperty("Type", BaseType.Properties.Find((x) => x.Name == "Type").Value);
                     caller.GetPropertiesFrom(BaseType);
 
                     isConstructor = true;

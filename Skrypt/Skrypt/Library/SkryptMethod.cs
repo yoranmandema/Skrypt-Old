@@ -88,9 +88,9 @@ namespace Skrypt.Library
                 Properties = scope.Properties | ScopeProperties.InMethod
             };
 
-            //if (self != null) {
-            inputScope.SetVariable("self", self, Modifier.Const);
-            //}
+            if (self != null) {
+                inputScope.SetVariable("self", self, Modifier.Const);
+            }
 
             var resultingScope =
                 engine.Executor.ExecuteBlock(BlockNode, inputScope);

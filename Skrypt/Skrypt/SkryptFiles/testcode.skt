@@ -1,27 +1,9 @@
 using System
 
-class StrictFunction {
-	in private strong ParamTypes = []
-	in private strong Function = _ => {}
-
-	StrictFunction(types, function) {
-		self.ParamTypes = types
-		self.Function = function
-	}
+fn Test (a,b) {
+	if (a.Type != String) {error("The big gay")}
 	
-	in private fn CheckTypes(input) {
-	
-	}
-	
-	in fn Call(input) {
-		self.CheckTypes(input)
-		
-		self.Function(input[0],input[1],input[2],input[3],input[4])
-	}
+	print("Success")
 }
 
-print(
-	StrictFunction([],() => {
-		
-	})
-)
+Test(1,2)
