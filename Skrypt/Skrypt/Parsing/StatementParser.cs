@@ -52,7 +52,7 @@ namespace Skrypt.Parsing
 
             result = _engine.GeneralParser.ParseSurrounded("{", "}", index, tokens, _engine.GeneralParser.Parse);
             var blockNode = result.Node;
-            index += result.Delta + 1;
+            index += result.Delta + 2;
 
             // Add condition and block nodes to main node
             node.Add(conditionParentNode);

@@ -190,6 +190,8 @@ namespace Skrypt.Parsing
                 }
             }
 
+            Console.WriteLine(parseTokens[0]);
+
             if (parseTokens[0].Equals("if", TokenTypes.Keyword) || parseTokens[0].Equals("while", TokenTypes.Keyword) || parseTokens[0].Equals("for", TokenTypes.Keyword)) {
                 result = _engine.StatementParser.Parse(parseTokens);
             }

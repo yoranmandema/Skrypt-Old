@@ -2,8 +2,9 @@ using System
 
 fn Test (a,b) {
 	if (a.Type != String) {error("The big gay")}
+	if (b.Type != Numeric) {error("Super gay")}
 	
 	print("Success")
 }
 
-Test(1,2)
+Test("",false)
