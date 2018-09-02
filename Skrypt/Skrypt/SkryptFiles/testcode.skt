@@ -7,4 +7,17 @@ fn Test (a,b) {
 	print("Success")
 }
 
-Test("",false)
+class Poop : Object {
+	public a = fn (a,d) {}
+}
+
+a.Test("",1)
+
+aad = 0b1010
+
+def poop:
+	
+
+
+
+

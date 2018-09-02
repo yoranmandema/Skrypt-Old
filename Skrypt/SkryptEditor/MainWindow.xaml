@@ -35,17 +35,21 @@
                     <!--<RowDefinition Height="200"/>-->
                 </Grid.RowDefinitions>
 
-                <avalonEdit:TextEditor
-                    xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
-                    Name="textEditor"
-                    FontFamily="Consolas"
-                    SyntaxHighlighting="Skrypt"
-                    FontSize="11pt"
-                    Grid.Row="0"
-                    ShowLineNumbers="True"
-                    Background="#2C292D"
-                    Foreground="#EEE"
-                    />
+                <TabControl>
+                    <TabItem Header="General">
+                        <avalonEdit:TextEditor
+                            xmlns:avalonEdit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                            Name="textEditor"
+                            FontFamily="Consolas"
+                            SyntaxHighlighting="Skrypt"
+                            FontSize="11pt"
+                            Grid.Row="0"
+                            ShowLineNumbers="True"
+                            Background="#2C292D"
+                            Foreground="#EEE"
+                            />
+                    </TabItem>
+                </TabControl>
             </Grid>
         </DockPanel>
     </Grid>
