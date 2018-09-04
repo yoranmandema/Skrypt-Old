@@ -47,25 +47,25 @@
 			}
 		},
 		"languages": [
-            {
-                "id": "skrypt",
-                "aliases": [
-                    "Skrypt",
-                    "skrypt"
-                ],
-                "extensions": [
-                    ".skt"
-                ],
-                "configuration": "./language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "skrypt",
-                "scopeName": "source.skrypt",
-                "path": "./syntaxes/skrypt.tmLanguage.json"
-            }
-        ]
+			{
+				"id": "skrypt",
+				"aliases": [
+					"Skrypt",
+					"skrypt"
+				],
+				"extensions": [
+					".skt"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "skrypt",
+				"scopeName": "source.skrypt",
+				"path": "./syntaxes/skrypt.tmLanguage.json"
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "cd client && npm run update-vscode && cd .. && npm run compile",

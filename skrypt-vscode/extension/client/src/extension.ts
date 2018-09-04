@@ -27,14 +27,26 @@ export function activate(context: ExtensionContext) {
 
 	// If the extension is launched in debug mode then the debug server options are used
 	// Otherwise the run options are used
-	let serverOptions: ServerOptions = {
-		run: { module: serverModule, transport: TransportKind.ipc },
-		debug: {
-			module: serverModule,
-			transport: TransportKind.ipc,
-			options: debugOptions
-		}
-	};
+	// let serverOptions: ServerOptions = {
+	// 	run: { module: serverModule, transport: TransportKind.ipc },
+	// 	debug: {
+	// 		module: serverModule,
+	// 		transport: TransportKind.ipc,
+	// 		options: debugOptions
+	// 	}
+	// };
+
+	let serverExe = 'dotnet';
+	let dllPath = context.asAbsolutePath(
+		path.join('..','Skrypt', 'Skrypt', 'bin','Debug','Skrypt.exe')
+	);
+
+	console.log(dllPath);
+
+    let serverOptions: ServerOptions = {
+        run: { command: serverExe, args: [dllPath] },
+        debug: { command: serverExe, args: [dllPath] }
+	}
 
 	// Options to control the language client
 	let clientOptions: LanguageClientOptions = {
