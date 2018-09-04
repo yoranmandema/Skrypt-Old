@@ -14,7 +14,9 @@ class Poop : Object {
 a.Test("",1)
 
 aad = 0b1010
-AAA
+
+def poop:
+	
 
 
 
