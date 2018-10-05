@@ -7,17 +7,14 @@ fn Test (a,b) {
 	print("Success")
 }
 
-class Poop : Object {
-	public a = fn (a,d) {}
+class Poop {
+	in public a = fn (a,d) {}
 }
 
-a.Test("",1)
+aad = Poop()
 
-aad = 0b1010
-
-def poop:
-	
-
+print(aad)
+print(aad.a)
 
 
 

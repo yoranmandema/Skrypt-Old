@@ -13,7 +13,7 @@
     "activationEvents": [
         "onCommand:extension.sayHello"
     ],
-    "main": "./extension",
+    "main": ".",
     "contributes": {
         "commands": [
             {
@@ -21,17 +21,26 @@
                 "title": "Hello World"
             }
         ],
-        "languages": [{
-            "id": "skrypt",
-            "aliases": ["Skrypt", "skrypt"],
-            "extensions": [".skt"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "skrypt",
-            "scopeName": "source.skrypt",
-            "path": "./syntaxes/skrypt.tmLanguage.json"
-        }]
+        "languages": [
+            {
+                "id": "skrypt",
+                "aliases": [
+                    "Skrypt",
+                    "skrypt"
+                ],
+                "extensions": [
+                    ".skt"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "skrypt",
+                "scopeName": "source.skrypt",
+                "path": "./syntaxes/skrypt.tmLanguage.json"
+            }
+        ]
     },
     "scripts": {
         "postinstall": "node ./node_modules/vscode/bin/install",

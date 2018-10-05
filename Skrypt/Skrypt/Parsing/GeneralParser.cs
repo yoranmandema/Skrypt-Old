@@ -125,12 +125,8 @@ namespace Skrypt.Parsing
             Modifier appliedModifiers = Modifier.None;
 
             if (tokens[0].Type == TokenTypes.Punctuator) {
-                switch (tokens[0].Value) {
-                    case "}":
-                    case "{":
-                        Console.WriteLine(tokens[0]);
-                        _engine.ThrowError("Statement expected.", tokens[0]);
-                        break;
+                if (tokens[0].Value == "{" || tokens[0].Value == "}") {
+                    _engine.ThrowError("Statement expected.", tokens[0]);
                 }
             }
             
