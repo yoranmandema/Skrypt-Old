@@ -14,6 +14,44 @@ namespace Skrypt.Parsing
         public int Start;
     }
 
+    public class ScopeCheck {
+        int roundScope = 0;
+        int squareScope = 0;
+        int curlyScope = 0;
+
+        public bool IsInScope => roundScope == 0 && squareScope == 0 && curlyScope == 0;
+        public bool IsInRoundScope => roundScope == 0;
+        public bool IsInSquareScope => squareScope == 0;
+        public bool IsInCurlyScope => curlyScope == 0;
+
+        public ScopeCheck Check(Token token) {
+            if (token.Type == TokenTypes.Punctuator) {
+                switch (token.Value) {
+                    case "(":
+                        roundScope++;
+                        break;
+                    case ")":
+                        roundScope--;
+                        break;
+                    case "[":
+                        squareScope++;
+                        break;
+                    case "]":
+                        squareScope--;
+                        break;
+                    case "{":
+                        curlyScope++;
+                        break;
+                    case "}":
+                        curlyScope--;
+                        break;
+                }
+            }
+
+            return this;
+        }
+    }
+
     /// <summary>
     ///     The expression parser class.
     ///     Contains all methods to parse expressions, and helper methods.
@@ -66,20 +104,22 @@ namespace Skrypt.Parsing
 
         // Checks whether a list of tokens is a valid conditional statement.
         private bool IsConditional(List<Token> tokens) {
-            bool isConditional = false;
-
-            int depth = 0;
+            var isConditional = false;
+            var scopeCheck = new ScopeCheck();
+            //int depth = 0;
 
             for (int i = 0; i < tokens.Count; i++) {
                 var token = tokens[i];
 
-                if (token.Equals("(", TokenTypes.Punctuator)) {
-                    depth++;
-                } else if (token.Equals(")", TokenTypes.Punctuator)) {
-                    depth--;
-                }
+                //if (token.Equals("(", TokenTypes.Punctuator)) {
+                //    depth++;
+                //} else if (token.Equals(")", TokenTypes.Punctuator)) {
+                //    depth--;
+                //}
 
-                if (token.Equals("?", TokenTypes.Punctuator) && depth == 0) {
+                scopeCheck.Check(token);
+
+                if (token.Equals("?", TokenTypes.Punctuator) && scopeCheck.IsInScope) {
                     isConditional = true;
                     SkipInfo skip = SkipFromTo("?", ":", tokens, i);
                 }
@@ -416,37 +456,19 @@ namespace Skrypt.Parsing
         ///     Parses individual arguments as expressions.
         /// </summary>
         public void SetArguments(List<List<Token>> arguments, List<Token> tokens) {
-            var depth = 0;
-            var indexDepth = 0;
-            var bracketDepth = 0;
             var i = 0;
             var buffer = new List<Token>();
-            var isFirst = true;  
+            var isFirst = true;
+            var scopeCheck = new ScopeCheck();
 
             for (i = 0; i < tokens.Count; i++) {
                 var token = tokens[i];
                 buffer.Add(token);
 
-                if (token.Equals("(", TokenTypes.Punctuator)) {
-                    depth++;
-                } else if (token.Equals(")", TokenTypes.Punctuator)) {
-                    depth--;
-                }
-
-                if (token.Equals("[", TokenTypes.Punctuator)) {
-                    indexDepth++;
-                } else if (token.Equals("]", TokenTypes.Punctuator)) {
-                    indexDepth--;
-                }
-
-                if (token.Equals("{", TokenTypes.Punctuator)) {
-                    bracketDepth++;
-                } else if (token.Equals("}", TokenTypes.Punctuator)) {
-                    bracketDepth--;
-                }
+                scopeCheck.Check(token);
 
                 // Only set arguments if they're not inside nested function calls.
-                if (depth == 0 && indexDepth == 0 && bracketDepth == 0) {
+                if (scopeCheck.IsInScope) {
                     if (token.Equals(",", TokenTypes.Punctuator)) {
                         isFirst = false;
 
@@ -637,19 +659,14 @@ namespace Skrypt.Parsing
         /// </summary>
         public ParseResult ParseConditional(List<Token> tokens) {
             var node = new ConditionalNode();
-            int depth = 0;
+            var scopeCheck = new ScopeCheck();
 
             for (int i = 0; i < tokens.Count; i++) {
                 var token = tokens[i];
 
-                if (token.Equals("(", TokenTypes.Punctuator)) {
-                    depth++;
-                }
-                else if (token.Equals(")", TokenTypes.Punctuator)) {
-                    depth--;
-                }
+                scopeCheck.Check(token);
 
-                if (token.Equals("?", TokenTypes.Punctuator) && depth == 0) {
+                if (token.Equals("?", TokenTypes.Punctuator) && scopeCheck.IsInScope) {
                     SkipInfo skip = SkipFromTo("?", ":", tokens, i);
 
                     var conditionNode = ParseClean(tokens.GetRange(0, i));
@@ -683,44 +700,6 @@ namespace Skrypt.Parsing
             return returnNode;
         }
 
-        public class ScopeCheck {
-            int roundScope = 0;
-            int squareScope = 0;
-            int curlyScope = 0;
-
-            bool isInScope => roundScope == 0 && squareScope == 0 && curlyScope == 0;
-            bool isInRoundScope => roundScope == 0;
-            bool isInSquareScope => squareScope == 0;
-            bool isInCurlyScope => curlyScope == 0;
-
-            public ScopeCheck Check (Token token) {
-                if (token.Type == TokenTypes.Punctuator) {
-                    switch (token.Value) {
-                        case "(":
-                            roundScope++;
-                            break;
-                        case ")":
-                            roundScope--;
-                            break;
-                        case "[":
-                            squareScope++;
-                            break;
-                        case "]":
-                            squareScope--;
-                            break;
-                        case "{":
-                            curlyScope++;
-                            break;
-                        case "}":
-                            curlyScope--;
-                            break;
-                    }
-                }
-
-                return this;
-            }
-        }
-
         /// <summary>
         ///     Parses a list of tokens into an expression node
         /// </summary>
@@ -728,11 +707,10 @@ namespace Skrypt.Parsing
         {
             var node = new Node();
             var delta = 0;
-            var pScope = 0;
-            var bScope = 0;
-            var cScope = 0;
             var addDelta = 0;
             var deltaOffset = 0;
+
+            var scopeCheck = new ScopeCheck();
 
             Token previousToken = null;
 
@@ -744,30 +722,9 @@ namespace Skrypt.Parsing
             // Skip until we hit the end of an expression
             while (true)
             {
-                if (tokens[delta].Type == TokenTypes.Punctuator) {
-                    switch (tokens[delta].Value) {
-                        case "(":
-                            pScope++;
-                            break;
-                        case ")":
-                            pScope--;
-                            break;
-                        case "[":
-                            bScope++;
-                            break;
-                        case "]":
-                            bScope--;
-                            break;
-                        case "{":
-                            cScope++;
-                            break;
-                        case "}":
-                            cScope--;
-                            break;
-                    }
-                }
+                scopeCheck.Check(tokens[delta]);
 
-                if (pScope == 0 && bScope == 0 && cScope == 0) {
+                if (scopeCheck.IsInScope && tokens[delta].Type == TokenTypes.EndOfExpression) { 
                     if (tokens[delta].Type == TokenTypes.EndOfExpression) {
                         addDelta = 1;
                         break;
