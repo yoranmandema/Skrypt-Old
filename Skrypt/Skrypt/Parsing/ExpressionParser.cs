@@ -709,7 +709,6 @@ namespace Skrypt.Parsing
             var delta = 0;
             var addDelta = 0;
             var deltaOffset = 0;
-
             var scopeCheck = new ScopeCheck();
 
             Token previousToken = null;
@@ -719,9 +718,8 @@ namespace Skrypt.Parsing
                 deltaOffset = 1;
             }
 
-            // Skip until we hit the end of an expression
-            while (true)
-            {
+            // Loop until we hit the end of an expression, or consumed all tokens.
+            while (true) {
                 scopeCheck.Check(tokens[delta]);
 
                 if (scopeCheck.IsInScope && tokens[delta].Type == TokenTypes.EndOfExpression) { 
