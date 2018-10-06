@@ -56,12 +56,24 @@ namespace Skrypt.Parsing
     ///     The expression parser class.
     ///     Contains all methods to parse expressions, and helper methods.
     /// </summary>
-    public class ExpressionParser
-    {
+    public class ExpressionParser {
         // Create list of operator groups with the right precedence order.
-        public static readonly List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup>
-        {
-            new OperatorGroup(new Operator[] {new OpAssign()}, false),
+        public static readonly List<OperatorGroup> OperatorPrecedence = new List<OperatorGroup> {
+            new OperatorGroup(new Operator[] {
+                new OpAssign(),
+                new OpAssignAdd(),
+                new OpAssignSubtract(),
+                new OpAssignDivide(),
+                new OpAssignMultiply(),
+                new OpAssignModulo(),
+                new OpAssignPower(),
+                new OpAssignBitAnd(),
+                new OpAssignBitOr(),
+                new OpAssignBitXor(),
+                new OpAssignBitShiftL(),
+                new OpAssignBitShiftR(),
+                new OpAssignBitShiftRZ()
+            },false),
             new OperatorGroup(new Operator[] {new OpLambda()}, true),
             new OperatorGroup(new Operator[] {new OpBreak(),new OpContinue() }, false, 0),
             new OperatorGroup(new Operator[] {new OpReturn()}, false, 1),
@@ -87,14 +99,12 @@ namespace Skrypt.Parsing
 
         private readonly SkryptEngine _engine;
 
-        public ExpressionParser(SkryptEngine e)
-        {
+        public ExpressionParser(SkryptEngine e) {
             _engine = e;
         }
 
         // (debug) Serializes a list of tokens into a string
-        public static string TokenString(List<Token> tokens)
-        {
+        public static string TokenString(List<Token> tokens) {
             var sb = "";
 
             foreach (var token in tokens) sb += token.Value;
@@ -173,7 +183,7 @@ namespace Skrypt.Parsing
 
             var CallArgsStart = 0;
 
-            Action loop = () => {
+            void loop () {
                 foreach (var op in OperatorPrecedence) {
                     foreach (var Operator in op.Operators) {
                         var i = 0;
@@ -364,7 +374,30 @@ namespace Skrypt.Parsing
                                         newNode.Add(leftNode);
 
                                         var rightNode = ParseExpression(newNode, rightBuffer);
-                                        newNode.Add(rightNode);
+
+                                        // Is the operator a combined assignment operator? 
+                                        // If so, generate a new node based on the secondary 
+                                        // operator, add a copy of the left node to that, and 
+                                        // add the right node to that. Then add the new node 
+                                        // structure to the existing operator node.
+                                        if (typeof(AssignmentOperator).IsAssignableFrom(Operator.GetType())) {
+                                            //newNode.Body = "assign";
+
+                                            var castOperator = (AssignmentOperator)Operator;
+                                            var leftClone = leftNode.Copy();
+                                            var secondaryOperatorNode = new Node {
+                                                Body = castOperator.SecondaryOperator.OperationName,
+                                                Type = TokenTypes.Punctuator,
+                                                Token = token
+                                            };
+
+                                            secondaryOperatorNode.Add(leftClone);
+                                            secondaryOperatorNode.Add(rightNode);
+
+                                            newNode.Add(secondaryOperatorNode);
+                                        } else {
+                                            newNode.Add(rightNode);
+                                        }
                                     }
 
                                     branch.Add(newNode);

@@ -1,20 +1,4 @@
-using System
+a = 2
+a ^= 30
 
-fn Test (a,b) {
-	if (a.Type != String) {error("The big gay")}
-	if (b.Type != Numeric) {error("Super gay")}
-	
-	print("Success")
-}
-
-class Poop {
-	in public a = fn (a,d) {}
-}
-
-aad = Poop()
-
-print(aad)
-print(aad.a)
-
-
-
+System.print(a)

@@ -34,6 +34,130 @@ namespace Skrypt.Library
         }
     }
 
+    internal class AssignmentOperator : Operator {
+        public Operator SecondaryOperator;
+    }
+
+    internal class OpAssignAdd : AssignmentOperator {
+        public OpAssignAdd() {
+            OperationName = "assign";
+            Operation = "+=";
+            SecondaryOperator = new OpAdd();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignSubtract : AssignmentOperator {
+        public OpAssignSubtract() {
+            OperationName = "assign";
+            Operation = "-=";
+            SecondaryOperator = new OpSubtract();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignDivide : AssignmentOperator {
+        public OpAssignDivide() {
+            OperationName = "assign";
+            Operation = "/=";
+            SecondaryOperator = new OpDivide();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignMultiply : AssignmentOperator {
+        public OpAssignMultiply() {
+            OperationName = "assign";
+            Operation = "*=";
+            SecondaryOperator = new OpMultiply();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignModulo : AssignmentOperator {
+        public OpAssignModulo() {
+            OperationName = "assign";
+            Operation = "%=";
+            SecondaryOperator = new OpModulo();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignPower : AssignmentOperator {
+        public OpAssignPower() {
+            OperationName = "assign";
+            Operation = "^=";
+            SecondaryOperator = new OpPower();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignBitShiftL : AssignmentOperator {
+        public OpAssignBitShiftL() {
+            OperationName = "assign";
+            Operation = "<<=";
+            SecondaryOperator = new OpBitShiftL();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignBitShiftR : AssignmentOperator {
+        public OpAssignBitShiftR() {
+            OperationName = "assign";
+            Operation = ">>=";
+            SecondaryOperator = new OpBitShiftR();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignBitShiftRZ : AssignmentOperator {
+        public OpAssignBitShiftRZ() {
+            OperationName = "assign";
+            Operation = ">>=";
+            SecondaryOperator = new OpBitShiftRZ();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignBitOr : AssignmentOperator {
+        public OpAssignBitOr() {
+            OperationName = "assign";
+            Operation = "|=";
+            SecondaryOperator = new OpBitOr();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignBitXor : AssignmentOperator {
+        public OpAssignBitXor() {
+            OperationName = "assign";
+            Operation = "|||=";
+            SecondaryOperator = new OpBitXor();
+
+            AllOperators.Add(this);
+        }
+    }
+
+    internal class OpAssignBitAnd : AssignmentOperator {
+        public OpAssignBitAnd() {
+            OperationName = "assign";
+            Operation = "&=";
+            SecondaryOperator = new OpBitAnd();
+
+            AllOperators.Add(this);
+        }
+    }
+
     internal class OpOr : Operator
     {
         public OpOr()

@@ -12,8 +12,7 @@ using Skrypt.Tokenization;
 
 namespace Skrypt.Engine
 {
-    public class ParseResult
-    {
+    public class ParseResult {
         //public Exception error;
         public int Delta = -1;
         public Node Node;
@@ -115,7 +114,7 @@ namespace Skrypt.Engine
 
             Tokenizer.AddRule(
                 new Regex(
-                    @"(using)|(return)|(continue)|(break)|(&&)|(\|\|\|)|(\|\|)|(=>)|(==)|(!=)|(>=)|(<=)|(<<)|(>>>)|(>>)|(\+\+)|(--)|[~=<>+\-*/%^&|!\[\]\(\)\.\,{}\?\:]"),
+                    @"(using)|(return)|(continue)|(break)|(&&)|(\+=)|(\-=)|(\/=)|(\*=)|(\%=)|(\^=)|(\&=)|(\|=)|(\|\|\|=)|(\|\|\|)|(\|\|)|(=>)|(==)|(!=)|(>=)|(<=)|(<<)|(>>>)|(>>)|(\+\+)|(--)|[~=<>+\-*/%^&|!\[\]\(\)\.\,{}\?\:]"),
                 TokenTypes.Punctuator
             );
 

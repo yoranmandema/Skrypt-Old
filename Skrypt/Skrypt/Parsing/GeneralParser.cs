@@ -12,11 +12,9 @@ namespace Skrypt.Parsing
     public class GeneralParser
     {
         public delegate Node ParseArgumentsMethod(List<List<Token>> args, List<Token> tokens);
-
         public delegate Node ParseMethod(List<Token> tokens);
 
-        public static List<string> Keywords = new List<string>
-        {
+        public static List<string> Keywords = new List<string> {
             "if",
             "while",
             "for",
@@ -29,8 +27,7 @@ namespace Skrypt.Parsing
             "return"
         };
 
-        public static List<string> NotPermittedInExpression = new List<string>
-        {
+        public static List<string> NotPermittedInExpression = new List<string> {
             "if",
             "while",
             "for",
@@ -39,8 +36,7 @@ namespace Skrypt.Parsing
             "const"
         };
 
-        public static List<string> ExpressionBreakWords = new List<string>
-        {
+        public static List<string> ExpressionBreakWords = new List<string> {
             "if",
             "while",
             "for",
@@ -49,8 +45,7 @@ namespace Skrypt.Parsing
             "using",
         };
 
-        public static List<string> Modifiers = new List<string>
-        {
+        public static List<string> Modifiers = new List<string> {
             "public",
             "private",
             "const",
@@ -60,15 +55,12 @@ namespace Skrypt.Parsing
 
         private readonly SkryptEngine _engine;
 
-        public GeneralParser(SkryptEngine e)
-        {
+        public GeneralParser(SkryptEngine e) {
             _engine = e;
         }
       
-        public List<Token> GetSurroundedTokens(string open, string close, int start, List<Token> tokens)
-        {
+        public List<Token> GetSurroundedTokens(string open, string close, int start, List<Token> tokens) {
             var index = start;
-
             var i = index + 1;
             var skip = _engine.ExpressionParser.SkipFromTo(open, close, tokens, index);
             var end = skip.End;
@@ -101,13 +93,13 @@ namespace Skrypt.Parsing
             var arguments = new List<List<Token>>();
             _engine.ExpressionParser.SetArguments(arguments, surroundedTokens);
 
-            foreach (var argument in arguments)
-            {
+            foreach (var argument in arguments) {
                 for (int i = 0; i < argument.Count - 1; i++) {
                     var next = argument[i + 1];
 
-                    if (next.Type == TokenTypes.EndOfExpression)
+                    if (next.Type == TokenTypes.EndOfExpression) {
                         _engine.ThrowError("Syntax error, ',' expected.", argument[i]);
+                    }
                 }
 
                 var argNode = _engine.ExpressionParser.ParseExpression(node,argument);
@@ -147,19 +139,19 @@ namespace Skrypt.Parsing
 
                 switch (t.Value) {
                     case "public":
-                        appliedModifiers = appliedModifiers | Modifier.Public;
+                        appliedModifiers |= Modifier.Public;
                         break;
                     case "private":
-                        appliedModifiers = appliedModifiers | Modifier.Private;
+                        appliedModifiers |= Modifier.Private;
                         break;
                     case "in":
-                        appliedModifiers = appliedModifiers | Modifier.Instance;
+                        appliedModifiers |= Modifier.Instance;
                         break;
                     case "const":
-                        appliedModifiers = appliedModifiers | Modifier.Const;
+                        appliedModifiers |= Modifier.Const;
                         break;
                     case "strong":
-                        appliedModifiers = appliedModifiers | Modifier.Strong;
+                        appliedModifiers |= Modifier.Strong;
                         break;
                 }
 
@@ -230,9 +222,7 @@ namespace Skrypt.Parsing
             return result;
         }
 
-        public Node Parse(List<Token> tokens)
-        {
-   
+        public Node Parse(List<Token> tokens) {   
             // Create main node
             var node = new Node {Body = "Block", Type = TokenTypes.Block};
 
@@ -240,13 +230,11 @@ namespace Skrypt.Parsing
 
             var i = 0;
 
-            while (i <= tokens.Count - 1)
-            {
+            while (i <= tokens.Count - 1) {
                 var test = TryParse(tokens.GetRange(i, tokens.Count - i));
                 i += test.Delta;
 
-                if (test.Node.Type == TokenTypes.MethodDeclaration)
-                {
+                if (test.Node.Type == TokenTypes.MethodDeclaration) {
                     node.AddAsFirst(test.Node);
                     continue;
                 }
