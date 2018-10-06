@@ -106,16 +106,9 @@ namespace Skrypt.Parsing
         private bool IsConditional(List<Token> tokens) {
             var isConditional = false;
             var scopeCheck = new ScopeCheck();
-            //int depth = 0;
 
             for (int i = 0; i < tokens.Count; i++) {
                 var token = tokens[i];
-
-                //if (token.Equals("(", TokenTypes.Punctuator)) {
-                //    depth++;
-                //} else if (token.Equals(")", TokenTypes.Punctuator)) {
-                //    depth--;
-                //}
 
                 scopeCheck.Check(token);
 
