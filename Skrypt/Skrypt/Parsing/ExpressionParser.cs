@@ -131,6 +131,17 @@ namespace Skrypt.Parsing
             return isConditional;
         }
 
+        enum ExpressionContextType {
+            None,
+            Parentheses,
+            FunctionCall,
+            Indexing,
+            ArrayLiteral,
+            FunctionLiteral,
+            Conditional,
+            Lambda
+        }
+
         /// <summary>
         ///     Recursively parses a list of tokens into an expression.
         /// </summary>
@@ -173,13 +184,15 @@ namespace Skrypt.Parsing
             var leftBuffer = new List<Token>();
             var rightBuffer = new List<Token>();
 
-            var isInPars = false;
-            var isFunctionCall = false;
-            var isIndexing = false;
-            var isArrayLiteral = false;
-            var isFunctionLiteral = false;
-            var isConditional = false;
-            var isLambda = false;
+            //bool isInPars = false;
+            //bool isFunctionCall = false;
+            //bool isIndexing = false;
+            //bool isArrayLiteral = false;
+            //bool isFunctionLiteral = false;
+            //bool isConditional = false;
+            //bool isLambda = false;
+
+            var contextType = ExpressionContextType.None;
 
             var CallArgsStart = 0;
 
@@ -220,7 +233,8 @@ namespace Skrypt.Parsing
 
                                 // Whole expression is a function literal - exit and parse it as such.
                                 if (start == 1 && skip.End == tokens.Count - 1) {
-                                    isFunctionLiteral = true;
+                                    //isFunctionLiteral = true;
+                                    contextType = ExpressionContextType.FunctionLiteral;
                                     return;
                                 }
                             }
@@ -244,12 +258,13 @@ namespace Skrypt.Parsing
 
                                 if (skip.Start == 0 && skip.End == tokens.Count - 1) {
                                     // Expression is fully surrounded by parentheses.
-                                    isInPars = true;
+                                    //isInPars = true;
+                                    contextType = ExpressionContextType.Parentheses;
                                     return;
                                 } else if (skip.End == tokens.Count - 1 && skip.Start > 0 && Operator.Operation == "(") {
                                     var before = tokens[skip.Start - 1];
-                                    isFunctionCall = true;
-                                    
+                                    var isFunctionCall = true;
+
                                     // Check whether the token preceding the opening parenthesis is an operator.
                                     // If it is, it means its not a function call.
                                     foreach (var _op in OperatorPrecedence) {
@@ -261,6 +276,7 @@ namespace Skrypt.Parsing
                                     }
 
                                     if (isFunctionCall) {
+                                        contextType = ExpressionContextType.FunctionCall;
                                         CallArgsStart = skip.Start;
                                         return;
                                     }
@@ -275,12 +291,13 @@ namespace Skrypt.Parsing
 
                                 if (skip.Start == 0 && skip.End == tokens.Count - 1) {
                                     // Expression is fully surrounded by brackets, this means its an array literal.
-                                    isArrayLiteral = true;
+                                    //isArrayLiteral = true;
+                                    contextType = ExpressionContextType.ArrayLiteral;
                                     return;
                                 }
                                 else if (skip.End == tokens.Count - 1 && skip.Start > 0 && Operator.Operation == "[") {
                                     var before = tokens[skip.Start - 1];
-                                    isIndexing = true;
+                                    var isIndexing = true;
 
                                     // Check whether the token preceding the opening bracket is an operator.
                                     // If it is, it means its not a index operation.
@@ -293,6 +310,7 @@ namespace Skrypt.Parsing
                                     }
 
                                     if (isIndexing) {
+                                        contextType = ExpressionContextType.Indexing;
                                         CallArgsStart = skip.Start;
                                         return;
                                     }
@@ -304,7 +322,8 @@ namespace Skrypt.Parsing
                                     _engine.ThrowError("Incomplete conditional statement.", token);
                                 } else if (token.Equals("?", TokenTypes.Punctuator)) {
                                     if (IsConditional(tokens)) {
-                                        isConditional = true;
+                                        //isConditional = true;
+                                        contextType = ExpressionContextType.Conditional;
                                         return;
                                     }
                                     else {
@@ -330,7 +349,8 @@ namespace Skrypt.Parsing
 
                                 if (hasRequiredLeftTokens && hasRequiredRightTokens) {
                                     if (token.Equals("=>", TokenTypes.Punctuator)) {
-                                        isLambda = true;
+                                        //isLambda = true;
+                                        contextType = ExpressionContextType.Lambda;
                                         return;
                                     }
 
@@ -381,8 +401,6 @@ namespace Skrypt.Parsing
                                         // add the right node to that. Then add the new node 
                                         // structure to the existing operator node.
                                         if (typeof(AssignmentOperator).IsAssignableFrom(Operator.GetType())) {
-                                            //newNode.Body = "assign";
-
                                             var castOperator = (AssignmentOperator)Operator;
                                             var leftClone = leftNode.Copy();
                                             var secondaryOperatorNode = new Node {
@@ -430,49 +448,25 @@ namespace Skrypt.Parsing
             };
             loop();
 
-            // Parse expression within parenthesis if it's completely surrounded.
-            if (isInPars) {
-                if (tokens.Count == 2) {
-                    _engine.ThrowError("Syntax error, expression expected.", tokens[0]);
-                }
+            switch (contextType) {
+                case ExpressionContextType.Parentheses:
+                    if (tokens.Count == 2) {
+                        _engine.ThrowError("Syntax error, expression expected.", tokens[0]);
+                    }
 
-                return ParseExpression(branch, tokens.GetRange(1, tokens.Count - 2));
-            }
-
-            // Parse method call.
-            if (isFunctionCall) {
-                var result = ParseCall(tokens,CallArgsStart);
-                return result.Node;
-            }
-
-            // Parse indexing.
-            if (isIndexing) {
-                var result = ParseIndexing(tokens, CallArgsStart);
-                return result.Node;
-            }
-
-            // Parse indexing.
-            if (isArrayLiteral) {
-                var result = ParseArrayLiteral(tokens);
-                return result.Node;
-            }
-
-            // Parse function literal.
-            if (isFunctionLiteral) {
-                var result = _engine.MethodParser.ParseFunctionLiteral(tokens.GetRange(1, tokens.Count - 1));
-                return result.Node;
-            }
-
-            // Parse lambda literal.
-            if (isLambda) {
-                var result = _engine.MethodParser.ParseLambda(tokens);
-                return result.Node;
-            }
-
-            // Parse conditional expression.
-            if (isConditional) {
-                var result = ParseConditional(tokens);
-                return result.Node;
+                    return ParseExpression(branch, tokens.GetRange(1, tokens.Count - 2));
+                case ExpressionContextType.FunctionCall:
+                    return ParseCall(tokens, CallArgsStart).Node;
+                case ExpressionContextType.Indexing:
+                    return ParseIndexing(tokens, CallArgsStart).Node;
+                case ExpressionContextType.ArrayLiteral:
+                    return ParseArrayLiteral(tokens).Node;
+                case ExpressionContextType.FunctionLiteral:
+                    return _engine.MethodParser.ParseFunctionLiteral(tokens.GetRange(1, tokens.Count - 1)).Node;
+                case ExpressionContextType.Lambda:
+                    return _engine.MethodParser.ParseLambda(tokens).Node;
+                case ExpressionContextType.Conditional:
+                    return ParseConditional(tokens).Node;
             }
 
             return null;
