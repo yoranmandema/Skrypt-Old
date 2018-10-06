@@ -180,20 +180,9 @@ namespace Skrypt.Parsing
                 }
             }
 
-            // Create left and right token buffers.
             var leftBuffer = new List<Token>();
-            var rightBuffer = new List<Token>();
-
-            //bool isInPars = false;
-            //bool isFunctionCall = false;
-            //bool isIndexing = false;
-            //bool isArrayLiteral = false;
-            //bool isFunctionLiteral = false;
-            //bool isConditional = false;
-            //bool isLambda = false;
-
+            var rightBuffer = new List<Token>();       
             var contextType = ExpressionContextType.None;
-
             var CallArgsStart = 0;
 
             void loop () {
@@ -233,7 +222,6 @@ namespace Skrypt.Parsing
 
                                 // Whole expression is a function literal - exit and parse it as such.
                                 if (start == 1 && skip.End == tokens.Count - 1) {
-                                    //isFunctionLiteral = true;
                                     contextType = ExpressionContextType.FunctionLiteral;
                                     return;
                                 }
@@ -258,7 +246,6 @@ namespace Skrypt.Parsing
 
                                 if (skip.Start == 0 && skip.End == tokens.Count - 1) {
                                     // Expression is fully surrounded by parentheses.
-                                    //isInPars = true;
                                     contextType = ExpressionContextType.Parentheses;
                                     return;
                                 } else if (skip.End == tokens.Count - 1 && skip.Start > 0 && Operator.Operation == "(") {
@@ -291,7 +278,6 @@ namespace Skrypt.Parsing
 
                                 if (skip.Start == 0 && skip.End == tokens.Count - 1) {
                                     // Expression is fully surrounded by brackets, this means its an array literal.
-                                    //isArrayLiteral = true;
                                     contextType = ExpressionContextType.ArrayLiteral;
                                     return;
                                 }
@@ -322,7 +308,6 @@ namespace Skrypt.Parsing
                                     _engine.ThrowError("Incomplete conditional statement.", token);
                                 } else if (token.Equals("?", TokenTypes.Punctuator)) {
                                     if (IsConditional(tokens)) {
-                                        //isConditional = true;
                                         contextType = ExpressionContextType.Conditional;
                                         return;
                                     }
@@ -349,7 +334,6 @@ namespace Skrypt.Parsing
 
                                 if (hasRequiredLeftTokens && hasRequiredRightTokens) {
                                     if (token.Equals("=>", TokenTypes.Punctuator)) {
-                                        //isLambda = true;
                                         contextType = ExpressionContextType.Lambda;
                                         return;
                                     }
@@ -635,8 +619,7 @@ namespace Skrypt.Parsing
         /// </summary>
         public ParseResult ParseUsing(List<Token> tokens) {
             var node = new UsingNode();
-
-            bool isIdentifier = true;
+            var isIdentifier = true;
             var buffer = new List<Token>();
             var skip = _engine.ExpectType(TokenTypes.Identifier, tokens);
             Token nextToken = null;
