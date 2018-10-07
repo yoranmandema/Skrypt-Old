@@ -11,18 +11,15 @@ namespace Skrypt.Tokenization
     ///     The main Tokenization class.
     ///     Contains all methods for tokenization.
     /// </summary>
-    public class Tokenizer
-    {
+    public class Tokenizer {
         private readonly SkryptEngine _engine;
         private readonly List<TokenRule> _tokenRules = new List<TokenRule>();
 
-        public Tokenizer(SkryptEngine e)
-        {
+        public Tokenizer(SkryptEngine e) { 
             _engine = e;
         }
 
-        public void AddRule(Regex pattern, TokenTypes type)
-        {
+        public void AddRule(Regex pattern, TokenTypes type) {
             _tokenRules.Add(new TokenRule
             {
                 Pattern = pattern,
@@ -30,20 +27,14 @@ namespace Skrypt.Tokenization
             });
         }
 
-        string[] wordOperators = {
-            "using"
-        };
-
         /// <summary>
         ///     Tokenizes the given input string according to the token rules given to this object.
         /// </summary>
         /// <returns>
         ///     A list of tokens.
         /// </returns>
-        public List<Token> Tokenize(string input)
-        {
+        public List<Token> Tokenize(string input) {
             var tokens = new List<Token>();
-
             var index = 0;
             var line = 1;
             var colom = 0;
