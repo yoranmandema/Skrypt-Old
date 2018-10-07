@@ -18,6 +18,9 @@ namespace Skrypt.Parsing
             _engine = e;
         }
 
+        /// <summary>
+        ///     Parses everything inside the body of a class.
+        /// </summary>
         Node ParseContents (List<Token> tokens, string name) {
             var constructorStart = -1;
             var clone = new List<Token>(tokens);
@@ -30,13 +33,18 @@ namespace Skrypt.Parsing
                     previousToken = clone[i - 1];
                 }
 
-                if (t.Value == name) {
+                // Look for constructor shortcut
+                if (t.Equals(name, TokenTypes.Identifier)) {
+                    // Should not be preceeded the fn keyword.
                     if (!(previousToken != null && previousToken.Equals("fn", TokenTypes.Keyword))) {
                         constructorStart = i;
                         continue;
                     }
                 }
 
+                // Syntactic sugar to more easily write constructor functions.
+                // This basically looks wether we have the pattern '[class name] () {...}' 
+                // and replaces that with 'public fn Constructor (...) {...}'
                 if (constructorStart != -1) {
                     if ((t.Value == "(") && (t.Type == TokenTypes.Punctuator) && (i == (constructorStart + 1))) {
                         var skip = _engine.ExpressionParser.SkipFromTo("(", ")", clone, i);
@@ -82,8 +90,10 @@ namespace Skrypt.Parsing
             return result;
         }
 
-        public ParseResult Parse(List<Token> tokens)
-        {
+        /// <summary>
+        ///     Parses a class definition.
+        /// </summary>
+        public ParseResult Parse(List<Token> tokens) {
             var i = 0;
 
             var skip = _engine.ExpectType(TokenTypes.Identifier, tokens, i);
@@ -94,23 +104,29 @@ namespace Skrypt.Parsing
 
             var inheritNode = new Node {Body = "Inherit", Type = TokenTypes.Inherit };
 
+            // Class inherits from another class or classes.
             if (tokens[i].Equals(":", TokenTypes.Punctuator)) {
-                var isIdentifier = true;
-                var nextToken = default(Token);
-                var s = _engine.ExpectType(TokenTypes.Identifier, tokens);
+                var isIdentifier    = true;
+                var nextToken       = default(Token);
+                var s               = _engine.ExpectType(TokenTypes.Identifier, tokens);
                 i++;
 
                 while (i < tokens.Count) {
-
                     var token = tokens[i];
 
-                    if (i < tokens.Count - 2) nextToken = tokens[i + 1];
+                    if (i < tokens.Count - 2) {
+                        nextToken = tokens[i + 1];
+                    }
 
-                    if (token.Type == TokenTypes.EndOfExpression) break;
+                    if (token.Type == TokenTypes.EndOfExpression) {
+                        break;
+                    }
 
                     if (isIdentifier) {
                         inheritNode.Add(_engine.ExpressionParser.Parse(new List<Token> { tokens[i] }).Node);
 
+                        // No curly bracket means there could be another class to inherit from.
+                        // Before that a seperator ',' token has to be present.
                         if (!(nextToken?.Equals("{", TokenTypes.Punctuator) ?? false) && i < tokens.Count - 1) {
                             var sk = _engine.ExpectValue(",", tokens, i);
                             isIdentifier = false;
@@ -119,6 +135,7 @@ namespace Skrypt.Parsing
                         }
                     }
                     else {
+                        // An object (identifier token) has to be present after a seperator ',' token.
                         var sk = _engine.ExpectType(TokenTypes.Identifier, tokens, i);
                         isIdentifier = true;
                     }
@@ -129,6 +146,7 @@ namespace Skrypt.Parsing
                 i++;
             }
 
+            // Parse class body.
             var SurroundedTokens = _engine.GeneralParser.GetSurroundedTokens("{", "}", i, tokens);
             var node = ParseContents(SurroundedTokens, tokens[1].Value);
 
