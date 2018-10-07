@@ -36,15 +36,6 @@ namespace Skrypt.Parsing
             "const"
         };
 
-        public static List<string> ExpressionBreakWords = new List<string> {
-            "if",
-            "while",
-            "for",
-            "fn",
-            "class",
-            "using",
-        };
-
         public static List<string> Modifiers = new List<string> {
             "public",
             "private",
@@ -58,7 +49,10 @@ namespace Skrypt.Parsing
         public GeneralParser(SkryptEngine e) {
             _engine = e;
         }
-      
+
+        /// <summary>
+        ///     Gets all tokens surrouned by the open and close tokens.
+        /// </summary>
         public List<Token> GetSurroundedTokens(string open, string close, int start, List<Token> tokens) {
             var index = start;
             var i = index + 1;
@@ -70,11 +64,9 @@ namespace Skrypt.Parsing
         }
 
         /// <summary>
-        ///     Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
+        ///     Parses tokens surrounded by the 'open' and 'close' tokens using the given parse method.
         /// </summary>
-        public ParseResult ParseSurrounded(string open, string close, int start, List<Token> tokens,
-            ParseMethod parseMethod)
-        {
+        public ParseResult ParseSurrounded(string open, string close, int start, List<Token> tokens, ParseMethod parseMethod) {
             var surroundedTokens = GetSurroundedTokens(open, close, start, tokens);
 
             var node = parseMethod(surroundedTokens);
@@ -83,45 +75,50 @@ namespace Skrypt.Parsing
         }
 
         /// <summary>
-        ///     Parses tokens surrounded by 'open' and 'close' tokens using the given parse method
+        ///     Parses any expression surrounded by the 'open' and 'close' tokens.
         /// </summary>
-        public ParseResult ParseSurroundedExpressions(string open, string close, int start, List<Token> tokens)
-        {
+        public ParseResult ParseSurroundedExpressions(string open, string close, int start, List<Token> tokens) {
             var surroundedTokens = GetSurroundedTokens(open, close, start, tokens);
 
             var node = new Node();
-            var arguments = new List<List<Token>>();
-            _engine.ExpressionParser.SetArguments(arguments, surroundedTokens);
+            var expressions = new List<List<Token>>();
 
-            foreach (var argument in arguments) {
-                for (int i = 0; i < argument.Count - 1; i++) {
-                    var next = argument[i + 1];
+            // Get a token list for each expression
+            _engine.ExpressionParser.SetArguments(expressions, surroundedTokens);
+
+            foreach (var expression in expressions) {
+                // Multiple expressions per argument (e.g 'a, b + 2 c + 3, d'), is not allowed. 
+                // Check for any EndOfExpression tokens within an argument to see if there are multiple.
+                for (int i = 0; i < expression.Count - 1; i++) {
+                    var next = expression[i + 1];
 
                     if (next.Type == TokenTypes.EndOfExpression) {
-                        _engine.ThrowError("Syntax error, ',' expected.", argument[i]);
+                        _engine.ThrowError("Syntax error, ',' expected.", expression[i]);
                     }
                 }
 
-                var argNode = _engine.ExpressionParser.ParseExpression(node,argument);
+                var argNode = _engine.ExpressionParser.ParseExpression(node, expression);
                 node.Add(argNode);
             }
 
             return new ParseResult {Node = node, Delta = surroundedTokens.Count + 1};
         }
 
-        private ParseResult TryParse(List<Token> tokens)
-        {
+        /// <summary>
+        ///     Parses one part of a program (branch statement, expression, function definition etc).
+        /// </summary>
+        private ParseResult TryParse(List<Token> tokens) {
             var i = 0;
             var t = tokens[i];
             var usedModifiers = new List<string>();
             Modifier appliedModifiers = Modifier.None;
 
-            if (tokens[0].Type == TokenTypes.Punctuator) {
-                if (tokens[0].Value == "{" || tokens[0].Value == "}") {
-                    _engine.ThrowError("Statement expected.", tokens[0]);
-                }
+            // Curly brackets have to be preceeded by either a branch statement, class definition or function definition
+            if ((tokens[0].Type == TokenTypes.Punctuator) && (tokens[0].Value == "{" || tokens[0].Value == "}")) {
+                _engine.ThrowError("Statement expected.", tokens[0]);
             }
             
+            // Check for modifiers.
             while (Modifiers.Contains(t.Value)) {
                 if (usedModifiers.Contains(t.Value)) {
                     _engine.ThrowError("Object can't be marked with multiple of the same modifiers", t);
@@ -164,13 +161,15 @@ namespace Skrypt.Parsing
                 }
             }
 
+            // All tokens proceeding the modifier tokens.
             var parseTokens = tokens.GetRange(i, tokens.Count - i);
 
             ParseResult result = null;
 
             if (appliedModifiers != Modifier.None) {
+                // Modifier tokens have to be proceeded by a variable definition.
                 if (parseTokens.Count == 0) {
-                    _engine.ThrowError("Syntax error, assignment expression expected.", tokens[0]);
+                    _engine.ThrowError("Syntax error, variable definition expected.", tokens[0]);
                 }
 
                 if ((appliedModifiers & Modifier.Public) == 0) {
@@ -178,12 +177,15 @@ namespace Skrypt.Parsing
                 }
             }
 
+            // Parse branch statement.
             if (parseTokens[0].Equals("if", TokenTypes.Keyword) || parseTokens[0].Equals("while", TokenTypes.Keyword) || parseTokens[0].Equals("for", TokenTypes.Keyword)) {
                 result = _engine.StatementParser.Parse(parseTokens);
             }
+            // Parse function definiton (or a function literal if applicable).
             else if (parseTokens[0].Equals("fn", TokenTypes.Keyword)) {
                 var isLiteral = false;
 
+                // If the fn keyword is not proceeded by an identifier, it means its a function literal.
                 if (parseTokens.Count > 2) {
                     if (parseTokens[1].Type != TokenTypes.Identifier) {
                         isLiteral = true;
@@ -197,6 +199,7 @@ namespace Skrypt.Parsing
                     result = _engine.MethodParser.Parse(parseTokens);
                 }
             }
+            // Parse class definition.
             else if (parseTokens[0].Equals("class", TokenTypes.Keyword)) {
                 result = _engine.ClassParser.Parse(parseTokens);
 
@@ -206,9 +209,11 @@ namespace Skrypt.Parsing
                     });
                 }
             }
+            // Parse using statement.
             else if (parseTokens[0].Equals("using", TokenTypes.Punctuator)) {
                 result = _engine.ExpressionParser.ParseUsing(parseTokens);
             }
+            // Parse as expression.
             else {
                 result = _engine.ExpressionParser.Parse(parseTokens);
             }
@@ -222,6 +227,9 @@ namespace Skrypt.Parsing
             return result;
         }
 
+        /// <summary>
+        ///     Parses a set of tokens into a program node.
+        /// </summary>
         public Node Parse(List<Token> tokens) {   
             // Create main node
             var node = new Node {Body = "Block", Type = TokenTypes.Block};
@@ -231,15 +239,16 @@ namespace Skrypt.Parsing
             var i = 0;
 
             while (i <= tokens.Count - 1) {
-                var test = TryParse(tokens.GetRange(i, tokens.Count - i));
-                i += test.Delta;
+                var bit = TryParse(tokens.GetRange(i, tokens.Count - i));
+                i += bit.Delta;
 
-                if (test.Node.Type == TokenTypes.MethodDeclaration) {
-                    node.AddAsFirst(test.Node);
+                // Move function definition nodes to first place.
+                if (bit.Node.Type == TokenTypes.MethodDeclaration) {
+                    node.AddAsFirst(bit.Node);
                     continue;
                 }
 
-                node.Add(test.Node);
+                node.Add(bit.Node);
             }
 
             node.Token = new Token {

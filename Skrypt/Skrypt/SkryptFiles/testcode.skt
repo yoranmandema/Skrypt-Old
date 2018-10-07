@@ -1,3 +1,8 @@
-yes = true
+using System
 
-yes ? (fn () {System.print("Yes!")})() : (fn () {System.print("No.")})()
+class test {
+	public in poop = 2
+}
+
+print(test().poop)
+
