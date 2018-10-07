@@ -30,6 +30,10 @@ namespace Skrypt.Tokenization
             });
         }
 
+        string[] wordOperators = {
+            "using"
+        };
+
         /// <summary>
         ///     Tokenizes the given input string according to the token rules given to this object.
         /// </summary>
@@ -52,14 +56,26 @@ namespace Skrypt.Tokenization
                 Match foundMatch = null;
                 TokenRule foundRule = null;
 
-                // Check input string for all token rules
-                foreach (var rule in _tokenRules)
-                {
+                // Check input string for all token rules.
+                foreach (var rule in _tokenRules) {
                     var match = rule.Pattern.Match(input);
 
-                    // Only permit match if it's found at the start of the string
-                    if (match.Index == 0 && match.Success)
-                    {
+                    // Only permit match if it's found at the start of the string.
+                    if (match.Index == 0 && match.Success) {
+
+                        if (rule.Type == TokenTypes.Punctuator || rule.Type == TokenTypes.Keyword || rule.Type == TokenTypes.BooleanLiteral) {
+                            // Check if the operator is a word, and part of an identifier.
+                            if (Regex.Match(match.Value, @"\w+").Success) {
+                                var whiteSpaceMatch = Regex.Match(input, @"\s");
+
+                                // Check if there's a whitespace character right after the operator token.
+                                // If there's not, it means the token is an identifier should be skipped for now.
+                                if (!(whiteSpaceMatch.Success && whiteSpaceMatch.Index == match.Value.Length)) {
+                                    continue;
+                                }
+                            }
+                        }
+
                         foundMatch = match;
                         foundRule = rule;
                     }
