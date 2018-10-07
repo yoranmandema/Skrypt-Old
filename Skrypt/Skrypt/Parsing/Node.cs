@@ -64,32 +64,32 @@ namespace Skrypt.Parsing
 
         public override string ToString()
         {
-            //var s = JsonConvert.SerializeObject(this, Formatting.Indented);
+            var s = JsonConvert.SerializeObject(this, Formatting.Indented);
 
-            //s = new Regex(@"[""\[\]\{\}\,\r]").Replace(s,"");
+            //s = new Regex(@"[""\[\]\{\}\,\r]").Replace(s, "");
             //s = new Regex(@"\n\s*?(?<!\\)\n").Replace(s, "\n");
 
             //foreach (var c in s) {
             //    Console.WriteLine(Regex.Escape("" + c));
             //}
 
-            var s = JsonConvert.SerializeObject(this, Formatting.Indented);
+            //var s = JsonConvert.SerializeObject(this, Formatting.Indented);
             //s = new Regex(@",").Replace(s, "\n");
-            //s = new Regex(@"""").Replace(s,"");
-            //s = new Regex(@":").Replace(s, ": ");
+            s = new Regex(@"""").Replace(s, "");
+            s = new Regex(@":").Replace(s, ": ");
             //s = new Regex(@"[\{\}]").Replace(s, "");
 
-            //foreach (var subnode in Nodes) {
-            //    var sns = subnode.ToString();
+            foreach (var subnode in Nodes) {
+                var sns = subnode.ToString();
 
-            //    var lines = sns.Split('\n');
+                //var lines = sns.Split('\n');
 
-            //    foreach (var l in lines) {
-            //        s += "| " + l;
-            //    }
-            //}
+                //foreach (var l in lines) {
+                //    s += "| " + l;
+                //}
+            }
 
-            //s = new Regex(@"[""\[\]\{\}\,\r]").Replace(s,"");
+            //s = new Regex(@"[""\[\]\{\}\,\r]").Replace(s, "");
 
             return s;
         }
@@ -155,7 +155,9 @@ namespace Skrypt.Parsing
 
                     break;
                 case TokenTypes.ClassDeclaration:
-                    C.Write("Class " + Body, Color.FromArgb(208, 25, 208));
+                    C.Write("Class " + ((ClassNode)this).Name, Color.FromArgb(208, 25, 208));
+                    Nodes = ((ClassNode)this).BodyNode.Nodes;
+
                     break;
                 case TokenTypes.MethodDeclaration:
                     C.Write("Function " + Body, Color.FromArgb(208, 25, 208));

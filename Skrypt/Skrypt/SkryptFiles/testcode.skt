@@ -1,8 +1,9 @@
-using System
-
 class test {
-	public in poop = 2
+	fn () {}
+
+	fn test () {
+		System.print("Constructor")
+	}
 }
 
-print(test().poop)
-
+test()

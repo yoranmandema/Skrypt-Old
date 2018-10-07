@@ -511,7 +511,7 @@ namespace Skrypt.Parsing
             var index = startingPoint;
             var end = 0;
             // The first opening token found - used for exceptions.
-            Token firstToken = null;
+            var firstToken = default(Token);
 
             while (true) {
                 if (tokens[index].Value == upScope && tokens[index].Type == TokenTypes.Punctuator) {
@@ -622,7 +622,7 @@ namespace Skrypt.Parsing
             var isIdentifier = true;
             var buffer = new List<Token>();
             var skip = _engine.ExpectType(TokenTypes.Identifier, tokens);
-            Token nextToken = null;
+            var nextToken = default(Token);
             int i = 1;
 
             while (i < tokens.Count) {
@@ -691,8 +691,7 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses an expression node without any parenting node
         /// </summary>
-        public Node ParseClean(List<Token> tokens)
-        {
+        public Node ParseClean(List<Token> tokens) {
             var node = new Node();
             node.Add(ParseExpression(node, tokens));
 
@@ -706,15 +705,13 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses a list of tokens into an expression node
         /// </summary>
-        public ParseResult Parse(List<Token> tokens)
-        {
+        public ParseResult Parse(List<Token> tokens) {
             var node = new Node();
             var delta = 0;
             var addDelta = 0;
             var deltaOffset = 0;
             var scopeCheck = new ScopeCheck();
-
-            Token previousToken = null;
+            var previousToken = default(Token);
 
             if (tokens[0].Type == TokenTypes.EndOfExpression) {
                 delta++;

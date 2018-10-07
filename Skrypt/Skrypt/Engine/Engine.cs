@@ -339,7 +339,9 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            //programNode.Print();
+            programNode.Print();
+
+            //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(programNode, Newtonsoft.Json.Formatting.Indented));
 
             Stopwatch = Stopwatch.StartNew();
             GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);

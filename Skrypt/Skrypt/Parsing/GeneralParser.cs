@@ -111,7 +111,7 @@ namespace Skrypt.Parsing
             var i = 0;
             var t = tokens[i];
             var usedModifiers = new List<string>();
-            Modifier appliedModifiers = Modifier.None;
+            var appliedModifiers = Modifier.None;
 
             // Curly brackets have to be preceeded by either a branch statement, class definition or function definition
             if ((tokens[0].Type == TokenTypes.Punctuator) && (tokens[0].Value == "{" || tokens[0].Value == "}")) {
@@ -164,7 +164,7 @@ namespace Skrypt.Parsing
             // All tokens proceeding the modifier tokens.
             var parseTokens = tokens.GetRange(i, tokens.Count - i);
 
-            ParseResult result = null;
+            var result = default(ParseResult);
 
             if (appliedModifiers != Modifier.None) {
                 // Modifier tokens have to be proceeded by a variable definition.
