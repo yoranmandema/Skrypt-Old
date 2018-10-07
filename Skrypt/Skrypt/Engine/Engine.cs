@@ -30,7 +30,7 @@ namespace Skrypt.Engine
         public GeneralParser GeneralParser;
         public ScopeContext GlobalScope = new ScopeContext();
         public List<Node> MethodNodes = new List<Node>();
-        public MethodParser MethodParser;
+        public FunctionParser MethodParser;
         public ModifierChecker ModifierChecker;
         public List<SkryptMethod> Methods = new List<SkryptMethod>();
         public StatementParser StatementParser;
@@ -55,7 +55,7 @@ namespace Skrypt.Engine
             StatementParser = new StatementParser(this);
             ExpressionParser = new ExpressionParser(this);
             GeneralParser = new GeneralParser(this);
-            MethodParser = new MethodParser(this);
+            MethodParser = new FunctionParser(this);
             ModifierChecker = new ModifierChecker(this);
             ClassParser = new ClassParser(this);
             Analizer = new Analizer(this);
@@ -339,7 +339,7 @@ namespace Skrypt.Engine
 
             // Debug program node
             //Console.WriteLine("Program:\n" + programNode);
-            programNode.Print();
+            //programNode.Print();
 
             //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(programNode, Newtonsoft.Json.Formatting.Indented));
 

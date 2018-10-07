@@ -9,17 +9,15 @@ namespace Skrypt.Parsing
     ///     The method parser class.
     ///     Contains all methods to parse user defined methods
     /// </summary>
-    public class MethodParser
+    public class FunctionParser
     {
         private readonly SkryptEngine _engine;
 
-        public MethodParser(SkryptEngine e)
-        {
+        public FunctionParser(SkryptEngine e) {
             _engine = e;
         }
 
-        public Node ParseSingleParameter(List<Token> tokens)
-        {
+        public Node ParseSingleParameter(List<Token> tokens) {
             var index = 0;
             var name = tokens[index].Value;
 
@@ -32,8 +30,7 @@ namespace Skrypt.Parsing
             return node;
         }
 
-        public Node ParseParameters(List<Token> tokens)
-        {
+        public Node ParseParameters(List<Token> tokens) {
             var node = new Node();
 
             var parameterLists = new List<List<Token>>();
@@ -51,8 +48,7 @@ namespace Skrypt.Parsing
             return node;
         }
 
-        public ParseResult ParseFunctionLiteral(List<Token> tokens)
-        {
+        public ParseResult ParseFunctionLiteral(List<Token> tokens) {
             var index = 0;
             var node = new Node();
             SkipInfo skip;
@@ -141,6 +137,7 @@ namespace Skrypt.Parsing
                 Body = "Function",
                 Type = TokenTypes.FunctionLiteral
             };
+
             returnNode.Nodes.Add(blockNode);
             returnNode.Nodes.Add(parameterNode);
 
@@ -150,17 +147,13 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses a list of tokens into a method node
         /// </summary>
-        public ParseResult Parse(List<Token> tokens)
-        {
+        public ParseResult Parse(List<Token> tokens) {
             var index = 0;
             SkipInfo skip;
             ParseResult result;
 
             skip = _engine.ExpectType(TokenTypes.Identifier, tokens);
             index += skip.Delta;
-
-            //skip = engine.expectType("Identifier", Tokens,index);
-            //index += skip.delta;
 
             skip = _engine.ExpectValue("(", tokens, index);
             index += skip.Delta;
@@ -176,11 +169,11 @@ namespace Skrypt.Parsing
             var blockNode = result.Node;
             index += result.Delta + 1;
 
-            var returnNode = new Node
-            {
+            var returnNode = new Node {
                 Body = tokens[1].Value,
                 Type = TokenTypes.MethodDeclaration
             };
+
             returnNode.Nodes.Add(blockNode);
             returnNode.Nodes.Add(parameterNode);
 

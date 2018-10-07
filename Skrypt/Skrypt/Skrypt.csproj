@@ -93,7 +93,7 @@
     <Compile Include="Parsing\ClassParser.cs" />
     <Compile Include="Parsing\ExpressionParser.cs" />
     <Compile Include="Parsing\GeneralParser.cs" />
-    <Compile Include="Parsing\MethodParser.cs" />
+    <Compile Include="Parsing\FunctionParser.cs" />
     <Compile Include="Parsing\ModifierChecker.cs" />
     <Compile Include="Parsing\Node.cs" />
     <Compile Include="Library\SkryptClass.cs" />
