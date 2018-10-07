@@ -21,18 +21,25 @@ namespace Skrypt.Parsing
         Node ParseContents (List<Token> tokens, string name) {
             var constructorStart = -1;
             var clone = new List<Token>(tokens);
+            var previousToken = default(Token);
 
             for (int i = 0; i < clone.Count; i++) {
                 var t = clone[i];
 
+                if (i > 0) {
+                    previousToken = clone[i - 1];
+                }
+
                 if (t.Value == name) {
-                    constructorStart = i;
-                    continue;
+                    if (!(previousToken != null && previousToken.Equals("fn", TokenTypes.Keyword))) {
+                        constructorStart = i;
+                        continue;
+                    }
                 }
 
                 if (constructorStart != -1) {
                     if ((t.Value == "(") && (t.Type == TokenTypes.Punctuator) && (i == (constructorStart + 1))) {
-                        SkipInfo skip = _engine.ExpressionParser.SkipFromTo("(", ")", clone, i);
+                        var skip = _engine.ExpressionParser.SkipFromTo("(", ")", clone, i);
 
                         if (skip.End + 1 < clone.Count) {
                             var t2 = clone[skip.End + 1];
@@ -88,8 +95,8 @@ namespace Skrypt.Parsing
             var inheritNode = new Node {Body = "Inherit", Type = TokenTypes.Inherit };
 
             if (tokens[i].Equals(":", TokenTypes.Punctuator)) {
-                bool isIdentifier = true;
-                Token nextToken = null;
+                var isIdentifier = true;
+                var nextToken = default(Token);
                 var s = _engine.ExpectType(TokenTypes.Identifier, tokens);
                 i++;
 
@@ -122,8 +129,8 @@ namespace Skrypt.Parsing
                 i++;
             }
 
-            List<Token> SurroundedTokens = _engine.GeneralParser.GetSurroundedTokens("{", "}", i, tokens);
-            Node node = ParseContents(SurroundedTokens, tokens[1].Value);
+            var SurroundedTokens = _engine.GeneralParser.GetSurroundedTokens("{", "}", i, tokens);
+            var node = ParseContents(SurroundedTokens, tokens[1].Value);
 
             var result = new ParseResult { Node = node, Delta = SurroundedTokens.Count + 1 };
 
