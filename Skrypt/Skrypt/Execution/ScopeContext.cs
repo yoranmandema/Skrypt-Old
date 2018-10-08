@@ -16,8 +16,7 @@ namespace Skrypt.Execution
         InClassDeclaration = 32,
     } 
 
-    public class ScopeContext
-    {
+    public class ScopeContext {
         [JsonIgnore]public ScopeContext ParentScope = null;
         [JsonIgnore]public List<ScopeContext> SubScopes = new List<ScopeContext>();
         public int Start;
@@ -31,10 +30,8 @@ namespace Skrypt.Execution
         public SkryptObject ReturnObject { get; set; }
         public SkryptObject ParentClass { get; set; }
 
-        public void SetVariable(string name, SkryptObject value, Modifier modifiers = Modifier.None)
-        {
-            Variables[name] = new Variable
-            {
+        public void SetVariable(string name, SkryptObject value, Modifier modifiers = Modifier.None) {
+            Variables[name] = new Variable {
                 Name = name,
                 Value = value,
                 Modifiers = modifiers,
@@ -44,14 +41,6 @@ namespace Skrypt.Execution
 
         public void AddType(string name, SkryptObject value, bool isConstant = false) {
             Types[name] = value;
-        }
-
-        public void PrintTypes (string indent = "") {
-            foreach (var t in Types) {
-                Console.WriteLine(indent + t.Value.Name);
-            }
-
-            ParentScope?.PrintTypes(indent + "  ");
         }
     }
 }
