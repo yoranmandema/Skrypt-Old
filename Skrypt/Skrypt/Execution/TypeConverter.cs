@@ -19,10 +19,10 @@ namespace Skrypt.Execution
             return (SkryptMethod)args[index];
         }
 
-        public static UserMethod ToUserMethod(SkryptObject[] args, int index) {
-            if (index > args.Length - 1) return new UserMethod();
+        public static UserFunction ToUserMethod(SkryptObject[] args, int index) {
+            if (index > args.Length - 1) return new UserFunction();
 
-            return (UserMethod)args[index];
+            return (UserFunction)args[index];
         }
 
         public static Sys.Boolean ToBoolean(SkryptObject[] args, int index)

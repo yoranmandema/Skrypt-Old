@@ -47,7 +47,7 @@ namespace Skrypt.Library
         public static ScopeContext GetPopulatedScope (SkryptMethod m, SkryptObject[] a = null) {
             var s = new ScopeContext();
 
-            if (m.GetType() == typeof(UserMethod)) {
+            if (m.GetType() == typeof(UserFunction)) {
                 for (int i = 0; i < m.Parameters.Count; i++) {
                     s.SetVariable(m.Parameters[i],a[i]);
                 }
@@ -63,7 +63,7 @@ namespace Skrypt.Library
         public static ScopeContext GetPopulatedScope(SkryptMethod m) {
             var s = new ScopeContext();
 
-            if (m.GetType() == typeof(UserMethod)) {
+            if (m.GetType() == typeof(UserFunction)) {
                 for (int i = 0; i < m.Parameters.Count; i++) {
                     s.SetVariable(m.Parameters[i], new Null());
                 }
@@ -75,7 +75,7 @@ namespace Skrypt.Library
         }
     }
 
-    public class UserMethod : SkryptMethod
+    public class UserFunction : SkryptMethod
     {
         public Node BlockNode { get; set; }
         public string Signature { get; set; }

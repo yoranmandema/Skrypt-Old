@@ -144,8 +144,8 @@ namespace Skrypt.Library
             var s = o.ToString();
             var ts = o.GetProperty("ToString");
 
-            if (ts != null && typeof(UserMethod).IsAssignableFrom(ts.GetType())) {
-                s = ((UserMethod)ts).Execute(engine, o, null, engine.CurrentScope).ReturnObject.ToString();
+            if (ts != null && typeof(UserFunction).IsAssignableFrom(ts.GetType())) {
+                s = ((UserFunction)ts).Execute(engine, o, null, engine.CurrentScope).ReturnObject.ToString();
             }
 
             return s;
