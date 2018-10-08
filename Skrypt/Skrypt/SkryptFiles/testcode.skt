@@ -1,9 +1,9 @@
-class test {
-	fn () {}
+using System
 
-	fn test () {
-		System.print("Constructor")
+class Printer {
+    public fn Print (message) {
+		print(message)
 	}
 }
 
-test()
+Printer.Print("Hello world!")

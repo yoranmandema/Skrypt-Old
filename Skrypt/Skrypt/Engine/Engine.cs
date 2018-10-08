@@ -8,12 +8,10 @@ using Skrypt.Library;
 using Skrypt.Library.Reflection;
 using Skrypt.Parsing;
 using Skrypt.Tokenization;
-// Using this so we can check how fast everything is happening
 
 namespace Skrypt.Engine
 {
     public class ParseResult {
-        //public Exception error;
         public int Delta = -1;
         public Node Node;
     }
@@ -136,13 +134,17 @@ namespace Skrypt.Engine
             );
         }
 
-        public Dictionary<string, SkryptObject> Types { get; set; } = new Dictionary<string, SkryptObject>();
-
-        public void AddClass(Type type) {
+        /// <summary>
+        ///     Adds a type as a variable to the engine's global scope.
+        /// </summary>
+        public void AddType(Type type) {
             var generated = ObjectGenerator.MakeObjectFromClass(type, this);
             GlobalScope.SetVariable(generated.Name, generated, Modifier.Const);
         }
 
+        /// <summary>
+        ///     Creates a new object of type T, and gives it all properties from its parent class.
+        /// </summary>
         public T Create<T>(params object[] input) {
             var newObject = (SkryptType)Activator.CreateInstance(typeof(T), input);
             var baseType = Executor.GetType(newObject.TypeName, CurrentScope);
@@ -153,6 +155,9 @@ namespace Skrypt.Engine
             return (T)((Object)newObject);
         }
 
+        /// <summary>
+        ///     Evaluates a binary operation.
+        /// </summary>
         public SkryptObject Eval(Operator operation, SkryptObject leftObject, SkryptObject rightObject, Node node = null) {
             dynamic left = Convert.ChangeType(leftObject, leftObject.GetType());
             dynamic right = Convert.ChangeType(rightObject, rightObject.GetType());
@@ -173,14 +178,16 @@ namespace Skrypt.Engine
 
             OperationDelegate operationDel = null;
 
-            if (opLeft != null)
+            if (opLeft != null) {
                 operationDel = opLeft.OperationDelegate;
-            if (opRight != null)
+            }
+
+            if (opRight != null) {
                 operationDel = opRight.OperationDelegate;
+            }
 
             if (operationDel == null) {
-                ThrowError("No such operation as " + left.Name + " " + operation.Operation + " " + right.Name,
-                    node.Token);
+                ThrowError("No such operation as " + left.Name + " " + operation.Operation + " " + right.Name,node.Token);
             }
 
             var result = (SkryptType)operationDel(new[] { leftObject, rightObject }, this);
@@ -190,6 +197,9 @@ namespace Skrypt.Engine
             return result;
         }
 
+        /// <summary>
+        ///     Evaluates a unary operation.
+        /// </summary>
         public SkryptObject Eval(Operator operation, SkryptObject leftObject, Node node = null) {
             dynamic left = Convert.ChangeType(leftObject, leftObject.GetType());
 
@@ -197,11 +207,12 @@ namespace Skrypt.Engine
 
             OperationDelegate operationDel = null;
 
-            if (opLeft != null)
+            if (opLeft != null) {
                 operationDel = opLeft.OperationDelegate;
-            else
-                ThrowError("No such operation as " + left.Name + " " + operation.Operation,
-                    node?.Nodes[0].Token);
+            }
+            else {
+                ThrowError("No such operation as " + left.Name + " " + operation.Operation,node?.Nodes[0].Token);
+            }
 
             var result = (SkryptType)operationDel(new[] { leftObject }, this);
 
@@ -211,7 +222,7 @@ namespace Skrypt.Engine
         }
 
         /// <summary>
-        ///     Calculates the line and column of a given index
+        ///     Calculates the line and column of a given index.
         /// </summary>
         public string GetLineAndRowStringFromIndex(int index) {
             var lines = 1;
@@ -253,17 +264,25 @@ namespace Skrypt.Engine
             return new SkipInfo { Start = start, End = index, Delta = delta };
         }
 
+        /// <summary>
+        ///     Skips token if next token has one of the given values. Throws exception when nothing is found.
+        /// </summary>
         public SkipInfo ExpectValue(string[] values, List<Token> tokens, int startingPoint = 0) {
             var start = startingPoint;
             var index = startingPoint;
             var msg = "Syntax error, tokens '" + string.Join(",", values) + "' expected.";
 
-            if (index == tokens.Count - 1) ThrowError(msg, tokens[index]);
-
-            if (Array.Exists(values, e => e == tokens[index + 1].Value))
-                index++;
-            else
+            // index is at the end of the token list, meaning the required token doesn't exist.
+            if (index == tokens.Count - 1) {
                 ThrowError(msg, tokens[index]);
+            }
+
+            if (Array.Exists(values, e => e == tokens[index + 1].Value)) {
+                index++;
+            }
+            else {
+                ThrowError(msg, tokens[index]);
+            }
 
             var delta = index - startingPoint;
 
@@ -278,12 +297,17 @@ namespace Skrypt.Engine
             var index = startingPoint;
             var msg = "Syntax error, tokens with type '" + type + "' expected.";
 
-            if (index == tokens.Count - 1) ThrowError(msg, tokens[index]);
-
-            if (tokens[index + 1].Type == type)
-                index++;
-            else
+            // index is at the end of the token list, meaning the required token doesn't exist.
+            if (index == tokens.Count - 1) {
                 ThrowError(msg, tokens[index]);
+            }
+
+            if (tokens[index + 1].Type == type) {
+                index++;
+            }
+            else {
+                ThrowError(msg, tokens[index]);
+            }
 
             var delta = index - startingPoint;
 
@@ -304,15 +328,24 @@ namespace Skrypt.Engine
             throw new SkryptException(message + lineRow, token);
         }
 
+        /// <summary>
+        ///     Set the value of a variable within the engine's global scope to a function.
+        /// </summary
         public SkryptEngine SetValue(string name, Delegate value) {
             return SetValue(name, new SharpMethod(value));
         }
 
+        /// <summary>
+        ///     Set the value of a variable within the engine's global scope to a new value.
+        /// </summary
         public SkryptEngine SetValue(string name, SkryptObject value) {
             GlobalScope.SetVariable(name, value);
             return this;
         }
 
+        /// <summary>
+        ///     Parses a string of code into a program node.
+        /// </summary>
         public Node Parse(string code = "") {
             if (code != string.Empty)
                 _code = code;

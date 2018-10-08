@@ -18,7 +18,7 @@ namespace Skrypt
             // Creating a skrypt engine object
             var engine = new SkryptEngine();
 
-            engine.AddClass(typeof(Vector));
+            engine.AddType(typeof(Vector));
             //engine.SetValue("WriteLine", new Action<object>(Console.WriteLine));
             engine.Parse(code);
 

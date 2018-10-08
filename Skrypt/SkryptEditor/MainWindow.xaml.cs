@@ -121,7 +121,7 @@ namespace SkryptEditor {
                 File.WriteAllText(_documentPath, textEditor.Text);
 
             var engine = new SkryptEngine();
-            engine.AddClass(typeof(Canvas.Drawing));
+            engine.AddType(typeof(Canvas.Drawing));
             var code = textEditor.Text;
 
             try {
