@@ -1,9 +1,3 @@
 using System
 
-class Printer {
-    public fn Print (message) {
-		print(message)
-	}
-}
-
-Printer.Print("Hello world!")
+print(Vector(2,2,1).Length)
