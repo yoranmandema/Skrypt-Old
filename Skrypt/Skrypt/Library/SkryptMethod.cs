@@ -13,15 +13,12 @@ namespace Skrypt.Library
     public delegate void SkryptSetDelegate(SkryptObject self, SkryptObject value);
     public delegate SkryptObject SkryptGetDelegate(SkryptObject self, SkryptObject[] input);
 
-    public class SkryptMethod : SkryptObject
-    {
+    public class SkryptMethod : SkryptObject {
         public string ReturnType { get; set; }
         public string CallName { get; set; }
         public List<string> Parameters { get; set; } = new List<string>();
 
-        public virtual ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
-            ScopeContext scope)
-        {
+        public virtual ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters, ScopeContext scope) {
             return null;
         }
 
@@ -37,11 +34,6 @@ namespace Skrypt.Library
             if (m.GetParameters()[2].ParameterType != typeof(SkryptObject[])) return false;
 
             return true;
-        }
-
-        public override string ToString()
-        {
-            return base.ToString();
         }
 
         public static ScopeContext GetPopulatedScope (SkryptMethod m, SkryptObject[] a = null) {
@@ -67,22 +59,17 @@ namespace Skrypt.Library
                 for (int i = 0; i < m.Parameters.Count; i++) {
                     s.SetVariable(m.Parameters[i], new Null());
                 }
-            } else {
-
-            }
+            }  
 
             return s;
         }
     }
 
-    public class UserFunction : SkryptMethod
-    {
+    public class UserFunction : SkryptMethod {
         public Node BlockNode { get; set; }
         public string Signature { get; set; }
 
-        public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
-            ScopeContext scope)
-        {
+        public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters, ScopeContext scope)  {
             var inputScope = new ScopeContext {
                 ParentScope = scope,
                 Properties = scope.Properties | ScopeProperties.InMethod
@@ -92,8 +79,7 @@ namespace Skrypt.Library
                 inputScope.SetVariable("self", self, Modifier.Const);
             }
 
-            var resultingScope =
-                engine.Executor.ExecuteBlock(BlockNode, inputScope);
+            var resultingScope = engine.Executor.ExecuteBlock(BlockNode, inputScope);
 
             resultingScope.ReturnObject = resultingScope.ReturnObject ?? new Native.System.Null();
             resultingScope.Variables = new Dictionary<string, Variable>(scope.Variables);
@@ -104,8 +90,7 @@ namespace Skrypt.Library
         }
     }
 
-    public class SharpMethod : SkryptMethod
-    {
+    public class SharpMethod : SkryptMethod {
         public Delegate Method { get; set; }
         public new bool IsSkryptMethod { get; set; }
 
@@ -115,9 +100,7 @@ namespace Skrypt.Library
             IsSkryptMethod = IsSkryptMethod(Method.GetMethodInfo());
         }
 
-        public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
-            ScopeContext scope)
-        {
+        public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters, ScopeContext scope) {
             SkryptObject returnValue = null;
 
             if (IsSkryptMethod) {
@@ -164,9 +147,7 @@ namespace Skrypt.Library
     public class GetMethod : SkryptMethod {
         public SkryptGetDelegate Method { get; set; }
 
-        public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters,
-            ScopeContext scope) {        
-
+        public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters, ScopeContext scope) {        
             var returnValue = Method(self, parameters);
 
             if (typeof(SkryptType).IsAssignableFrom(returnValue.GetType())) {
