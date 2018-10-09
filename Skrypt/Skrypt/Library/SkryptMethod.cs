@@ -73,7 +73,8 @@ namespace Skrypt.Library
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters, ScopeContext scope)  {
             var inputScope = new ScopeContext {
                 ParentScope = scope,
-                Properties = scope.Properties | ScopeProperties.InMethod
+                Properties = scope.Properties | ScopeProperties.InMethod,
+                CallStack = scope.CallStack
             };
 
             if (self != null) {

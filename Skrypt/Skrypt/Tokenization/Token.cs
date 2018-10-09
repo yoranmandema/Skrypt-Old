@@ -12,7 +12,9 @@ namespace Skrypt.Tokenization
         public int Start { get; set; }
         public int End { get; set; }
         public int Line { get; set; }
-        public int Colom { get; set; }
+        public int Column { get; set; }
+        public int LineEnd { get; set; }
+        public int ColumnEnd { get; set; }
 
         public override string ToString()
         {

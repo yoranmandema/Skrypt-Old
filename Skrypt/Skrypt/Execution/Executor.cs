@@ -810,7 +810,9 @@ namespace Skrypt.Execution
                         };
                     }
 
-                    methodContext.CallStack.Path = function.Path;
+                    methodContext.CallStack.Path = _engine.CurrentExecutingFile;
+
+                    _engine.CurrentExecutingFile = function.Path;
 
                     methodScopeResult = function.Execute(_engine, caller, arguments.ToArray(), methodContext);
                 }

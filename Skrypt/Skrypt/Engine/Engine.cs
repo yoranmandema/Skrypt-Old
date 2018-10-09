@@ -354,30 +354,13 @@ namespace Skrypt.Engine
         ///     Throws an error with line and colom indicator
         /// </summary>
         public void ThrowError(string message, Token token = null) {
-            string code;
-            string path;
-            string file;
-            string pathMessage = "";
-
-            if (State == EngineState.Executing) {
-                file = CurrentExecutingFile;
-            } else {
-                file = CurrentParsingFile;
-            }
-
-            if (CurrentStack != null) {
-                file = CurrentStack.Path;
-            }
-
-            code = Files[file];
-
-            if (!String.IsNullOrEmpty(file)) pathMessage = file + " ";
-
-            var lineRow = token != null ? " (" + GetLineAndRowStringFromIndex(code, token.Start) + ")" : "";
+            var lineRow = token != null ? $"({token.Line}, { token.Column}, {token.LineEnd}, { token.ColumnEnd})" : "";
 
             Console.WriteLine();
             Console.WriteLine(message);
-            if (token != null) Console.WriteLine($"\n\t{pathMessage}(line: {token.Line}, column: {token.Colom})\n");
+
+            CurrentStack = new CallStack((State == EngineState.Executing ? CurrentExecutingFile : CurrentParsingFile) + " ", token, CurrentStack, "");
+
             Console.WriteLine(CurrentStack);
 
             throw new SkryptException(message + lineRow, token);
@@ -403,9 +386,7 @@ namespace Skrypt.Engine
 
             var code = File.ReadAllText(path);
 
-            var fileName = SkryptEngine.MakeRelativePath(Root, path);
-
-            Console.WriteLine(fileName);
+            var fileName = MakeRelativePath(Root, path);
 
             CurrentParsingFile = fileName;
             CurrentExecutingFile = fileName;
@@ -421,7 +402,7 @@ namespace Skrypt.Engine
             if (code != string.Empty)
                 _code = code;
 
-            Files[""] = code;
+            //Files[""] = code;
 
             Stopwatch = Stopwatch.StartNew();
 

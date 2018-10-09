@@ -39,7 +39,7 @@ namespace Skrypt.Tokenization
             var tokens = new List<Token>();
             var index = 0;
             var line = 1;
-            var colom = 0;
+            var column = 0;
             var originalInput = input;
 
             Token previousToken = null;
@@ -59,11 +59,11 @@ namespace Skrypt.Tokenization
                         if (rule.Type == TokenTypes.Punctuator || rule.Type == TokenTypes.Keyword || rule.Type == TokenTypes.BooleanLiteral) {
                             // Check if the operator is a word, and part of an identifier.
                             if (Regex.Match(match.Value, @"\w+").Success) {
-                                var whiteSpaceMatch = Regex.Match(input, @"\s");
+                                var identifierStartCheck = Regex.Match(input, @"[_a-zA-Z]");
 
                                 // Check if there's a whitespace character right after the operator token.
                                 // If there's not, it means the token is an identifier should be skipped for now.
-                                if (!(whiteSpaceMatch.Success && whiteSpaceMatch.Index == match.Value.Length)) {
+                                if (identifierStartCheck.Success && identifierStartCheck.Index == match.Value.Length) {
                                     continue;
                                 }
                             }
@@ -78,7 +78,22 @@ namespace Skrypt.Tokenization
 
                 if (nl.Index == 0 && nl.Success) {
                     line++;
-                    colom = 0;
+                    column = 0;
+                }
+
+                var lineEnd = line;
+                var columnEnd = column;
+                var endIndex = 0;
+
+                while (endIndex < (foundMatch.Value.Length)) {
+                    if (input[endIndex] == '\n') {
+                        lineEnd++;
+                        columnEnd = 0;
+                    } else {
+                        columnEnd++;
+                    }
+
+                    endIndex++;
                 }
 
                 // No match was found; this means we encountered an unexpected token.
@@ -92,7 +107,9 @@ namespace Skrypt.Tokenization
                     Start = index + foundMatch.Index,
                     End = index + foundMatch.Index + foundMatch.Value.Length - 1,
                     Line = line,
-                    Colom = colom,
+                    Column = column,
+                    LineEnd = lineEnd,
+                    ColumnEnd = columnEnd,
                 };
 
                 // Ignore token if it's type equals null
@@ -103,7 +120,7 @@ namespace Skrypt.Tokenization
 
                 // Increase current index and cut away part of the string that got matched so we don't repeat it again.
                 index += foundMatch.Value.Length;
-                colom += foundMatch.Value.Length;
+                column += foundMatch.Value.Length;
                 input = originalInput.Substring(index);
             }
 

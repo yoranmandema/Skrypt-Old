@@ -25,7 +25,7 @@ namespace Skrypt.Engine {
 
             if (!string.IsNullOrEmpty(Path)) str += $" in: {Path} ";
 
-            if (Token != null) str += $"(line: {Token.Line}, column {Token.Colom})";
+            if (Token != null) str += $"({Token.Line}, { Token.Column}, {Token.LineEnd}, { Token.ColumnEnd})";
 
             if (Parent != null) {
                 str += "\n" + Parent;
