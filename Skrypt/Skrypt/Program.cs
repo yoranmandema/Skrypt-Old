@@ -11,26 +11,22 @@ namespace Skrypt
         private static void Main(string[] args)
         {
             // Get skrypt test code
-            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                @"..\..\SkryptFiles\testcode.skt");
+            var path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\..\SkryptFiles\testcode.skt");
             var code = File.ReadAllText(path);
 
             // Creating a skrypt engine object
             var engine = new SkryptEngine();
 
-            engine.AddType(typeof(Vector));
-            engine.SetValue("WriteLine", new Action<object>(Console.WriteLine));
-            engine.Parse(code);
+            //engine.Parse(code);
+            engine.DoFile(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"..\..\SkryptFiles\include.skt"));
 
             double time = 0;
-            int instances = 1000;
+            int instances = 0;
             if (instances > 0) {
                 for (int i = 0; i < instances; i++) {
                     var e = new SkryptEngine(code) {
                         Settings = EngineSettings.NoLogs
                     };
-                    e.AddType(typeof(Vector));
-                    e.SetValue("WriteLine", new Action<object>(Console.WriteLine));
                     e.Parse();
                     time += e.ExecutionTime;
                 }

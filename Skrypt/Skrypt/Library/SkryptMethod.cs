@@ -66,6 +66,7 @@ namespace Skrypt.Library
     }
 
     public class UserFunction : SkryptMethod {
+        public string Path;
         public Node BlockNode { get; set; }
         public string Signature { get; set; }
 

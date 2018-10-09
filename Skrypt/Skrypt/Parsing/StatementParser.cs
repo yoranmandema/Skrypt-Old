@@ -2,6 +2,7 @@
 using Skrypt.Engine;
 using Skrypt.Tokenization;
 using System;
+using System.IO;
 
 namespace Skrypt.Parsing
 {
@@ -164,8 +165,48 @@ namespace Skrypt.Parsing
         }
 
         /// <summary>
-        ///     Parses any statement and returns node
+        ///     Parses an include statement.
         /// </summary>
+        public ParseResult ParseInclude(List<Token> tokens) {
+            var skip = _engine.ExpectType(TokenTypes.StringLiteral, tokens);
+
+            if (string.IsNullOrEmpty(_engine.Root)) {
+                _engine.ThrowError("Engine path invalid!", tokens[1]);
+            }
+
+            var desiredFile = tokens[1].Value.EndsWith(".skt") ? tokens[1].Value : tokens[1].Value + ".skt";
+            var path = Path.GetFullPath(Path.Combine(_engine.Root, desiredFile));
+            var fileName = SkryptEngine.MakeRelativePath(_engine.Root, path);
+            var fileStream = File.Open(path, FileMode.Open);
+
+            string includedCode;
+            using (var sr = new StreamReader(fileStream)) {
+                includedCode = sr.ReadToEnd();
+            }
+
+            _engine.Files[fileName] = includedCode;
+
+            var oldParsingFile = _engine.CurrentParsingFile;
+            _engine.CurrentParsingFile = path;
+
+            var includeTokens = _engine.Tokenizer.Tokenize(includedCode);
+
+            _engine.TokenProcessor.ProcessTokens(includeTokens);
+
+            var programNode = _engine.GeneralParser.Parse(includeTokens);
+            var node = new IncludeNode {
+                Nodes = programNode.Nodes,
+                Path = fileName
+            };
+
+            _engine.CurrentParsingFile = oldParsingFile;
+
+            return new ParseResult { Node = node, Delta = 3 };
+        }
+
+        /// <summary>
+        ///     Parses any statement and returns node
+        /// </summary
         public ParseResult Parse(List<Token> tokens)
         {
             switch (tokens[0].Value)

@@ -34,6 +34,8 @@ namespace Skrypt.Tokenization
         ///     A list of tokens.
         /// </returns>
         public List<Token> Tokenize(string input) {
+            _engine.State = EngineState.Tokenizing;
+
             var tokens = new List<Token>();
             var index = 0;
             var line = 1;

@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\Analizer.cs" />
+    <Compile Include="Engine\EngineState.cs" />
     <Compile Include="Engine\Engine.cs" />
     <Compile Include="Engine\CallStack.cs" />
     <Compile Include="Execution\Executor.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Parsing\Nodes\CallNode.cs" />
     <Compile Include="Parsing\Nodes\ClassNode.cs" />
     <Compile Include="Parsing\Nodes\ConditionalNode.cs" />
+    <Compile Include="Parsing\Nodes\IncludeNode.cs" />
     <Compile Include="Parsing\Nodes\IndexNode.cs" />
     <Compile Include="Parsing\Nodes\NullNode.cs" />
     <Compile Include="Parsing\Nodes\NumericNode.cs" />
@@ -126,6 +128,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="SkryptFiles\include.skt" />
+    <None Include="SkryptFiles\includecode.skt" />
     <None Include="SkryptFiles\testcode.skt" />
   </ItemGroup>
   <ItemGroup>

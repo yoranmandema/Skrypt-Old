@@ -24,7 +24,8 @@ namespace Skrypt.Parsing
             "break",
             "continue",
             "const",
-            "return"
+            "return",
+            "include"
         };
 
         public static List<string> NotPermittedInExpression = new List<string> {
@@ -33,7 +34,8 @@ namespace Skrypt.Parsing
             "for",
             "class",
             "using",
-            "const"
+            "const",
+            "include"
         };
 
         public static List<string> Modifiers = new List<string> {
@@ -213,6 +215,10 @@ namespace Skrypt.Parsing
             else if (parseTokens[0].Equals("using", TokenTypes.Punctuator)) {
                 result = _engine.ExpressionParser.ParseUsing(parseTokens);
             }
+            // Parse include statement.
+            else if (parseTokens[0].Equals("include", TokenTypes.Keyword)) {
+                result = _engine.StatementParser.ParseInclude(parseTokens);
+            }
             // Parse as expression.
             else {
                 result = _engine.ExpressionParser.Parse(parseTokens);
@@ -230,7 +236,9 @@ namespace Skrypt.Parsing
         /// <summary>
         ///     Parses a set of tokens into a program node.
         /// </summary>
-        public Node Parse(List<Token> tokens) {   
+        public Node Parse(List<Token> tokens) {
+            _engine.State = EngineState.Parsing;
+
             // Create main node
             var node = new Node {Body = "Block", Type = TokenTypes.Block};
 
@@ -245,10 +253,15 @@ namespace Skrypt.Parsing
                 // Move function definition nodes to first place.
                 if (bit.Node.Type == TokenTypes.MethodDeclaration) {
                     node.AddAsFirst(bit.Node);
-                    continue;
                 }
-
-                node.Add(bit.Node);
+                //else if (bit.Node.Type == TokenTypes.Include) {
+                //    foreach (var n in bit.Node.Nodes) {
+                //        node.Add(n);
+                //    }
+                //}
+                else {
+                    node.Add(bit.Node);
+                }
             }
 
             node.Token = new Token {

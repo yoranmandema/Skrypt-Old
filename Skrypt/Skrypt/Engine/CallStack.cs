@@ -8,20 +8,24 @@ using Skrypt.Library;
 
 namespace Skrypt.Engine {
     public class CallStack {
+        public string Path { get; set; }
         public string Descriptor { get; set; }
         public Token Token { get; set; }
         public CallStack Parent { get; set; }
 
-        public CallStack (string descriptor, Token token, CallStack callStack) {
+        public CallStack (string descriptor, Token token, CallStack callStack, string path) {
             Descriptor = descriptor;
             Token = token;
             Parent = callStack;
+            Path = path;
         }
 
         public override string ToString() {
             var str = $"\tat {Descriptor}";
 
-            if (Token != null) str += $"\t(line: {Token.Line}, column {Token.Colom})";
+            if (!string.IsNullOrEmpty(Path)) str += $" in: {Path} ";
+
+            if (Token != null) str += $"(line: {Token.Line}, column {Token.Colom})";
 
             if (Parent != null) {
                 str += "\n" + Parent;

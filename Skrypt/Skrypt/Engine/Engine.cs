@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Text.RegularExpressions;
 using Skrypt.Analysis;
 using Skrypt.Execution;
@@ -35,7 +36,13 @@ namespace Skrypt.Engine
         public Tokenizer Tokenizer;
         public TokenProcessor TokenProcessor;
 
+        public string Root { get; private set; }
+        public string CurrentExecutingFile;
+        public string CurrentParsingFile;
+        public Dictionary<string,string> Files = new Dictionary<string,string>();
+
         public EngineSettings Settings;
+        public EngineState State;
 
         internal Stopwatch Stopwatch { get; set; }
         internal CallStack CurrentStack { get; set; }
@@ -91,7 +98,7 @@ namespace Skrypt.Engine
             );
 
             Tokenizer.AddRule(
-                new Regex(@"const|using|public|private|strong|in|class|fn|if|elseif|else|while"),
+                new Regex(@"include|const|using|public|private|strong|in|class|fn|if|elseif|else|while"),
                 TokenTypes.Keyword
             );
 
@@ -224,13 +231,13 @@ namespace Skrypt.Engine
         /// <summary>
         ///     Calculates the line and column of a given index.
         /// </summary>
-        public string GetLineAndRowStringFromIndex(int index) {
+        public string GetLineAndRowStringFromIndex(string code, int index) {
             var lines = 1;
             var row = 1;
             var i = 0;
 
             while (i < index) {
-                if (_code[i] == '\n') {
+                if (code[i] == '\n') {
                     lines++;
                     row = 1;
                 }
@@ -314,15 +321,63 @@ namespace Skrypt.Engine
             return new SkipInfo { Start = start, End = index, Delta = delta };
         }
 
+
+        /// <summary>
+        /// Creates a relative path from one file or folder to another.
+        /// </summary>
+        /// <param name="fromPath">Contains the directory that defines the start of the relative path.</param>
+        /// <param name="toPath">Contains the path that defines the endpoint of the relative path.</param>
+        /// <returns>The relative path from the start directory to the end path or <c>toPath</c> if the paths are not related.</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="UriFormatException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public static String MakeRelativePath(String fromPath, String toPath) {
+            if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
+            if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
+
+            Uri fromUri = new Uri(fromPath);
+            Uri toUri = new Uri(toPath);
+
+            if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
+
+            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+            String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+            if (toUri.Scheme.Equals("file", StringComparison.InvariantCultureIgnoreCase)) {
+                relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            }
+
+            return relativePath;
+        }
+
         /// <summary>
         ///     Throws an error with line and colom indicator
         /// </summary>
         public void ThrowError(string message, Token token = null) {
-            var lineRow = token != null ? " (" + GetLineAndRowStringFromIndex(token.Start) + ")" : "";
+            string code;
+            string path;
+            string file;
+            string pathMessage = "";
+
+            if (State == EngineState.Executing) {
+                file = CurrentExecutingFile;
+            } else {
+                file = CurrentParsingFile;
+            }
+
+            if (CurrentStack != null) {
+                file = CurrentStack.Path;
+            }
+
+            code = Files[file];
+
+            if (!String.IsNullOrEmpty(file)) pathMessage = file + " ";
+
+            var lineRow = token != null ? " (" + GetLineAndRowStringFromIndex(code, token.Start) + ")" : "";
 
             Console.WriteLine();
             Console.WriteLine(message);
-            if (token != null) Console.WriteLine($"\n\t(line: {token.Line}, column: {token.Colom})\n");
+            if (token != null) Console.WriteLine($"\n\t{pathMessage}(line: {token.Line}, column: {token.Colom})\n");
             Console.WriteLine(CurrentStack);
 
             throw new SkryptException(message + lineRow, token);
@@ -343,12 +398,30 @@ namespace Skrypt.Engine
             return this;
         }
 
+        public void DoFile (string path) {
+            Root = Path.GetFullPath(Path.Combine(path, @"..\"));
+
+            var code = File.ReadAllText(path);
+
+            var fileName = SkryptEngine.MakeRelativePath(Root, path);
+
+            Console.WriteLine(fileName);
+
+            CurrentParsingFile = fileName;
+            CurrentExecutingFile = fileName;
+            Files[fileName] = code;
+
+            Parse(code);
+        }
+
         /// <summary>
         ///     Parses a string of code into a program node.
         /// </summary>
         public Node Parse(string code = "") {
             if (code != string.Empty)
                 _code = code;
+
+            Files[""] = code;
 
             Stopwatch = Stopwatch.StartNew();
 

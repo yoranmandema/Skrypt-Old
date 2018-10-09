@@ -364,7 +364,8 @@ namespace Skrypt.Execution
                 Name = node.Body,
                 Signature = node.Body,
                 BlockNode = node.Nodes[0],
-                CallName = node.Body
+                CallName = node.Body,
+                Path = _engine.CurrentExecutingFile
             };
 
             // Create parameters.
@@ -395,6 +396,8 @@ namespace Skrypt.Execution
         ///     Executes a block.
         /// </summary>
         public ScopeContext ExecuteBlock (Node node, ScopeContext scopeContext, ScopeProperties properties = 0) {
+            _engine.State = EngineState.Executing;
+
             ScopeContext scope = new ScopeContext ();
 
             // Copy settings from previous scope.
@@ -420,6 +423,7 @@ namespace Skrypt.Execution
 
             _engine.CurrentScope = scope;
             var oldStack = _engine.CurrentStack;
+            var oldPath = _engine.CurrentExecutingFile;
 
             foreach (var subNode in node.Nodes) {
                 if (subNode.Type == TokenTypes.Statement) {
@@ -438,6 +442,10 @@ namespace Skrypt.Execution
                     if ((scope.Properties & ScopeProperties.SkippedLoop) != 0) return scope;
                     if ((scope.Properties & ScopeProperties.BrokeLoop) != 0) return scope;
                     if (scope.ReturnObject != null) return scope;
+                }
+                else if (subNode.Type == TokenTypes.Include) {
+                    _engine.CurrentExecutingFile = ((IncludeNode)subNode).Path;
+                    scope = ExecuteBlock(subNode, scope);
                 }
                 else if (subNode.Type == TokenTypes.MethodDeclaration) {
                     var result = ExecuteFunctionDeclaration(subNode, scope);
@@ -463,6 +471,7 @@ namespace Skrypt.Execution
                 // Reset current stack and scope variables.
                 _engine.CurrentScope = scope;
                 _engine.CurrentStack = oldStack;
+                _engine.CurrentExecutingFile = oldPath;
             }
 
             return scope;
@@ -680,7 +689,8 @@ namespace Skrypt.Execution
                     Name = "method",
                     Signature = node.Body,
                     BlockNode = node.Nodes[0],
-                    CallName = node.Body.Split('_')[0]
+                    CallName = node.Body.Split('_')[0],
+                    Path = _engine.CurrentExecutingFile
                 };
 
                 foreach (var snode in node.Nodes[1].Nodes) {
@@ -773,7 +783,7 @@ namespace Skrypt.Execution
                 var methodContext = new ScopeContext {
                     ParentScope = scopeContext,
                     // Create new call stack for method.
-                    CallStack = new CallStack(((SkryptMethod)foundFunction).Name, callNode.Getter.Token, scopeContext.CallStack),
+                    CallStack = new CallStack(((SkryptMethod)foundFunction).Name, callNode.Getter.Token, scopeContext.CallStack, ""),
                     Properties = scopeContext.Properties | ScopeProperties.InMethod
                 };
 
@@ -799,6 +809,8 @@ namespace Skrypt.Execution
                             Scope = methodContext
                         };
                     }
+
+                    methodContext.CallStack.Path = function.Path;
 
                     methodScopeResult = function.Execute(_engine, caller, arguments.ToArray(), methodContext);
                 }

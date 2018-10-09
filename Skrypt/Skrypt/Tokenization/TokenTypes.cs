@@ -27,6 +27,7 @@ namespace Skrypt.Tokenization {
         Getter,
         Index,
         Using,
+        Include,
         Conditional,
         Block,
         Statement,
