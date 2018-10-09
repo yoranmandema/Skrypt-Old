@@ -16,6 +16,12 @@ namespace Skrypt.Execution
             _engine = e;
         }
 
+        public void SetFunctionOwner (SkryptObject function, SkryptObject owner) {
+            if (function.GetType() == typeof(UserFunction)) {
+                ((UserFunction)function).Class = owner;
+            }
+        }
+
         /// <summary>
         ///     Recursively fetches a variable from the given scope.
         /// </summary>
@@ -351,6 +357,10 @@ namespace Skrypt.Execution
                 }
             }
 
+            foreach (var p in Object.Properties) {
+                SetFunctionOwner(p.Value, Object);
+            }
+
             Object.Name = node.Name;
 
             return Object;
@@ -640,6 +650,8 @@ namespace Skrypt.Execution
                         else {
                             accessResult.Property.Value = result;
                         }
+
+                        //SetFunctionOwner(result, target);
                     }
                     // Left side is an expression.
                     else if (node.Nodes[0].Body == "Index") {

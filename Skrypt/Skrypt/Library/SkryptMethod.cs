@@ -69,6 +69,7 @@ namespace Skrypt.Library
         public string Path;
         public Node BlockNode { get; set; }
         public string Signature { get; set; }
+        public SkryptObject Class { get; set; }
 
         public override ScopeContext Execute(SkryptEngine engine, SkryptObject self, SkryptObject[] parameters, ScopeContext scope)  {
             var inputScope = new ScopeContext {
@@ -77,7 +78,9 @@ namespace Skrypt.Library
                 CallStack = scope.CallStack
             };
 
-            if (self != null) {
+            if (self == null && Class != null) {
+                inputScope.SetVariable("self", Class, Modifier.Const);
+            } else if (self != null) {
                 inputScope.SetVariable("self", self, Modifier.Const);
             }
 
