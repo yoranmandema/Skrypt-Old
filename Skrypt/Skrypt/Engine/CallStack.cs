@@ -25,10 +25,16 @@ namespace Skrypt.Engine {
 
             if (!string.IsNullOrEmpty(Path)) str += $" in: {Path} ";
 
-            if (Token != null) str += $"({Token.Line}, { Token.Column}, {Token.LineEnd}, { Token.ColumnEnd})";
+            if (Token != null) str += $"({Token.Line}, {Token.Column}, {Token.LineEnd}, {Token.ColumnEnd})";
 
             if (Parent != null) {
-                str += "\n" + Parent;
+                var parentMessage = Parent.ToString();
+
+                if (parentMessage.StartsWith(str)) {
+                    return parentMessage; 
+                } else {
+                    str += "\n" + parentMessage;
+                }
             }
 
             return str;
