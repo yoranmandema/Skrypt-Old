@@ -19,7 +19,7 @@ namespace Skrypt
             var engine = new SkryptEngine();
 
             engine.AddType(typeof(Vector));
-            //engine.SetValue("WriteLine", new Action<object>(Console.WriteLine));
+            engine.SetValue("WriteLine", new Action<object>(Console.WriteLine));
             engine.Parse(code);
 
             double time = 0;
@@ -30,6 +30,7 @@ namespace Skrypt
                         Settings = EngineSettings.NoLogs
                     };
                     e.AddType(typeof(Vector));
+                    e.SetValue("WriteLine", new Action<object>(Console.WriteLine));
                     e.Parse();
                     time += e.ExecutionTime;
                 }
