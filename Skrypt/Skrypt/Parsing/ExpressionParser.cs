@@ -456,6 +456,36 @@ namespace Skrypt.Parsing
             return null;
         }
 
+        public Node GetOptimisedNode (Node node) {
+            var result = _engine.Executor.ExecuteExpression(node, _engine.GlobalScope);
+            Node newNode = node;
+
+            Type resultType = result.GetType();
+
+            if (resultType == typeof(Library.Native.System.Numeric)) {
+                newNode = new NumericNode {
+                    Value = ((Library.Native.System.Numeric)result).Value
+                };
+            }
+            else if (resultType == typeof(Library.Native.System.String)) {
+                newNode = new StringNode {
+                    Value = ((Library.Native.System.String)result).Value
+                };
+            }
+            else if (resultType == typeof(Library.Native.System.Boolean)) {
+                newNode = new BooleanNode {
+                    Value = ((Library.Native.System.Boolean)result).Value
+                };
+            }
+            else if (resultType == typeof(Library.Native.System.Null)) {
+                newNode = new NullNode();
+            }
+
+            newNode.Nodes = node.Nodes;
+
+            return newNode;
+        }
+
         /// <summary>
         ///     Parses individual arguments as expressions.
         /// </summary>
