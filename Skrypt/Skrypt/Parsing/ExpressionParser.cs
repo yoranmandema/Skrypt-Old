@@ -768,6 +768,12 @@ namespace Skrypt.Parsing
 
             var returnNode = ParseClean(tokens.GetRange(deltaOffset, delta - deltaOffset));
 
+            Console.WriteLine("Expression:");
+            returnNode.Print();
+            Console.WriteLine("Optimised:");
+            returnNode = ExpressionOptimiser.OptimiseExpressionNode(returnNode,_engine);
+            returnNode.Print();
+
             delta += addDelta;
 
             return new ParseResult {Node = returnNode, Delta = delta};

@@ -74,6 +74,7 @@
     <Compile Include="Execution\ScopeContext.cs" />
     <Compile Include="Execution\TypeConverter.cs" />
     <Compile Include="Execution\Variable.cs" />
+    <Compile Include="ILGenerator\BasicGenerator.cs" />
     <Compile Include="Library\Native\Encoding.cs" />
     <Compile Include="Library\Native\Crypto.cs" />
     <Compile Include="Library\Native\FileIO.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Library\Native\SkryptClasses\String.cs" />
     <Compile Include="Library\SkryptType.cs" />
     <Compile Include="Parsing\ClassParser.cs" />
+    <Compile Include="Parsing\ExpressionOptimiser.cs" />
     <Compile Include="Parsing\ExpressionParser.cs" />
     <Compile Include="Parsing\GeneralParser.cs" />
     <Compile Include="Parsing\FunctionParser.cs" />

@@ -10,8 +10,7 @@ using Skrypt.Library.Reflection;
 using Skrypt.Parsing;
 using Skrypt.Tokenization;
 
-namespace Skrypt.Engine
-{
+namespace Skrypt.Engine {
     public class ParseResult {
         public int Delta = -1;
         public Node Node;
@@ -433,6 +432,7 @@ namespace Skrypt.Engine
 
             Stopwatch = Stopwatch.StartNew();
             GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
+            //ILGen.BasicGenerator.GenerateMethodFromNode(programNode);
             Stopwatch.Stop();
             double execute = Stopwatch.Elapsed.TotalMilliseconds;
             ExecutionTime = execute;

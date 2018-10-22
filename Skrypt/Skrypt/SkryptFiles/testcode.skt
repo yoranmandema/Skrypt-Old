@@ -1,1 +1,9 @@
-include 
+using System
+
+class CoolPrinter {	
+	public fn PrintSomething () {
+		print("Cool!")
+	}
+}
+
+CoolPrinter.PrintSomething()
