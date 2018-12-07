@@ -1,9 +1,10 @@
 using System
 
-class CoolPrinter {	
-	public fn PrintSomething () {
-		print("Cool!")
+class JSON {
+	const public fn parseString (string) {
+		if (string.Type != String) {error("Input must be a string!")}
+		
+		
 	}
-}
 
-CoolPrinter.PrintSomething()
+}

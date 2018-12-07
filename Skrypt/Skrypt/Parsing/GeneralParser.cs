@@ -240,7 +240,7 @@ namespace Skrypt.Parsing
             _engine.State = EngineState.Parsing;
 
             // Create main node
-            var node = new Node {Body = "Block", Type = TokenTypes.Block};
+            var node = new BlockNode();
 
             if (tokens.Count == 0) return node;
 

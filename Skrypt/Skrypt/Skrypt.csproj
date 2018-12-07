@@ -105,14 +105,17 @@
     <Compile Include="Engine\SkryptException.cs" />
     <Compile Include="Library\SkryptProperty.cs" />
     <Compile Include="Parsing\Nodes\ArrayNode.cs" />
+    <Compile Include="Parsing\Nodes\BlockNode.cs" />
     <Compile Include="Parsing\Nodes\BooleanNode.cs" />
     <Compile Include="Parsing\Nodes\CallNode.cs" />
     <Compile Include="Parsing\Nodes\ClassNode.cs" />
     <Compile Include="Parsing\Nodes\ConditionalNode.cs" />
+    <Compile Include="Parsing\Nodes\IdentifierNode.cs" />
     <Compile Include="Parsing\Nodes\IncludeNode.cs" />
     <Compile Include="Parsing\Nodes\IndexNode.cs" />
     <Compile Include="Parsing\Nodes\NullNode.cs" />
     <Compile Include="Parsing\Nodes\NumericNode.cs" />
+    <Compile Include="Parsing\Nodes\OperationNode.cs" />
     <Compile Include="Parsing\Nodes\StringNode.cs" />
     <Compile Include="Parsing\Nodes\UsingNode.cs" />
     <Compile Include="Parsing\StatementParser.cs" />

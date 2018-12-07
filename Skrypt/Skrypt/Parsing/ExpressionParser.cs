@@ -172,7 +172,7 @@ namespace Skrypt.Parsing
                             Token = tokens[0]
                         };
                     default:
-                        return new Node {
+                        return new IdentifierNode {
                             Body = tokens[0].Value,
                             Type = tokens[0].Type,
                             Token = tokens[0]
@@ -339,11 +339,13 @@ namespace Skrypt.Parsing
                                     }
 
                                     // Create operation node with type and body.
-                                    var newNode = new Node {
+                                    var newNode = new OperationNode {
                                         Body = Operator.OperationName,
                                         Type = token.Type,
                                         Token = token
                                     };
+
+                                    newNode.Body = Operator.OperationName;
 
                                     if (op.Members == 1) {
                                         // Check whether we actually have a value that gets operated on.
@@ -768,11 +770,7 @@ namespace Skrypt.Parsing
 
             var returnNode = ParseClean(tokens.GetRange(deltaOffset, delta - deltaOffset));
 
-            Console.WriteLine("Expression:");
-            returnNode.Print();
-            Console.WriteLine("Optimised:");
             returnNode = ExpressionOptimiser.OptimiseExpressionNode(returnNode,_engine);
-            returnNode.Print();
 
             delta += addDelta;
 

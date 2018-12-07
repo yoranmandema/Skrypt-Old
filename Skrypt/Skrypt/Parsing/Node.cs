@@ -133,6 +133,20 @@ namespace Skrypt.Parsing
                     C.Write(((NumericNode)this).Value, Color.FromArgb(184, 215, 163));
                     break;
                 case TokenTypes.Call:
+                    C.WriteLine(Body, Color.FromArgb(66, 147, 208));
+
+                    C.Write("| " + indent, Color.FromArgb(100, 100, 100));
+                    C.WriteLine("Function:", Color.FromArgb(217, 220, 220));
+                    ((CallNode)this).Getter.Print(indent + "| | ");
+
+                    C.Write("| " + indent, Color.FromArgb(100, 100, 100));
+                    C.WriteLine("Arguments:", Color.FromArgb(217, 220, 220));
+
+                    foreach (var arg in ((CallNode)this).Arguments) {
+                        arg.Print(indent + "| | ");
+                    }
+
+                    break;
                 case TokenTypes.Punctuator:
                     C.Write(Body, Color.FromArgb(66, 147, 208));
                     break;

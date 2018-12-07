@@ -431,7 +431,7 @@ namespace Skrypt.Engine {
             //Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(programNode, Newtonsoft.Json.Formatting.Indented));
 
             Stopwatch = Stopwatch.StartNew();
-            GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
+            //GlobalScope = Executor.ExecuteBlock(programNode, GlobalScope);
             //ILGen.BasicGenerator.GenerateMethodFromNode(programNode);
             Stopwatch.Stop();
             double execute = Stopwatch.Elapsed.TotalMilliseconds;
