@@ -8,7 +8,7 @@ namespace Skrypt.Interpreter.Compiler {
     class CompileScope {
         Dictionary<string, int> identifiers = new Dictionary<string, int>();
 
-        public int GetStlocFromIdentifier (string identifier) {
+        public int GetIndexFromIdentifier(string identifier) {
             if (identifiers.ContainsKey(identifier)) {
                 return identifiers[identifier];
             } else {

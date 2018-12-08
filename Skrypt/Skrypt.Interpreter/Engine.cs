@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,9 +17,14 @@ namespace Skrypt.Interpreter {
 
             programNode.Print();
 
+            var sw = Stopwatch.StartNew();
+
             Instructions = InstructionCompiler.Compile(programNode);
+            sw.Stop();
 
             PrintInstructions();
+
+            Console.WriteLine($"Compile time: {sw.Elapsed.TotalMilliseconds}ms");
         }
 
         public void PrintInstructions () {

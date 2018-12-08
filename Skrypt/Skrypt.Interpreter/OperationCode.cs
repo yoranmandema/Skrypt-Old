@@ -6,13 +6,17 @@ using System.Threading.Tasks;
 
 namespace Skrypt.Interpreter {
     enum OperationCode {
-        br_equal,
-        br_false,
+        brequal,
+        brfalse,
 
         add,
         assign,
 
         stloc,
-        number
+        ldloc,
+
+        ldnum,
+        ldstr,
+        ldbool
     }
 }

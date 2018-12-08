@@ -40,28 +40,43 @@ namespace Skrypt.Interpreter.Compiler {
         }
 
         public static void CompileOperation(Node node, ref List<Instruction> instructions) {
+            if (node.Body == "assign") {
+                CompileAssignment(node, ref instructions);
+
+                return;
+            }
+
+            for (int i = node.Nodes.Count; i --> 0;) {
+                CompileBranch(node.Nodes[i], ref instructions);
+            }
+
             var operationCode = (OperationCode)Enum.Parse(typeof(OperationCode), node.Body);
 
             instructions.Add(new Instruction {
                 OpCode = operationCode
             });
+        }
 
-            foreach (var n in node.Nodes) {
-                CompileBranch(n, ref instructions);
-            }
+        public static void CompileAssignment (Node node, ref List<Instruction> instructions) {
+            CompileBranch(node.Nodes[1], ref instructions);
+
+            instructions.Add(new Instruction {
+                OpCode = OperationCode.stloc,
+                Value = CurrentScope.GetIndexFromIdentifier(node.Nodes[0].Body)
+            });
         }
 
         public static void CompileNumeric(Node node, ref List<Instruction> instructions) {
             instructions.Add(new Instruction {
-                OpCode = OperationCode.number,
+                OpCode = OperationCode.ldnum,
                 Value = ((NumericNode)node).Value
             });
         }
 
         public static void CompileIdentifier(Node node, ref List<Instruction> instructions) {
             instructions.Add(new Instruction {
-                OpCode = OperationCode.stloc,
-                Value = CurrentScope.GetStlocFromIdentifier(((IdentifierNode)node).Body)
+                OpCode = OperationCode.ldloc,
+                Value = CurrentScope.GetIndexFromIdentifier(((IdentifierNode)node).Body)
             });
         }
     }
