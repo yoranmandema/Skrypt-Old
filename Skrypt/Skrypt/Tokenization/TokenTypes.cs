@@ -27,7 +27,7 @@ namespace Skrypt.Tokenization {
         Parameter           = 1 << 16,
         Getter              = 1 << 17,
         Index               = 1 << 18,
-        Using               = 1 << 19,
+        Import               = 1 << 19,
         Include             = 1 << 20,
         Conditional         = 1 << 21,
         Block               = 1 << 22,

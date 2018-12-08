@@ -184,7 +184,7 @@ namespace Skrypt.Library
     {
         public OpNotEqual()
         {
-            OperationName = "notequal";
+            OperationName = "nequal";
             Operation = "!=";
             Type = Operators.NotEqual;
             AllOperators.Add(this);
@@ -206,7 +206,7 @@ namespace Skrypt.Library
     {
         public OpGreater()
         {
-            OperationName = "greater";
+            OperationName = "great";
             Operation = ">";
             Type = Operators.Greater;
             AllOperators.Add(this);
@@ -217,7 +217,7 @@ namespace Skrypt.Library
     {
         public OpLesser()
         {
-            OperationName = "lesser";
+            OperationName = "less";
             Operation = "<";
             Type = Operators.Lesser;
             AllOperators.Add(this);
@@ -228,7 +228,7 @@ namespace Skrypt.Library
     {
         public OpGreaterEqual()
         {
-            OperationName = "equalgreater";
+            OperationName = "eqg";
             Operation = ">=";
             Type = Operators.EqualGreater;
             AllOperators.Add(this);
@@ -239,7 +239,7 @@ namespace Skrypt.Library
     {
         public OpLesserEqual()
         {
-            OperationName = "equallesser";
+            OperationName = "eql";
             Operation = "<=";
             Type = Operators.EqualLesser;
             AllOperators.Add(this);
@@ -248,7 +248,7 @@ namespace Skrypt.Library
 
     internal class OpBitShiftL : Operator {
         public OpBitShiftL() {
-            OperationName = "bitshiftl";
+            OperationName = "bshiftl";
             Operation = "<<";
             Type = Operators.BitShiftL;
             AllOperators.Add(this);
@@ -257,7 +257,7 @@ namespace Skrypt.Library
 
     internal class OpBitShiftR : Operator {
         public OpBitShiftR() {
-            OperationName = "bitshiftr";
+            OperationName = "bshiftr";
             Operation = ">>";
             Type = Operators.BitShiftR;
             AllOperators.Add(this);
@@ -266,7 +266,7 @@ namespace Skrypt.Library
 
     internal class OpBitShiftRZ : Operator {
         public OpBitShiftRZ() {
-            OperationName = "bitshiftrz";
+            OperationName = "bshiftrz";
             Operation = ">>>";
             Type = Operators.BitShiftRZ;
             AllOperators.Add(this);
@@ -275,7 +275,7 @@ namespace Skrypt.Library
 
     internal class OpBitAnd : Operator {
         public OpBitAnd() {
-            OperationName = "bitand";
+            OperationName = "band";
             Operation = "&";
             Type = Operators.BitAnd;
             AllOperators.Add(this);
@@ -284,7 +284,7 @@ namespace Skrypt.Library
 
     internal class OpBitXor : Operator {
         public OpBitXor() {
-            OperationName = "bitxor";
+            OperationName = "bxor";
             Operation = "|||";
             Type = Operators.BitXOr;
             AllOperators.Add(this);
@@ -293,7 +293,7 @@ namespace Skrypt.Library
 
     internal class OpBitOr : Operator {
         public OpBitOr() {
-            OperationName = "bitor";
+            OperationName = "bor";
             Operation = "|";
             Type = Operators.BitOr;
             AllOperators.Add(this);
@@ -302,7 +302,7 @@ namespace Skrypt.Library
 
     internal class OpBitNot : Operator {
         public OpBitNot() {
-            OperationName = "bitnot";
+            OperationName = "bnot";
             Members = 1;
             Operation = "~";
             Type = Operators.BitNot;
@@ -325,7 +325,7 @@ namespace Skrypt.Library
     {
         public OpSubtract()
         {
-            OperationName = "subtract";
+            OperationName = "sub";
             Operation = "-";
             FailOnMissingMembers = false;
             Type = Operators.Subtract;
@@ -337,7 +337,7 @@ namespace Skrypt.Library
     {
         public OpMultiply()
         {
-            OperationName = "multiply";
+            OperationName = "mul";
             Operation = "*";
             Type = Operators.Multiply;
             AllOperators.Add(this);
@@ -348,7 +348,7 @@ namespace Skrypt.Library
     {
         public OpDivide()
         {
-            OperationName = "divide";
+            OperationName = "div";
             Operation = "/";
             Type = Operators.Divide;
             AllOperators.Add(this);
@@ -359,7 +359,7 @@ namespace Skrypt.Library
     {
         public OpModulo()
         {
-            OperationName = "modulo";
+            OperationName = "mod";
             Operation = "%";
             Type = Operators.Modulo;
             AllOperators.Add(this);
@@ -370,7 +370,7 @@ namespace Skrypt.Library
     {
         public OpPower()
         {
-            OperationName = "power";
+            OperationName = "pow";
             Operation = "^";
             Type = Operators.Power;
             AllOperators.Add(this);
@@ -408,7 +408,7 @@ namespace Skrypt.Library
     {
         public OpNegate()
         {
-            OperationName = "negate";
+            OperationName = "neg";
             Members = 1;
             Operation = "-";
             Type = Operators.Negate;

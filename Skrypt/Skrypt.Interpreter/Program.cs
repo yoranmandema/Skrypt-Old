@@ -11,9 +11,9 @@ namespace Skrypt.Interpreter {
 
             engine.Run(
 @"
-a = 1
-b = 123
-c = b + a
+import System
+
+print(""Hello world"")
 "
                 );
 

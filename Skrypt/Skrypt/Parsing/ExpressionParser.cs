@@ -650,7 +650,7 @@ namespace Skrypt.Parsing
         ///     Parses a using statement.
         /// </summary>
         public ParseResult ParseUsing(List<Token> tokens) {
-            var node = new UsingNode();
+            var node = new ImportNode();
             var isIdentifier = true;
             var buffer = new List<Token>();
             var skip = _engine.ExpectType(TokenTypes.Identifier, tokens);

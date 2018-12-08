@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Skrypt.Tokenization;
 
 namespace Skrypt.Parsing {
-    public class UsingNode : Node {
-        public override TokenTypes Type => TokenTypes.Using;
-        public override string Body => "Using";
+    public class ImportNode : Node {
+        public override TokenTypes Type => TokenTypes.Import;
+        public override string Body => "Import";
         public Node Getter { get; set; }
     }
 }

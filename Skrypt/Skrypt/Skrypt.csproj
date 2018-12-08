@@ -117,7 +117,7 @@
     <Compile Include="Parsing\Nodes\NumericNode.cs" />
     <Compile Include="Parsing\Nodes\OperationNode.cs" />
     <Compile Include="Parsing\Nodes\StringNode.cs" />
-    <Compile Include="Parsing\Nodes\UsingNode.cs" />
+    <Compile Include="Parsing\Nodes\ImportNode.cs" />
     <Compile Include="Parsing\StatementParser.cs" />
     <Compile Include="Tokenization\Tokenizer.cs" />
     <Compile Include="Tokenization\Token.cs" />

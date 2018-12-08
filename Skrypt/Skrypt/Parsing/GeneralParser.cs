@@ -20,7 +20,7 @@ namespace Skrypt.Parsing
             "for",
             "fn",
             "class",
-            "using",
+            "import",
             "break",
             "continue",
             "const",
@@ -33,7 +33,7 @@ namespace Skrypt.Parsing
             "while",
             "for",
             "class",
-            "using",
+            "import",
             "const",
             "include"
         };
@@ -212,7 +212,7 @@ namespace Skrypt.Parsing
                 }
             }
             // Parse using statement.
-            else if (parseTokens[0].Equals("using", TokenTypes.Punctuator)) {
+            else if (parseTokens[0].Equals("import", TokenTypes.Punctuator)) {
                 result = _engine.ExpressionParser.ParseUsing(parseTokens);
             }
             // Parse include statement.

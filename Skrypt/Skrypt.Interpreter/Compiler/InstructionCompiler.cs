@@ -27,11 +27,20 @@ namespace Skrypt.Interpreter.Compiler {
                         CompileBranch(n, ref instructions);
                     }
                     break;
+                case nameof(ImportNode):
+                    CompileUsing(node, ref instructions);
+                    break;
+                case nameof(CallNode):
+                    CompileCall(node, ref instructions);
+                    break;
                 case nameof(OperationNode):
                     CompileOperation(node, ref instructions);
                     break;
                 case nameof(NumericNode):
                     CompileNumeric(node, ref instructions);
+                    break;
+                case nameof(StringNode):
+                    CompileString(node, ref instructions);
                     break;
                 case nameof(IdentifierNode):
                     CompileIdentifier(node, ref instructions);
@@ -42,6 +51,10 @@ namespace Skrypt.Interpreter.Compiler {
         public static void CompileOperation(Node node, ref List<Instruction> instructions) {
             if (node.Body == "assign") {
                 CompileAssignment(node, ref instructions);
+
+                return;
+            } else if (node.Body == "access") {
+                CompileAccess(node, ref instructions);
 
                 return;
             }
@@ -66,6 +79,15 @@ namespace Skrypt.Interpreter.Compiler {
             });
         }
 
+        public static void CompileAccess(Node node, ref List<Instruction> instructions) {
+            CompileBranch(node.Nodes[0], ref instructions);
+
+            instructions.Add(new Instruction {
+                OpCode = OperationCode.access,
+                Value = node.Nodes[1].Body
+            });
+        }
+
         public static void CompileNumeric(Node node, ref List<Instruction> instructions) {
             instructions.Add(new Instruction {
                 OpCode = OperationCode.ldnum,
@@ -73,10 +95,41 @@ namespace Skrypt.Interpreter.Compiler {
             });
         }
 
+        public static void CompileString(Node node, ref List<Instruction> instructions) {
+            instructions.Add(new Instruction {
+                OpCode = OperationCode.ldstr,
+                Value = ((StringNode)node).Value
+            });
+        }
+
         public static void CompileIdentifier(Node node, ref List<Instruction> instructions) {
             instructions.Add(new Instruction {
                 OpCode = OperationCode.ldloc,
                 Value = CurrentScope.GetIndexFromIdentifier(((IdentifierNode)node).Body)
+            });
+        }
+
+        public static void CompileUsing(Node node, ref List<Instruction> instructions) {
+            CompileBranch(((ImportNode)node).Getter, ref instructions);
+
+            instructions.Add(new Instruction {
+                OpCode = OperationCode.import
+            });
+        }
+
+        public static void CompileCall(Node node, ref List<Instruction> instructions) {
+            CompileBranch(((CallNode)node).Getter, ref instructions);
+
+            instructions.Add(new Instruction {
+                OpCode = OperationCode.fnloc
+            });
+
+            for (int i = ((CallNode)node).Arguments.Count; i --> 0;) {
+                CompileBranch(((CallNode)node).Arguments[i], ref instructions);
+            }
+
+            instructions.Add(new Instruction {
+                OpCode = OperationCode.call
             });
         }
     }

@@ -9,11 +9,18 @@ namespace Skrypt.Interpreter {
         brequal,
         brfalse,
 
+        import,
+        call,
+        access,
+
         add,
-        assign,
+        sub,
+        mul,
+        div,
 
         stloc,
         ldloc,
+        fnloc,
 
         ldnum,
         ldstr,

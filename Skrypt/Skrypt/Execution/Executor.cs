@@ -389,7 +389,7 @@ namespace Skrypt.Execution
         /// <summary>
         ///     Executes a using statement.
         /// </summary>
-        public ScopeContext ExecuteUsing(UsingNode node, ScopeContext scopeContext) {
+        public ScopeContext ExecuteUsing(ImportNode node, ScopeContext scopeContext) {
             var Object = ExecuteExpression(node.Getter, scopeContext);
 
             // Add all public variables from object as variables to scope.
@@ -467,8 +467,8 @@ namespace Skrypt.Execution
 
                     scope.SetVariable(createdClass.Name, createdClass, subNode.Modifiers);
                 }
-                else if (subNode.Type == TokenTypes.Using) {
-                    var _scope = ExecuteUsing((UsingNode)subNode, scope);
+                else if (subNode.Type == TokenTypes.Import) {
+                    var _scope = ExecuteUsing((ImportNode)subNode, scope);
                 }
                 else {
                     var result = _engine.Executor.ExecuteExpression(subNode, scope);
