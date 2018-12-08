@@ -20,7 +20,7 @@ namespace Skrypt.Interpreter {
 
         stloc,
         ldloc,
-        fnloc,
+        setfn,
 
         ldnum,
         ldstr,

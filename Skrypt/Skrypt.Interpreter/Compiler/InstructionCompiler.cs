@@ -121,7 +121,7 @@ namespace Skrypt.Interpreter.Compiler {
             CompileBranch(((CallNode)node).Getter, ref instructions);
 
             instructions.Add(new Instruction {
-                OpCode = OperationCode.fnloc
+                OpCode = OperationCode.setfn
             });
 
             for (int i = ((CallNode)node).Arguments.Count; i --> 0;) {
