@@ -42,6 +42,12 @@ namespace Skrypt.Interpreter.Compiler {
                 case nameof(StringNode):
                     CompileString(node, ref instructions);
                     break;
+                case nameof(BooleanNode):
+                    CompileBoolean(node, ref instructions);
+                    break;
+                case nameof(NullNode):
+                    CompileNull(node, ref instructions);
+                    break;
                 case nameof(IdentifierNode):
                     CompileIdentifier(node, ref instructions);
                     break;
@@ -99,6 +105,20 @@ namespace Skrypt.Interpreter.Compiler {
             instructions.Add(new Instruction {
                 OpCode = OperationCode.ldstr,
                 Value = ((StringNode)node).Value
+            });
+        }
+
+        public static void CompileBoolean(Node node, ref List<Instruction> instructions) {
+            instructions.Add(new Instruction {
+                OpCode = OperationCode.ldbool,
+                Value = ((BooleanNode)node).Value
+            });
+        }
+
+        public static void CompileNull(Node node, ref List<Instruction> instructions) {
+            instructions.Add(new Instruction {
+                OpCode = OperationCode.ldnull,
+                Value = null
             });
         }
 

@@ -24,6 +24,7 @@ namespace Skrypt.Interpreter {
 
         ldnum,
         ldstr,
-        ldbool
+        ldbool,
+        ldnull
     }
 }
