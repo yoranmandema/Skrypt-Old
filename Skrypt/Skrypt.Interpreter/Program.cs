@@ -13,7 +13,7 @@ namespace Skrypt.Interpreter {
 @"
 import System
 
-print(""Hello world"")
+print(1)
 "
                 );
 
