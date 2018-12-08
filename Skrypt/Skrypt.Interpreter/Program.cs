@@ -17,6 +17,24 @@ c = b + a
 "
                 );
 
+            engine.PrintInstructions();
+
+            Console.WriteLine($"Compile time: {engine.CompileTime}ms");
+
+            engine.Options = new Options {
+                CanWrite = false
+            };
+
+            int iterations = 1000;
+            double totalTime = 0;
+
+            for (int i = 0; i < iterations; i++) {
+                engine.Run();
+                totalTime += engine.CompileTime;
+            }
+
+            Console.WriteLine($"Compile time average: {totalTime / iterations}ms");
+
             Console.ReadKey();
         }
     }

@@ -9,22 +9,31 @@ using Skrypt.Interpreter.Compiler;
 
 namespace Skrypt.Interpreter {
     class Engine {
-        List<Instruction> Instructions;
+        public Options Options { get; set; } = new Options();
 
-        public void Run (string code) {
-            var parseEngine = new SkryptEngine(code);
+        List<Instruction> Instructions;
+        string _code { get; set; }
+
+        public double CompileTime;
+
+        public void Run (string code = "") {
+            if (!string.IsNullOrEmpty(code)) {
+                _code = code;
+            }
+
+            var parseEngine = new SkryptEngine(_code);
+            parseEngine.Settings = EngineSettings.NoLogs;
             var programNode = parseEngine.Parse();
 
-            programNode.Print();
+            if (Options.CanWrite) programNode.Print();             
 
             var sw = Stopwatch.StartNew();
 
             Instructions = InstructionCompiler.Compile(programNode);
+
             sw.Stop();
 
-            PrintInstructions();
-
-            Console.WriteLine($"Compile time: {sw.Elapsed.TotalMilliseconds}ms");
+            CompileTime = sw.Elapsed.TotalMilliseconds;
         }
 
         public void PrintInstructions () {
