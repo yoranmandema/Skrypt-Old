@@ -22,7 +22,7 @@ namespace Skrypt.Interpreter.Compiler {
             CompileGeneral(node, ref instructions);
 
             for (int i = 0; i < instructions.Count; i++) {
-                if (instructions[i].Value.GetType() == typeof(PrecompiledAdress)) {
+                if (instructions[i].Value?.GetType() == typeof(PrecompiledAdress)) {
                     instructions[i] = new Instruction {
                         OpCode = instructions[i].OpCode,
                         Value = i + ((PrecompiledAdress)instructions[i].Value).Delta + 1
@@ -112,13 +112,25 @@ namespace Skrypt.Interpreter.Compiler {
             });
         }
 
-        public static void CompileAccess(Node node, ref List<Instruction> instructions) {
-            CompileGeneral(node.Nodes[0], ref instructions);
+        public static void CompileAccess(Node node, ref List<Instruction> instructions, bool fromProperty = false) {
+            if (fromProperty) {
+                instructions.Add(new Instruction {
+                    OpCode = OperationCode.access,
+                    Value = node.Nodes[0].Body
+                });
+            } else {
+                CompileGeneral(node.Nodes[0], ref instructions);
+            }
 
-            instructions.Add(new Instruction {
-                OpCode = OperationCode.access,
-                Value = node.Nodes[1].Body
-            });
+            if (node.Nodes[1].Body == "access") {
+                CompileAccess(node.Nodes[1], ref instructions, true);
+            } else {
+
+                instructions.Add(new Instruction {
+                    OpCode = OperationCode.access,
+                    Value = node.Nodes[1].Body
+                });
+            }   
         }
 
         public static void CompileIf(IfNode node, ref List<Instruction> instructions) {

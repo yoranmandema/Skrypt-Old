@@ -11,15 +11,7 @@ namespace Skrypt.Interpreter {
 
             engine.Run(
 @"
-if (true) {
-    ""iff""
-} elseif (false) {
-    if (100) {
-        ""iff in elseif""
-    }
-} else {
-    ""else""
-}
+System.Math.Random.Poop.Cancer
 "
                 );
 

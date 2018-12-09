@@ -25,7 +25,7 @@ namespace Skrypt.Interpreter {
             parseEngine.Settings = EngineSettings.NoLogs;
             var programNode = parseEngine.Parse();
 
-            //if (Options.CanWrite) programNode.Print();             
+            if (Options.CanWrite) programNode.Print();             
 
             var sw = Stopwatch.StartNew();
 
@@ -45,7 +45,7 @@ namespace Skrypt.Interpreter {
 
                 Console.WriteLine(index + ":\t" + instr.ToString());
 
-                if (instr.OpCode == OperationCode.brfalse || instr.OpCode == OperationCode.move) {
+                if (instr.OpCode == OperationCode.brfalse || instr.OpCode == OperationCode.move || instr.OpCode == OperationCode.import) {
                     Console.WriteLine();
                 }
             }

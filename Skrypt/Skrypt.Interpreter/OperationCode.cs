@@ -18,6 +18,9 @@ namespace Skrypt.Interpreter {
         sub,
         mul,
         div,
+        mod,
+
+        equal,
 
         stloc,
         ldloc,
