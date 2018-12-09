@@ -138,15 +138,11 @@ namespace Skrypt.Interpreter.Compiler {
         }
 
         public static void CompileCall(Node node, ref List<Instruction> instructions) {
-            CompileBranch(((CallNode)node).Getter, ref instructions);
-
-            instructions.Add(new Instruction {
-                OpCode = OperationCode.setfn
-            });
-
             for (int i = ((CallNode)node).Arguments.Count; i --> 0;) {
                 CompileBranch(((CallNode)node).Arguments[i], ref instructions);
             }
+
+            CompileBranch(((CallNode)node).Getter, ref instructions);
 
             instructions.Add(new Instruction {
                 OpCode = OperationCode.call
