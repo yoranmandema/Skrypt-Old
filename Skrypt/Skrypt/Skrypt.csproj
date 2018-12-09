@@ -107,6 +107,9 @@
     <Compile Include="Parsing\Nodes\ArrayNode.cs" />
     <Compile Include="Parsing\Nodes\BlockNode.cs" />
     <Compile Include="Parsing\Nodes\BooleanNode.cs" />
+    <Compile Include="Parsing\Nodes\ElseIfNode.cs" />
+    <Compile Include="Parsing\Nodes\IBranchNode.cs" />
+    <Compile Include="Parsing\Nodes\IfNode.cs" />
     <Compile Include="Parsing\Nodes\CallNode.cs" />
     <Compile Include="Parsing\Nodes\ClassNode.cs" />
     <Compile Include="Parsing\Nodes\ConditionalNode.cs" />

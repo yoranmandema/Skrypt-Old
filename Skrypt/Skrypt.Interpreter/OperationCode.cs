@@ -8,6 +8,7 @@ namespace Skrypt.Interpreter {
     enum OperationCode {
         brequal,
         brfalse,
+        move,
 
         import,
         call,

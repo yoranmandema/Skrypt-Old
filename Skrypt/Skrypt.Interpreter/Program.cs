@@ -11,9 +11,15 @@ namespace Skrypt.Interpreter {
 
             engine.Run(
 @"
-import System
-
-print(null)
+if (true) {
+    ""iff""
+} elseif (false) {
+    if (100) {
+        ""iff in elseif""
+    }
+} else {
+    ""else""
+}
 "
                 );
 
@@ -25,7 +31,7 @@ print(null)
                 CanWrite = false
             };
 
-            int iterations = 1000;
+            int iterations = 0;
             double totalTime = 0;
 
             for (int i = 0; i < iterations; i++) {

@@ -25,7 +25,7 @@ namespace Skrypt.Interpreter {
             parseEngine.Settings = EngineSettings.NoLogs;
             var programNode = parseEngine.Parse();
 
-            if (Options.CanWrite) programNode.Print();             
+            //if (Options.CanWrite) programNode.Print();             
 
             var sw = Stopwatch.StartNew();
 
@@ -36,14 +36,23 @@ namespace Skrypt.Interpreter {
             CompileTime = sw.Elapsed.TotalMilliseconds;
         }
 
-        public void PrintInstructions () {
-            Console.WriteLine("Instructions: ");
+        public static void PrintInstructions (List<Instruction> instructions) {
+            //Console.WriteLine("Instructions: ");
 
-            for (int i = 0; i < Instructions.Count; i++) {
-                var index = i.ToString("X4");
+            for (int i = 0; i < instructions.Count; i++) {
+                var index = i.ToString();
+                var instr = instructions[i];
 
-                Console.WriteLine(index + ": " + Instructions[i]);
+                Console.WriteLine(index + ":\t" + instr.ToString());
+
+                if (instr.OpCode == OperationCode.brfalse || instr.OpCode == OperationCode.move) {
+                    Console.WriteLine();
+                }
             }
+        }
+
+        public void PrintInstructions() {
+            PrintInstructions(Instructions);
         }
     }
 }

@@ -52,10 +52,10 @@ namespace Skrypt.Parsing
 
             result = _engine.GeneralParser.ParseSurrounded("{", "}", index, tokens, _engine.GeneralParser.Parse);
             var blockNode = result.Node;
-            index += result.Delta + 2;
+            index += result.Delta + 1;
 
             // Add condition and block nodes to main node
-            node.Add(conditionParentNode);
+            node.Add(conditionNode);
             node.Add(blockNode);
 
             return new ParseResult {Node = node, Delta = index};
@@ -139,29 +139,38 @@ namespace Skrypt.Parsing
             var index = 0;
 
             // Create main statement node
-            var result = ParseStatement(tokens);
-            index += result.Delta;
+            var preResult = ParseStatement(tokens);
+            index += preResult.Delta;
+
+            var result = new IfNode {
+                Condition = preResult.Node.Nodes[0],
+                Block = preResult.Node.Nodes[1]
+            };
 
             // Only parse statements elseif/else if there's any tokens after if statement
             if (index < tokens.Count - 1) {
                 while (tokens[index].Equals("elseif", TokenTypes.Keyword)) {
                     var elseIfResult = ParseStatement(tokens.GetRange(index, tokens.Count - index));
-                    result.Node.Add(elseIfResult.Node);
+
+                    result.ElseIfNodes.Add(new ElseIfNode {
+                        Condition = elseIfResult.Node.Nodes[0],
+                        Block = elseIfResult.Node.Nodes[1]
+                    });
+
                     index += elseIfResult.Delta;
 
                     if (index == tokens.Count) break;
                 }
-            }
 
-            if (index < tokens.Count - 1) {
                 if (tokens[index].Equals("else", TokenTypes.Keyword)) {
                     var elseResult = ParseElseStatement(tokens.GetRange(index, tokens.Count - index));
-                    result.Node.Add(elseResult.Node);
+
+                    result.ElseNode = elseResult.Node;
                     index += elseResult.Delta;
                 }
-            }
-            
-            return new ParseResult {Node = result.Node, Delta = index};
+            }   
+
+            return new ParseResult {Node = result, Delta = index};
         }
 
         /// <summary>
