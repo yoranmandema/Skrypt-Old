@@ -11,13 +11,11 @@ namespace Skrypt.Interpreter {
 
             engine.Run(
 @"
-System.Math.Random.Poop.Cancer
+System.Math.Random.Poop.DoStuff().a
 "
                 );
 
-            engine.PrintInstructions();
-
-            Console.WriteLine($"Compile time: {engine.CompileTime}ms");
+            //Console.WriteLine($"Compile time: {engine.CompileTime}ms");
 
             engine.Options = new Options {
                 CanWrite = false
@@ -31,7 +29,7 @@ System.Math.Random.Poop.Cancer
                 totalTime += engine.CompileTime;
             }
 
-            Console.WriteLine($"Compile time average: {totalTime / iterations}ms");
+            //Console.WriteLine($"Compile time average: {totalTime / iterations}ms");
 
             Console.ReadKey();
         }

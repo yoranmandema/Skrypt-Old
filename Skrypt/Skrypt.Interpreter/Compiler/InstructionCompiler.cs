@@ -14,6 +14,7 @@ namespace Skrypt.Interpreter.Compiler {
     class InstructionCompiler {
         public static CompileScope CurrentScope { get; set; }
         public static int ScopeDepth { get; set; }
+        public static bool GettingProperty { get; set; }
 
         public static List<Instruction> Compile(Node node) {
             CurrentScope = new CompileScope();
@@ -112,18 +113,13 @@ namespace Skrypt.Interpreter.Compiler {
             });
         }
 
-        public static void CompileAccess(Node node, ref List<Instruction> instructions, bool fromProperty = false) {
-            if (fromProperty) {
-                instructions.Add(new Instruction {
-                    OpCode = OperationCode.access,
-                    Value = node.Nodes[0].Body
-                });
-            } else {
-                CompileGeneral(node.Nodes[0], ref instructions);
-            }
+        public static void CompileAccess(Node node, ref List<Instruction> instructions) {
+            CompileGeneral(node.Nodes[0], ref instructions);
 
             if (node.Nodes[1].Body == "access") {
-                CompileAccess(node.Nodes[1], ref instructions, true);
+                GettingProperty = node.Nodes[1].Nodes[0].Type == Tokenization.TokenTypes.Identifier;
+
+                CompileAccess(node.Nodes[1], ref instructions);
             } else {
 
                 instructions.Add(new Instruction {
@@ -214,10 +210,17 @@ namespace Skrypt.Interpreter.Compiler {
         }
 
         public static void CompileIdentifier(Node node, ref List<Instruction> instructions) {
-            instructions.Add(new Instruction {
-                OpCode = OperationCode.ldloc,
-                Value = CurrentScope.GetIndexFromIdentifier(((IdentifierNode)node).Body)
-            });
+            if (GettingProperty) {
+                instructions.Add(new Instruction {
+                    OpCode = OperationCode.access,
+                    Value = node.Body
+                });
+            } else {
+                instructions.Add(new Instruction {
+                    OpCode = OperationCode.ldloc,
+                    Value = CurrentScope.GetIndexFromIdentifier(((IdentifierNode)node).Body)
+                });
+            }
         }
 
         public static void CompileUsing(Node node, ref List<Instruction> instructions) {

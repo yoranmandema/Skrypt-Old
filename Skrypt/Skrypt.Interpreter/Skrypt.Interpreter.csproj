@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CIL\CILGeneration.cs" />
     <Compile Include="Compiler\CompileScope.cs" />
     <Compile Include="Compiler\InstructionCompiler.cs" />
     <Compile Include="Engine.cs" />

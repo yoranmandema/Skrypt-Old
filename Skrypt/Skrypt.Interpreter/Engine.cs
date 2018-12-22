@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Skrypt.Engine;
 using Skrypt.Interpreter.Compiler;
+using Skrypt.Interpreter.CIL;
 
 namespace Skrypt.Interpreter {
     class Engine {
@@ -25,11 +26,15 @@ namespace Skrypt.Interpreter {
             parseEngine.Settings = EngineSettings.NoLogs;
             var programNode = parseEngine.Parse();
 
-            if (Options.CanWrite) programNode.Print();             
+            //if (Options.CanWrite) programNode.Print();             
 
             var sw = Stopwatch.StartNew();
 
-            Instructions = InstructionCompiler.Compile(programNode);
+            //Instructions = InstructionCompiler.Compile(programNode);
+
+            var method = CILGenerator.CompileToMethod(programNode);
+
+            method.Invoke(null, new string[] { null });
 
             sw.Stop();
 
