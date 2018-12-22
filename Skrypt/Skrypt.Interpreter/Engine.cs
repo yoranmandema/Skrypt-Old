@@ -16,6 +16,11 @@ namespace Skrypt.Interpreter {
         string _code { get; set; }
 
         public double CompileTime;
+        public CILGenerator CILGenerator;
+
+        public Engine () {
+            CILGenerator = new CILGenerator();
+        }
 
         public void Run (string code = "") {
             if (!string.IsNullOrEmpty(code)) {
@@ -28,15 +33,16 @@ namespace Skrypt.Interpreter {
 
             //if (Options.CanWrite) programNode.Print();             
 
-            var sw = Stopwatch.StartNew();
-
             //Instructions = InstructionCompiler.Compile(programNode);
 
-            var method = CILGenerator.CompileToMethod(programNode);
+            var sw = Stopwatch.StartNew();
 
-            method.Invoke(null, new string[] { null });
+            var method = CILGenerator.CompileToAction(programNode);
 
             sw.Stop();
+
+            method.DynamicInvoke();
+
 
             CompileTime = sw.Elapsed.TotalMilliseconds;
         }

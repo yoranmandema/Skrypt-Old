@@ -11,17 +11,17 @@ namespace Skrypt.Interpreter {
 
             engine.Run(
 @"
-System.Math.Random.Poop.DoStuff().a
+a = 2 + 1 * 2 
 "
                 );
 
-            //Console.WriteLine($"Compile time: {engine.CompileTime}ms");
+            Console.WriteLine($"Compile time: {engine.CompileTime}ms");
 
             engine.Options = new Options {
                 CanWrite = false
             };
 
-            int iterations = 0;
+            int iterations = 100;
             double totalTime = 0;
 
             for (int i = 0; i < iterations; i++) {
@@ -29,7 +29,7 @@ System.Math.Random.Poop.DoStuff().a
                 totalTime += engine.CompileTime;
             }
 
-            //Console.WriteLine($"Compile time average: {totalTime / iterations}ms");
+            Console.WriteLine($"Compile time average: {totalTime / iterations}ms");
 
             Console.ReadKey();
         }

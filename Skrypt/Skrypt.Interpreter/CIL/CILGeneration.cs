@@ -9,97 +9,115 @@ using System.Threading;
 using System.Diagnostics.SymbolStore;
 using System.Diagnostics;
 using Skrypt.Parsing;
+using Sigil;
 
 namespace Skrypt.Interpreter.CIL {
     public class CILGenerator {
-        private static int sequencePoint = 2;
-        private static ILGenerator ILGenerator;
-        private static ISymbolDocumentWriter document;
+        public MethodInfo OutputMethod;
+        private Emit<Action> emit;
 
-        public static MethodInfo CompileToMethod (Node program, string name = "SkryptAssembly") {
-            // create a dynamic assembly and module
+        public Action CompileToAction(Node program) {
+            emit = Emit<Action>.NewDynamicMethod();
 
-            var assemblyName = new AssemblyName {
-                Name = name
-            };
+            try {
+                CompileGeneral(program);
 
-            var assemblyBuilder = Thread.GetDomain().DefineDynamicAssembly(assemblyName, AssemblyBuilderAccess.RunAndSave);
+                emit.Return();
+            }
+            catch (SigilVerificationException e) {
+                Console.WriteLine(e.GetDebugInfo());
 
-            // Mark generated code as debuggable.
+                throw e;
+            }
 
-            // See http://blogs.msdn.com/rmbyers/archive/2005/06/26/432922.aspx for explanation.
+            var del = emit.CreateDelegate();
 
-            var daType = typeof(DebuggableAttribute);
-
-            ConstructorInfo daCtor = daType.GetConstructor(new Type[] { typeof(DebuggableAttribute.DebuggingModes) });
-
-            var daBuilder = new CustomAttributeBuilder(daCtor, new object[] {
-                DebuggableAttribute.DebuggingModes.DisableOptimizations |
-                DebuggableAttribute.DebuggingModes.Default
-            });
-
-            assemblyBuilder.SetCustomAttribute(daBuilder);
-
-            ModuleBuilder module = assemblyBuilder.DefineDynamicModule($"{name}.exe", true); // <-- pass 'true' to track debug info.
-
-            // Tell Emit about the source file that we want to associate this with.
-
-            document = module.DefineDocument(@"Source.txt", Guid.Empty, Guid.Empty, Guid.Empty);
-
-            // create a new type to hold our Main method
-
-            TypeBuilder typeBuilder = module.DefineType("Program", TypeAttributes.Public | TypeAttributes.Class);
-
-            // create the Main(string[] args) method
-
-            MethodBuilder methodbuilder = typeBuilder.DefineMethod("Main", MethodAttributes.HideBySig | MethodAttributes.Static | MethodAttributes.Public, typeof(void), new Type[] { typeof(string[]) });
-
-            // generate the IL for the Main method
-
-            ILGenerator = methodbuilder.GetILGenerator();
-
-            // Create a local variable of type 'string', and call it 'xyz'
-
-            LocalBuilder localXYZ = ILGenerator.DeclareLocal(typeof(string));
-
-            localXYZ.SetLocalSymInfo("xyz"); // Provide name for the debugger. 
-
-            // Emit sequence point before the IL instructions. This is start line, start col, end line, end column, 
-
-            // Line 2: xyz = "hello";
-
-            MarkSequencePoint();
-
-            ILGenerator.Emit(OpCodes.Ldstr, "Hello world!");
-
-            ILGenerator.Emit(OpCodes.Stloc, localXYZ);
-
-            // Line 3: Write(xyz);
-
-            MethodInfo infoWriteLine = typeof(System.Console).GetMethod("WriteLine", new Type[] { typeof(string) });
-
-            MarkSequencePoint();
-
-            ILGenerator.Emit(OpCodes.Ldloc, localXYZ);
-
-            ILGenerator.EmitCall(OpCodes.Call, infoWriteLine, null);
-
-            // Line 4: return;
-
-            MarkSequencePoint();
-
-            ILGenerator.Emit(OpCodes.Ret);
-
-            Type type = typeBuilder.CreateType();
-
-            // This now calls the newly generated method. We can step into this and debug our emitted code!!
-
-            return type.GetMethod("Main");
+            return del;
         }
 
-        static void MarkSequencePoint () {
-            ILGenerator.MarkSequencePoint(document, sequencePoint, 1, sequencePoint, 100);
-            sequencePoint++;
+        public void CompileGeneral(Node node) {
+            var type = node.GetType().Name;
+
+            switch (type) {
+                case nameof(BlockNode):
+                    foreach (var n in node.Nodes) {
+                        CompileGeneral(n);
+                    }
+                    break;
+                case nameof(NumericNode):
+                    CompileNumeric((NumericNode)node);
+                    break;
+                case nameof(StringNode):
+                    CompileString((StringNode)node);
+                    break;
+                case nameof(BooleanNode):
+                    CompileBool((BooleanNode)node);
+                    break;
+                case nameof(NullNode):
+                    CompileNull();
+                    break;
+                case nameof(OperationNode):
+                    CompileOperation((OperationNode)node);
+                    break;
+            }
+        }
+
+        public void CompileNumeric(NumericNode node) {
+            emit.LoadConstant(node.Value);
+            emit.Box(typeof(double));
+        }
+
+        public void CompileString(StringNode node) {
+            emit.LoadConstant(node.Value);
+            emit.Box(typeof(string));
+        }
+
+        public void CompileBool(BooleanNode node) {
+            emit.LoadConstant(node.Value);
+            emit.Box(typeof(bool));
+        }
+
+        public void CompileNull() {
+            emit.LoadNull();
+        }
+
+        public void CompileOperation(OperationNode node) {
+            if (node.Body == "assign") {
+                CompileAssignment(node);
+
+                return;
+            }
+
+            for (int i = node.Nodes.Count; i-- > 0;) {
+                CompileGeneral(node.Nodes[i]);
+            }
+
+            switch (node.Body) {
+                case "add":
+                    emit.Add();
+                    break;
+                case "subtract":
+                    emit.Subtract();
+                    break;
+                case "multiply":
+                    emit.Multiply();
+                    break;
+                case "divide":
+                    emit.Divide();
+                    break;
+                case "modulo":
+                    emit.Remainder();
+                    break;
+            }
+        }
+
+        public void CompileAssignment(Node node) {
+            CompileGeneral(node.Nodes[1]);
+
+            var local = emit.DeclareLocal(typeof(object), node.Body);
+            emit.StoreLocal(local);
+            emit.LoadLocal(local);
+            emit.Call(typeof(System.Console).GetMethod("WriteLine", new Type[] { typeof(object) }));
         }
     }
 }
